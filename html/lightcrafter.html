@@ -1,0 +1,452 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Lightcrafter &mdash; QDSpy 0.6 beta documentation</title>
+    
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.6 beta',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="top" title="QDSpy 0.6 beta documentation" href="index.html" />
+    <link rel="next" title="QDS Commands" href="commands.html" />
+    <link rel="prev" title="Shader description files" href="shaderfiles.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="commands.html" title="QDS Commands"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="shaderfiles.html" title="Shader description files"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.6 beta documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Lightcrafter</a><ul>
+<li><a class="reference internal" href="#api">API</a></li>
+<li><a class="reference internal" href="#native-resolution">Native resolution</a></li>
+<li><a class="reference internal" href="#timing">Timing</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="shaderfiles.html"
+                        title="previous chapter">Shader description files</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="commands.html"
+                        title="next chapter">QDS Commands</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/lightcrafter.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="lightcrafter">
+<h1>Lightcrafter<a class="headerlink" href="#lightcrafter" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="api">
+<span id="lightcrafter-api"></span><h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<p>To interact with the lightcrafter device directly in a python script
+(during <strong>compile-time</strong> of the stimulus, see section <a class="reference internal" href="how_QDSpy_works.html"><em>How QDSpy works</em></a>),
+use the follwing lightcrafter class.</p>
+<dl class="class">
+<dt id="Devices.lightcrafter.Lightcrafter">
+<em class="property">class </em><code class="descclassname">Devices.lightcrafter.</code><code class="descname">Lightcrafter</code><span class="sig-paren">(</span><em>_isCheckOnly=False</em>, <em>_isVerbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and initialize lightcrafter object.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameters:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_isCheckOnly</td>
+<td><div class="first last line-block">
+<div class="line">all functions only check parameters</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>_isVerbose</td>
+<td><div class="first last line-block">
+<div class="line">send messages to stdout</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>_devNum=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to lightcrafter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.disconnect">
+<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disconnects the lightcrafter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.getHardwareStatus">
+<code class="descname">getHardwareStatus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.getHardwareStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.getHardwareStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests the device&#8217;s hardware status and returns a list with up
+to three elements:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Result:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>code</td>
+<td><div class="first last line-block">
+<div class="line">0=ok or error code</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>data</td>
+<td><div class="first last line-block">
+<div class="line">the original data byte(s) returned by the device</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>info</td>
+<td><div class="first last line-block">
+<div class="line">a dictionary with following entries:</div>
+<div class="line">initOK, DMDError, swapError, seqAbort,</div>
+<div class="line">seqError</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.getMainStatus">
+<code class="descname">getMainStatus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.getMainStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.getMainStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests the device&#8217;s main status and returns a list with up
+to three elements:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Result:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>code</td>
+<td><div class="first last line-block">
+<div class="line">0=ok or error code</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>data</td>
+<td><div class="first last line-block">
+<div class="line">the original data byte(s) returned by the device</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>info</td>
+<td><div class="first last line-block">
+<div class="line">a dictionary with following entry:</div>
+<div class="line">DMDParked, SeqRunning, FBufFrozen,</div>
+<div class="line">FBufFrozen, GammaEnab</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.getSystemStatus">
+<code class="descname">getSystemStatus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.getSystemStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.getSystemStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests the device&#8217;s system status and returns a list with up
+to three elements:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Result:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>code</td>
+<td><div class="first last line-block">
+<div class="line">0=ok or error code</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>data</td>
+<td><div class="first last line-block">
+<div class="line">the original data byte(s) returned by the device</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>info</td>
+<td><div class="first last line-block">
+<div class="line">a dictionary with following entry:</div>
+<div class="line">MemoryOK</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.getVideoSignalDetectStatus">
+<code class="descname">getVideoSignalDetectStatus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.getVideoSignalDetectStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.getVideoSignalDetectStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests the status of the video signal received by the device and
+returns a list with up to three elements:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Result:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>code</td>
+<td><div class="first last line-block">
+<div class="line">0=ok or error code</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>data</td>
+<td><div class="first last line-block">
+<div class="line">the original data byte(s) returned by the device</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>info</td>
+<td><div class="first last line-block">
+<div class="line">a dictionary with following entry:</div>
+<div class="line">SigDetect, HRes, VRes, HSyncPol, VSyncPol,</div>
+<div class="line">PixClk_kHz, HFreq_kHz, VFreq_Hz</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.setDisplayMode">
+<code class="descname">setDisplayMode</code><span class="sig-paren">(</span><em>_mode</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.setDisplayMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.setDisplayMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the display mode of the device.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameters:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_mode</td>
+<td><div class="first last line-block">
+<div class="line">0=video display mode,</div>
+<div class="line">Assumes streaming video image from the</div>
+<div class="line">30-bit RGB or FPD-link interface with a</div>
+<div class="line">pixel resolution of up to 1280 × 800 up</div>
+<div class="line">to 120 Hz.</div>
+<div class="line">1=Pattern display mode</div>
+<div class="line">Assumes a 1-bit through 8-bit image with</div>
+<div class="line">a pixel resolution of 912 × 1140 and</div>
+<div class="line">bypasses all the image processing functions</div>
+<div class="line">of the DLPC350.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.setInputSource">
+<code class="descname">setInputSource</code><span class="sig-paren">(</span><em>_source</em>, <em>_bitDepth</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.setInputSource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.setInputSource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the input source of the device.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameters:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_source</td>
+<td><div class="first last line-block">
+<div class="line">0=parallel interface (PP),</div>
+<div class="line">1=internal test pattern,</div>
+<div class="line">2=Flash</div>
+<div class="line">3=FPD-link</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>_bitDepth</td>
+<td><div class="first last line-block">
+<div class="line">Parallel interface bit depth</div>
+<div class="line">0=30, 1=24, 2=20, 3=16, 4=10, 5=8 bits</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.softwareReset">
+<code class="descname">softwareReset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.softwareReset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.softwareReset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signal the device to do a software reset. This will take a couple
+of seconds. After the reset the device is disconnected.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="native-resolution">
+<h2>Native resolution<a class="headerlink" href="#native-resolution" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Aspect ratio: ~1.6</li>
+<li>Native resolution: 912 x 1140 (width x height)
+=&gt; relative pixel size: 2:1 (x:y)</li>
+</ul>
+</div>
+<div class="section" id="timing">
+<h2>Timing<a class="headerlink" href="#timing" title="Permalink to this headline">¶</a></h2>
+<p>All by lightcrafter programming, no external electronics needed.
+But <strong>only 3 bit color depth</strong> for each channel blue and green.</p>
+<p>Legend:</p>
+<ul class="simple">
+<li>b0=blue channel bit 0, g1=green channel bit 1, etc.</li>
+<li>Each pattern, separated by |, is displayed for 347 us</li>
+<li>Each line = 1 scan line, fluorescence acquisition during display of r0,r1</li>
+</ul>
+<p>Pattern:</p>
+<div class="highlight-python"><div class="highlight"><pre>b0|b1|r0|r1|r0|r1| = 2.082 ms
+b2|b3|r0|r1|r0|r1|
+b4|b5|r0|r1|r0|r1|
+b6|b7|r0|r1|r0|r1|
+g0|g1|r0|r1|r0|r1|
+g2|g3|r0|r1|r0|r1|
+g4|g5|r0|r1|r0|r1|
+g6|g7|r0|r1|r0|r1|
+=16.656 ms
+</pre></div>
+</div>
+<p>=1 visual stimulus frame, if we drive the graphics card at 60.038 Hz
+(which is possible using a genlock card)</p>
+<p>This works in principle, but not with a bit depth of 8 (255 levels of
+intensity), because now the bits directly correspond to 8 time slots per
+color channel, resulting in a actual bit depth of 3.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="commands.html" title="QDS Commands"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="shaderfiles.html" title="Shader description files"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.6 beta documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

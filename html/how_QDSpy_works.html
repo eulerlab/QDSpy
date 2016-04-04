@@ -1,0 +1,228 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>How QDSpy works &mdash; QDSpy 0.6 beta documentation</title>
+    
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.6 beta',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="top" title="QDSpy 0.6 beta documentation" href="index.html" />
+    <link rel="next" title="Getting ready" href="installation.html" />
+    <link rel="prev" title="Welcome to QDSpy’s documentation!" href="index.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Getting ready"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to QDSpy’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.6 beta documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">How QDSpy works</a><ul>
+<li><a class="reference internal" href="#gamma-correction">Gamma correction</a></li>
+<li><a class="reference internal" href="#log-file">Log file</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to QDSpy&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="next chapter">Getting ready</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/how_QDSpy_works.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="how-qdspy-works">
+<h1>How QDSpy works<a class="headerlink" href="#how-qdspy-works" title="Permalink to this headline">¶</a></h1>
+<p>In QDSpy, stimuli are represented by Python scripts (.py). It is important to
+understand, that such a Python stimulus script <em>describes</em> how a stimulus is
+rendered, but does not present it directly.</p>
+<p>When running a Python stimulus script (e.g. from a shell as
+<code class="docutils literal"><span class="pre">python</span> <span class="pre">.\scriptname.py</span></code>), it generates a <em>compiled</em> version of the stimulus
+and saves this as a pickle file (.pickle). This .pickle file will be &#8220;played&#8221;
+to present the stimulus. When running a Python stimulus script as described
+above and a current .pickle file of the same name exists, the stimulus is
+presented.</p>
+<p>Therefore, one needs to distinguish between the execution of the Python
+stimulus script (<strong>compile-time</strong>) and the presentation of its &#8220;pickled&#8221;
+version (<strong>presentation-time</strong>). One important consequence is that Python code
+which does not use the <code class="docutils literal"><span class="pre">QDS</span></code> module commands to render the stimulus will
+not effect on the presentation of the stimulus.</p>
+<p>For example, QDSpy commands that address a lightcrafter (<code class="docutils literal"><span class="pre">QDS.LC_xxx()</span></code>)
+will affect the lightcrafter at <strong>presentation-time</strong> but not at compile-time,
+whereas the commands from the lightcrafter API
+(<code class="docutils literal"><span class="pre">Devices.lightcrafter</span></code> module) affect a lightcrafter at <strong>compile-time</strong>
+but not at presentation time.</p>
+<div class="section" id="gamma-correction">
+<h2>Gamma correction<a class="headerlink" href="#gamma-correction" title="Permalink to this headline">¶</a></h2>
+<p>The colour lookup table (LUT) that (very roughly) translates pixel colors into
+displayed colors can now be changed, for example, to account for non-linearities
+in the intensity range of the display device.</p>
+<p>For details on gamma correction under Windows, see
+<a class="reference external" href="https://msdn.microsoft.com/de-de/library/windows/desktop/jj635732%28v=vs.85%29.aspx#evolution_of_display_hardware">here</a>.
+QDSpy currently uses Windows&#8217; <code class="docutils literal"><span class="pre">SetDeviceGammaRamp</span></code> function to change gamma.
+The advantage is that it is very simple to use, however, a side effect is that
+all connected screens are affected.</p>
+<p>To use gamma correction, see also section <a class="reference internal" href="installation.html"><em>Getting ready</em></a>. Also, a flag in
+the configuration file (<code class="docutils literal"><span class="pre">QDSpy.ini</span></code>) needs to be set:</p>
+<div class="highlight-ini"><div class="highlight"><pre>...
+[Display]
+...
+bool_allowGammaLUT = True
+</pre></div>
+</div>
+<p>There are two ways to adjust the LUT:</p>
+<ol class="arabic">
+<li><p class="first">Have a text file (<code class="docutils literal"><span class="pre">.txt</span></code>) that defines the whole LUT in the main QDSpy
+folder. This file is then automatically loaded when QDSpy is started
+(only GUI version). The name of the file has to be the same as the
+following entry in the <code class="docutils literal"><span class="pre">QDSpy.ini</span></code> file:</p>
+<div class="highlight-ini"><div class="highlight"><pre>...
+[Display]
+...
+str_userGammaLUTFileName = defaultGammaLUT
+</pre></div>
+</div>
+</li>
+<li><p class="first">Using the function <code class="xref py py-func docutils literal"><span class="pre">QDS.setColorMode()</span></code> in a stimulus script to
+re-define individual entries of the LUT. <em>This option is not yet fully
+implemented.</em></p>
+</li>
+</ol>
+<p>When the program ends, a linear gamma LUT will be automatically restored.</p>
+</div>
+<div class="section" id="log-file">
+<h2>Log file<a class="headerlink" href="#log-file" title="Permalink to this headline">¶</a></h2>
+<p>The log file contains &#8220;machine-readable&#8221; entries with information
+about the stimuli that are presented. These entries alway start with <code class="docutils literal"><span class="pre">DATA</span></code>
+and are string representations of Python dictionaries.</p>
+<p>User-defined entries:</p>
+<ol class="arabic">
+<li><p class="first">Using the function <a class="reference internal" href="commands.html#QDS.LogUserParameters" title="QDS.LogUserParameters"><code class="xref py py-func docutils literal"><span class="pre">QDS.LogUserParameters()</span></code></a> in a stimulus script,
+the user log information important for the data analysis.</p>
+<div class="highlight-python"><div class="highlight"><pre>20151220_135948    DATA {&#39;nTrials&#39;: 1, &#39;dxStim_um&#39;: 1000}
+</pre></div>
+</div>
+</li>
+<li><p class="first">The QDSpy GUI allows the user to enter comments at any timepoint.</p>
+<div class="highlight-python"><div class="highlight"><pre>20151220_135951    DATA {&#39;userComment&#39;: &#39;Cell #3 responds well&#39;}
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Automatically written entries:</p>
+<ol class="arabic">
+<li><p class="first">Start of stimulus presentation (stimulus file name with relative path,
+state of presentation, md5 hash of stimulus pickle file).</p>
+<div class="highlight-python"><div class="highlight"><pre>20151220_135948    DATA {&#39;stimState&#39;: &#39;STARTED&#39;, &#39;stimFileName&#39;: &#39;.\\Stimuli\\RGC_Chirp_2&#39;, &#39;stimMD5&#39;: &#39;c81ec82f926eadbd3a649f861f30b5e7&#39;}
+</pre></div>
+</div>
+</li>
+<li><p class="first">End of stimulus presentation (stimulus file name with relative path,
+state of presentation).</p>
+<div class="highlight-python"><div class="highlight"><pre>20151220_135951    DATA {&#39;stimState&#39;: &#39;ABORTED&#39;, &#39;stimFileName&#39;: &#39;.\\Stimuli\\RGC_Chirp_2&#39;}
+</pre></div>
+</div>
+</li>
+<li><p class="first">Information about presentation after the end of a stimulus.</p>
+<div class="highlight-python"><div class="highlight"><pre>20151220_135951    DATA {&#39;nFrames&#39;: 180, &#39;avgFreq_Hz&#39;: 60.001000732110455, &#39;nDroppedFrames&#39;: 1}
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Getting ready"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to QDSpy’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.6 beta documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

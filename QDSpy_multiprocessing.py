@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+#  QDSpy_multiproc.py
+#
+#  ...
+#
+#  Copyright (c) 2013-2015 Thomas Euler
+#  Distributed under the terms of the GNU General Public License (GPL)
+#
+# ---------------------------------------------------------------------
+__author__ 	= "code@eulerlab.de"
+
+import time            
+from   multiprocessing import Manager, Pipe 
+
+# ---------------------------------------------------------------------
+# Multiprocessing support
+# ---------------------------------------------------------------------     
+UNDEFINED, PRESENTING, COMPILING, CANCELING, TERMINATING, IDLE = (     
+  "Undefined", "Presenting", "Compiling", "Canceling",  
+  "Terminating", "Idle")
+  
+class PipeValType:
+  toCli_log          = 0
+  toCli_displayInfo  = 1
+  toCli_TEMP         = 2
+  # ...
+  toSrv_fileName     = 10
+  toSrv_changedStage = 11 
+
+# ---------------------------------------------------------------------
+# Sync class
+# ---------------------------------------------------------------------     
+class Sync:
+  def __init__(self):
+    # Initializing
+    #
+    self.Request       = Manager().Value("i", IDLE)
+    self.State         = Manager().Value("i", UNDEFINED)
+    self.pipeCli, self.pipeSrv = Pipe()
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def setStateSafe(self, _newState):
+    self.State.value   = _newState
+
+  def setRequestSafe(self, _newReq):
+    self.Request.value = _newReq
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def waitForState(self, _targetState, _timeout_s=0.0, _updateProc=None):
+    # Wait for "mpState" to reach a certain state or for timeout, if given. 
+    # Returns True, if stage was reached within the timeout period
+    #
+    timeout   = False
+    t_s       = time.time()
+    while not(self.State.value == _targetState) and not(timeout):
+      if _updateProc != None:
+        _updateProc()
+      time.sleep(0.05)
+      if _timeout_s > 0.0:
+        timeout = (time.time() -t_s) >= _timeout_s
+    return not(timeout) 
+ 
+# --------------------------------------------------------------------

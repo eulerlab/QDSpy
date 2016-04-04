@@ -1,0 +1,77 @@
+----------------------------------------------
+QDS Commands
+----------------------------------------------
+
+Control stimulus generation
+----------------------------------------------
+
+.. autofunction:: QDS.Initialize
+.. autofunction:: QDS.SetColorMode
+.. autofunction:: QDS.SetColorLUTEntry
+.. autofunction:: QDS.StartScript
+.. autofunction:: QDS.EndScript
+.. autofunction:: QDS.Loop
+
+Generate objects
+----------------------------------------------
+
+.. autofunction:: QDS.DefObj_BoxEx
+.. autofunction:: QDS.DefObj_Box
+.. autofunction:: QDS.DefObj_EllipseEx
+.. autofunction:: QDS.DefObj_Ellipse
+.. autofunction:: QDS.DefObj_SectorEx
+.. autofunction:: QDS.DefObj_Sector
+.. autofunction:: QDS.DefObj_Movie
+.. autofunction:: QDS.DefObj_Video
+
+Scene and object color
+----------------------------------------------
+
+.. autofunction:: QDS.SetObjColorEx
+.. autofunction:: QDS.SetObjColorAlphaByVertex
+.. autofunction:: QDS.SetBkgColor
+
+Shader-related
+----------------------------------------------
+
+.. autofunction:: QDS.DefShader
+.. autofunction:: QDS.SetShaderParams
+.. autofunction:: QDS.SetObjShader
+
+Render stimulus scenes
+----------------------------------------------
+
+.. autofunction:: QDS.Scene_Clear
+.. autofunction:: QDS.Scene_RenderEx
+.. autofunction:: QDS.Start_Movie
+.. autofunction:: QDS.Start_Video
+
+Other functions
+----------------------------------------------
+
+.. autofunction:: QDS.GetDefaultRefreshRate
+.. autofunction:: QDS.GetMovieParameters
+.. autofunction:: QDS.GetVideoParameters
+.. autofunction:: QDS.GetStimulusPath
+.. autofunction:: QDS.LogUserParameters
+
+
+Lightcrafter-related functions
+----------------------------------------------
+
+.. note:: Note that the following functions do not affect the status of the 
+          lightcrafter device not during compile-time of the script, that 
+          is not immediately, but **during presentation-time only**. 
+          For the definitions 
+          of "compile-time" and "presentation-time", see section
+          :doc:`how_QDSpy_works`.
+
+          To interact with the lightcrafter device directly in a python 
+          script, use the :ref:`lightcrafter class <lightcrafter_API>`.
+
+.. autofunction:: QDS.LC_softwareReset
+.. autofunction:: QDS.LC_setInputSource
+.. autofunction:: QDS.LC_setDisplayMode
+.. autofunction:: QDS.LC_setLEDCurrents
+
+

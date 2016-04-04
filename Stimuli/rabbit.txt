@@ -1,0 +1,7 @@
+[QDSMovie2Description]
+QDSVersionID=xQDS
+FrWidth=227
+FrHeight=192
+FrCount=40
+isFirstFrBottomLeft=True
+Comment=a rabbit movie

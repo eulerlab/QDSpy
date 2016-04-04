@@ -1,0 +1,336 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting ready &mdash; QDSpy 0.6 beta documentation</title>
+    
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.6 beta',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="top" title="QDSpy 0.6 beta documentation" href="index.html" />
+    <link rel="next" title="Configuration file" href="inifile.html" />
+    <link rel="prev" title="How QDSpy works" href="how_QDSpy_works.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="inifile.html" title="Configuration file"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="how_QDSpy_works.html" title="How QDSpy works"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.6 beta documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Getting ready</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#running-the-gui-version-of-qdspy">Running the GUI version of QDSpy</a></li>
+<li><a class="reference internal" href="#using-qdspy-with-the-shell">Using QDSpy with the shell</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="how_QDSpy_works.html"
+                        title="previous chapter">How QDSpy works</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inifile.html"
+                        title="next chapter">Configuration file</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/installation.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="getting-ready">
+<h1>Getting ready<a class="headerlink" href="#getting-ready" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">Install a current python distribution (<strong>64-bit, Python 3.4.x</strong>), e.g.
+<a class="reference external" href="http://pythonxynews.blogspot.de/">Python(x,y)</a> or
+<a class="reference external" href="https://store.continuum.io/cshop/anaconda/">Anaconda</a>. The following
+steps were tested with Anaconda3 - using a different distribution may
+require the installation of additional packages.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Python 3.5.x is currently not recommended, because a fully
+functional QDSpy requires the hidapi package and that is not
+yet not available for the latest Python version (for details,
+see below).</p>
+</div>
+<p>You will need to start a windows shell can be started using <code class="docutils literal"><span class="pre">cmd.exe</span></code> or
+<code class="docutils literal"><span class="pre">powershell.exe</span></code>. The latter is the better alternative, as it supports,
+among other things, a Unix-like syntax.</p>
+<p><em>Anaconda (recommended):</em></p>
+<p>Anaconda does not come with PyOpenGL, therefore execute in the shell:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install pyopengl
+</pre></div>
+</div>
+<p>This does not nescessarily install the OpenGL extension GLUT. In most cases
+QDSpy does not need GLUT. If, however, an error occurs because GLUT is
+missing, install GLUT following the instructions found <a class="reference external" href="http://cim.mcgill.ca/~fmannan/comp557/Python%20and%20PyOpenGL%20Installation.html">here</a>.</p>
+<p><em>Python(x,y):</em></p>
+<p>The current version of this distribution contains all of the above packages.</p>
+</li>
+<li><p class="first">Install the <a class="reference external" href="http://www.pyglet.org/">pyglet</a> extension by executing in the
+shell:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install pyglet
+</pre></div>
+</div>
+</li>
+<li><p class="first">If you plan to use the LightCrafter 4500 not only as a displaying device
+but also want to configure it via QDSpy (via USB), then you will need
+the hidapi package.</p>
+<p><em>Python 3.4.x:</em></p>
+<p>Just try to run QDSpy - the pre-compiled library <code class="docutils literal"><span class="pre">hid.pyd</span></code> provided in
+<code class="docutils literal"><span class="pre">...\QDSpy\Devices</span></code> should work (tested with Python 3.4.x, Windows 8.1 64-bit).</p>
+<p>If this does not work, the <code class="docutils literal"><span class="pre">hidapi</span></code> package needs to be installed. Most likely,
+it cannot be installed via pip (see below) - this is because installing
+<code class="docutils literal"><span class="pre">hidapi</span></code> under Python 3.4.x via pip requires the Microsoft Visual C++ 10.0
+compiler being present,
+and unfortunately there is no easy way of getting the needed components
+installed (so far only for Python 2, Microsoft provides a convinient installer).</p>
+<ol class="loweralpha">
+<li><p class="first">Install Microsoft Visual C++ 2010 (Express is sufficient)</p>
+</li>
+<li><p class="first">Install Microsoft SDK 7.1 (Windows 7)</p>
+</li>
+<li><p class="first">Create under <code class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files</span> <span class="pre">(x86)\Microsoft</span> <span class="pre">Visual</span> <span class="pre">Studio</span> <span class="pre">10.0\VC\bin\amd64\</span></code>
+a .bat file called <code class="docutils literal"><span class="pre">vcvars64.bat</span></code> with the following content:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="s">&quot;C:\Program Files\Microsoft SDKs\Windows</span><span class="se">\v</span><span class="s">7.1\Bin\SetEnv.cmd&quot;</span> <span class="o">/</span><span class="n">x64</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Now pip should work:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install hidapi
+</pre></div>
+</div>
+</li>
+</ol>
+<p><em>Python 3.5.x:</em></p>
+<p>For Python 3.5.x, installation of <code class="docutils literal"><span class="pre">hidapi</span></code> now requires Microsoft
+Visual C++ 14.0. <em>Instructions to be added soon.</em></p>
+</li>
+<li><p class="first">If you plan to use a digital I/O card from <a class="reference external" href="http://www.mccdaq.com">Measurement Computing</a>, you need to install their <a class="reference external" href="http://www.mccdaq.com/daq-software/universal-library.aspx">Universal Library</a>
+(the 64-bit version). Note that you&#8217;ll need to reboot before the library is
+available to QDSpy. Enable the support for digital I/O in the
+<a class="reference internal" href="inifile.html"><em>Configuration file</em></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">Timing</span><span class="p">]</span>
+<span class="o">...</span>
+<span class="n">bool_use_digitalio</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">int_digitalio_board_num</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">int_digitalio_device_num</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">If you need gamma correction (currently Windows-only): Depending how strongly
+the color presentation needs to be changed, you may have to define/change a
+registry key that tells Windows normally to prevents too extreme color changes
+by the user. For details on gamma correction, see <a class="reference external" href="https://msdn.microsoft.com/de-de/library/windows/desktop/jj635732%28v=vs.85%29.aspx#evolution_of_display_hardware">here</a>.</p>
+<p>To deactivate Windows&#8217; safety measures, write the following text in a
+file with the extension <code class="docutils literal"><span class="pre">.reg</span></code> and double-click it:</p>
+<div class="highlight-python"><div class="highlight"><pre>[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ICM]
+&quot;GdiIcmGammaRange&quot;=dword:00000100
+</pre></div>
+</div>
+<p>To reactivate Windows&#8217; safety measures:</p>
+<div class="highlight-python"><div class="highlight"><pre>[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ICM]
+&quot;GdiIcmGammaRange&quot;=dword:00000000
+</pre></div>
+</div>
+<p>You may have to reboot for this change to become active.</p>
+<p>Note that QDSpy currently uses Windows&#8217; <code class="docutils literal"><span class="pre">SetDeviceGammaRamp</span></code> function
+to change gamma. The advantage is that it is very simple to use, however,
+a side effect is that all connected screens are affected.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">With the registry key set as described above, you can accidentally
+turn all screens unreadable!!</p>
+</div>
+</li>
+<li><p class="first">Copy the content of the .zip file into a folder (e.g. <code class="docutils literal"><span class="pre">C:\User\QDSpy</span></code>),
+keeping the internal folder substructure intact.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="running-the-gui-version-of-qdspy">
+<h2>Running the GUI version of QDSpy<a class="headerlink" href="#running-the-gui-version-of-qdspy" title="Permalink to this headline">¶</a></h2>
+<p>Open a windows shell (<code class="docutils literal"><span class="pre">powershell.exe</span></code>) and change to the QDSpy folder.
+Run the GUI version of QDSpy:</p>
+<div class="highlight-python"><div class="highlight"><pre>Windows PowerShell
+Copyright (C) 2014 Microsoft Corporation. Alle Rechte vorbehalten.
+
+PS C:\Users\Thomas\QDSpy3&gt; python QDSpy_GUI_main.py x
+</pre></div>
+</div>
+<p>Note that one parameter is needed (here <code class="docutils literal"><span class="pre">x</span></code>), but it is later ignored.</p>
+<p>Alternatively, use the included batch file <code class="docutils literal"><span class="pre">QDSpy.bat</span></code> to start the GUI
+version of QDSpy. For instance, create a link to this batch file on the
+desktop; change the icon of this linke to <code class="docutils literal"><span class="pre">QDSpy.ico`</span></code>.</p>
+</div>
+<div class="section" id="using-qdspy-with-the-shell">
+<h2>Using QDSpy with the shell<a class="headerlink" href="#using-qdspy-with-the-shell" title="Permalink to this headline">¶</a></h2>
+<p>Another way to compile and run stimulus scripts is by using the windows shell.</p>
+<ol class="arabic">
+<li><p class="first">Start a shell and change to the folder that contains the stimulus scripts:</p>
+<div class="highlight-python"><div class="highlight"><pre>Windows PowerShell
+Copyright (C) 2014 Microsoft Corporation. Alle Rechte vorbehalten.
+
+PS C:\Users\Thomas&gt; e:
+PS E:\&gt; cd .\user\Dropbox\QDSpy\QDS_stimuli
+PS E:\user\Dropbox\QDSpy\QDS_stimuli&gt;
+</pre></div>
+</div>
+</li>
+<li><p class="first">Compile a script (for details on writing QDS stimulus scripts, see
+<a class="reference internal" href="writing_scripts.html"><em>Writing QDSpy stimulus scripts</em></a>):</p>
+<div class="highlight-python"><div class="highlight"><pre>PS E:\User\Dropbox\QDSpy\Stimuli&gt; python .\stimLCTest2.py
+     *** QDSpy v0.4 alpha Compiler - (c) 2013-15 Thomas Euler
+         Initializing ...
+         Defining objects ...
+      ok 150 object(s) defined.
+      ok 0 shader(s) defined.
+         Generating scenes ...
+      ok 245 scene(s) defined.
+      ok Stimulus &#39;Test2&#39; compiled for 60.0 Hz refresh (default).
+      ok Stimulus &#39;Test2&#39; saved to &#39;stimLCTest2.pickle&#39;
+      ok ... done in 1.204 s
+PS E:\User\Dropbox\QDSpy\Stimuli&gt;
+</pre></div>
+</div>
+<p>Some information about the script is shown, the script is compiled and
+saved to disk as a .pickle file of the same name as the .py script file.</p>
+</li>
+<li><p class="first">To present the compiled stimulus, run the script again:</p>
+<div class="highlight-python"><div class="highlight"><pre>PS E:\User\Dropbox\QDSpy\Stimuli&gt; python .\stimLCTest2.py
+     *** QDSpy v0.4 alpha Compiler - (c) 2013-15 Thomas Euler
+         Initializing ...
+    INFO Script has not changed, running stimulus now ...
+     *** QDSpy v0.4 alpha Presenter - (c) 2013-15 Thomas Euler
+      ok Initializing ...
+         ENABLED    : high process priority during presentation
+         enabled    : automatic garbage collection
+    INFO OpenGL     : v4.3.12618 Compatibility Profile Context 13.251.9001.1001
+    INFO Renderer   : AMD Radeon HD 7800 Series by ATI Technologies Inc.
+    INFO Timing     : vsync-based (Pyglet calls), DEFAULT
+      ok Window mode, 800x600 pixels
+         ENABLED    : forced fsync
+      ok SwapIntervalEXT() reported success
+      ok Stage center: 0,0 pixels, scale: 0.83,0.83 µm/pix, rotation: 0°, refresh: 60.0 Hz
+         2 shader type(s) found
+      ok Stimulus &#39;stimLCTest2.pickle&#39; loaded
+         Name       : Test2
+         Description: Test for Lightcrafter
+         Frequency  : 60.0 Hz
+      ok Stimulus &#39;Test2&#39; prepared
+      ok Running...
+ WARNING dt of frame #2 was 13.824 ms
+ WARNING dt of frame #60 was 33.576 ms
+ WARNING dt of frame #120 was 19.380 ms
+ WARNING dt of frame #121 was 14.338 ms
+      ok Done
+      ok Program finished
+    INFO 16.666 ms/frame (60.002 Hz), rendering: 1.033 ms (720 frames in total)
+    INFO 16.689 +/- 0.669 ms/frame (over the last 719 frames) = 59.9 Hz
+ WARNING 4 frames dropped (=0.556 %)
+      ok ... done
+PS E:\User\Dropbox\QDSpy\Stimuli&gt;
+</pre></div>
+</div>
+<p>The script checks if the .pickle file is more recent that the .py file
+(indicating that the .py file has not changed). If this is the case,
+the stimulus is presented, acknowledging the settings in the folder&#8217;s
+configuration file (<code class="docutils literal"><span class="pre">QDSpy.ini</span></code>, see <a class="reference internal" href="inifile.html"><em>Configuration file</em></a>).</p>
+<p>Before displaying the stimulus, some information about the system is
+shown. To abort the stimulus, press <code class="docutils literal"><span class="pre">Q</span></code>; note that (currently)
+the focus has to be on the stimulus window for these keys to be active.</p>
+</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="inifile.html" title="Configuration file"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="how_QDSpy_works.html" title="How QDSpy works"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.6 beta documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

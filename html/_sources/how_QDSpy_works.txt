@@ -1,0 +1,105 @@
+----------------------------------------------
+How QDSpy works
+----------------------------------------------
+
+In QDSpy, stimuli are represented by Python scripts (.py). It is important to
+understand, that such a Python stimulus script *describes* how a stimulus is 
+rendered, but does not present it directly. 
+
+When running a Python stimulus script (e.g. from a shell as 
+``python .\scriptname.py``), it generates a *compiled* version of the stimulus
+and saves this as a pickle file (.pickle). This .pickle file will be "played" 
+to present the stimulus. When running a Python stimulus script as described 
+above and a current .pickle file of the same name exists, the stimulus is 
+presented.
+
+Therefore, one needs to distinguish between the execution of the Python 
+stimulus script (**compile-time**) and the presentation of its "pickled"
+version (**presentation-time**). One important consequence is that Python code 
+which does not use the ``QDS`` module commands to render the stimulus will 
+not effect on the presentation of the stimulus.
+
+For example, QDSpy commands that address a lightcrafter (``QDS.LC_xxx()``) 
+will affect the lightcrafter at **presentation-time** but not at compile-time, 
+whereas the commands from the lightcrafter API 
+(``Devices.lightcrafter`` module) affect a lightcrafter at **compile-time**
+but not at presentation time.
+
+Gamma correction
+----------------------------------------------
+
+The colour lookup table (LUT) that (very roughly) translates pixel colors into 
+displayed colors can now be changed, for example, to account for non-linearities
+in the intensity range of the display device. 
+
+For details on gamma correction under Windows, see 
+`here <https://msdn.microsoft.com/de-de/library/windows/desktop/jj635732%28v=vs.85%29.aspx#evolution_of_display_hardware>`_.
+QDSpy currently uses Windows' ``SetDeviceGammaRamp`` function to change gamma. 
+The advantage is that it is very simple to use, however, a side effect is that
+all connected screens are affected.
+
+To use gamma correction, see also section :doc:`installation`. Also, a flag in
+the configuration file (``QDSpy.ini``) needs to be set:
+
+.. code-block:: ini
+  
+  ... 
+  [Display]
+  ...
+  bool_allowGammaLUT = True
+
+There are two ways to adjust the LUT:
+
+1) Have a text file (``.txt``) that defines the whole LUT in the main QDSpy 
+   folder. This file is then automatically loaded when QDSpy is started
+   (only GUI version). The name of the file has to be the same as the 
+   following entry in the ``QDSpy.ini`` file:
+   
+   .. code-block:: ini
+   
+     ... 
+     [Display]
+     ...
+     str_userGammaLUTFileName = defaultGammaLUT
+
+2) Using the function :py:func:`QDS.setColorMode` in a stimulus script to
+   re-define individual entries of the LUT. *This option is not yet fully
+   implemented.*
+
+When the program ends, a linear gamma LUT will be automatically restored. 
+
+Log file
+----------------------------------------------
+
+The log file contains "machine-readable" entries with information
+about the stimuli that are presented. These entries alway start with ``DATA``
+and are string representations of Python dictionaries.
+
+User-defined entries:
+
+1) Using the function :py:func:`QDS.LogUserParameters` in a stimulus script,
+   the user log information important for the data analysis.
+   ::
+     20151220_135948    DATA {'nTrials': 1, 'dxStim_um': 1000}
+
+2) The QDSpy GUI allows the user to enter comments at any timepoint.
+   :: 
+     20151220_135951    DATA {'userComment': 'Cell #3 responds well'}
+
+Automatically written entries:
+
+1) Start of stimulus presentation (stimulus file name with relative path,
+   state of presentation, md5 hash of stimulus pickle file).
+   :: 
+     20151220_135948    DATA {'stimState': 'STARTED', 'stimFileName': '.\\Stimuli\\RGC_Chirp_2', 'stimMD5': 'c81ec82f926eadbd3a649f861f30b5e7'}
+
+2) End of stimulus presentation (stimulus file name with relative path,
+   state of presentation).
+   :: 
+     20151220_135951    DATA {'stimState': 'ABORTED', 'stimFileName': '.\\Stimuli\\RGC_Chirp_2'}
+
+3) Information about presentation after the end of a stimulus. 
+   ::
+     20151220_135951    DATA {'nFrames': 180, 'avgFreq_Hz': 60.001000732110455, 'nDroppedFrames': 1}
+
+

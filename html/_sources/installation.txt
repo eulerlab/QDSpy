@@ -1,0 +1,215 @@
+----------------------------------------------
+Getting ready
+----------------------------------------------
+
+Installation
+----------------------------------------------
+
+1) Install a current python distribution (**64-bit, Python 3.4.x**), e.g.
+   `Python(x,y) <http://pythonxynews.blogspot.de/>`_ or
+   `Anaconda <https://store.continuum.io/cshop/anaconda/>`_. The following
+   steps were tested with Anaconda3 - using a different distribution may
+   require the installation of additional packages.
+
+   .. note:: Python 3.5.x is currently not recommended, because a fully 
+             functional QDSpy requires the hidapi package and that is not 
+             yet not available for the latest Python version (for details,
+             see below).
+
+   You will need to start a windows shell can be started using ``cmd.exe`` or
+   ``powershell.exe``. The latter is the better alternative, as it supports,
+   among other things, a Unix-like syntax.
+
+   *Anaconda (recommended):*
+
+   Anaconda does not come with PyOpenGL, therefore execute in the shell:
+   :: 
+     pip install pyopengl 
+
+   This does not nescessarily install the OpenGL extension GLUT. In most cases
+   QDSpy does not need GLUT. If, however, an error occurs because GLUT is 
+   missing, install GLUT following the instructions found `here 
+   <http://cim.mcgill.ca/~fmannan/comp557/Python%20and%20PyOpenGL%20Installation.html>`_.  
+
+
+   *Python(x,y):*
+   
+   The current version of this distribution contains all of the above packages.
+
+2) Install the `pyglet <http://www.pyglet.org/>`_ extension by executing in the
+   shell:
+   ::
+     pip install pyglet
+
+3) If you plan to use the LightCrafter 4500 not only as a displaying device
+   but also want to configure it via QDSpy (via USB), then you will need 
+   the hidapi package.
+
+   *Python 3.4.x:*
+
+   Just try to run QDSpy - the pre-compiled library ``hid.pyd`` provided in 
+   ``...\QDSpy\Devices`` should work (tested with Python 3.4.x, Windows 8.1 64-bit). 
+
+   If this does not work, the ``hidapi`` package needs to be installed. Most likely, 
+   it cannot be installed via pip (see below) - this is because installing
+   ``hidapi`` under Python 3.4.x via pip requires the Microsoft Visual C++ 10.0
+   compiler being present,
+   and unfortunately there is no easy way of getting the needed components 
+   installed (so far only for Python 2, Microsoft provides a convinient installer). 
+
+   a) Install Microsoft Visual C++ 2010 (Express is sufficient)
+   b) Install Microsoft SDK 7.1 (Windows 7)
+   c) Create under ``C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\amd64\``
+      a .bat file called ``vcvars64.bat`` with the following content:
+      ::
+        "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
+   d) Now pip should work:
+      ::
+        pip install hidapi
+
+   *Python 3.5.x:*
+
+   For Python 3.5.x, installation of ``hidapi`` now requires Microsoft 
+   Visual C++ 14.0. *Instructions to be added soon.*
+
+4) If you plan to use a digital I/O card from `Measurement Computing 
+   <http://www.mccdaq.com>`_, you need to install their `Universal Library
+   <http://www.mccdaq.com/daq-software/universal-library.aspx>`_ 
+   (the 64-bit version). Note that you'll need to reboot before the library is
+   available to QDSpy. Enable the support for digital I/O in the 
+   :doc:`inifile`:
+   :: 
+     [Timing]
+     ...
+     bool_use_digitalio = True
+     int_digitalio_board_num = 0
+     int_digitalio_device_num = 1
+
+5) If you need gamma correction (currently Windows-only): Depending how strongly 
+   the color presentation needs to be changed, you may have to define/change a 
+   registry key that tells Windows normally to prevents too extreme color changes 
+   by the user. For details on gamma correction, see `here 
+   <https://msdn.microsoft.com/de-de/library/windows/desktop/jj635732%28v=vs.85%29.aspx#evolution_of_display_hardware>`_.
+
+   To deactivate Windows' safety measures, write the following text in a 
+   file with the extension ``.reg`` and double-click it:
+   :: 
+     [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ICM]
+     "GdiIcmGammaRange"=dword:00000100
+
+   To reactivate Windows' safety measures:
+   :: 
+     [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ICM]
+     "GdiIcmGammaRange"=dword:00000000
+
+   You may have to reboot for this change to become active.
+
+   Note that QDSpy currently uses Windows' ``SetDeviceGammaRamp`` function
+   to change gamma. The advantage is that it is very simple to use, however,
+   a side effect is that all connected screens are affected.
+
+   .. warning:: With the registry key set as described above, you can accidentally
+                turn all screens unreadable!!
+
+
+6) Copy the content of the .zip file into a folder (e.g. ``C:\User\QDSpy``),
+   keeping the internal folder substructure intact.
+
+Running the GUI version of QDSpy
+----------------------------------------------
+
+Open a windows shell (``powershell.exe``) and change to the QDSpy folder. 
+Run the GUI version of QDSpy:
+::
+  Windows PowerShell
+  Copyright (C) 2014 Microsoft Corporation. Alle Rechte vorbehalten.
+
+  PS C:\Users\Thomas\QDSpy3> python QDSpy_GUI_main.py x
+
+Note that one parameter is needed (here ``x``), but it is later ignored.
+
+
+Alternatively, use the included batch file ``QDSpy.bat`` to start the GUI
+version of QDSpy. For instance, create a link to this batch file on the 
+desktop; change the icon of this linke to ``QDSpy.ico```.
+
+
+Using QDSpy with the shell
+----------------------------------------------
+
+Another way to compile and run stimulus scripts is by using the windows shell. 
+
+1) Start a shell and change to the folder that contains the stimulus scripts:
+   ::
+     Windows PowerShell
+     Copyright (C) 2014 Microsoft Corporation. Alle Rechte vorbehalten.
+
+     PS C:\Users\Thomas> e:
+     PS E:\> cd .\user\Dropbox\QDSpy\QDS_stimuli
+     PS E:\user\Dropbox\QDSpy\QDS_stimuli>
+
+2) Compile a script (for details on writing QDS stimulus scripts, see
+   :doc:`writing_scripts`):
+   ::
+     PS E:\User\Dropbox\QDSpy\Stimuli> python .\stimLCTest2.py
+          *** QDSpy v0.4 alpha Compiler - (c) 2013-15 Thomas Euler
+              Initializing ...
+              Defining objects ...
+           ok 150 object(s) defined.
+           ok 0 shader(s) defined.
+              Generating scenes ...
+           ok 245 scene(s) defined.
+           ok Stimulus 'Test2' compiled for 60.0 Hz refresh (default).
+           ok Stimulus 'Test2' saved to 'stimLCTest2.pickle'
+           ok ... done in 1.204 s
+     PS E:\User\Dropbox\QDSpy\Stimuli>
+
+   Some information about the script is shown, the script is compiled and
+   saved to disk as a .pickle file of the same name as the .py script file.
+
+3) To present the compiled stimulus, run the script again:
+   ::
+     PS E:\User\Dropbox\QDSpy\Stimuli> python .\stimLCTest2.py
+          *** QDSpy v0.4 alpha Compiler - (c) 2013-15 Thomas Euler
+              Initializing ...
+         INFO Script has not changed, running stimulus now ...
+          *** QDSpy v0.4 alpha Presenter - (c) 2013-15 Thomas Euler
+           ok Initializing ...
+              ENABLED    : high process priority during presentation
+              enabled    : automatic garbage collection
+         INFO OpenGL     : v4.3.12618 Compatibility Profile Context 13.251.9001.1001
+         INFO Renderer   : AMD Radeon HD 7800 Series by ATI Technologies Inc.
+         INFO Timing     : vsync-based (Pyglet calls), DEFAULT
+           ok Window mode, 800x600 pixels
+              ENABLED    : forced fsync
+           ok SwapIntervalEXT() reported success
+           ok Stage center: 0,0 pixels, scale: 0.83,0.83 µm/pix, rotation: 0°, refresh: 60.0 Hz
+              2 shader type(s) found
+           ok Stimulus 'stimLCTest2.pickle' loaded
+              Name       : Test2
+              Description: Test for Lightcrafter
+              Frequency  : 60.0 Hz
+           ok Stimulus 'Test2' prepared
+           ok Running...
+      WARNING dt of frame #2 was 13.824 ms
+      WARNING dt of frame #60 was 33.576 ms
+      WARNING dt of frame #120 was 19.380 ms
+      WARNING dt of frame #121 was 14.338 ms
+           ok Done
+           ok Program finished
+         INFO 16.666 ms/frame (60.002 Hz), rendering: 1.033 ms (720 frames in total)
+         INFO 16.689 +/- 0.669 ms/frame (over the last 719 frames) = 59.9 Hz
+      WARNING 4 frames dropped (=0.556 %)
+           ok ... done
+     PS E:\User\Dropbox\QDSpy\Stimuli>
+
+   The script checks if the .pickle file is more recent that the .py file
+   (indicating that the .py file has not changed). If this is the case,
+   the stimulus is presented, acknowledging the settings in the folder's
+   configuration file (``QDSpy.ini``, see :doc:`inifile`).
+
+   Before displaying the stimulus, some information about the system is
+   shown. To abort the stimulus, press ``Q``; note that (currently)
+   the focus has to be on the stimulus window for these keys to be active.
+
+

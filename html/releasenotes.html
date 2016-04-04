@@ -1,0 +1,218 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Known issues &mdash; QDSpy 0.6 beta documentation</title>
+    
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.6 beta',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="top" title="QDSpy 0.6 beta documentation" href="index.html" />
+    <link rel="next" title="Disclaimer" href="disclaimer.html" />
+    <link rel="prev" title="QDS Commands" href="commands.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="disclaimer.html" title="Disclaimer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="commands.html" title="QDS Commands"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.6 beta documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Known issues</a></li>
+<li><a class="reference internal" href="#to-do">To do</a></li>
+<li><a class="reference internal" href="#release-notes">Release notes</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="commands.html"
+                        title="previous chapter">QDS Commands</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="disclaimer.html"
+                        title="next chapter">Disclaimer</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/releasenotes.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="known-issues">
+<h1>Known issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p class="first">Videos won&#8217;t stop correctly; do not use yet.
+Minor: While partial transparency and scaling works with videos, rotation
+does not yet (wrong rotation axis?)</p>
+</li>
+<li><p class="first">Shader-enabled objects may not be drawn in the correct order, which means
+that shader objects can flicker when they overlap.</p>
+</li>
+<li><p class="first">Starting a movie for the first time in a script can cause a delay of ~200 ms.
+A work-around is to start the movie right at the beginning of the script
+starting section, for example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">...</span>
+<span class="n">QDS</span><span class="o">.</span><span class="n">StartScript</span><span class="p">()</span>
+<span class="n">QDS</span><span class="o">.</span><span class="n">Start_Movie</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>  <span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">QDS</span><span class="o">.</span><span class="n">Scene_Clear</span><span class="p">(</span><span class="mf">2.00</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>This avoids the delay later during the time-critical parts of a stimulus.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="to-do">
+<h1>To do<a class="headerlink" href="#to-do" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>URGENT: Fix video presentation</li>
+<li>URGENT: Handle error when QDSpy GUI does not find a compiled __autorun</li>
+<li>Recompile hidapi for Python 3.5. Implement use of correct pre-compiled
+hidapi module depending on Python version (3.4 vs. 3.5)</li>
+<li>Check x-y scaling</li>
+<li>Check timing of digital I/O signals (i.e. triggers).</li>
+<li>Complete lightcrafter interface.</li>
+<li>For color modes &gt;1 (special lightcrafter modes), movie images need to be
+converted with the respective cvolor scheme.</li>
+<li>Add stimulus control window to be displayed on the GUI screen when stimulus
+presentation is running fullscreen on a different display.</li>
+<li>Add possibitity to control timing (i.e. sync refresh to an external source)
+on genlock-enabled NVIDIA and/or ATI graphic cards.</li>
+</ul>
+</div>
+<div class="section" id="release-notes">
+<h1>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
+<p>v0.6 beta (April 2016)</p>
+<ul class="simple">
+<li>Bug fixes</li>
+<li>Added <cite>DefObj_Video()</cite>, <cite>Start_Video()`and `GetVideoParamters()</cite> commands.
+Not yet fully implemented and tested; do not use yet.</li>
+<li>Added <cite>GetMovieParameters()</cite> command</li>
+<li>Fixed <cite>GetDefaultRefreshRate()</cite> command; now reports requested frame rate.</li>
+<li>Added <cite>[Tweaking]</cite> section to configuration file. Here, parameters that tune
+the behaviour of QDSpy are collected. The first parameter is <cite>bool_use3DTextures</cite>;
+it determines, which of pyglets texture implementations is used to load and
+manage montage images for movie objects (0=texture grid, 1=3D texture).</li>
+<li>Added instructions to the documentation of <cite>DefObj_Movie()</cite> how to convert
+a movie image montage used for the previous QDS with QDSpy. Key is that - in
+contrast to QDS - QDSpy considers the bottom-left frame of a montage the first
+frame of the sequence.</li>
+</ul>
+<p>v0.5 beta (December 2015)</p>
+<ul class="simple">
+<li>Bug fixes</li>
+<li>Documentation updated</li>
+<li>Gamma correction of display now possible (see section
+<a class="reference internal" href="how_QDSpy_works.html"><em>How QDSpy works</em></a>)</li>
+<li>Now catches errors generated when compiling shader scripts.</li>
+<li>Changed stage parameters (magification, center, rotation, etc.) are now
+written to the configuration file.</li>
+<li>Writes the log automatically to a file. The log contains machine-readable
+tags for the data analysis.</li>
+</ul>
+<p>v0.4 alpha (November 2015)</p>
+<ul class="simple">
+<li>Migrated to Python 3.4.3</li>
+<li>Added GUI</li>
+<li>Bug fixes</li>
+<li>Added rudimentary support for controlling a lightcrafter device</li>
+<li>Added movie commands, currently only copying what the old QDS commands did.</li>
+<li>Added a shader that acknowledges colour and alpha value of its object
+(&#8220;SINE_WAVE_GRATING_MIX&#8221;).</li>
+</ul>
+<p>v0.3 alpha (March 2015)</p>
+<ul class="simple">
+<li>Minor bug fixes</li>
+<li>Fixed transparency of objects (works now)</li>
+</ul>
+<p>v0.2 alpha (before 2015)</p>
+<ul class="simple">
+<li>Basic functionality, proof of concept</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="disclaimer.html" title="Disclaimer"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="commands.html" title="QDS Commands"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.6 beta documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

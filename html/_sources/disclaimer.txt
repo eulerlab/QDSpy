@@ -1,0 +1,33 @@
+----------------------------------------------
+Disclaimer
+----------------------------------------------
+
+Distribution
+----------------------------------------------
+
+Although the use of this software is free it must not be distributed without 
+notifying Thomas Euler, eulerlab @ CIN/Uiversity of Tübingen.
+
+QDSpy heavily relies on `pyglet <http://www.pyglet.org/>`_, which is currently
+provided under the BSD open-source license, allowing you to use it for both 
+commercial and other open-source projects with very little restriction.
+
+
+Governing Law
+----------------------------------------------
+
+This agreement shall be governed by the laws of Germany.
+
+
+Disclaimer of Warranty
+----------------------------------------------
+
+THIS SOFTWARE AND THE ACCOMPANYING FILES ARE DISTRIBUTED "AS IS" AND WITHOUT
+WARRANTIES AS TO PERFORMANCE OR MERCHANTABILITY OR ANY OTHER WARRANTIES WHETHER
+EXPRESSED OR IMPLIED.  Because of the various hardware and software 
+environments into which QDSpy may be put, NO WARRANTY OF FITNESS FOR A 
+PARTICULAR PURPOSE IS OFFERED.
+
+Good data processing procedure dictates that any program be thoroughly tested 
+with non-critical data before relying on it. The user must assume the entire 
+risk of using the program.
