@@ -7,8 +7,7 @@
 //
 //#QDS ShaderVertexStart
 // ----------------------------------------------------------------------
-//in   vec4   Position;
-varying out   vec4   vertex_color;
+varying       vec4   vertex_color;
 
 void main() 
 {
@@ -24,7 +23,6 @@ void main()
 #define pi2   6.283185307179
 
 in            vec4   vertex_color;
-varying out   vec4   FragColor;
 
 uniform float time_s;
 uniform vec3  obj_xy_rot;
@@ -37,14 +35,14 @@ float         inten;
 vec4          b;
       
 void main() {
-  vec4  a     = gl_FragCoord;
-  a.x         = a.x -obj_xy_rot.x;
-  a.y         = a.y -obj_xy_rot.y;
-  b.x         = a.x*cos(obj_xy_rot[2]) -a.y*sin(obj_xy_rot[2]);
-  b.y         = a.y*cos(obj_xy_rot[2]) +a.x*sin(obj_xy_rot[2]);
-  inten       = (sin(((b.x)/perLen_um +time_s/perDur_s) *pi2) +1.0)/2.0;
-  FragColor   = mix(minRGB, maxRGB, inten);
-  FragColor   = mix(FragColor, vertex_color, 0.5);
+  vec4  a      = gl_FragCoord;
+  a.x          = a.x -obj_xy_rot.x;
+  a.y          = a.y -obj_xy_rot.y;
+  b.x          = a.x*cos(obj_xy_rot[2]) -a.y*sin(obj_xy_rot[2]);
+  b.y          = a.y*cos(obj_xy_rot[2]) +a.x*sin(obj_xy_rot[2]);
+  inten        = (sin(((b.x)/perLen_um +time_s/perDur_s) *pi2) +1.0)/2.0;
+  gl_FragColor = mix(minRGB, maxRGB, inten);
+  gl_FragColor = mix(gl_FragColor, vertex_color, 0.5);
 }
 // ----------------------------------------------------------------------
 //#QDS ShaderFragmentEnd
