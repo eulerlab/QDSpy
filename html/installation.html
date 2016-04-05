@@ -105,7 +105,6 @@
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic">
 <li><p class="first">Install a current python distribution (<strong>64-bit, Python 3.4.x</strong>), e.g.
-<a class="reference external" href="http://pythonxynews.blogspot.de/">Python(x,y)</a> or
 <a class="reference external" href="https://store.continuum.io/cshop/anaconda/">Anaconda</a>. The following
 steps were tested with Anaconda3 - using a different distribution may
 require the installation of additional packages.</p>
@@ -119,16 +118,15 @@ see below).</p>
 <p>You will need to start a windows shell can be started using <code class="docutils literal"><span class="pre">cmd.exe</span></code> or
 <code class="docutils literal"><span class="pre">powershell.exe</span></code>. The latter is the better alternative, as it supports,
 among other things, a Unix-like syntax.</p>
-<p><em>Anaconda (recommended):</em></p>
-<p>Anaconda does not come with PyOpenGL, therefore execute in the shell:</p>
+</li>
+<li><p class="first">Anaconda currently does not come with PyOpenGL, therefore execute in the
+shell:</p>
 <div class="highlight-python"><div class="highlight"><pre>pip install pyopengl
 </pre></div>
 </div>
 <p>This does not nescessarily install the OpenGL extension GLUT. In most cases
 QDSpy does not need GLUT. If, however, an error occurs because GLUT is
 missing, install GLUT following the instructions found <a class="reference external" href="http://cim.mcgill.ca/~fmannan/comp557/Python%20and%20PyOpenGL%20Installation.html">here</a>.</p>
-<p><em>Python(x,y):</em></p>
-<p>The current version of this distribution contains all of the above packages.</p>
 </li>
 <li><p class="first">Install the <a class="reference external" href="http://www.pyglet.org/">pyglet</a> extension by executing in the
 shell:</p>
@@ -208,6 +206,17 @@ turn all screens unreadable!!</p>
 </li>
 <li><p class="first">Copy the content of the .zip file into a folder (e.g. <code class="docutils literal"><span class="pre">C:\User\QDSpy</span></code>),
 keeping the internal folder substructure intact.</p>
+</li>
+<li><p class="first">It is important to add the path to the QDSpy main folder to the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>
+environment variable. If this variable does not yet exist, it needs to be
+created. There are several ways to do this but the easiest way is probably
+using Spyder, which comes with the Anaconda package.</p>
+<ol class="loweralpha simple">
+<li>run Spyder (note that the first start can take some time).</li>
+<li>in the menu, select <code class="docutils literal"><span class="pre">Tools</span></code>, then <code class="docutils literal"><span class="pre">PYTHONPATH</span> <span class="pre">manager</span></code></li>
+<li>add the path to the QDSpy folder and press the <code class="docutils literal"><span class="pre">synchronize</span></code> button.</li>
+</ol>
+<p>Note that open powershells need to be restarted to acknowledge this change.</p>
 </li>
 </ol>
 </div>

@@ -55,6 +55,7 @@ class Config:
     self.userLUTFName = QDSpy_userGammaLUTFileName
     self.pathLogs     = QDSpy_pathLogFiles
     self.use3DTextures= QDSpy_use3DTextures
+    self.recordStim   = QDSpy_recordStim
 
     try:
       self.conf.readfp(open(QDSpy_iniFileName))
@@ -88,6 +89,7 @@ class Config:
       self.userLUTFName = self.conf.get("Display", "str_userGammaLUTFileName")
       
       self.use3DTextures= self.conf.getboolean("Tweaking", "bool_use3DTextures")
+      self.recordStim   = self.conf.getboolean("Tweaking", "bool_recordStim")
       
     except IOError:
       # Initialization file does not exist, recreate
@@ -136,6 +138,7 @@ class Config:
       
       self.conf.add_section("Tweaking")      
       self.conf.set("Tweaking","bool_use3DTextures",      QDSpy_use3DTextures)
+      self.conf.set("Tweaking","bool_recordStim",         QDSpy_recordStim)
 
       with open(QDSpy_iniFileName, 'w') as confFile:
         self.conf.write(confFile)
