@@ -10,6 +10,7 @@
 __author__ 	= "code@eulerlab.de"
 
 import sys
+import ctypes
 from   QDSpy_global      import *
 from   OpenGL.GLUT       import *
 from   OpenGL.GLU        import *
@@ -36,6 +37,10 @@ def getInfoGLStr ():
   info     = GLInfo()
   info.set_active_context()
   return "OpenGL     : v" +info.get_version()
+
+def getInfoGLSLStr ():
+  val = pyglet.gl.glGetString(pyglet.gl.GL_SHADING_LANGUAGE_VERSION)
+  return "GLSL       : v" +ctypes.string_at(val).decode()
 
 def getImplementationStr ():
   return "Timing     : vsync-based (Pyglet calls), DEFAULT"

@@ -66,6 +66,7 @@ class View:
     # Log some information about OpenGL on this machine
     #
     ssp.Log.write("INFO", grx.getInfoGLStr())
+    ssp.Log.write("INFO", grx.getInfoGLSLStr())
     ssp.Log.write("INFO", grx.getInfoRendererStr())
     ssp.Log.write("INFO", grx.getImplementationStr())
     if QDSpy_graphicsAPI == 1:

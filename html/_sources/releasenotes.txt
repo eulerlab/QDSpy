@@ -27,9 +27,7 @@ To do
 
 * URGENT: Fix video presentation
 
-* URGENT: Handle error when QDSpy GUI does not find a compiled __autorun
-
-* Recompile hidapi for Python 3.5. Implement use of correct pre-compiled
+* URGENT: Recompile hidapi for Python 3.5. Implement use of correct pre-compiled
   hidapi module depending on Python version (3.4 vs. 3.5)
 
 * Check x-y scaling
@@ -51,6 +49,10 @@ To do
 ----------------------------------------------
 Release notes
 ----------------------------------------------
+
+* Now reports GLSL version
+* Fixed error when QDSpy GUI does not find a compiled `__autorun`.
+* ...
 
 v0.6 beta (April 2016) 
 

@@ -15,6 +15,7 @@ from    OpenGL.GLUT         import *
 from    OpenGL.GLU          import *
 from    OpenGL.WGL          import *
 
+import ctypes
 import  pyglet
 pyglet.options['debug_gl']  = QDSpy_doOpenGLErrorChecking
 from    pyglet.gl           import *
@@ -37,6 +38,10 @@ def getInfoGLStr ():
   info     = GLInfo()
   info.set_active_context()
   return "OpenGL     : v" +info.get_version()
+  
+def getInfoGLSLStr ():
+  val = pyglet.gl.glGetString(pyglet.gl.GL_SHADING_LANGUAGE_VERSION)
+  return "GLSL       : v" +ctypes.string_at(val).decode()
 
 def getImplementationStr ():
   return "Timing     : timer-based (Pyglet)"
