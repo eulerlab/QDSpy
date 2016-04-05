@@ -140,9 +140,6 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
   # Initialize digital IO hardware, if requested
   #
   if _Conf.useDIO:
-    """
-    _IO  = dio.devIO_UL(dio.devTypeUL.USB1024LS, _Conf.DIObrd, _Conf.DIOdev)
-    """
     _IO  = dio.devIO_UL(dio.devTypeUL.PCIDIO24, _Conf.DIObrd, _Conf.DIOdev)
     port = _IO.getPortFromStr(_Conf.DIOportOut)
     _IO.configDPort(port, dio.devConst.DIGITAL_OUT)

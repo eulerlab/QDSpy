@@ -6,7 +6,6 @@ Installation
 ----------------------------------------------
 
 1) Install a current python distribution (**64-bit, Python 3.4.x**), e.g.
-   `Python(x,y) <http://pythonxynews.blogspot.de/>`_ or
    `Anaconda <https://store.continuum.io/cshop/anaconda/>`_. The following
    steps were tested with Anaconda3 - using a different distribution may
    require the installation of additional packages.
@@ -20,9 +19,8 @@ Installation
    ``powershell.exe``. The latter is the better alternative, as it supports,
    among other things, a Unix-like syntax.
 
-   *Anaconda (recommended):*
-
-   Anaconda does not come with PyOpenGL, therefore execute in the shell:
+2) Anaconda currently does not come with PyOpenGL, therefore execute in the 
+   shell:
    :: 
      pip install pyopengl 
 
@@ -31,17 +29,12 @@ Installation
    missing, install GLUT following the instructions found `here 
    <http://cim.mcgill.ca/~fmannan/comp557/Python%20and%20PyOpenGL%20Installation.html>`_.  
 
-
-   *Python(x,y):*
-   
-   The current version of this distribution contains all of the above packages.
-
-2) Install the `pyglet <http://www.pyglet.org/>`_ extension by executing in the
+3) Install the `pyglet <http://www.pyglet.org/>`_ extension by executing in the
    shell:
    ::
      pip install pyglet
 
-3) If you plan to use the LightCrafter 4500 not only as a displaying device
+4) If you plan to use the LightCrafter 4500 not only as a displaying device
    but also want to configure it via QDSpy (via USB), then you will need 
    the hidapi package.
 
@@ -72,7 +65,7 @@ Installation
    For Python 3.5.x, installation of ``hidapi`` now requires Microsoft 
    Visual C++ 14.0. *Instructions to be added soon.*
 
-4) If you plan to use a digital I/O card from `Measurement Computing 
+5) If you plan to use a digital I/O card from `Measurement Computing 
    <http://www.mccdaq.com>`_, you need to install their `Universal Library
    <http://www.mccdaq.com/daq-software/universal-library.aspx>`_ 
    (the 64-bit version). Note that you'll need to reboot before the library is
@@ -85,7 +78,7 @@ Installation
      int_digitalio_board_num = 0
      int_digitalio_device_num = 1
 
-5) If you need gamma correction (currently Windows-only): Depending how strongly 
+6) If you need gamma correction (currently Windows-only): Depending how strongly 
    the color presentation needs to be changed, you may have to define/change a 
    registry key that tells Windows normally to prevents too extreme color changes 
    by the user. For details on gamma correction, see `here 
@@ -112,8 +105,21 @@ Installation
                 turn all screens unreadable!!
 
 
-6) Copy the content of the .zip file into a folder (e.g. ``C:\User\QDSpy``),
+7) Copy the content of the .zip file into a folder (e.g. ``C:\User\QDSpy``),
    keeping the internal folder substructure intact.
+
+8) It is important to add the path to the QDSpy main folder to the ``PYTHONPATH``
+   environment variable. If this variable does not yet exist, it needs to be
+   created. There are several ways to do this but the easiest way is probably
+   using Spyder, which comes with the Anaconda package.
+  
+   a) run Spyder (note that the first start can take some time).
+   b) in the menu, select ``Tools``, then ``PYTHONPATH manager``
+   c) add the path to the QDSpy folder and press the ``synchronize`` button.
+
+   Note that open powershells need to be restarted to acknowledge this change.
+   
+
 
 Running the GUI version of QDSpy
 ----------------------------------------------
