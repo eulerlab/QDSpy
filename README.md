@@ -12,23 +12,45 @@ To get started, see ``/QDSpy/html/installation.html``.
 
 ####Known issues
 
-* Videos won’t stop correctly; do not use yet. Minor: While partial transparency and scaling works with videos, rotation does not yet (wrong rotation axis?)
-* Shader-enabled objects may not be drawn in the correct order, which means that shader objects can flicker when they overlap.
-* Starting a movie for the first time in a script can cause a delay of ~200 ms. A work-around is to start the movie right at the beginning of the script starting section (see documentation)
+* Videos won't stop correctly; do not use yet.
+  Minor: While partial transparency and scaling works with videos, rotation
+  does not yet (wrong rotation axis?)
+
+* Shader-enabled objects may not be drawn in the correct order, which means
+  that shader objects can flicker when they overlap.
+
+* Starting a movie for the first time in a script can cause a delay of ~200 ms.
+  A work-around is to start the movie right at the beginning of the script
+  starting section, for example:
+  ::
+    ...
+    QDS.StartScript()
+    QDS.Start_Movie(1, (0,0), [ 0,  0, 1,  1], (1,1), 0, 0)
+    QDS.Scene_Clear(2.00, 0)
+    ...
+
+  This avoids the delay later during the time-critical parts of a stimulus. 
 
 ####To do
 
 * URGENT: Fix video presentation
-* URGENT: Handle error when QDSpy GUI does not find a compiled __autorun
-* Recompile hidapi for Python 3.5. Implement use of correct pre-compiled hidapi module depending on Python version (3.4 vs. 3.5)
+* URGENT: Recompile hidapi for Python 3.5. Implement use of correct pre-compiled
+  hidapi module depending on Python version (3.4 vs. 3.5)
 * Check x-y scaling
 * Check timing of digital I/O signals (i.e. triggers).
 * Complete lightcrafter interface.
-* For color modes >1 (special lightcrafter modes), movie images need to be converted with the respective cvolor scheme.
-* Add stimulus control window to be displayed on the GUI screen when stimulus presentation is running fullscreen on a different display.
-* Add possibitity to control timing (i.e. sync refresh to an external source) on genlock-enabled NVIDIA and/or ATI graphic cards.
+* For color modes >1 (special lightcrafter modes), movie images need to be
+  converted with the respective cvolor scheme.
+* Add stimulus control window to be displayed on the GUI screen when stimulus
+  presentation is running fullscreen on a different display.
+* Add possibitity to control timing (i.e. sync refresh to an external source) 
+  on genlock-enabled NVIDIA and/or ATI graphic cards.
 
 ####Release notes
+
+* Now reports GLSL version
+* Fixed error when QDSpy GUI does not find a compiled `__autorun`.
+* ...
 
 v0.6 beta (April 2016)
 * Bug fixes

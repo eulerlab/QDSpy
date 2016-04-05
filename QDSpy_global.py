@@ -51,6 +51,7 @@ QDSpy_fileVersionID         = 6
 QDSpy_stimFileExt           = ".py"
 QDSpy_pathStimuli           = ".\\Stimuli"
 QDSpy_autorunStimFileName   = "__autorun"
+QDSpy_autorunDefFileName    = "__autorun_default"
 
 QDSpy_movDescFileExt        = ".txt"
 QDSpy_movDescSect           = "QDSMovie2Description"

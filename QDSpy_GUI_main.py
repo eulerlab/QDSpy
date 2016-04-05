@@ -64,6 +64,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.Conf          = cnf.Config()
     self.Stim          = stm.Stim()
     self.currStimPath  = self.Conf.pathStim
+    self.currQDSPath   = os.getcwd()
     self.currStimName  = "n/a"
     self.currStimFName = ""
     self.isStimReady   = False
@@ -134,40 +135,37 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.updateStimList()
     self.updateAll()
 
-    # Check if autorun stimulus file present and if som run it
+    # Check if autorun stimulus file present and if so run it
     #
     try:
-      # *******************
-      # *******************
-      # TODO: Log that now attempting to run __autorun
-      # *******************
-      # *******************
       self.currStimFName = self.currStimPath +QDSpy_autorunStimFileName
+      self.isStimCurr    = gsu.getStimCompileState(self.currStimFName)
+      if not(self.isStimCurr):
+        self.currStimFName = self.currQDSPath +"\\" +QDSpy_autorunDefFileName
+        self.logWrite("ERROR", "No compiled `{0}` in current stimulus folder,"
+                               " using `{1}` in `{2}`."
+                               .format(QDSpy_autorunStimFileName, 
+                                       QDSpy_autorunDefFileName, 
+                                       self.currQDSPath))
+      self.logWrite("DEBUG", "Running {0} ...".format(self.currStimFName))
       self.Stim.load(self.currStimFName, _onlyInfo=True)
       self.setState(State.ready)
-      self.isStimReady   = True
-      self.isStimCurr    = gsu.getStimCompileState(self.currStimFName)
-      if self.isStimCurr:
-        self.runStim()
-      else:  
-        # *******************
-        # *******************
-        # TODO: Compile file first
-        # *******************
-        # *******************
-        pass
+      self.isStimReady = True
+      self.runStim()
 
     except:
       # Failed ...
       #
       if(self.Stim.getLastErrC() != stm.StimErrC.ok):
         self.updateStatusBar(self.Stim.getLastErrStr(), True)
-        # *******************
-        # *******************
-        # TODO: Indicate in history that autorun failed      
-        # *******************
-        # *******************
-
+        ssp.Log.isRunFromGUI = False
+        ssp.Log.write("ERROR", "No compiled `{0}` in current stimulus folder,"
+                               " and `{1}.pickle` is not in `{2}`. Program is"
+                               " aborted."
+                               .format(QDSpy_autorunStimFileName, 
+                                       QDSpy_autorunDefFileName, 
+                                       self.currQDSPath))
+        sys.exit(0)
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def __del__(self):
