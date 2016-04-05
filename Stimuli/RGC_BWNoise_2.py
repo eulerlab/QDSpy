@@ -17,6 +17,7 @@ p = {"durStim_s"       : 0.200,
      "fNameNoise"      : "RGC_BWNoise_official",
      "durFr_s"         : 1/60.0, # Frame duration
      "nFrPerMarker"    : 3}
+     
 QDS.LogUserParameters(p)
 
 # Do some calculations and preparations

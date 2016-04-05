@@ -8,10 +8,11 @@ QDS.Initialize("movie", "Example for playing a movie")
 
 # Define global stimulus parameters
 #
-nTrials   = 3                       # number of stimulus presentations
-mScal     = (2.0, 2.0)              # movie scaling (x, y)
-mOrient   = [0, 45, 90, 135]        # movie orientations
-mAlpha    = 250                     # transparency of movie
+p = {}
+p['nTrials']   = 3                       # number of stimulus presentations
+p['mScal']     = (2.0, 2.0)              # movie scaling (x, y)
+p['mOrient']   = [0, 45, 90, 135]        # movie orientations
+p['mAlpha']    = 250                     # transparency of movie
 
 FrRefr_Hz = QDS.GetDefaultRefreshRate()
 
@@ -25,22 +26,22 @@ QDS.DefObj_Movie(1, "rabbit.jpg")
 QDS.StartScript()
 QDS.Scene_Clear(1.00, 0)
 
-for iT in range(nTrials):
-  for iOrient in mOrient:
-    QDS.Start_Movie(1, (0,0), [0, 0, FrRefr_Hz, 1], mScal, mAlpha, iOrient)
+for iT in range(p['nTrials']):
+  for iOrient in p['mOrient']:
+    QDS.Start_Movie(1, (0,0), [0, 0, FrRefr_Hz, 1], p['mScal'], p['mAlpha'], iOrient)
     QDS.Scene_Clear(1.00, 0)
-    QDS.Start_Movie(1, (0,0), [0,nFr-1, 3, 1], mScal, mAlpha, iOrient)
+    QDS.Start_Movie(1, (0,0), [0,nFr-1, 3, 1], p['mScal'], p['mAlpha'], iOrient)
     QDS.Scene_Clear(0.05, 1)
     QDS.Scene_Clear(1.95, 0)
-    QDS.Start_Movie(1, (0,0), [nFr-1, nFr-1, 2*FrRefr_Hz, 1], mScal, mAlpha, iOrient)
+    QDS.Start_Movie(1, (0,0), [nFr-1, nFr-1, 2*FrRefr_Hz, 1], p['mScal'], p['mAlpha'], iOrient)
     QDS.Scene_Clear(2.00, 0)
 
-    QDS.Start_Movie(1, (0,0), [nFr-1, nFr-1, FrRefr_Hz,  1], mScal, mAlpha, iOrient)
+    QDS.Start_Movie(1, (0,0), [nFr-1, nFr-1, FrRefr_Hz,  1], p['mScal'], p['mAlpha'], iOrient)
     QDS.Scene_Clear(1.00, 0)
-    QDS.Start_Movie(1, (0,0), [nFr-1, 0, 3, 1], mScal, mAlpha, iOrient)
+    QDS.Start_Movie(1, (0,0), [nFr-1, 0, 3, 1], p['mScal'], p['mAlpha'], iOrient)
     QDS.Scene_Clear(0.05, 1)
     QDS.Scene_Clear(1.95, 0)
-    QDS.Start_Movie(1, (0,0), [0, 0, 2*FrRefr_Hz, 1], mScal, mAlpha, iOrient)
+    QDS.Start_Movie(1, (0,0), [0, 0, 2*FrRefr_Hz, 1], p['mScal'], p['mAlpha'], iOrient)
     QDS.Scene_Clear(2.00, 0)
 
 QDS.Scene_Clear(1.00, 0)
