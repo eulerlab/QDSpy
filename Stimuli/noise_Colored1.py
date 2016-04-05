@@ -13,21 +13,22 @@ random.seed(1)
 
 # Define global stimulus parameters
 #
-dtFr_s    = 3/60.0  # presentation time per pattern
-nTrials   = 500     # # of repeats
-nPrMark   = 20      # present marker every nPrMark *dtFr_s
-nRows     = 30      # dimensions of pattern grid
-nCols     = 30
-boxDx     = 15      # box size in um
-boxDy     = 15
-dRot_step = 0       # angle by which boxes are rotated
+p = {}
+p['dtFr_s']    = 3/60.0  # presentation time per pattern
+p['nTrials']   = 500     # # of repeats
+p['nPrMark']   = 20      # present marker every p['nPrMark']*p['dtFr_s']
+p['nRows']     = 30      # dimensions of pattern grid
+p['nCols']     = 30
+p['boxDx']     = 15      # box size in um
+p['boxDy']     = 15
+p['dRot_step'] = 0       # angle by which boxes are rotated
 
 # Define objects
 # Generate one box object per grid position
 #
-nB        = nRows*nCols
+nB        = p['nRows']*p['nCols']
 for iB in range(1, nB+1):
-  QDS.DefObj_Box(iB, boxDx, boxDy)
+  QDS.DefObj_Box(iB, p['boxDx'], p['boxDy'])
 
 # Fill list with parameters for every box object
 #
@@ -36,11 +37,11 @@ BoxPosList = []
 BoxMagList = []
 BoxRotList = []
 
-for iX in range(nCols):
-  for iY in range(nRows):
-    iB = 1 +iX +iY*nCols
-    x  = iX*boxDx +boxDx/2.0 -boxDx*nCols/2.0
-    y  = iY*boxDy +boxDy/2.0 -boxDy*nRows/2.0
+for iX in range(p['nCols']):
+  for iY in range(p['nRows']):
+    iB = 1 +iX +iY*p['nCols']
+    x  = iX*p['boxDx'] +p['boxDx']/2.0 -p['boxDx']*p['nCols']/2.0
+    y  = iY*p['boxDy'] +p['boxDy']/2.0 -p['boxDy']*p['nRows']/2.0
     BoxIndList.append(iB)
     BoxPosList.append((x,y))
     BoxMagList.append((1.0, 1.0))
@@ -54,7 +55,7 @@ QDS.Scene_Clear(1.0, 0)
 # Present grid
 #
 rot	= 0.0
-for iT in range(nTrials):
+for iT in range(p['nTrials']):
   BoxColList = []
   BoxAlpList = []
   BoxRotList = []
@@ -65,10 +66,10 @@ for iT in range(nTrials):
     BoxColList.append((r, g, b))
     BoxAlpList.append(255)
     BoxRotList.append(rot)
-    rot += dRot_step
+    rot += p['dRot_step']
   QDS.SetObjColorEx(BoxIndList, BoxColList, BoxAlpList)
-  QDS.Scene_RenderEx(dtFr_s, BoxIndList, BoxPosList, BoxMagList,
-                     BoxRotList, int((iT % nPrMark) == 0))
+  QDS.Scene_RenderEx(p['dtFr_s'], BoxIndList, BoxPosList, BoxMagList,
+                     BoxRotList, int((iT % p['nPrMark']) == 0))
 
 QDS.Scene_Clear(1.0, 0)
 

@@ -7,8 +7,9 @@ import  QDS
 QDS.Initialize("Test2", "Test for Lightcrafter")
 QDS.SetColorMode((8,7,7), (0,1,1), 0)
 
-nTrials   = 60
-dt_s      = 0.0166666666 
+p = {}
+p['nTrials']   = 60
+p['dt_s']      = 0.0166666666 
 
 QDS.DefObj_Sector(1, 100, 50, 180, 270)
 #QDS.SetObjColorEx([1], [(255,128,128)], [255])
@@ -20,8 +21,8 @@ QDS.SetObjColorAlphaByVertex([2], [[(128,255,128,255),(255,128,0,0)]])
 
 # ---------------------------------------------------------------------
 def myLoop():
-  for iT in range(nTrials):
-    QDS.Scene_RenderEx(dt_s, [1,2], [(0,0),(0,0)], [(1,1),(1,1)], [0,0], 0)
+  for iT in range(p['nTrials']):
+    QDS.Scene_RenderEx(p['dt_s'], [1,2], [(0,0),(0,0)], [(1,1),(1,1)], [0,0], 0)
 
 # ---------------------------------------------------------------------
 QDS.StartScript()
