@@ -109,11 +109,6 @@ class Presenter:
     self.tFr          = 0.0
     self.tStart       = 0.0
 
-    self.nFrTotal     = 0
-    self.avFrDur_s    = 0.0
-    self.nRendTotal   = 0
-    self.avRendDur_s  = 0.0
-    self.tFr          = 0.0
     if QDSpy_frRateStatsBufferLen > 0:
       self.dataDtFr   = np.zeros(QDSpy_frRateStatsBufferLen, dtype=float)
     else:
