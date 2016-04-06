@@ -83,6 +83,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.btnStimPlay.clicked.connect(self.OnClick_btnStimPlay)
     self.btnStimCompile.clicked.connect(self.OnClick_btnStimCompile)
     self.btnStimAbort.clicked.connect(self.OnClick_btnStimAbort)
+    self.btnChangeStimFolder.clicked.connect(self.OnClick_btnChangeStimFolder)
     self.checkShowHistory.clicked.connect(self.OnClick_checkShowHistory)
     
     self.spinBoxLED1.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
@@ -251,9 +252,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     
     self.listStim.setEnabled(isStimSelPerm)
     self.btnRefreshStimList.setEnabled(isStimSelPerm)
-    """
     self.btnChangeStimFolder.setEnabled(isStimSelPerm)
-    """
 
     self.btnStimPlay.setText("Play")
     self.btnStimPlay.setEnabled(self.isStimReady)
@@ -361,6 +360,19 @@ class MainWinClass(QtGui.QMainWindow, form_class):
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_btnRefreshStimList(self):
     self.updateStimList()
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_btnChangeStimFolder(self):
+    # ...
+    newPath = QtGui.QFileDialog.getExistingDirectory(self, 
+                "Select new stimulus folder", self.currStimPath, 
+                options=QtGui.QFileDialog.ShowDirsOnly) 
+    if len(newPath) > 0:
+      # Change path and update stimulus list ...
+      #
+      self.currStimPath = newPath
+      self.logWrite(" ", "New stimulus folder `{0}`".format(newPath))
+      self.updateStimList()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_listStim(self, _selItem):
