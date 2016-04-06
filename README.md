@@ -52,7 +52,7 @@ To get started, see ``/QDSpy/html/installation.html``.
 * Fixed error when QDSpy GUI does not find a compiled `__autorun`.
 * Stimulus folder can now be selected using the  `Change folder` button. Note
   that at program start, QDSpy always pre-selects the default stimulus folder
-  defined in the `QDSpy:ini` file
+  defined in the `QDSpy.ini` file
 * ...
 
 v0.6 beta (April 2016)
