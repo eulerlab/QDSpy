@@ -1,8 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Apr  7 11:32:23 2016
+Created on April 7th 2016 @author: Luke Edward Rogerson, AG Euler
 
-@author: Luke
+This stimulus is intended to be a natural expansion on the chirp. While the 
+chirp has several attractive properties (clearly identifies polarity, extracts
+sufficient frequency and contrast sensitivities for classification), it does 
+not provide a comprehensive exploration of the frequency and contrast parameter
+space.
+
+It is this latter problem which this stimulus seeks to resolve. The ripple 
+stimulus presents a sequence of sine waves, each governed by two parameters,
+one for frequency and another for contrast. The full parameter space is defined
+by a grid of possible parameter pairs, which are explored at random. The sine 
+wave is presented for a short time for each pair (approximately 3 seconds).
 """
 import collections
 from functools import partial
@@ -12,13 +22,11 @@ import random
 
 # Define global stimulus parameters
 p = {'_sName'          : "Ripple_0",
-     '_sDescr'         : "'chirp' in fingerprinting stimulus set",
+     '_sDescr'         : "Sine wave ripples, varying frequency and contrast",
      'seed'            : 1,
      "nTrials"         : 1, 
      "IHalf"           : 127,
-     "IFull"           : 254,
      "dxStim_um"       : 1000,   # Stimulus size
-     "StimType"        : 2,      # 1 = Box, 2 = Circle/
      "durFr_s"         : 1/60.0, # Frame duration
      'durRipple'       : 3,
      'contrast_max'    : 1,
