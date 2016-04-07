@@ -91,8 +91,8 @@ dispatcher = collections.OrderedDict([
     ('init', partial(QDS.Initialize,p['_sName'],p['_sDescr'])),
     ('log', partial(QDS.LogUserParameters,p)),
     ('build', partial(buildStimulus,p)),
-    ('clear1', partial(QDS.Scene_Clear,1.0, 0)),
     ('start', QDS.StartScript),
+    ('clear1', partial(QDS.Scene_Clear,1.0, 0)),
     ('iter', partial(iterateStimulus,p)),
     ('clear2', partial(QDS.Scene_Clear,1.0, 0)),
     ('stop', QDS.EndScript)]                               
