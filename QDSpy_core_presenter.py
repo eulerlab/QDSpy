@@ -71,7 +71,19 @@ class Presenter:
 
     self.dtFr_meas_s  = self.Stage.dtFr_s
     self.dtFr_thres_s = self.dtFr_meas_s +(self.Conf.maxDtTr_ms)/1000.0
-
+    
+    # Prepare recording of stimulus presentation, if requested
+    #
+    if self.Conf.recordStim:
+      self.bufferMan  = pyglet.image.get_buffer_manager()
+      # **********************
+      # **********************
+      # TODO: LUKE
+      # something like "function(self.Conf)"
+      # **********************
+      # **********************
+      print("called: prepare record stimulus presentation")
+      
     # Define event handler(s)
     #
     self.View.setOnKeyboardHandler(self.onKeyboard)
@@ -509,34 +521,6 @@ class Presenter:
       glTranslatef(self.Stage.centOffX_pix, self.Stage.centOffY_pix, 0)
       self.currBatch.draw()        
       glPopMatrix()
-
-    # Show marker and send signal, if requested
-    #
-    '''
-    if self.IO != None:
-      # ************
-      # ************
-      # TODO: first read port to be able to set/clear only the needed pin
-      # ************
-      # ************
-      """
-      if self.IO_isMarkSet:
-        self.IO.writeDPort(self.IO_portOut, 0)
-        self.IO_isMarkSet = False
-      else:  
-        self.IO.writeDPort(self.IO_portOut, self.IO_maskMark)
-        self.IO_isMarkSet = True
-      """
-      if self.Stim.cScMarkList[_iSc] > 0:
-        # ...
-        self.IO.writeDPort(self.IO_portOut, self.IO_maskMark)
-        self.IO_isMarkSet   = True
-      else:
-        if self.IO_isMarkSet:
-          # ...
-          self.IO.writeDPort(self.IO_portOut, 0)
-          self.IO_isMarkSet = False
-    '''    
       
     # Track rendering timing, if requested
     #
@@ -662,31 +646,27 @@ class Presenter:
       if isMaskChanged:
         self.IO.writeDPort(self.IO_portOut, maskMark)
 
-    """
-    mgr           = pyglet.image.get_buffer_manager()
-    color_buffer  = mgr.get_color_buffer()
-    image         = color_buffer.image_data.get_image_data()
-    image.width   = image.width //32    
-    image.height  = image.height //32
-    imageFormat   = "RGBA"
-    imagePitch    = image.width * len(imageFormat)
-    self.Sync.pipeSrv.send([mpr.PipeValType.toCli_TEMP, 
-                            image.get_data(imageFormat, imagePitch)])
-    """
-    """
-    mgr           = pyglet.image.get_buffer_manager()
-    color_buffer  = mgr.get_color_buffer()
-    image         = color_buffer.image_data.get_image_data()
-    image.width   = image.width   
-    image.height  = image.height
-    
-    pil_image     = Image.fromstring(image.format, 
-                                     (image.width, image.height), 
-                                      image.get_data(image.format, image.pitch))
-    pil_image     = pil_image.transpose(Image.FLIP_TOP_BOTTOM)
-    pil_image     = pil_image.convert('RGB')
-    pil_image.save("D:\SCRATCH\MOVIE\{0:06d}.png".format(self.nFrTotal), "PNG")
-    """
+      # Record stimulus presentation, if requested
+      #
+      if self.Conf.recordStim:
+        colBuf = self.bufferMan.get_color_buffer()
+        image  = colBuf.image_data.get_image_data()
+        # **********************
+        # **********************
+        # TODO: LUKE
+        # something like function(image, self.nFr), containing something like
+        '''
+        pil_image     = Image.fromstring(image.format, 
+                                         (image.width, image.height), 
+                                          image.get_data(image.format, image.pitch))
+        pil_image     = pil_image.transpose(Image.FLIP_TOP_BOTTOM)
+        pil_image     = pil_image.convert('RGB')
+        pil_image.save("D:\SCRATCH\MOVIE\{0:06d}.png".format(self.nFrTotal), "PNG")
+        '''
+        # **********************
+        # **********************
+        print("called: record stimulus presentation", self.nFr, self.nFrTotal)
+        
     
     # Keep track of refresh duration
     #

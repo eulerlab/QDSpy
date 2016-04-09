@@ -188,6 +188,7 @@ class StimErrC:
   noShadersInRunSect  = -55
   invalidShaderType   = -56
   notShaderObject     = -57
+  noCompiledStim      = -58 
 
   movieFileNotFound   = -60
   notMovieObject      = -61
@@ -218,6 +219,7 @@ StimErrStr	= dict([
   (StimErrC.noStimOrNotCompiled,"No stimulus defined or not yet compiled"),
   (StimErrC.wrongStimFileFormat,"Wrong stimulus file format"),
   (StimErrC.invalidFileNamePath,"Invalid file name or path"),
+  (StimErrC.noCompiledStim,     "Stimulus needs to be compiled"),
   (StimErrC.noDefsInRunSection, "No object definitions allowed in run se"
                                 "ction"),
   (StimErrC.noShadersInRunSect, "Shader must be assigned to objects befo"
@@ -1208,7 +1210,7 @@ class Stim:
           self.cODr_tr_vertRGBA  = stimPick.load()
 
     except IOError:
-      self.LastErrC = StimErrC.invalidFileNamePath
+      self.LastErrC = StimErrC.noCompiledStim
       ssp.Log.write("ERROR", self.getLastErrStr())
       raise StimException(self.LastErrC)
       
