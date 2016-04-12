@@ -126,7 +126,6 @@ starting section, for example:</p>
 <li>URGENT: Fix video presentation</li>
 <li>URGENT: Recompile hidapi for Python 3.5. Implement use of correct pre-compiled
 hidapi module depending on Python version (3.4 vs. 3.5)</li>
-<li>Check x-y scaling</li>
 <li>Check timing of digital I/O signals (i.e. triggers).</li>
 <li>Complete lightcrafter interface.</li>
 <li>For color modes &gt;1 (special lightcrafter modes), movie images need to be
@@ -144,8 +143,14 @@ on genlock-enabled NVIDIA and/or ATI graphic cards.</li>
 <li>Fixed error when QDSpy GUI does not find a compiled <cite>__autorun</cite>.</li>
 <li>Stimulus folder can now be selected using the  <cite>Change folder</cite> button. Note
 that at program start, QDSpy always pre-selects the default stimulus folder
-defined in the <cite>QDSpy:ini</cite> file</li>
-<li>...</li>
+defined in the <cite>QDSpy.ini</cite> file</li>
+<li>Cleaning up some pyglet-related code</li>
+<li>Fixed that <cite>psutil</cite> was required even with <cite>bool_incr_process_prior=False</cite></li>
+<li>Added two entries to the <cite>[Display]</cite> section of the configuration file:
+<cite>bool_markershowonscreen</cite> determines if the marker (&#8220;trigger&#8221;) that is send
+via an I/O card is indicated as a small box in the right-bottom corner of
+the screen. Entry <cite>int_markerrgba</cite> (e.g. = 255,127,127,255) defines the
+marker color as RGB+alpha values.</li>
 </ul>
 <p>v0.6 beta (April 2016)</p>
 <ul class="simple">

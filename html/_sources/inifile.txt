@@ -44,6 +44,9 @@ This is an exemplary configuration:
   int_LED_QtColor = darkMagenta,green,blue
   bool_allowGammaLUT = False
   str_userGammaLUTFileName = defaultGammaLUT
+  bool_markerShowOnScreen = True
+  int_markerRGBA = 255,127,127,255
+
   
   [Paths]
   str_shader = ..\Shader\
@@ -53,7 +56,7 @@ This is an exemplary configuration:
   
   [Tweaking]
   bool_use3DTextures = 0
-  
+  bool_recordStim = 0  
 
   
 

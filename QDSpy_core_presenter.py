@@ -6,7 +6,7 @@
 #  The presenter class uses an OpenGL window (view) to sets up the
 #  stimulus screen (stage) and takes care of rendering compiled stimuli
 #
-##  Copyright (c) 2013-2015 Thomas Euler
+##  Copyright (c) 2013-2016 Thomas Euler
 #  All rights reserved.
 #
 # ---------------------------------------------------------------------
@@ -20,6 +20,7 @@ from   QDSpy_global          import *
 import QDSpy_stim            as stm
 import QDSpy_stim_movie      as mov
 import QDSpy_stim_video      as vid
+import QDSpy_stim_draw       as drw
 import QDSpy_stim_support    as ssp
 import QDSpy_core_support    as csp
 import QDSpy_core_shader     as csh
@@ -153,6 +154,8 @@ class Presenter:
     self.MovieCtrlList= []    # list, movie control class objects
     self.VideoList    = []    # list, video class objects
     self.VideoCtrlList= []    # list, video control class objects
+    
+    self.markerVert   = drw.marker2vert(self.Stage, self.Conf)
 
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -221,10 +224,6 @@ class Presenter:
       #
       _userParams = sc[stm.SC_field_userParams]
       _userParams.update(stimFileName=self.Stim.fileName)
-      """
-      print file name with path
-      and hash tag
-      """
       ssp.Log.write("DATA", _userParams.__str__())
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -503,14 +502,13 @@ class Presenter:
 
         res = vCtOb.getNextFrIndex()
         if res < 0:
-          print("res < 0")
           vCtOb, iScWhenStarted, iFrWhenStarted = self.VideoCtrlList.pop(iVC)
           vCtOb.kill()
 
         else:
           vCtOb.Sprite.batch = self.currBatch
           iVC += 1
-
+          
       # Draw current triangle vertices, acknowledging the scaling and
       # rotation of the current display (stage settings)
       #
@@ -519,8 +517,16 @@ class Presenter:
                self.Stage.scalY_umPerPix *self.Stage.winXCorrFact, 0.0)
       glRotatef(self.Stage.rot_angle, 0, 0, 1)
       glTranslatef(self.Stage.centOffX_pix, self.Stage.centOffY_pix, 0)
-      self.currBatch.draw()        
+      self.currBatch.draw()    
       glPopMatrix()
+      
+    # Show marker, if requested and present in the current scene
+    #
+    if self.Conf.markShowOnScr and sc[stm.SC_field_marker]:  
+      pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
+                                   self.markerVert[1],
+                                   ("v2i/stream", self.markerVert[0]),
+                                   ("c4B/stream", self.markerVert[2]))
       
     # Track rendering timing, if requested
     #

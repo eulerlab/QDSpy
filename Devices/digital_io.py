@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 #  digital_io.py
 #
-#  Digital I/O - Work in progress
+#  Digital I/O using Measurement Computing's Universal Library
+#  http://www.mccdaq.com/daq-software/universal-library.aspx
 #
 #  Copyright (c) 2013-2016 Thomas Euler
 #  All rights reserved.
@@ -40,36 +41,6 @@ dictUL        = dict([
   (devConst.PORT_C_HI,   ULConst.FIRSTPORTCH),
   (devConst.DIGITAL_IN,  ULConst.DIGITALIN),
   (devConst.DIGITAL_OUT, ULConst.DIGITALOUT)])
-
-# ---------------------------------------------------------------------
-# I/O base class
-# ---------------------------------------------------------------------
-"""
-class UniversalLibraryError( UniversalLibraryBaseError ):
-    # error occurred within the C layer of Universal Library
-    def __init__(self, UDStat):
-        errstr = 'Error %d: %s'%(UDStat,_get_error_message(UDStat))
-        self.errno = UDStat
-        Exception.__init__(self, errstr)
-
-class UniversalLibraryPythonError( UniversalLibraryBaseError ):
-    # error occurred within the Python layer of Universal Library
-    pass
-
-def _get_error_message(UDStat):
-    err_msg = ctypes.create_string_buffer(constants.ERRSTRLEN)
-    err2 = cbw.cbGetErrMsg(UDStat,err_msg)
-    if err2:
-        raise SystemError(
-            'Error %d while getting error message for error %d'%(err2,UDStat))
-    origerrstr = err_msg.value
-    return origerrstr
-
-def CHK(UDStat):
-    # raise appropriate exception if error occurred
-    if UDStat != NOERRORS:
-        raise UniversalLibraryError(UDStat)
-"""
 
 # ---------------------------------------------------------------------
 # I/O base class

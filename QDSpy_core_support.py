@@ -37,7 +37,7 @@ getTime  = None
 
 if sys.platform == 'win32':
   global _fcounter, _qpfreq, _winQPC
-  from    ctypes       import byref, c_int64, windll
+  from ctypes import byref, c_int64, windll
   _fcounter = c_int64()
   _qpfreq   = c_int64()
   windll.Kernel32.QueryPerformanceFrequency(byref(_qpfreq))

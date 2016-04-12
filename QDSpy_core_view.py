@@ -5,7 +5,7 @@
 #
 #  The view class provides an OpenGL window/context
 #
-##  Copyright (c) 2013-2015 Thomas Euler
+##  Copyright (c) 2013-2016 Thomas Euler
 #  All rights reserved.
 #
 # ---------------------------------------------------------------------
@@ -29,10 +29,12 @@ QDSpy_graphicsAPI = args.timing
 
 if   QDSpy_graphicsAPI == 0:
   import  QDSpy_core_GL_default as grx
+"""
 elif QDSpy_graphicsAPI == 1:
   import  QDSpy_core_GL_alter1  as grx
 elif QDSpy_graphicsAPI == 2:
   import  QDSpy_core_GL_alter2  as grx
+"""
 
 # ---------------------------------------------------------------------
 # View class
@@ -44,6 +46,7 @@ class View:
     #
     self.Stage          = _Stage
     self.Conf           = _Conf
+    self.winMirror      = None
     self.__reset()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -90,7 +93,7 @@ class View:
       self.winHeight   = self.screens[self.iScr].height
       self.Stage.winXCorrFact   = 1.0
       ssp.Log.write("INFO", "screen={0}".format(self.screens))
-      (self.winPyglet, self.winPresent) = grx.getWindows(self, True)
+      self.winPresent  = grx.getWindows(self, True)
       grx.setMouseVisible(self, False)
       ssp.Log.write("ok", "Fullscreen mode, {0}x{1} pixels, on screen #{2}"
                     .format(self.winWidth, self.winHeight, self.iScr))
@@ -110,10 +113,16 @@ class View:
       #
       self.iScr        = 0
       self.screens     = grx.getScreens()
+      """
       self.Stage.winXCorrFact   = float(self.winWidth) /self.screens[0].width
-      (self.winPyglet, self.winPresent) = grx.getWindows(self, False)
+      """
+      self.winPresent  = grx.getWindows(self, False)
       ssp.Log.write("ok", "Window mode, {0}x{1} pixels"
                     .format(self.winWidth, self.winHeight))
+    
+    """                    
+    self.winMirror     = pyglet.window.Window()
+    """
 
     # Update stage object
     #

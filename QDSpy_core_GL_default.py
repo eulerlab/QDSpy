@@ -70,13 +70,13 @@ def getWindows (_View, _isFullScr):
                                      style=pyglet.window.Window.WINDOW_STYLE_TOOL)
     winPyglet.set_location(_View.winLeft, _View.winTop)
 
-  return (winPyglet, winPyglet)
+  return winPyglet
 
 # ---------------------------------------------------------------------
 def setMouseVisible (_View, _visible):
   # Make mouse cursor visible/invisible
   #
-  #_View.winPyglet.switch_to()
+  #_View.winPresent.switch_to()
   _View.winPresent.set_mouse_visible(_visible)
   if not(sys.platform == 'win32'):
     _View.winPresent.set_exclusive_mouse(not _visible)
@@ -108,7 +108,7 @@ def setEventHandlers (_View):
   # Define general event handlers
   #
   """
-  @_View.winPyglet.event
+  @_View.winPresent.event
   def on_draw():
     print("on_draw")
     #pyglet.clock.tick()
@@ -116,8 +116,14 @@ def setEventHandlers (_View):
     return pyglet.event.EVENT_HANDLED
   """  
 
-  @_View.winPyglet.event
+
+  @_View.winPresent.event
   def on_key_press(symbol, modifiers):
+    if _View.winMirror:
+      _View.winMirror.switch_to()
+      # ...
+      
+    _View.winPresent.switch_to()    
     """
     if   symbol == pyglet.window.key.ESCAPE:
       _View.onKeyboard(b"\x1B", 0, 0)
@@ -126,8 +132,14 @@ def setEventHandlers (_View):
     if symbol == QDSpy_KEY_KillPresentPyglet:
       _View.onKeyboard(QDSpy_KEY_KillPresent, 0, 0)
 
-  @_View.winPyglet.event
+
+  @_View.winPresent.event
   def on_resize(width, height):
+    if _View.winMirror:
+      _View.winMirror.switch_to()
+      # ...
+      
+    _View.winPresent.switch_to()    
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     glOrtho(-_View.winWidth/2, _View.winWidth/2,
@@ -140,7 +152,11 @@ def setEventHandlers (_View):
 def setStandardProperties (_View):
   # Set some general OpenGL properties
   #
-  #_View.winPyglet.switch_to()
+  if _View.winMirror:
+    _View.winMirror.switch_to()
+    # ...
+    
+  _View.winPresent.switch_to()    
   glClearColor(0., 0., 0., 0.)
   glClear(GL_COLOR_BUFFER_BIT)
   glColor3f(1., 1., 1.)
@@ -160,7 +176,11 @@ def setStandardProperties (_View):
 def clearScreen (_View, _RGB=[]):
   # Clear screen; change background color, if requested
   #
-  #_View.winPyglet.switch_to()
+  if _View.winMirror:
+    _View.winMirror.switch_to()
+    # ...
+    
+  _View.winPresent.switch_to()    
   if len(_RGB) == 3:
     glClearColor(_RGB[0]/255.0, _RGB[1]/255.0, _RGB[2]/255.0, 0.0)
   else:
@@ -170,25 +190,21 @@ def clearScreen (_View, _RGB=[]):
 def present (_View):
   # Swap display buffers to display new frame
   #
-  """
-  wins = pyglet.window.get_platform().get_default_display().get_windows()
-  for win in wins: win.dispatch_events()
-  """
-  """
-  _View.winPyglet.dispatch_pending_events()
-  """
-  
   pyglet.clock.tick()
-  """  
+  """
   for iWin, window in enumerate(pyglet.app.windows):
     window.switch_to()
     window.dispatch_events()
-    window.dispatch_event('on_draw')
+    #window.dispatch_event('on_draw')
     window.flip()
-    print(iWin)
-  """
-  _View.winPyglet.dispatch_events()
-  _View.winPyglet.flip()
+
+  if _View.winMirror:
+    _View.winMirror.switch_to()
+    # ...
+  _View.winPresent.switch_to()    
+  """ 
+  _View.winPresent.dispatch_events()
+  _View.winPresent.flip()
   glLoadIdentity()
   glBegin(GL_POINTS)
   glColor4f(0, 0, 0, 0)
@@ -207,7 +223,7 @@ def startMainLoop (_Pre):
 def endMainLoop(_View):
   # End the main loop and destroy windows
   #
-  _View.winPyglet.close()
+  _View.winPresent.close()
   
 # ---------------------------------------------------------------------
 
