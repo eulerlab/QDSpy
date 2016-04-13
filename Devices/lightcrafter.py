@@ -9,7 +9,7 @@
 #  Internal:
 #
 #
-#  Copyright (c) 2014-2015 Thomas Euler
+#  Copyright (c) 2014-2016 Thomas Euler
 #  All rights reserved.
 #
 # ---------------------------------------------------------------------

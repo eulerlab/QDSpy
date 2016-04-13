@@ -21,7 +21,7 @@ QDSpy_fullScrWinName        = "x" #QDSPY_STIMULUS"
 
 QDSpy_isDebug               = True
 QDSpy_isGUIQuitWithDialog   = False
-QDSpy_workerMsgsToStdOut    = False
+QDSpy_workerMsgsToStdOut    = True # False
 
 QDSpy_winWidth              = 800
 QDSpy_winHeight             = 600
@@ -86,6 +86,10 @@ QDSpy_UL_deviceNum          = 6
 QDSpy_UL_portOut            = "A"
 QDSpy_UL_portIn             = "B"
 QDSpy_UL_pinMarkerOut       = 2  
+
+QDSpy_markerRGBA            = [255,127,127,255]
+QDSpy_markerScrWidthFract   = 16
+QDSpy_markerShowOnScr       = True
 
 QDSpy_use_Lightcrafter      = True
 QDSpy_LEDNames_default      = ["red", "green", "blue"]

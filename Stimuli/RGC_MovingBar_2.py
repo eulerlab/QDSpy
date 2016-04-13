@@ -21,7 +21,8 @@ def MoveBarSeq():
     #
     QDS.Scene_Clear(durMarker_s, 1)
     for iStep in range(int(nFrToMove)):
-      QDS.Scene_RenderEx(p["durFr_s"], [1], [(x,y)], [(1.0,1.0)], [rot_deg], 0)
+      QDS.Scene_RenderEx(p["durFr_s"], [1], [(x,y)], [(1.0,1.0)], [rot_deg], 
+                         iStep < p["nFrPerMarker"])
       x    -= math.cos(rot_rad) *umPerFr
       y    += math.sin(rot_rad) *umPerFr
 

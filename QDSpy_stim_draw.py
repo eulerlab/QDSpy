@@ -183,3 +183,19 @@ def sct2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
   return (newVert, newiVTr, newRGBA, hStr, pxy, rot_deg)
 
 # ---------------------------------------------------------------------
+def marker2vert (_Stage, _Conf):
+  # Generate vertices for the trigger marker
+  #
+  dx2       = _Stage.dxScr /QDSpy_markerScrWidthFract /2
+  pxy       = (_Stage.dxScr//2, -_Stage.dyScr//2)
+  rect      = [-dx2, -dx2, dx2, dx2]
+  newVert   = [rect[0], rect[1], rect[2], rect[1],
+               rect[2], rect[3], rect[0], rect[3]]
+  newVert   = sup.rotateTranslate(newVert, 0, pxy)
+  newVert   = sup.toInt(newVert)
+  newiVTr   = (0, 1, 2, 0, 2, 3)
+  newRGBA   = len(newVert) //2 *_Conf.markRGBA
+  
+  return (newVert, newiVTr, newRGBA)
+
+# ---------------------------------------------------------------------

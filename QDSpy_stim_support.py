@@ -47,17 +47,6 @@ def rotateTranslate(_coords, _rot_deg, _posxy):
   return coords
 
 # ---------------------------------------------------------------------
-def scaleToScreen(_coords, _Stage):
-  # Scale coordinates depending on screen settings in stage
-  #
-  coords    = []
-  for i in range(0, len(_coords), 2):
-    x       = _coords[i] /float(_Stage.scalX_umPerPix) +_Stage.centX_pix
-    y       = _coords[i+1] /float(_Stage.scalY_umPerPix) +_Stage.centY_pix
-    coords  += [x, y]
-  return coords
-
-# ---------------------------------------------------------------------
 def toInt(_coords):
   # Convert the coordinates in the list to integers
   #

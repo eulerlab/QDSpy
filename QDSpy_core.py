@@ -48,10 +48,11 @@ def setPerformanceHigh(_Conf):
 
 
 def setPerformanceNormal(_Conf):
-  csp.setNormalProcessPrior()
+  if _Conf.incPP:
+    csp.setNormalProcessPrior()
   if _Conf.disGC:
     gc.enable()
-
+    
 
 def loadStimulus(_fNameStim, _Stim): 
   if len(_fNameStim) == 0:
@@ -258,7 +259,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
 
       # Dispatch events for the OpenGL window and sleep for a bit
       #
-      _View.winPyglet.dispatch_events() 
+      _View.winPresent.dispatch_events() 
       time.sleep(0.05)
 
   # Restore gamma LUT, if nescessary

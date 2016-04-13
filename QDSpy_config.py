@@ -56,6 +56,8 @@ class Config:
     self.pathLogs     = QDSpy_pathLogFiles
     self.use3DTextures= QDSpy_use3DTextures
     self.recordStim   = QDSpy_recordStim
+    self.markShowOnScr= QDSpy_markerShowOnScr
+    self.markRGBA     = QDSpy_markerRGBA
 
     try:
       self.conf.readfp(open(QDSpy_iniFileName))
@@ -87,6 +89,9 @@ class Config:
       self.LEDQtColors  = temp.split(sep=",")
       self.allowGammaLUT= self.conf.getboolean("Display", "bool_allowGammaLUT")
       self.userLUTFName = self.conf.get("Display", "str_userGammaLUTFileName")
+      self.markShowOnScr= self.conf.getboolean("Display", "bool_markerShowOnScreen")
+      temp              = self.conf.get("Display", "int_markerRGBA")      
+      self.markRGBA     = [int(i) for i in temp.split(sep=",")]
       
       self.use3DTextures= self.conf.getboolean("Tweaking", "bool_use3DTextures")
       self.recordStim   = self.conf.getboolean("Tweaking", "bool_recordStim")
@@ -135,7 +140,10 @@ class Config:
       self.conf.set("Display","int_LED_QtColor",          QDSpy_LEDQtColors_default)
       self.conf.set("Display","bool_allowGammaLUT",       QDSpy_allowGammaLUT_default)
       self.conf.set("Display","str_userGammaLUTFileName", QDSpy_userGammaLUTFileName)
-      
+
+      self.conf.set("Display","bool_markerShowOnScreen",  QDSpy_markerShowOnScr)
+      self.conf.set("Display","int_markerRGBA",           QDSpy_markerRGBA)
+
       self.conf.add_section("Tweaking")      
       self.conf.set("Tweaking","bool_use3DTextures",      QDSpy_use3DTextures)
       self.conf.set("Tweaking","bool_recordStim",         QDSpy_recordStim)

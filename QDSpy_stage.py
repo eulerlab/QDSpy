@@ -34,10 +34,16 @@ ScrDevStr             = dict([
 # Stimulus stage class
 # ---------------------------------------------------------------------
 class Stage:
+  """
   def __init__(self, _winWidth=480, _winHeight=320,
                _winLeft=0, _winTop=0, 
                _scalX=1.0, _scalY=1.0, _offX=0, _offY=0, _rot=0, 
                _rFreq=60.0, _scr=0, _disFSC=False, _d=None):
+  """
+  def __init__(self, _winWidth, _winHeight, _winLeft, _winTop, 
+               _scalX, _scalY, _offX, _offY, _rot, _rFreq, _scr, 
+               _disFSC, _d=None):
+  
     # Initialize stage object from parameters or from dictionary (_d)
     #
     if _d == None:               
