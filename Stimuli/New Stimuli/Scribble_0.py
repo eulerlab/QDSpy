@@ -1,8 +1,66 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 13 17:42:21 2016
+Created on April 13th 2016 @author: Luke Edward Rogerson, AG Euler
 
-@author: Luke
+The scribble stimulus is designed to explore the range of frequencies and 
+contrasts to which a cell might be sensitive. Unlike it's sister stimulus, the
+Ripple, the Scribble stimulus continuously explores the parameter space. 
+
+This provides a trajectory through parameter space which might allow the 
+frequency and contrast sensitivities to be explored in more detail. The 
+trajectory has several potentially valuable properties. Notably, a constant 
+rate of motion, a generally smooth trajectory, and an approximately even 
+sampling of parameter space. 
+
+~~ Algorithm ~~
+
+i.   Random points are chosen on a sphere. 
+ii.  A trajectory is drawn by interpolating between these points.
+iii. The sphere is projected onto a 2d plane. This is equivalent to 
+     disregarding the Z-dimension in Cartesian coordinates.
+iv.  The points are interpolated on the 2d plane to regularise the underlying
+     rate of motion.
+v.   The points are interpolated to the desired rate of motion.
+vi.  The points are mapped from their arbitrary initial scales (a circle, r=1)
+     to the space of their respective parameters.
+
+~~ Notes ~~
+
+The initial projection (sphere -> circle) is needed for the generation of the
+continuous trajectories. Simply interpolating between points on a circle 
+creates a large amount of central bias in both the points which are sampled and
+the paths of the trajectories. Viewed from above, the random movement at a 
+constant rate on a sphere has a slight bias towards edges, but this bias is
+easily corrected for.
+
+It may be possible to combine iv. and v., though it is not so straightforward
+to calculate the distance between steps before the interpolation. It should
+also be possible, in principle, to convert the distance correction factor to 
+spherical coordinates, and perform the correction before the projection. In 
+concert, this would reduce the number of interpolation operations from 3 -> 1.
+This should go some way towards clarifying the contribution of the scaling
+parameters.
+
+Several factors give rise to the number of steps in the final stimulus:
+
+~ nSteps = nPoints*p['interpRatio_1']*p['interpRatio_2']*p['gradient_ratio']
+
+The first three factors are prespecified, while the last depends on several 
+parameters. While there does not necessarily have to be a tradeoff here, it 
+will take some thought to redesign the function such that the length and rate
+can be prespecified.
+
+Due to the use of cubic spline interpolation (which makes the trajectories
+smooth), artefacts sometimes arise where parameters outside of the defined 
+circle appear on the trajectory. One can check for this using some of the 
+plotting functions provided for at the end of the script.
+
+TODO: Provide full parameter descriptions.
+TODO: Interpolation reduction.
+TODO: Spherical projected-motion correction.
+TODO: Parameterise length completely.
+TODO: Clean up distance calculations.
+
 """
 import collections
 from functools import partial
@@ -12,18 +70,18 @@ import numpy.random
 import QDS
 import scipy as sp
 import scipy.interpolate
-#import seaborn as sns
+import seaborn as sns
 
 # Define global stimulus parameters
 p = {'_sName'          : "Scribble_0",
      '_sDescr'         : "Continuously varying sine wave",
      'seed'            : 1,
      'dxStim_um'       : 100,
-     'nPoints'         : 15,
+     'nPoints'         : 30,
      'interpRatio_1'   : 10,
      'interpRatio_2'   : 5,
      'sphere_unit'     : 1,
-     'target_gradient' : 1,
+     'target_gradient' : 0.33,
      'contrast_max'    : 1,
      'contrast_min'    : 0,
      'contrast_rate'   : 0.5,
