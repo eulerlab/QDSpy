@@ -19,14 +19,14 @@ p = {'_sName'          : "Ripple_0",
      "iFull"           : 254,
      "dxStim_um"       : 100,   # Stimulus size
      "durFr_s"         : 1/60.0, # Frame duration
-     'durRipple'       : 2.5,
+     'durRipple'       : 2,
      'contrast_max'    : 1,
      'contrast_min'    : 0.2,
      'contrast_n'      : 5,
      'frequency_max'   : 6,
      'frequency_min'   : 2,     
      'frequency_n'     : 10,
-     "tSteadyMID_s"    : 0.5,    # Light at 50% for steps
+     "tSteadyMID_s"    : 2,    # Light at 50% for steps
      }
      
 def buildStimulus(p):
