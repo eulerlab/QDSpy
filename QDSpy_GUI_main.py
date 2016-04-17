@@ -21,7 +21,7 @@ from   PyQt4                  import QtCore, QtGui, uic
 from   multiprocessing        import Process
 import QDSpy_stim             as stm
 import QDSpy_stim_support     as ssp
-import QDSpy_config           as cnf
+import QDSpy_config           as cfg
 import QDSpy_GUI_support      as gsu
 import QDSpy_multiprocessing  as mpr
 from   QDSpy_global           import *
@@ -29,7 +29,7 @@ import QDSpy_core
 
 if QDSpy_use_Lightcrafter:
   import Devices.lightcrafter as lcr
-
+  
 # ---------------------------------------------------------------------
 form_class   = uic.loadUiType("QDSpy_GUI_main.ui")[0]
 
@@ -61,7 +61,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
   def __init__(self, parent=None):
     # Initialize
     #
-    self.Conf          = cnf.Config()
+    self.Conf          = cfg.Config()
     self.Stim          = stm.Stim()
     self.currStimPath  = self.Conf.pathStim
     self.currQDSPath   = os.getcwd()
@@ -71,6 +71,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.isStimCurr    = False
     self.isViewReady   = False
     self.Stage         = None
+    self.noMsgToStdOut = cfg.getParsedArgv().gui
 
     QtGui.QMainWindow.__init__(self, parent)
     self.setupUi(self)
@@ -604,12 +605,10 @@ class MainWinClass(QtGui.QMainWindow, form_class):
   def logWrite(self, _headerStr, _msgStr):
     # Log a message to the appropriate output
     #
-    if QDSpy_workerMsgsToStdOut:
-      ssp.Log.write(_headerStr, _msgStr)
-    else:  
-      data   = ssp.Log.write(_headerStr, _msgStr, _getStr=True)
-      if data != None:
-        self.log(data)
+    data = ssp.Log.write(_headerStr, _msgStr, _getStr=True)
+    if data != None:
+      self.log(data)
+
     
   def log(self, _data):
     msg    = _data[2] +"\r"
@@ -639,5 +638,4 @@ if __name__ == "__main__":
   QDSWin.show()
   QDSApp.exec_()
   
-
 # ---------------------------------------------------------------------

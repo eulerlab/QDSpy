@@ -20,15 +20,11 @@ __author__ 	= "code@eulerlab.de"
 import time
 import os
 import sys
-from   datetime             import datetime
-"""
-import __main__             as main
-"""
-from   QDSpy_global         import *
-from   QDSpy_stim           import ColorMode
-import QDSpy_stim           as stm
-import QDSpy_stim_support   as ssp
-import QDSpy_config         as cnf
+from   datetime           import datetime
+from   QDSpy_global       import *
+import QDSpy_stim         as stm
+import QDSpy_stim_support as ssp
+import QDSpy_config       as cfg
 
 # ---------------------------------------------------------------------
 _Stim   = stm.Stim()
@@ -38,13 +34,13 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   """
   Initializes the QDS library. Needs to be called **before** any other
   QDS command is used.
-
+ 
   =============== ==================================================
   Parameters:
   =============== ==================================================
-  _sName          | stimulus name
+  _sName          | stimulus name 
   _sDescr         | description of stimulus (optional)
-  _runMode        | 0=just re-compile,
+  _runMode        | 0=just re-compile,  
                   | 1=run stimulus if script unchanged
   =============== ==================================================
   """
@@ -54,7 +50,7 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   _Stim.ErrC      = stm.StimErrC.ok
   _Stim.tStart    = time.time()
   _Stim.isRunSect = False
-  _Stim.Conf      = cnf.Config()
+  _Stim.Conf      = cfg.Config()
 
   # Parse command-line arguments
   #
@@ -63,7 +59,7 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   _Stim.fNameDir  = fNameOnlyDir +"\\" +fName
   fNameDir_py     = _Stim.fNameDir +".py"
   fNameDir_pk     = _Stim.fNameDir +".pickle"
-  args            = cnf.getParsedArgv(_isWithStimFName=False)
+  args            = cfg.getParsedArgv()
 
   # Display startup message and return if running the up-to-date stimulus
   # immediately is not requested
@@ -92,7 +88,7 @@ def GetDefaultRefreshRate():
   """
   Returns the refresh rate (in Hz) defined in the QDS configuration files.
   """
-  _Stage = cnf.Config().createStageFromConfig()
+  _Stage = cfg.Config().createStageFromConfig()
   return _Stage.scrReqFreq_Hz
 
 # ---------------------------------------------------------------------
@@ -136,7 +132,7 @@ def LogUserParameters(_dict):
 #  """
 #  Returns the current screen size as (dx,dy) tupple.
 #  """
-#  _Stage = cnf.Config().createStageFromConfig()
+#  _Stage = cfg.Config().createStageFromConfig()
 #  return (_Stage.dxScr, _Stage.dyScr)
 
 
@@ -144,7 +140,7 @@ def LogUserParameters(_dict):
 def SetColorLUTEntry (_index, _rgb):
   """
   Redefines an entry in the colour lookup table (LUT), allowing to linearize
-  the intensity range of a display.
+  the intensity range of a display. 
 
   Note that it alters the gamma LUT at **run-time** 
   (see section :doc:`how_QDSpy_works`) on the operation system-side, that is 
@@ -175,7 +171,7 @@ def SetColorLUTEntry (_index, _rgb):
 
 # ---------------------------------------------------------------------
 def SetColorMode(_depth_bit, _shift_bit=(0,0,0),
-                 _mode=ColorMode._0_255):
+                 _mode=stm.ColorMode._0_255):
   """
   Set color mode and bit depth as well as bit offset.
   
@@ -216,7 +212,8 @@ def SetColorMode(_depth_bit, _shift_bit=(0,0,0),
   if (isinstance(_shift_bit, tuple) and (len(_shift_bit) == 3)):
     _Stim.bitShift  = _shift_bit
 
-  if _mode in [ColorMode._0_255, ColorMode._0_1, ColorMode.LC_G9B9]:
+  if _mode in [stm.ColorMode._0_255, stm.ColorMode._0_1, 
+               stm.ColorMode.LC_G9B9]:
     _Stim.colorMode = _mode
 
 # ---------------------------------------------------------------------
@@ -264,7 +261,7 @@ def EndScript():
 
   # Compile stimulus
   #
-  _Conf  = cnf.Config()
+  _Conf  = cfg.Config()
   _Stage = _Conf.createStageFromConfig()
   _Stim.compile(_Stage)
 
@@ -421,7 +418,7 @@ def DefObj_Movie(_iobj, _fName):
                montage into a stack
             3) use `Image/Transform/Flip Vertically` to mirror the stack 
                along the x axis
-            4) use `Image/Stacks/Make Montage...`to convert the stack back
+            4) use `Image/Stacks/Make Montage...` to convert the stack back
                into a montage
             5) use `Image/Transform/Flip Vertically` again now to mirror the
                montage along the x axis. Now the frame sequence starts with

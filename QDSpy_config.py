@@ -15,9 +15,10 @@ __author__ 	= "code@eulerlab.de"
 import sys
 import argparse
 import configparser
-import QDSpy_stage           as stg
-import QDSpy_gamma           as gma
-from   QDSpy_global          import *
+import QDSpy_stage        as stg
+import QDSpy_gamma        as gma
+import QDSpy_stim_support as ssp
+from   QDSpy_global       import *
 
 # ---------------------------------------------------------------------
 # Configuration file class
@@ -99,6 +100,9 @@ class Config:
     except IOError:
       # Initialization file does not exist, recreate
       #
+      ssp.Log.write("WARNING", "`QDSpy.ini`not found, generating new "\
+                               "configuration file from default values")    
+    
       self.conf.add_section("Stage")
       self.conf.set("Stage", "float_refresh_frequency_Hz",QDSpy_refresh_Hz)
       self.conf.set("Stage", "int_screen_width_pix",      QDSpy_winWidth)
@@ -108,7 +112,7 @@ class Config:
       self.conf.set("Stage", "float_center_rotation_deg", 0.0)
       self.conf.set("Stage", "float_scale_x_um_per_pix",  1.0)
       self.conf.set("Stage", "float_scale_y_um_per_pix",  1.0)
-      self.conf.set("Stage", "int_screen_index",          0)
+      self.conf.set("Stage", "int_screen_index",          QDSpy_screenIndex)
       self.conf.set("Stage", "bool_disableFullScrCmd",    QDSpy_disableFullScrCmd)
       self.conf.set("Stage", "int_window_left_pix",       0)
       self.conf.set("Stage", "int_window_top_pix",        0)
@@ -116,16 +120,16 @@ class Config:
       self.conf.add_section("Timing")
       self.conf.set("Timing","bool_incr_process_prior",   QDSpy_incProcessPrior)
       self.conf.set("Timing","bool_try_forcing_fsync",    QDSpy_tryForcingFSync)
+      self.conf.set("Timing","bool_disable_garbage_collector", QDSpy_disableGarbageCollect)      
+      self.conf.set("Timing","bool_track_timing",         QDSpy_trackTiming)
+      self.conf.set("Timing","bool_warn_when_frames_dropped",  QDSpy_warnDroppedFrames)
+      self.conf.set("Timing","float_frame_dur_threshold_ms", QDSpy_FrDurThreshold_ms)
       self.conf.set("Timing","bool_use_digitalIO",        QDSpy_useUL_DIO)
       self.conf.set("Timing","int_digitalIO_board_num",   QDSpy_UL_boardNum)
       self.conf.set("Timing","int_digitalIO_device_num",  QDSpy_UL_deviceNum)
       self.conf.set("Timing","int_digitalio_port_out",    QDSpy_UL_portOut)
       self.conf.set("Timing","int_digitalio_port_in",     QDSpy_UL_portIn)
       self.conf.set("Timing","int_digitalio_pin_markerOut", QDSpy_UL_pinMarkerOut)
-      self.conf.set("Timing","bool_track_timing",         QDSpy_trackTiming)
-      self.conf.set("Timing","bool_warn_when_frames_dropped",  QDSpy_warnDroppedFrames)
-      self.conf.set("Timing","float_frame_dur_threshold_ms", QDSpy_FrDurThreshold_ms)
-      self.conf.set("Timing","bool_disable_garbage_collector", QDSpy_disableGarbageCollect)      
 
       self.conf.add_section("Paths")
       self.conf.set("Paths", "str_shader",                QDSpy_pathShader)
@@ -206,21 +210,22 @@ class Config:
 # Parsing command-line arguments
 #
 # ---------------------------------------------------------------------
-def getParsedArgv(_isWithStimFName=True):
+def getParsedArgv():
   # Return the parsed command-line arguments
   #
   parser    = argparse.ArgumentParser(description="Present a stimulus.")
-  parser.add_argument("-t", "--timing", type=int, choices=[0, 1, 2],
+  parser.add_argument("-t", "--timing", type=int, choices=[0],
                       default=QDSpy_graphicsAPI,
                       help="mechanism used for stimulus timing")
   parser.add_argument("-v", "--verbose", action="store_true",
                       help="show detailed analysis of timimg etc.")
   parser.add_argument("-c", "--compile", action="store_true",
                       help="re-compile stimulus, even if up-to-date")
-                      
-  if _isWithStimFName:
-    parser.add_argument("fNameStim", default="x",
-                      help="name of stimulus file w/o file extension")
+  parser.add_argument("-g", "--gui", action="store_true",
+                      help="send messages to GUI only")
+  parser.add_argument("fNameStim", default="x", nargs="?",
+                      help="optional stimulus file name w/o file extension")
+
   return parser.parse_args()
 
 # ---------------------------------------------------------------------

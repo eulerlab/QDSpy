@@ -10,7 +10,7 @@
 #  and primarly targets Windows, but may also run on other operating
 #  systems.
 #
-#  Copyright (c) 2013-2015 Thomas Euler
+#  Copyright (c) 2013-2016 Thomas Euler
 #  All rights reserved.
 #
 # ---------------------------------------------------------------------

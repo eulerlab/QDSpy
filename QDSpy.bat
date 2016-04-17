@@ -1,1 +1,1 @@
-start pythonw QDSpy_GUI_main.py x
+start pythonw QDSpy_GUI_main.py --gui

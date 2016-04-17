@@ -11,7 +11,7 @@
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-import pyglet
+import pyglet 
 
 # ---------------------------------------------------------------------
 QDSpy_versionStr            = "QDSpy v0.6 beta"
@@ -21,12 +21,13 @@ QDSpy_fullScrWinName        = "x" #QDSPY_STIMULUS"
 
 QDSpy_isDebug               = True
 QDSpy_isGUIQuitWithDialog   = False
-QDSpy_workerMsgsToStdOut    = True # False
+QDSpy_workerMsgsToStdOut    = True
+QDSpy_noStimArg             = False
 
-QDSpy_winWidth              = 800
-QDSpy_winHeight             = 600
+QDSpy_winWidth              = 640
+QDSpy_winHeight             = 480
 QDSpy_screenIndex           = 1
-QDSpy_disableFullScrCmd     = False
+QDSpy_disableFullScrCmd     = True
 
 QDSpy_multiSamplingLevel    = 0
 QDSpy_doOpenGLErrorChecking = False
@@ -50,7 +51,7 @@ QDSpy_cPickleProtocol       = 3
 QDSpy_cPickleFileExt        = ".pickle"
 QDSpy_fileVersionID         = 6
 QDSpy_stimFileExt           = ".py"
-QDSpy_pathStimuli           = ".\\Stimuli"
+QDSpy_pathStimuli           = ".\\Stimuli\\"
 QDSpy_autorunStimFileName   = "__autorun"
 QDSpy_autorunDefFileName    = "__autorun_default"
 
@@ -87,16 +88,16 @@ QDSpy_UL_portOut            = "A"
 QDSpy_UL_portIn             = "B"
 QDSpy_UL_pinMarkerOut       = 2  
 
-QDSpy_markerRGBA            = [255,127,127,255]
+QDSpy_markerRGBA            = "255,127,127,255"
 QDSpy_markerScrWidthFract   = 16
 QDSpy_markerShowOnScr       = True
 
-QDSpy_use_Lightcrafter      = True
-QDSpy_LEDNames_default      = ["red", "green", "blue"]
-QDSpy_LEDPeakWLs_default    = [650, 510, 450]
-QDSpy_LEDQtColors_default   = ["darkRed", "darkGreen", "darkBlue"]
+QDSpy_use_Lightcrafter      = False
+QDSpy_LEDNames_default      = "red, green, blue"
+QDSpy_LEDPeakWLs_default    = "650, 510, 450"
+QDSpy_LEDQtColors_default   = "darkRed, darkGreen, darkBlue"
 
-QDSpy_allowGammaLUT_default = True
+QDSpy_allowGammaLUT_default = False
 QDSpy_LUTFileExt            = ".txt"
 QDSpy_userGammaLUTFileName  = "defaultGammaLUT"
 

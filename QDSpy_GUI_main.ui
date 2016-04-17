@@ -679,11 +679,6 @@ config</string>
       </widget>
      </widget>
     </widget>
-    <widget class="QWidget" name="tabPage2Settings">
-     <attribute name="title">
-      <string>Settings</string>
-     </attribute>
-    </widget>
    </widget>
    <widget class="QTextBrowser" name="textBrowserHistory">
     <property name="enabled">

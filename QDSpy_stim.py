@@ -668,13 +668,22 @@ class Stim:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def logUserParameters(self, _dict):
-    # Writes a user-defined set of parameters to the  log file
+    # Writes a user-defined set of parameters to the log file
     # (For parameters, see QDS.py)
     #
     if not(isinstance(_dict, dict)):
       self.LastErrC = StimErrC.invalidParamType
       raise StimException
       
+    # **************************************
+    # **************************************
+    # TODO: Check dict for large lists or data structures and if 
+    #       present, save right here as external stimulus files to
+    #       keep the amount of text written into the log file and
+    #       the history during the stimulus presentation at a 
+    #       minimum
+    # **************************************
+    # **************************************
     newSce = [StimSceType.logUserParams, -1, self.nSce, False,
               _dict]
     self.SceList.append(newSce)

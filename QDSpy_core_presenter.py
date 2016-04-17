@@ -12,9 +12,6 @@
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-"""
-from   PIL                   import Image   
-"""
 import numpy                 as np
 from   QDSpy_global          import *
 import QDSpy_stim            as stm
@@ -35,24 +32,25 @@ global Clock
 Clock  = csp.defaultClock
 
 # ---------------------------------------------------------------------
-# Determine from command line argument which OpenGL solution to use
-# for timing and what reporting level is set
+# Adjust global parameters depending on command line arguments
 #
-global  QDSpy_verbose
+args = cfg.getParsedArgv()
 
-args              = cfg.getParsedArgv()
-QDSpy_verbose     = args.verbose
+global QDSpy_verbose
+QDSpy_verbose = args.verbose
+if QDSpy_verbose:
+  import pylab
+
+global QDSpy_graphicsAPI
 QDSpy_graphicsAPI = args.timing
-
-if   QDSpy_graphicsAPI == 0:
-  import  QDSpy_core_GL_default as grx
+if QDSpy_graphicsAPI == 0:
+  import QDSpy_core_GL_default as grx
+"""
 elif QDSpy_graphicsAPI == 1:
   import  QDSpy_core_GL_alter1  as grx
 elif QDSpy_graphicsAPI == 2:
   import  QDSpy_core_GL_alter2  as grx
-
-if   QDSpy_verbose:
-  import pylab
+"""
 
 # ---------------------------------------------------------------------
 # Presenter class
@@ -224,6 +222,12 @@ class Presenter:
       #
       _userParams = sc[stm.SC_field_userParams]
       _userParams.update(stimFileName=self.Stim.fileName)
+      # **************************************
+      # **************************************
+      # TODO: Copy also external stimulus files (containing large 
+      #       lists or data structures) to the log directory
+      # **************************************
+      # **************************************
       ssp.Log.write("DATA", _userParams.__str__())
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

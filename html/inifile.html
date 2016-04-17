@@ -92,7 +92,11 @@
   <div class="section" id="configuration-file">
 <h1>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h1>
 <p>The configuration file <code class="docutils literal"><span class="pre">QDSpy.ini</span></code> defines the environment in which stimuli
-are presented.</p>
+are presented. Many of these parameters are hardware-specific (e.g. whether or
+not a lightcrafter or an digital I/O card is used) and need to be adjusted
+and/or optimized to the setup/experimental situation.</p>
+<p>Deleting the <code class="docutils literal"><span class="pre">QDSpy.ini</span></code> file triggers QDSpy to generate a new file from
+standard values during the next program start.</p>
 <p>This is an exemplary configuration:</p>
 <div class="highlight-ini"><div class="highlight"><pre><span class="k">[Stage]</span>
 <span class="na">float_refresh_frequency_Hz</span> <span class="o">=</span> <span class="s">60.0</span>
@@ -131,7 +135,6 @@ are presented.</p>
 <span class="na">str_userGammaLUTFileName</span> <span class="o">=</span> <span class="s">defaultGammaLUT</span>
 <span class="na">bool_markerShowOnScreen</span> <span class="o">=</span> <span class="s">True</span>
 <span class="na">int_markerRGBA</span> <span class="o">=</span> <span class="s">255,127,127,255</span>
-
 
 <span class="k">[Paths]</span>
 <span class="na">str_shader</span> <span class="o">=</span> <span class="s">..\Shader\</span>

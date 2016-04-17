@@ -93,15 +93,11 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span>   <span class="nn">datetime</span>             <span class="kn">import</span> <span class="n">datetime</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">import __main__             as main</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span>   <span class="nn">QDSpy_global</span>         <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span>   <span class="nn">QDSpy_stim</span>           <span class="kn">import</span> <span class="n">ColorMode</span>
-<span class="kn">import</span> <span class="nn">QDSpy_stim</span>           <span class="kn">as</span> <span class="nn">stm</span>
-<span class="kn">import</span> <span class="nn">QDSpy_stim_support</span>   <span class="kn">as</span> <span class="nn">ssp</span>
-<span class="kn">import</span> <span class="nn">QDSpy_config</span>         <span class="kn">as</span> <span class="nn">cnf</span>
+<span class="kn">from</span>   <span class="nn">datetime</span>           <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span>   <span class="nn">QDSpy_global</span>       <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">QDSpy_stim</span>         <span class="kn">as</span> <span class="nn">stm</span>
+<span class="kn">import</span> <span class="nn">QDSpy_stim_support</span> <span class="kn">as</span> <span class="nn">ssp</span>
+<span class="kn">import</span> <span class="nn">QDSpy_config</span>       <span class="kn">as</span> <span class="nn">cfg</span>
 
 <span class="c"># ---------------------------------------------------------------------</span>
 <span class="n">_Stim</span>   <span class="o">=</span> <span class="n">stm</span><span class="o">.</span><span class="n">Stim</span><span class="p">()</span>
@@ -111,13 +107,13 @@
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Initializes the QDS library. Needs to be called **before** any other</span>
 <span class="sd">  QDS command is used.</span>
-
+<span class="sd"> </span>
 <span class="sd">  =============== ==================================================</span>
 <span class="sd">  Parameters:</span>
 <span class="sd">  =============== ==================================================</span>
-<span class="sd">  _sName          | stimulus name</span>
+<span class="sd">  _sName          | stimulus name </span>
 <span class="sd">  _sDescr         | description of stimulus (optional)</span>
-<span class="sd">  _runMode        | 0=just re-compile,</span>
+<span class="sd">  _runMode        | 0=just re-compile,  </span>
 <span class="sd">                  | 1=run stimulus if script unchanged</span>
 <span class="sd">  =============== ==================================================</span>
 <span class="sd">  &quot;&quot;&quot;</span>
@@ -127,7 +123,7 @@
   <span class="n">_Stim</span><span class="o">.</span><span class="n">ErrC</span>      <span class="o">=</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimErrC</span><span class="o">.</span><span class="n">ok</span>
   <span class="n">_Stim</span><span class="o">.</span><span class="n">tStart</span>    <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
   <span class="n">_Stim</span><span class="o">.</span><span class="n">isRunSect</span> <span class="o">=</span> <span class="bp">False</span>
-  <span class="n">_Stim</span><span class="o">.</span><span class="n">Conf</span>      <span class="o">=</span> <span class="n">cnf</span><span class="o">.</span><span class="n">Config</span><span class="p">()</span>
+  <span class="n">_Stim</span><span class="o">.</span><span class="n">Conf</span>      <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">Config</span><span class="p">()</span>
 
   <span class="c"># Parse command-line arguments</span>
   <span class="c">#</span>
@@ -136,7 +132,7 @@
   <span class="n">_Stim</span><span class="o">.</span><span class="n">fNameDir</span>  <span class="o">=</span> <span class="n">fNameOnlyDir</span> <span class="o">+</span><span class="s">&quot;</span><span class="se">\\</span><span class="s">&quot;</span> <span class="o">+</span><span class="n">fName</span>
   <span class="n">fNameDir_py</span>     <span class="o">=</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">fNameDir</span> <span class="o">+</span><span class="s">&quot;.py&quot;</span>
   <span class="n">fNameDir_pk</span>     <span class="o">=</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">fNameDir</span> <span class="o">+</span><span class="s">&quot;.pickle&quot;</span>
-  <span class="n">args</span>            <span class="o">=</span> <span class="n">cnf</span><span class="o">.</span><span class="n">getParsedArgv</span><span class="p">(</span><span class="n">_isWithStimFName</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+  <span class="n">args</span>            <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">getParsedArgv</span><span class="p">()</span>
 
   <span class="c"># Display startup message and return if running the up-to-date stimulus</span>
   <span class="c"># immediately is not requested</span>
@@ -165,7 +161,7 @@
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Returns the refresh rate (in Hz) defined in the QDS configuration files.</span>
 <span class="sd">  &quot;&quot;&quot;</span>
-  <span class="n">_Stage</span> <span class="o">=</span> <span class="n">cnf</span><span class="o">.</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">createStageFromConfig</span><span class="p">()</span>
+  <span class="n">_Stage</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">createStageFromConfig</span><span class="p">()</span>
   <span class="k">return</span> <span class="n">_Stage</span><span class="o">.</span><span class="n">scrReqFreq_Hz</span>
 
 <span class="c"># ---------------------------------------------------------------------</span></div>
@@ -209,7 +205,7 @@
 <span class="c">#  &quot;&quot;&quot;</span>
 <span class="c">#  Returns the current screen size as (dx,dy) tupple.</span>
 <span class="c">#  &quot;&quot;&quot;</span>
-<span class="c">#  _Stage = cnf.Config().createStageFromConfig()</span>
+<span class="c">#  _Stage = cfg.Config().createStageFromConfig()</span>
 <span class="c">#  return (_Stage.dxScr, _Stage.dyScr)</span>
 
 
@@ -217,7 +213,7 @@
 <div class="viewcode-block" id="SetColorLUTEntry"><a class="viewcode-back" href="../commands.html#QDS.SetColorLUTEntry">[docs]</a><span class="k">def</span> <span class="nf">SetColorLUTEntry</span> <span class="p">(</span><span class="n">_index</span><span class="p">,</span> <span class="n">_rgb</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Redefines an entry in the colour lookup table (LUT), allowing to linearize</span>
-<span class="sd">  the intensity range of a display.</span>
+<span class="sd">  the intensity range of a display. </span>
 
 <span class="sd">  Note that it alters the gamma LUT at **run-time** </span>
 <span class="sd">  (see section :doc:`how_QDSpy_works`) on the operation system-side, that is </span>
@@ -248,7 +244,7 @@
 
 <span class="c"># ---------------------------------------------------------------------</span></div>
 <div class="viewcode-block" id="SetColorMode"><a class="viewcode-back" href="../commands.html#QDS.SetColorMode">[docs]</a><span class="k">def</span> <span class="nf">SetColorMode</span><span class="p">(</span><span class="n">_depth_bit</span><span class="p">,</span> <span class="n">_shift_bit</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
-                 <span class="n">_mode</span><span class="o">=</span><span class="n">ColorMode</span><span class="o">.</span><span class="n">_0_255</span><span class="p">):</span>
+                 <span class="n">_mode</span><span class="o">=</span><span class="n">stm</span><span class="o">.</span><span class="n">ColorMode</span><span class="o">.</span><span class="n">_0_255</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Set color mode and bit depth as well as bit offset.</span>
 <span class="sd">  </span>
@@ -289,7 +285,8 @@
   <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">_shift_bit</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_shift_bit</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)):</span>
     <span class="n">_Stim</span><span class="o">.</span><span class="n">bitShift</span>  <span class="o">=</span> <span class="n">_shift_bit</span>
 
-  <span class="k">if</span> <span class="n">_mode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ColorMode</span><span class="o">.</span><span class="n">_0_255</span><span class="p">,</span> <span class="n">ColorMode</span><span class="o">.</span><span class="n">_0_1</span><span class="p">,</span> <span class="n">ColorMode</span><span class="o">.</span><span class="n">LC_G9B9</span><span class="p">]:</span>
+  <span class="k">if</span> <span class="n">_mode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">stm</span><span class="o">.</span><span class="n">ColorMode</span><span class="o">.</span><span class="n">_0_255</span><span class="p">,</span> <span class="n">stm</span><span class="o">.</span><span class="n">ColorMode</span><span class="o">.</span><span class="n">_0_1</span><span class="p">,</span> 
+               <span class="n">stm</span><span class="o">.</span><span class="n">ColorMode</span><span class="o">.</span><span class="n">LC_G9B9</span><span class="p">]:</span>
     <span class="n">_Stim</span><span class="o">.</span><span class="n">colorMode</span> <span class="o">=</span> <span class="n">_mode</span>
 
 <span class="c"># ---------------------------------------------------------------------</span></div>
@@ -337,7 +334,7 @@
 
   <span class="c"># Compile stimulus</span>
   <span class="c">#</span>
-  <span class="n">_Conf</span>  <span class="o">=</span> <span class="n">cnf</span><span class="o">.</span><span class="n">Config</span><span class="p">()</span>
+  <span class="n">_Conf</span>  <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">Config</span><span class="p">()</span>
   <span class="n">_Stage</span> <span class="o">=</span> <span class="n">_Conf</span><span class="o">.</span><span class="n">createStageFromConfig</span><span class="p">()</span>
   <span class="n">_Stim</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">_Stage</span><span class="p">)</span>
 
@@ -494,7 +491,7 @@
 <span class="sd">               montage into a stack</span>
 <span class="sd">            3) use `Image/Transform/Flip Vertically` to mirror the stack </span>
 <span class="sd">               along the x axis</span>
-<span class="sd">            4) use `Image/Stacks/Make Montage...`to convert the stack back</span>
+<span class="sd">            4) use `Image/Stacks/Make Montage...` to convert the stack back</span>
 <span class="sd">               into a montage</span>
 <span class="sd">            5) use `Image/Transform/Flip Vertically` again now to mirror the</span>
 <span class="sd">               montage along the x axis. Now the frame sequence starts with</span>

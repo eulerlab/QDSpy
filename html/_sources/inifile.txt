@@ -3,7 +3,12 @@ Configuration file
 ----------------------------------------------
 
 The configuration file ``QDSpy.ini`` defines the environment in which stimuli
-are presented.
+are presented. Many of these parameters are hardware-specific (e.g. whether or
+not a lightcrafter or an digital I/O card is used) and need to be adjusted
+and/or optimized to the setup/experimental situation.
+
+Deleting the ``QDSpy.ini`` file triggers QDSpy to generate a new file from
+standard values during the next program start.
 
 This is an exemplary configuration:
 
@@ -46,7 +51,6 @@ This is an exemplary configuration:
   str_userGammaLUTFileName = defaultGammaLUT
   bool_markerShowOnScreen = True
   int_markerRGBA = 255,127,127,255
-
   
   [Paths]
   str_shader = ..\Shader\

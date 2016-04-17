@@ -130,14 +130,20 @@ Run the GUI version of QDSpy:
   Windows PowerShell
   Copyright (C) 2014 Microsoft Corporation. Alle Rechte vorbehalten.
 
-  PS C:\Users\Thomas\QDSpy3> python QDSpy_GUI_main.py x
-
-Note that one parameter is needed (here ``x``), but it is later ignored.
-
+  PS C:\Users\Thomas\QDSpy3> python QDSpy_GUI_main.py
 
 Alternatively, use the included batch file ``QDSpy.bat`` to start the GUI
 version of QDSpy. For instance, create a link to this batch file on the 
 desktop; change the icon of this linke to ``QDSpy.ico```.
+
+Using the batch file is equivalent to
+::
+  PS C:\Users\Thomas\QDSpy3> python QDSpy_GUI_main.py --gui
+
+The optional command line parameter ``--gui`` directs all messages (except
+for messages generated when scripts are compiled) exclusively to the history 
+window of the GUI. The parameter is ignored when starting stimulus files 
+directly from the shell.
 
 
 Using QDSpy with the shell

@@ -18,17 +18,12 @@ import pyglet
 pyglet.options['debug_gl'] = QDSpy_doOpenGLErrorChecking
 
 # ---------------------------------------------------------------------
-# Determine from command line argument which OpenGL solution to use
-# for timing and what reporting level is set
+# Adjust global parameters depending on command line arguments
 #
-global  QDSpy_verbose
-
-args              = cfg.getParsedArgv()
-QDSpy_verbose     = args.verbose
-QDSpy_graphicsAPI = args.timing
-
-if   QDSpy_graphicsAPI == 0:
-  import  QDSpy_core_GL_default as grx
+global QDSpy_graphicsAPI
+QDSpy_graphicsAPI = cfg.getParsedArgv().timing
+if QDSpy_graphicsAPI == 0:
+  import QDSpy_core_GL_default as grx
 """
 elif QDSpy_graphicsAPI == 1:
   import  QDSpy_core_GL_alter1  as grx

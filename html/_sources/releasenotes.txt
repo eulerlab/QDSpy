@@ -54,7 +54,16 @@ Release notes
   via an I/O card is indicated as a small box in the right-bottom corner of
   the screen. Entry `int_markerrgba` (e.g. = 255,127,127,255) defines the 
   marker color as RGB+alpha values.
-
+* Starting the GUI version does not require a command line parameter anymore
+* Added a new optional command line parameter ``--gui``, which when present
+  directs all messages (except for messages generated when scripts are 
+  compiled) to the history window of the GUI. 
+* If the `QDSpy.ini` file is missing, it will be recreated from default values.
+  From now on, the `QDSpy.ini` file will not be on Git Hub any longer to 
+  prevent that new versions overwrite setup-specific settings (e.g. hardware 
+  use, digital I/O configuration, etc.)
+* Removed currently unused tab "Setting" in GUI
+* ...
 
 v0.6 beta (April 2016) 
 

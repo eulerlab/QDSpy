@@ -151,6 +151,16 @@ defined in the <cite>QDSpy.ini</cite> file</li>
 via an I/O card is indicated as a small box in the right-bottom corner of
 the screen. Entry <cite>int_markerrgba</cite> (e.g. = 255,127,127,255) defines the
 marker color as RGB+alpha values.</li>
+<li>Starting the GUI version does not require a command line parameter anymore</li>
+<li>Added a new optional command line parameter <code class="docutils literal"><span class="pre">--gui</span></code>, which when present
+directs all messages (except for messages generated when scripts are
+compiled) to the history window of the GUI.</li>
+<li>If the <cite>QDSpy.ini</cite> file is missing, it will be recreated from default values.
+From now on, the <cite>QDSpy.ini</cite> file will not be on Git Hub any longer to
+prevent that new versions overwrite setup-specific settings (e.g. hardware
+use, digital I/O configuration, etc.)</li>
+<li>Removed currently unused tab &#8220;Setting&#8221; in GUI</li>
+<li>...</li>
 </ul>
 <p>v0.6 beta (April 2016)</p>
 <ul class="simple">

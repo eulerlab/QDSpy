@@ -18,9 +18,9 @@ import datetime
 import numpy                   as  np
 import Libraries.color_console as con
 import QDSpy_multiprocessing   as mpr
+import QDSpy_config            as cfg
 from   QDSpy_global            import *
 import QDSpy_stim
-
 
 # ---------------------------------------------------------------------
 Msg_Prior_DEBUG    = -1
@@ -132,17 +132,19 @@ class Log:
     # Initializing
     #
     self.isRunFromGUI   = False
-    self.Sync           = None
+    self.Sync           = None  
     self.stdFCol        = con.get_text_attr()
     self.stdBCol        = self.stdFCol & 0x0070
+    self.noMsgToStdOut  = not(QDSpy_workerMsgsToStdOut)
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setGUISync(self, _Sync):
     # Define a syncronisation object to relay messages to the GUI
     #
     if _Sync != None:
-      self.isRunFromGUI = True
-      self.Sync         = _Sync
+      self.isRunFromGUI  = True
+      self.Sync          = _Sync 
+      self.noMsgToStdOut = cfg.getParsedArgv().gui
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def write(self, _headerStr, _msgStr, _isProgress=False, _getStr=False):
@@ -191,21 +193,7 @@ class Log:
   
     # Send message to log ...
     #
-    if self.isRunFromGUI and not(QDSpy_workerMsgsToStdOut):
-      # ... via pipe to GUI ...
-      #
-      if len(_headerStr) == 0:
-        txt = "{0}{1!s:70}".format(tStr, _msgStr)
-      else:
-        txt = "{0}{1!s:>8} {2}".format(tStr, _headerStr, _msgStr)
-        
-      data  = [mpr.PipeValType.toCli_log, tStr, txt, msgCol, msgPrior] 
-      if not(_getStr):  
-        self.Sync.pipeSrv.send(data)
-      else:
-        return data
-                              
-    else:
+    if not(self.noMsgToStdOut): 
       # ... to stdout ...
       #
       con.set_text_attr(msgAttr)
@@ -219,7 +207,21 @@ class Log:
                                  "" if _isProgress else "\n"))
       con.set_text_attr(self.stdBCol |self.stdFCol)
       sys.stdout.flush()
-
+      
+    if self.isRunFromGUI:  
+      # ... and via pipe to GUI
+      #
+      if len(_headerStr) == 0:
+        txt = "{0}{1!s:70}".format(tStr, _msgStr)
+      else:
+        txt = "{0}{1!s:>8} {2}".format(tStr, _headerStr, _msgStr)
+        
+      data  = [mpr.PipeValType.toCli_log, tStr, txt, msgCol, msgPrior] 
+      if not(_getStr):  
+        self.Sync.pipeSrv.send(data)
+      else:
+        return data
+  
 # ---------------------------------------------------------------------
 Log = Log()
 

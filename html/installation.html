@@ -227,13 +227,20 @@ Run the GUI version of QDSpy:</p>
 <div class="highlight-python"><div class="highlight"><pre>Windows PowerShell
 Copyright (C) 2014 Microsoft Corporation. Alle Rechte vorbehalten.
 
-PS C:\Users\Thomas\QDSpy3&gt; python QDSpy_GUI_main.py x
+PS C:\Users\Thomas\QDSpy3&gt; python QDSpy_GUI_main.py
 </pre></div>
 </div>
-<p>Note that one parameter is needed (here <code class="docutils literal"><span class="pre">x</span></code>), but it is later ignored.</p>
 <p>Alternatively, use the included batch file <code class="docutils literal"><span class="pre">QDSpy.bat</span></code> to start the GUI
 version of QDSpy. For instance, create a link to this batch file on the
 desktop; change the icon of this linke to <code class="docutils literal"><span class="pre">QDSpy.ico`</span></code>.</p>
+<p>Using the batch file is equivalent to</p>
+<div class="highlight-python"><div class="highlight"><pre>PS C:\Users\Thomas\QDSpy3&gt; python QDSpy_GUI_main.py --gui
+</pre></div>
+</div>
+<p>The optional command line parameter <code class="docutils literal"><span class="pre">--gui</span></code> directs all messages (except
+for messages generated when scripts are compiled) exclusively to the history
+window of the GUI. The parameter is ignored when starting stimulus files
+directly from the shell.</p>
 </div>
 <div class="section" id="using-qdspy-with-the-shell">
 <h2>Using QDSpy with the shell<a class="headerlink" href="#using-qdspy-with-the-shell" title="Permalink to this headline">¶</a></h2>
