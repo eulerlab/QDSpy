@@ -33,6 +33,9 @@ To get started, see ``/QDSpy/html/installation.html``.
 
 ####To do
 
+* URGENT: Check dictionaries that are written by the user to history and log
+  file for large lists or data structures; these should go into separate files
+  to prevent delaying the stimulus presentation 
 * URGENT: Fix video presentation
 * URGENT: Recompile hidapi for Python 3.5. Implement use of correct pre-compiled
   hidapi module depending on Python version (3.4 vs. 3.5)
@@ -48,17 +51,26 @@ To get started, see ``/QDSpy/html/installation.html``.
 ####Release notes
 
 * Now reports GLSL version
-* Fixed error when QDSpy GUI does not find a compiled `__autorun`.
-* Stimulus folder can now be selected using the  `Change folder` button. Note
+* Fixed error when QDSpy GUI does not find a compiled ``__autorun``.
+* Stimulus folder can now be selected using the ``Change folder`` button. Note
   that at program start, QDSpy always pre-selects the default stimulus folder
-  defined in the `QDSpy.ini` file
+  defined in the ``QDSpy.ini`` file
 * Cleaning up some pyglet-related code
-* Fixed that psutil was required even with `bool_incr_process_prior=False`
-* Added two entries to the `[Display]` section of the configuration file: 
-  `bool_markershowonscreen` determines if the marker (“trigger”) that is send 
+* Fixed that psutil was required even with ``bool_incr_process_prior=False``
+* Added two entries to the ``[Display]`` section of the configuration file: 
+  ``bool_markershowonscreen`` determines if the marker (“trigger”) that is send 
   via an I/O card is indicated as a small box in the right-bottom corner of the
-  screen. Entry `int_markerrgba` (e.g. `= 255,127,127,255`) defines the marker 
+  screen. Entry ``int_markerrgba`` (e.g. ``= 255,127,127,255``) defines the marker 
   color as RGB+alpha values.
+* Starting the GUI version does not require a command line parameter anymore
+* Added a new optional command line parameter ``--gui``, which when present
+  directs all messages (except for messages generated when scripts are 
+  compiled) to the history window of the GUI. 
+* If the ``QDSpy.ini`` file is missing, it will be recreated from default values.
+  From now on, the ``QDSpy.ini`` file will not be any longer in this repository to 
+  prevent that new versions overwrite setup-specific settings (e.g. hardware 
+  use, digital I/O configuration, etc.)
+* Removed currently unused tab "Setting" in GUI
 * ...
 
 v0.6 beta (April 2016)
