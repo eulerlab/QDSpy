@@ -4,7 +4,7 @@ This is a Python software for scripting and presenting stimuli for visual neuros
 It is based on QDS (http://wvad.mpimf-heidelberg.mpg.de/abteilungen/biomedizinischeOptik/software/qds/), 
 uses OpenGL and primarly targets Windows but, with a few changes, may also run on other operating systems.
 
-*Note, this is an early, experimental (alpha) version.*
+*Note, this is an early beta version.*
 
 See documentation in ``/QDSpy/html/index.html``.
 
