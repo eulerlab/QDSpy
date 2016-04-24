@@ -57,9 +57,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -71,25 +68,25 @@
           <div class="body" role="main">
             
   <h1>Source code for QDS</h1><div class="highlight"><pre>
-<span class="c">#!/usr/bin/env python</span>
-<span class="c"># -*- coding: utf-8 -*-</span>
-<span class="c"># ---------------------------------------------------------------------</span>
-<span class="c">#  QDS.py</span>
-<span class="c">#</span>
-<span class="c">#  Library for stimulus scripts</span>
-<span class="c">#</span>
-<span class="c">#  This is a simple Python software for scripting and presenting stimuli</span>
-<span class="c">#  for visual neuroscience. It is based on QDS, uses OpenGL via pyglet</span>
-<span class="c">#  and primarly targets Windows, but may also run on other operating</span>
-<span class="c">#  systems.</span>
-<span class="c">#</span>
-<span class="c">#  Copyright (c) 2013-2016 Thomas Euler</span>
-<span class="c">#  All rights reserved.</span>
-<span class="c">#</span>
-<span class="c"># ---------------------------------------------------------------------</span>
-<span class="n">__author__</span> 	<span class="o">=</span> <span class="s">&quot;code@eulerlab.de&quot;</span>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
+<span class="c1">#  QDS.py</span>
+<span class="c1">#</span>
+<span class="c1">#  Library for stimulus scripts</span>
+<span class="c1">#</span>
+<span class="c1">#  This is a simple Python software for scripting and presenting stimuli</span>
+<span class="c1">#  for visual neuroscience. It is based on QDS, uses OpenGL via pyglet</span>
+<span class="c1">#  and primarly targets Windows, but may also run on other operating</span>
+<span class="c1">#  systems.</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright (c) 2013-2016 Thomas Euler</span>
+<span class="c1">#  All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
+<span class="n">__author__</span> 	<span class="o">=</span> <span class="s2">&quot;code@eulerlab.de&quot;</span>
 
-<span class="c"># ---------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
@@ -99,11 +96,11 @@
 <span class="kn">import</span> <span class="nn">QDSpy_stim_support</span> <span class="kn">as</span> <span class="nn">ssp</span>
 <span class="kn">import</span> <span class="nn">QDSpy_config</span>       <span class="kn">as</span> <span class="nn">cfg</span>
 
-<span class="c"># ---------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <span class="n">_Stim</span>   <span class="o">=</span> <span class="n">stm</span><span class="o">.</span><span class="n">Stim</span><span class="p">()</span>
 
-<span class="c"># ---------------------------------------------------------------------</span>
-<div class="viewcode-block" id="Initialize"><a class="viewcode-back" href="../commands.html#QDS.Initialize">[docs]</a><span class="k">def</span> <span class="nf">Initialize</span><span class="p">(</span><span class="n">_sName</span><span class="o">=</span><span class="s">&quot;noname&quot;</span><span class="p">,</span> <span class="n">_sDescr</span><span class="o">=</span><span class="s">&quot;nodescription&quot;</span><span class="p">,</span> <span class="n">_runMode</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
+<div class="viewcode-block" id="Initialize"><a class="viewcode-back" href="../commands.html#QDS.Initialize">[docs]</a><span class="k">def</span> <span class="nf">Initialize</span><span class="p">(</span><span class="n">_sName</span><span class="o">=</span><span class="s2">&quot;noname&quot;</span><span class="p">,</span> <span class="n">_sDescr</span><span class="o">=</span><span class="s2">&quot;nodescription&quot;</span><span class="p">,</span> <span class="n">_runMode</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Initializes the QDS library. Needs to be called **before** any other</span>
 <span class="sd">  QDS command is used.</span>
@@ -125,46 +122,46 @@
   <span class="n">_Stim</span><span class="o">.</span><span class="n">isRunSect</span> <span class="o">=</span> <span class="bp">False</span>
   <span class="n">_Stim</span><span class="o">.</span><span class="n">Conf</span>      <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">Config</span><span class="p">()</span>
 
-  <span class="c"># Parse command-line arguments</span>
-  <span class="c">#</span>
+  <span class="c1"># Parse command-line arguments</span>
+  <span class="c1">#</span>
   <span class="n">fName</span>           <span class="o">=</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])))[</span><span class="mi">0</span><span class="p">]</span>
   <span class="n">fNameOnlyDir</span>    <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-  <span class="n">_Stim</span><span class="o">.</span><span class="n">fNameDir</span>  <span class="o">=</span> <span class="n">fNameOnlyDir</span> <span class="o">+</span><span class="s">&quot;</span><span class="se">\\</span><span class="s">&quot;</span> <span class="o">+</span><span class="n">fName</span>
-  <span class="n">fNameDir_py</span>     <span class="o">=</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">fNameDir</span> <span class="o">+</span><span class="s">&quot;.py&quot;</span>
-  <span class="n">fNameDir_pk</span>     <span class="o">=</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">fNameDir</span> <span class="o">+</span><span class="s">&quot;.pickle&quot;</span>
+  <span class="n">_Stim</span><span class="o">.</span><span class="n">fNameDir</span>  <span class="o">=</span> <span class="n">fNameOnlyDir</span> <span class="o">+</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span> <span class="o">+</span><span class="n">fName</span>
+  <span class="n">fNameDir_py</span>     <span class="o">=</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">fNameDir</span> <span class="o">+</span><span class="s2">&quot;.py&quot;</span>
+  <span class="n">fNameDir_pk</span>     <span class="o">=</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">fNameDir</span> <span class="o">+</span><span class="s2">&quot;.pickle&quot;</span>
   <span class="n">args</span>            <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">getParsedArgv</span><span class="p">()</span>
 
-  <span class="c"># Display startup message and return if running the up-to-date stimulus</span>
-  <span class="c"># immediately is not requested</span>
-  <span class="c">#</span>
-  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;***&quot;</span><span class="p">,</span> <span class="n">QDSpy_versionStr</span> <span class="o">+</span><span class="s">&quot; Compiler - &quot;</span> <span class="o">+</span><span class="n">QDSpy_copyrightStr</span><span class="p">)</span>
-  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;Initializing ...&quot;</span><span class="p">)</span>
+  <span class="c1"># Display startup message and return if running the up-to-date stimulus</span>
+  <span class="c1"># immediately is not requested</span>
+  <span class="c1">#</span>
+  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;***&quot;</span><span class="p">,</span> <span class="n">QDSpy_versionStr</span> <span class="o">+</span><span class="s2">&quot; Compiler - &quot;</span> <span class="o">+</span><span class="n">QDSpy_copyrightStr</span><span class="p">)</span>
+  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;Initializing ...&quot;</span><span class="p">)</span>
   <span class="k">if</span> <span class="n">_runMode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="k">return</span>
 
-  <span class="c"># Check if pickle-file is current, if so, run the stimulus without</span>
-  <span class="c"># recompiling</span>
-  <span class="c">#</span>
+  <span class="c1"># Check if pickle-file is current, if so, run the stimulus without</span>
+  <span class="c1"># recompiling</span>
+  <span class="c1">#</span>
   <span class="n">tLastUpt_py</span>     <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getmtime</span><span class="p">(</span><span class="n">fNameDir_py</span><span class="p">))</span>
   <span class="k">try</span><span class="p">:</span>
     <span class="n">tLastUpt_pick</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getmtime</span><span class="p">(</span><span class="n">fNameDir_pk</span><span class="p">))</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">tLastUpt_pick</span> <span class="o">&gt;</span> <span class="n">tLastUpt_py</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">compile</span><span class="p">):</span>
-      <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;INFO&quot;</span><span class="p">,</span> <span class="s">&quot;Script has not changed, running stimulus now ...&quot;</span><span class="p">)</span>
-      <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s">&quot;python ..\QDSpy_core.py -t={0} {1} {2}&quot;</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">timing</span><span class="p">,</span> <span class="s">&quot;-v&quot;</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span> <span class="k">else</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">fName</span><span class="p">))</span>
+      <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;Script has not changed, running stimulus now ...&quot;</span><span class="p">)</span>
+      <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;python ..\QDSpy_core.py -t={0} {1} {2}&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">timing</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">fName</span><span class="p">))</span>
       <span class="nb">exit</span><span class="p">()</span>
   <span class="k">except</span> <span class="ne">WindowsError</span><span class="p">:</span>
-    <span class="k">pass</span>
+    <span class="k">pass</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="GetDefaultRefreshRate"><a class="viewcode-back" href="../commands.html#QDS.GetDefaultRefreshRate">[docs]</a><span class="k">def</span> <span class="nf">GetDefaultRefreshRate</span><span class="p">():</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Returns the refresh rate (in Hz) defined in the QDS configuration files.</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="n">_Stage</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">createStageFromConfig</span><span class="p">()</span>
-  <span class="k">return</span> <span class="n">_Stage</span><span class="o">.</span><span class="n">scrReqFreq_Hz</span>
+  <span class="k">return</span> <span class="n">_Stage</span><span class="o">.</span><span class="n">scrReqFreq_Hz</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="GetStimulusPath"><a class="viewcode-back" href="../commands.html#QDS.GetStimulusPath">[docs]</a><span class="k">def</span> <span class="nf">GetStimulusPath</span><span class="p">():</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Returns the current path of the stimulus folder. Use this function</span>
@@ -174,9 +171,9 @@
 <span class="sd">    path = QDS.getStimulusPath()</span>
 <span class="sd">    file = open(path +&quot;parameters.txt&quot;, &quot;r&quot;)</span>
 <span class="sd">  &quot;&quot;&quot;</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">Conf</span><span class="o">.</span><span class="n">pathStim</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">Conf</span><span class="o">.</span><span class="n">pathStim</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="LogUserParameters"><a class="viewcode-back" href="../commands.html#QDS.LogUserParameters">[docs]</a><span class="k">def</span> <span class="nf">LogUserParameters</span><span class="p">(</span><span class="n">_dict</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Writes a user-defined set of parameters to the history and log file.</span>
@@ -197,19 +194,19 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">logUserParameters</span><span class="p">(</span><span class="n">_dict</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;logUserParameters: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;logUserParameters: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span>
-<span class="c">#def getScreenSize():</span>
-<span class="c">#  &quot;&quot;&quot;</span>
-<span class="c">#  Returns the current screen size as (dx,dy) tupple.</span>
-<span class="c">#  &quot;&quot;&quot;</span>
-<span class="c">#  _Stage = cfg.Config().createStageFromConfig()</span>
-<span class="c">#  return (_Stage.dxScr, _Stage.dyScr)</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
+<span class="c1">#def getScreenSize():</span>
+<span class="c1">#  &quot;&quot;&quot;</span>
+<span class="c1">#  Returns the current screen size as (dx,dy) tupple.</span>
+<span class="c1">#  &quot;&quot;&quot;</span>
+<span class="c1">#  _Stage = cfg.Config().createStageFromConfig()</span>
+<span class="c1">#  return (_Stage.dxScr, _Stage.dyScr)</span>
 
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="SetColorLUTEntry"><a class="viewcode-back" href="../commands.html#QDS.SetColorLUTEntry">[docs]</a><span class="k">def</span> <span class="nf">SetColorLUTEntry</span> <span class="p">(</span><span class="n">_index</span><span class="p">,</span> <span class="n">_rgb</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Redefines an entry in the colour lookup table (LUT), allowing to linearize</span>
@@ -239,10 +236,10 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">setColorLUTEntry</span><span class="p">(</span><span class="n">_index</span><span class="p">,</span> <span class="n">_rgb</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;LUT_changeEntry(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LUT_changeEntry(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="SetColorMode"><a class="viewcode-back" href="../commands.html#QDS.SetColorMode">[docs]</a><span class="k">def</span> <span class="nf">SetColorMode</span><span class="p">(</span><span class="n">_depth_bit</span><span class="p">,</span> <span class="n">_shift_bit</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
                  <span class="n">_mode</span><span class="o">=</span><span class="n">stm</span><span class="o">.</span><span class="n">ColorMode</span><span class="o">.</span><span class="n">_0_255</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
@@ -287,23 +284,23 @@
 
   <span class="k">if</span> <span class="n">_mode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">stm</span><span class="o">.</span><span class="n">ColorMode</span><span class="o">.</span><span class="n">_0_255</span><span class="p">,</span> <span class="n">stm</span><span class="o">.</span><span class="n">ColorMode</span><span class="o">.</span><span class="n">_0_1</span><span class="p">,</span> 
                <span class="n">stm</span><span class="o">.</span><span class="n">ColorMode</span><span class="o">.</span><span class="n">LC_G9B9</span><span class="p">]:</span>
-    <span class="n">_Stim</span><span class="o">.</span><span class="n">colorMode</span> <span class="o">=</span> <span class="n">_mode</span>
+    <span class="n">_Stim</span><span class="o">.</span><span class="n">colorMode</span> <span class="o">=</span> <span class="n">_mode</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="StartScript"><a class="viewcode-back" href="../commands.html#QDS.StartScript">[docs]</a><span class="k">def</span> <span class="nf">StartScript</span><span class="p">():</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Start of the stimulus run section. No definitions are allowed after</span>
 <span class="sd">  this command. Must be called before QDS commands that generate</span>
 <span class="sd">  stimulus scenes are called.</span>
 <span class="sd">  &quot;&quot;&quot;</span>
-  <span class="c"># ...</span>
-  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ok&quot;</span><span class="p">,</span> <span class="s">&quot;{0} object(s) defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ObjList</span><span class="p">)))</span>
-  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ok&quot;</span><span class="p">,</span> <span class="s">&quot;{0} shader(s) defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ShList</span><span class="p">)))</span>
-  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span>   <span class="s">&quot;Generating scenes ...&quot;</span><span class="p">)</span>
+  <span class="c1"># ...</span>
+  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;{0} object(s) defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ObjList</span><span class="p">)))</span>
+  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;{0} shader(s) defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ShList</span><span class="p">)))</span>
+  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span>   <span class="s2">&quot;Generating scenes ...&quot;</span><span class="p">)</span>
   <span class="n">_Stim</span><span class="o">.</span><span class="n">isRunSect</span> <span class="o">=</span> <span class="bp">True</span>
-  <span class="k">return</span>
+  <span class="k">return</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="Loop"><a class="viewcode-back" href="../commands.html#QDS.Loop">[docs]</a><span class="k">def</span> <span class="nf">Loop</span><span class="p">(</span><span class="n">_nRepeats</span><span class="p">,</span> <span class="n">_func</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Loops the stimulus sequence generated by the given function.</span>
@@ -322,34 +319,34 @@
   <span class="n">_Stim</span><span class="o">.</span><span class="n">loopBegin</span><span class="p">(</span><span class="n">_nRepeats</span><span class="p">)</span>
   <span class="n">_func</span><span class="p">()</span>
   <span class="n">_Stim</span><span class="o">.</span><span class="n">loopEnd</span><span class="p">()</span>
-  <span class="k">return</span>
+  <span class="k">return</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="EndScript"><a class="viewcode-back" href="../commands.html#QDS.EndScript">[docs]</a><span class="k">def</span> <span class="nf">EndScript</span><span class="p">():</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Must be called after all stimulus scenes have been created, i.e.</span>
 <span class="sd">  at the end of the script.</span>
 <span class="sd">  &quot;&quot;&quot;</span>
-  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ok&quot;</span><span class="p">,</span> <span class="s">&quot;{0} scene(s) defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">nSce</span><span class="p">))</span>
+  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;{0} scene(s) defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">nSce</span><span class="p">))</span>
 
-  <span class="c"># Compile stimulus</span>
-  <span class="c">#</span>
+  <span class="c1"># Compile stimulus</span>
+  <span class="c1">#</span>
   <span class="n">_Conf</span>  <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">Config</span><span class="p">()</span>
   <span class="n">_Stage</span> <span class="o">=</span> <span class="n">_Conf</span><span class="o">.</span><span class="n">createStageFromConfig</span><span class="p">()</span>
   <span class="n">_Stim</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">_Stage</span><span class="p">)</span>
 
-  <span class="c"># Save compiled stimulus code to a pickle file</span>
-  <span class="c">#</span>
+  <span class="c1"># Save compiled stimulus code to a pickle file</span>
+  <span class="c1">#</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  sPath         = os.path.basename(main.__file__)</span>
 <span class="sd">  sFName, sFExt = os.path.splitext(sPath)</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="n">_Stim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">fNameDir</span><span class="p">)</span>
 
-  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ok&quot;</span><span class="p">,</span> <span class="s">&quot;... done in {0:.3f} s&quot;</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span><span class="n">_Stim</span><span class="o">.</span><span class="n">tStart</span><span class="p">))</span>
+  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;... done in {0:.3f} s&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span><span class="n">_Stim</span><span class="o">.</span><span class="n">tStart</span><span class="p">))</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="DefObj_BoxEx"><a class="viewcode-back" href="../commands.html#QDS.DefObj_BoxEx">[docs]</a><span class="k">def</span> <span class="nf">DefObj_BoxEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_dx</span><span class="p">,</span> <span class="n">_dy</span><span class="p">,</span> <span class="n">_enShader</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Defines a box object and if shaders can be used for this object.</span>
@@ -369,15 +366,15 @@
       <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span> <span class="o">=</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimErrC</span><span class="o">.</span><span class="n">noDefsInRunSection</span>
       <span class="k">raise</span> <span class="n">stm</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ObjList</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-      <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;Defining objects ...&quot;</span><span class="p">)</span>
+      <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;Defining objects ...&quot;</span><span class="p">)</span>
 
     <span class="n">_Stim</span><span class="o">.</span><span class="n">defObj_box</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_dx</span><span class="p">,</span> <span class="n">_dy</span><span class="p">,</span> <span class="n">_enShader</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;DefObj_Box(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Box(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-<span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+<span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <div class="viewcode-block" id="DefObj_Box"><a class="viewcode-back" href="../commands.html#QDS.DefObj_Box">[docs]</a><span class="k">def</span> <span class="nf">DefObj_Box</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_dx</span><span class="p">,</span> <span class="n">_dy</span><span class="p">,</span> <span class="n">_angle</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  See :py:func:`QDS.DefObj_BoxEx`</span>
@@ -386,11 +383,11 @@
 <span class="sd">            angle of an object is now set in the render command.</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="k">if</span> <span class="n">_angle</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s">&quot;DefObj_Box: &#39;angle&#39; is depreciated&quot;</span><span class="p">)</span>
-  <span class="n">DefObj_BoxEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_dx</span><span class="p">,</span> <span class="n">_dy</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Box: &#39;angle&#39; is depreciated&quot;</span><span class="p">)</span>
+  <span class="n">DefObj_BoxEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_dx</span><span class="p">,</span> <span class="n">_dy</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
 
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="DefObj_SectorEx"><a class="viewcode-back" href="../commands.html#QDS.DefObj_SectorEx">[docs]</a><span class="k">def</span> <span class="nf">DefObj_SectorEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
                     <span class="n">_enShader</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
@@ -415,25 +412,25 @@
 <span class="sd">  =============== ==================================================</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ObjList</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;Defining objects ...&quot;</span><span class="p">)</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;Defining objects ...&quot;</span><span class="p">)</span>
 
   <span class="k">try</span><span class="p">:</span>
     <span class="n">_Stim</span><span class="o">.</span><span class="n">defObj_sector</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="p">,</span>
                         <span class="n">_enShader</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;DefObj_Sector(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Sector(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-<span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+<span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <div class="viewcode-block" id="DefObj_Sector"><a class="viewcode-back" href="../commands.html#QDS.DefObj_Sector">[docs]</a><span class="k">def</span> <span class="nf">DefObj_Sector</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  See :py:func:`QDS.DefObj_SectorEx`</span>
 <span class="sd">  &quot;&quot;&quot;</span>
-  <span class="n">DefObj_SectorEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+  <span class="n">DefObj_SectorEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
 
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="DefObj_EllipseEx"><a class="viewcode-back" href="../commands.html#QDS.DefObj_EllipseEx">[docs]</a><span class="k">def</span> <span class="nf">DefObj_EllipseEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_dx</span><span class="p">,</span> <span class="n">_dy</span><span class="p">,</span> <span class="n">_enShader</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Defines an ellipse object.</span>
@@ -449,16 +446,16 @@
 <span class="sd">  =============== ==================================================</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ObjList</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;Defining objects ...&quot;</span><span class="p">)</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;Defining objects ...&quot;</span><span class="p">)</span>
 
   <span class="k">try</span><span class="p">:</span>
     <span class="n">_Stim</span><span class="o">.</span><span class="n">defObj_ellipse</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_dx</span><span class="p">,</span> <span class="n">_dy</span><span class="p">,</span> <span class="n">_enShader</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;DefObj_Ellipse: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Ellipse: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <div class="viewcode-block" id="DefObj_Ellipse"><a class="viewcode-back" href="../commands.html#QDS.DefObj_Ellipse">[docs]</a><span class="k">def</span> <span class="nf">DefObj_Ellipse</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_dx</span><span class="p">,</span> <span class="n">_dy</span><span class="p">,</span> <span class="n">_angle</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  See :py:func:`QDS.DefObj_EllipseEx`</span>
@@ -467,11 +464,11 @@
 <span class="sd">            angle of an object is now set in the render command.</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="k">if</span> <span class="n">_angle</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s">&quot;DefObj_Ellipse: &#39;angle&#39; is depreciated&quot;</span><span class="p">)</span>
-  <span class="n">DefObj_EllipseEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_dx</span><span class="p">,</span> <span class="n">_dy</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Ellipse: &#39;angle&#39; is depreciated&quot;</span><span class="p">)</span>
+  <span class="n">DefObj_EllipseEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_dx</span><span class="p">,</span> <span class="n">_dy</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
 
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="DefObj_Movie"><a class="viewcode-back" href="../commands.html#QDS.DefObj_Movie">[docs]</a><span class="k">def</span> <span class="nf">DefObj_Movie</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_fName</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Defines and loads a movie object.</span>
@@ -507,16 +504,16 @@
 <span class="sd">  =============== ==================================================</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ObjList</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;Defining objects ...&quot;</span><span class="p">)</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;Defining objects ...&quot;</span><span class="p">)</span>
 
   <span class="k">try</span><span class="p">:</span>
     <span class="n">_Stim</span><span class="o">.</span><span class="n">defObj_movie</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_fName</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;DefObj_Movie: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Movie: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="GetMovieParameters"><a class="viewcode-back" href="../commands.html#QDS.GetMovieParameters">[docs]</a><span class="k">def</span> <span class="nf">GetMovieParameters</span><span class="p">(</span><span class="n">_iobj</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Returns a list with the parameters of a movie object. The movie </span>
@@ -540,11 +537,11 @@
     <span class="n">params</span> <span class="o">=</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">getMovieParams</span><span class="p">(</span><span class="n">_iobj</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;getMovieParameters: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">params</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;getMovieParameters: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">params</span></div>
 
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="DefObj_Video"><a class="viewcode-back" href="../commands.html#QDS.DefObj_Video">[docs]</a><span class="k">def</span> <span class="nf">DefObj_Video</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_fName</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Defines and loads a video object.</span>
@@ -560,16 +557,16 @@
 <span class="sd">  =============== ==================================================</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ObjList</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;Defining objects ...&quot;</span><span class="p">)</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;Defining objects ...&quot;</span><span class="p">)</span>
 
   <span class="k">try</span><span class="p">:</span>
     <span class="n">_Stim</span><span class="o">.</span><span class="n">defObj_video</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_fName</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;DefObj_Video: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Video: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
   
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="GetVideoParameters"><a class="viewcode-back" href="../commands.html#QDS.GetVideoParameters">[docs]</a><span class="k">def</span> <span class="nf">GetVideoParameters</span><span class="p">(</span><span class="n">_iobj</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Returns a list with the parameters of a video object. The video </span>
@@ -593,11 +590,11 @@
     <span class="n">params</span> <span class="o">=</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">getVideoParams</span><span class="p">(</span><span class="n">_iobj</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;getVideoParams: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">params</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;getVideoParams: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">params</span></div>
 
   
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="DefShader"><a class="viewcode-back" href="../commands.html#QDS.DefShader">[docs]</a><span class="k">def</span> <span class="nf">DefShader</span><span class="p">(</span><span class="n">_ishd</span><span class="p">,</span> <span class="n">_shType</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Defines a shader. For details, see :doc:`shaderfiles`.</span>
@@ -615,16 +612,16 @@
       <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span> <span class="o">=</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimErrC</span><span class="o">.</span><span class="n">noDefsInRunSection</span>
       <span class="k">raise</span> <span class="n">stm</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ObjList</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-      <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;Defining shaders ...&quot;</span><span class="p">)</span>
+      <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;Defining shaders ...&quot;</span><span class="p">)</span>
 
     <span class="n">_Stim</span><span class="o">.</span><span class="n">defShader</span><span class="p">(</span><span class="n">_ishd</span><span class="p">,</span> <span class="n">_shType</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;DefShader: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefShader: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="SetObjColorEx"><a class="viewcode-back" href="../commands.html#QDS.SetObjColorEx">[docs]</a><span class="k">def</span> <span class="nf">SetObjColorEx</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">,</span> <span class="n">_ocols</span><span class="p">,</span> <span class="n">_alphas</span><span class="o">=</span><span class="p">[]):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Set color of object(s) (not defined for all object types).</span>
@@ -654,15 +651,15 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">setObjColor</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">,</span> <span class="n">_ocols</span><span class="p">,</span> <span class="n">_alphas</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;SetObjColor(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetObjColor(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-<span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+<span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <span class="k">def</span> <span class="nf">SetObjColor</span><span class="p">(</span><span class="n">_nobj</span><span class="p">,</span> <span class="n">_iobjs</span><span class="p">,</span> <span class="n">_ocols</span><span class="p">):</span>
   <span class="n">_alphas</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">)</span> <span class="o">*</span><span class="p">[</span><span class="mi">255</span><span class="p">]</span>
   <span class="n">SetObjColorEx</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">,</span> <span class="n">_ocols</span><span class="p">,</span> <span class="n">_alphas</span><span class="p">)</span>
 
-<span class="c"># ---------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="SetObjColorAlphaByVertex"><a class="viewcode-back" href="../commands.html#QDS.SetObjColorAlphaByVertex">[docs]</a><span class="k">def</span> <span class="nf">SetObjColorAlphaByVertex</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">,</span> <span class="n">_oRGBAs</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Set color and transparency (alpha) of object(s) by vertex</span>
@@ -694,12 +691,12 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">setObjColorAlphaByVertex</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">,</span> <span class="n">_oRGBAs</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;SetObjColorAlphaByVertex: {0}, {1}&quot;</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetObjColorAlphaByVertex: {0}, {1}&quot;</span>
                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="SetShaderParams"><a class="viewcode-back" href="../commands.html#QDS.SetShaderParams">[docs]</a><span class="k">def</span> <span class="nf">SetShaderParams</span><span class="p">(</span><span class="n">_ishd</span><span class="p">,</span> <span class="n">_shParams</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Sets or changes the parameters of a shader.</span>
@@ -732,11 +729,11 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">setShaderParams</span><span class="p">(</span><span class="n">_ishd</span><span class="p">,</span> <span class="n">_shParams</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;SetShaderParams: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetShaderParams: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="SetObjShader"><a class="viewcode-back" href="../commands.html#QDS.SetObjShader">[docs]</a><span class="k">def</span> <span class="nf">SetObjShader</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">,</span> <span class="n">_ishds</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Attach shaders to the objects in the list.</span>
@@ -767,11 +764,11 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">setObjShader</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">,</span> <span class="n">_ishds</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;SetObjShader: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetObjShader: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="SetBkgColor"><a class="viewcode-back" href="../commands.html#QDS.SetBkgColor">[docs]</a><span class="k">def</span> <span class="nf">SetBkgColor</span><span class="p">(</span><span class="n">_col</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Set color of background.</span>
@@ -786,11 +783,11 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">setBkgColor</span><span class="p">(</span><span class="n">_col</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;SetBkgColor: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetBkgColor: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="Scene_Clear"><a class="viewcode-back" href="../commands.html#QDS.Scene_Clear">[docs]</a><span class="k">def</span> <span class="nf">Scene_Clear</span><span class="p">(</span><span class="n">_dur</span><span class="p">,</span> <span class="n">_marker</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Clear screen and wait.</span>
@@ -810,11 +807,11 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">clearScene</span><span class="p">(</span><span class="n">_dur</span><span class="p">,</span> <span class="p">(</span><span class="n">_marker</span><span class="o">==</span><span class="mi">1</span><span class="p">))</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;Scene_Clear: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;Scene_Clear: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="Scene_RenderEx"><a class="viewcode-back" href="../commands.html#QDS.Scene_RenderEx">[docs]</a><span class="k">def</span> <span class="nf">Scene_RenderEx</span><span class="p">(</span><span class="n">_dur</span><span class="p">,</span> <span class="n">_iobjs</span><span class="p">,</span> <span class="n">_opos</span><span class="p">,</span> <span class="n">_omag</span><span class="p">,</span> <span class="n">_oang</span><span class="p">,</span> <span class="n">_marker</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Draw objects and wait.</span>
@@ -845,17 +842,17 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">renderScene</span><span class="p">(</span><span class="n">_dur</span><span class="p">,</span> <span class="n">_iobjs</span><span class="p">,</span> <span class="n">_opos</span><span class="p">,</span> <span class="n">_omag</span><span class="p">,</span> <span class="n">_oang</span><span class="p">,</span> <span class="p">(</span><span class="n">_marker</span><span class="o">==</span><span class="mi">1</span><span class="p">))</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;Scene_Render(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;Scene_Render(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-<span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+<span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <span class="k">def</span> <span class="nf">Scene_Render</span><span class="p">(</span><span class="n">_dur</span><span class="p">,</span> <span class="n">_nobjs</span><span class="p">,</span> <span class="n">_iobjs</span><span class="p">,</span> <span class="n">_opos</span><span class="p">,</span> <span class="n">_marker</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
   <span class="n">_omag</span>   <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">)</span><span class="o">*</span><span class="p">[(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)]</span>
   <span class="n">_oang</span>   <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">)</span><span class="o">*</span><span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
   <span class="n">Scene_RenderEx</span><span class="p">(</span><span class="n">_dur</span><span class="p">,</span> <span class="n">_iobjs</span><span class="p">,</span> <span class="n">_opos</span><span class="p">,</span> <span class="n">_omag</span><span class="p">,</span> <span class="n">_oang</span><span class="p">,</span> <span class="n">_marker</span><span class="p">)</span>
 
 
-<span class="c"># ---------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="Start_Movie"><a class="viewcode-back" href="../commands.html#QDS.Start_Movie">[docs]</a><span class="k">def</span> <span class="nf">Start_Movie</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_opos</span><span class="p">,</span> <span class="n">_seq</span><span class="p">,</span> <span class="n">_omag</span><span class="p">,</span> <span class="n">_trans</span><span class="p">,</span> <span class="n">_oang</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Start playing a movie object.</span>
@@ -879,10 +876,10 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">startMovie</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_opos</span><span class="p">,</span> <span class="n">_seq</span><span class="p">,</span> <span class="n">_omag</span><span class="p">,</span> <span class="n">_trans</span><span class="p">,</span> <span class="n">_oang</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;Start_Movie: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;Start_Movie: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="Start_Video"><a class="viewcode-back" href="../commands.html#QDS.Start_Video">[docs]</a><span class="k">def</span> <span class="nf">Start_Video</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_opos</span><span class="p">,</span> <span class="n">_omag</span><span class="p">,</span> <span class="n">_trans</span><span class="p">,</span> <span class="n">_oang</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Start playing a movie object.</span>
@@ -901,14 +898,14 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">startVideo</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_opos</span><span class="p">,</span> <span class="n">_omag</span><span class="p">,</span> <span class="n">_trans</span><span class="p">,</span> <span class="n">_oang</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;Start_Video: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;Start_Video: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
-<span class="c"># =====================================================================</span>
-<span class="c"># Lightcrafter-related commands</span>
+<span class="c1"># =====================================================================</span>
+<span class="c1"># Lightcrafter-related commands</span>
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="LC_softwareReset"><a class="viewcode-back" href="../commands.html#QDS.LC_softwareReset">[docs]</a><span class="k">def</span> <span class="nf">LC_softwareReset</span><span class="p">():</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Signal the device to do a software reset. This will take a couple</span>
@@ -917,10 +914,10 @@
   <span class="k">try</span><span class="p">:</span>
     <span class="n">_Stim</span><span class="o">.</span><span class="n">processLCrCommand</span><span class="p">(</span><span class="n">stm</span><span class="o">.</span><span class="n">StimLCrCmd</span><span class="o">.</span><span class="n">softwareReset</span><span class="p">)</span>
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;LC_softwareReset: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_softwareReset: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-<span class="c"># ---------------------------------------------------------------------  </span></div>
+<span class="c1"># ---------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="LC_setInputSource"><a class="viewcode-back" href="../commands.html#QDS.LC_setInputSource">[docs]</a><span class="k">def</span> <span class="nf">LC_setInputSource</span><span class="p">(</span><span class="n">_source</span><span class="p">,</span> <span class="n">_bitDepth</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Defines the input source of the device.</span>
@@ -940,11 +937,11 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">processLCrCommand</span><span class="p">(</span><span class="n">stm</span><span class="o">.</span><span class="n">StimLCrCmd</span><span class="o">.</span><span class="n">setInputSource</span><span class="p">,</span> 
                             <span class="p">[</span><span class="n">_source</span><span class="p">,</span> <span class="n">_bitDepth</span><span class="p">])</span>
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;LC_setInputSource: {0}, {1}&quot;</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_setInputSource: {0}, {1}&quot;</span>
                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-<span class="c"># ---------------------------------------------------------------------  </span></div>
+<span class="c1"># ---------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="LC_setDisplayMode"><a class="viewcode-back" href="../commands.html#QDS.LC_setDisplayMode">[docs]</a><span class="k">def</span> <span class="nf">LC_setDisplayMode</span><span class="p">(</span><span class="n">_mode</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Sets the display mode of the device.</span>
@@ -968,11 +965,11 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">processLCrCommand</span><span class="p">(</span><span class="n">stm</span><span class="o">.</span><span class="n">StimLCrCmd</span><span class="o">.</span><span class="n">setInputSource</span><span class="p">,</span> 
                             <span class="p">[</span><span class="n">_source</span><span class="p">,</span> <span class="n">_bitDepth</span><span class="p">])</span>
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;LC_setInputSource: {0}, {1}&quot;</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_setInputSource: {0}, {1}&quot;</span>
                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-<span class="c"># ---------------------------------------------------------------------  </span></div>
+<span class="c1"># ---------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="LC_setLEDCurrents"><a class="viewcode-back" href="../commands.html#QDS.LC_setLEDCurrents">[docs]</a><span class="k">def</span> <span class="nf">LC_setLEDCurrents</span><span class="p">(</span><span class="n">_rgb</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Sets the current of the LEDs.</span>
@@ -987,11 +984,11 @@
   <span class="k">try</span><span class="p">:</span>
     <span class="n">_Stim</span><span class="o">.</span><span class="n">processLCrCommand</span><span class="p">(</span><span class="n">stm</span><span class="o">.</span><span class="n">StimLCrCmd</span><span class="o">.</span><span class="n">setLEDCurrents</span><span class="p">,</span> <span class="p">[</span><span class="n">_rgb</span><span class="p">])</span>
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s">&quot;LC_setLEDCurrents: {0}, {1}&quot;</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_setLEDCurrents: {0}, {1}&quot;</span>
                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
 </pre></div>
 
           </div>
@@ -1011,7 +1008,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

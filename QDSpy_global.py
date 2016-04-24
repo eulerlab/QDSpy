@@ -92,7 +92,7 @@ QDSpy_markerRGBA            = "255,127,127,255"
 QDSpy_markerScrWidthFract   = 16
 QDSpy_markerShowOnScr       = True
 
-QDSpy_use_Lightcrafter      = False
+QDSpy_use_Lightcrafter      = True
 QDSpy_LEDNames_default      = "red, green, blue"
 QDSpy_LEDPeakWLs_default    = "650, 510, 450"
 QDSpy_LEDQtColors_default   = "darkRed, darkGreen, darkBlue"

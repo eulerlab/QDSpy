@@ -90,9 +90,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -153,14 +150,14 @@ QDS command is used.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Note that this conversion happens at <strong>compile-time</strong> 
-(see section <a class="reference internal" href="how_QDSpy_works.html"><em>How QDSpy works</em></a>). Changing the mode requires
+(see section <a class="reference internal" href="how_QDSpy_works.html"><span class="doc">How QDSpy works</span></a>). Changing the mode requires
 recompilation of the script to affect presentation.</p>
 </div>
 <p>Bit depth and offset each are defined by color (as (r,b,b) tuple). All
 color values are scaled by the given bit depth and then bitwise left-
 shifted by the given offset. For example, when color mode is 0..255
 (see below), &#8220;red&#8221; is scaled:</p>
-<div class="highlight-python"><div class="highlight"><pre>r&#39; = (r/255 x(2^BitDepth_r -1)) &lt;&lt; BitShift_r
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s1">r&#39; = (r/255 x(2^BitDepth_r -1)) &lt;&lt; BitShift_r</span>
 </pre></div>
 </div>
 <table border="1" class="docutils">
@@ -212,7 +209,7 @@ blanks (=red LED) for laser-scanning (700 us LED +1400 us blank),
 <dd><p>Redefines an entry in the colour lookup table (LUT), allowing to linearize
 the intensity range of a display.</p>
 <p>Note that it alters the gamma LUT at <strong>run-time</strong> 
-(see section <a class="reference internal" href="how_QDSpy_works.html"><em>How QDSpy works</em></a>) on the operation system-side, that is 
+(see section <a class="reference internal" href="how_QDSpy_works.html"><span class="doc">How QDSpy works</span></a>) on the operation system-side, that is 
 for <em>all</em> connected display devices, including the screen that shows the 
 GUI.</p>
 <p>When the program ends, a linear gamma LUT will be automatically restored.</p>
@@ -691,7 +688,7 @@ the number of tuples per object depends on the object type:</p>
 <dl class="function">
 <dt id="QDS.DefShader">
 <code class="descclassname">QDS.</code><code class="descname">DefShader</code><span class="sig-paren">(</span><em>_ishd</em>, <em>_shType</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/QDS.html#DefShader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#QDS.DefShader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines a shader. For details, see <a class="reference internal" href="shaderfiles.html"><em>Shader description files</em></a>.</p>
+<dd><p>Defines a shader. For details, see <a class="reference internal" href="shaderfiles.html"><span class="doc">Shader description files</span></a>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="23%" />
@@ -1135,8 +1132,8 @@ object must have been loaded.</p>
 <dd><p>Returns the current path of the stimulus folder. Use this function
 to make sure that the script can locate user-provided accessory files
 (e.g. a random number series for a noise stimulus):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">path</span> <span class="o">=</span> <span class="n">QDS</span><span class="o">.</span><span class="n">getStimulusPath</span><span class="p">()</span>
-<span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span><span class="s">&quot;parameters.txt&quot;</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">QDS</span><span class="o">.</span><span class="n">getStimulusPath</span><span class="p">()</span>
+<span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span><span class="s2">&quot;parameters.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1167,7 +1164,7 @@ to make sure that the script can locate user-provided accessory files
 </table>
 <p>Example for such a user parameter entry as it appears in the history
 and log file:</p>
-<div class="highlight-python"><div class="highlight"><pre>20151220_135948    DATA {&#39;nTrials&#39;: 1, &#39;dxStim_um&#39;: 1000}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">20151220</span><span class="n">_135948</span>    <span class="n">DATA</span> <span class="p">{</span><span class="s1">&#39;nTrials&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;dxStim_um&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">}</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1182,9 +1179,9 @@ lightcrafter device not during compile-time of the script, that
 is not immediately, but <strong>during presentation-time only</strong>.
 For the definitions
 of &#8220;compile-time&#8221; and &#8220;presentation-time&#8221;, see section
-<a class="reference internal" href="how_QDSpy_works.html"><em>How QDSpy works</em></a>.</p>
+<a class="reference internal" href="how_QDSpy_works.html"><span class="doc">How QDSpy works</span></a>.</p>
 <p class="last">To interact with the lightcrafter device directly in a python
-script, use the <a class="reference internal" href="lightcrafter.html#lightcrafter-api"><span>lightcrafter class</span></a>.</p>
+script, use the <a class="reference internal" href="lightcrafter.html#lightcrafter-api"><span class="std std-ref">lightcrafter class</span></a>.</p>
 </div>
 <dl class="function">
 <dt id="QDS.LC_softwareReset">
@@ -1314,7 +1311,7 @@ of seconds. After the reset the device is disconnected.</p>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

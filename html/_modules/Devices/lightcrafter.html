@@ -57,9 +57,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -71,43 +68,49 @@
           <div class="body" role="main">
             
   <h1>Source code for Devices.lightcrafter</h1><div class="highlight"><pre>
-<span class="c">#!/usr/bin/env python</span>
-<span class="c"># -*- coding: utf-8 -*-</span>
-<span class="c"># ---------------------------------------------------------------------</span>
-<span class="c">#  lightcrafter.py</span>
-<span class="c">#</span>
-<span class="c">#  ...</span>
-<span class="c">#</span>
-<span class="c"># ---------------------------------------------------------------------</span>
-<span class="c">#  Internal:</span>
-<span class="c">#</span>
-<span class="c">#</span>
-<span class="c">#  Copyright (c) 2014-2016 Thomas Euler</span>
-<span class="c">#  All rights reserved.</span>
-<span class="c">#</span>
-<span class="c"># ---------------------------------------------------------------------</span>
-<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;thomas.euler@eulerlab.de&quot;</span>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
+<span class="c1">#  lightcrafter.py</span>
+<span class="c1">#</span>
+<span class="c1">#  ...</span>
+<span class="c1">#</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
+<span class="c1">#  Internal:</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright (c) 2014-2016 Thomas Euler</span>
+<span class="c1">#  All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;thomas.euler@eulerlab.de&quot;</span>
 
-<span class="c"># ---------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">Devices.hid</span> <span class="kn">as</span> <span class="nn">hid</span>
-<span class="kn">import</span> <span class="nn">numpy</span>       <span class="kn">as</span> <span class="nn">np</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">import sys</span>
+<span class="sd">if (sys.version_info[0] +sys.version_info[1]/10) &lt;= 3.4:</span>
+<span class="sd">  import Devices.hid_py34_64 as hid</span>
+<span class="sd">else:</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-<span class="c"># ---------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <span class="n">LC_width</span>             <span class="o">=</span> <span class="mi">912</span>
 <span class="n">LC_height</span>            <span class="o">=</span> <span class="mi">1140</span>
 
-<span class="c"># ---------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <span class="n">LC_VID</span>               <span class="o">=</span> <span class="mh">0x0451</span>
 <span class="n">LC_PID</span>               <span class="o">=</span> <span class="mh">0x6401</span>
 
 <span class="n">LC_MaxDataLen</span>        <span class="o">=</span> <span class="mi">64</span>
 <span class="n">LC_Timeout_ms</span>        <span class="o">=</span> <span class="mi">2000</span>
-<span class="n">LC_B1Flags_read</span>      <span class="o">=</span> <span class="mb">0b11000000</span>   <span class="c"># bit7=1 read transaction,</span>
-                                    <span class="c"># bit6=1 reply requested</span>
+<span class="n">LC_B1Flags_read</span>      <span class="o">=</span> <span class="mb">0b11000000</span>   <span class="c1"># bit7=1 read transaction,</span>
+                                    <span class="c1"># bit6=1 reply requested</span>
 <span class="n">LC_B1Flags_write</span>     <span class="o">=</span> <span class="mb">0b00000000</span>
 <span class="n">LC_firstDataByte</span>     <span class="o">=</span> <span class="mi">4</span>
 
-<span class="c"># ---------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <span class="n">SOURCE_SEL_Parallel</span>  <span class="o">=</span> <span class="mi">0</span>
 <span class="n">SOURCE_SEL_Test</span>      <span class="o">=</span> <span class="mi">1</span>
 <span class="n">SOURCE_SEL_Flash</span>     <span class="o">=</span> <span class="mi">2</span>
@@ -124,7 +127,7 @@
 <span class="n">DISP_MODE_Pattern</span>    <span class="o">=</span> <span class="mh">0x01</span>
 
 
-<span class="c"># ---------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <span class="k">class</span> <span class="nc">ERROR</span><span class="p">:</span>
   <span class="n">OK</span>                 <span class="o">=</span> <span class="mi">0</span>
   <span class="n">OPEN_FAILED</span>        <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -135,62 +138,62 @@
   <span class="n">INVALID_PARAMS</span>     <span class="o">=</span> <span class="o">-</span><span class="mi">6</span>
 
 <span class="n">ErrorStr</span>             <span class="o">=</span> <span class="nb">dict</span><span class="p">([</span>
-  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>                <span class="s">&quot;ok&quot;</span><span class="p">),</span>
-  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OPEN_FAILED</span><span class="p">,</span>       <span class="s">&quot;Failed to open device&quot;</span><span class="p">),</span>
-  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">TIME_OUT</span><span class="p">,</span>          <span class="s">&quot;Time-out&quot;</span><span class="p">),</span>
-  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">NO_RESPONSE</span><span class="p">,</span>       <span class="s">&quot;No reponse from device&quot;</span><span class="p">),</span>
-  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">NAK_ERROR</span><span class="p">,</span>         <span class="s">&quot;Command not acknowledged&quot;</span><span class="p">),</span>
-  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">COULD_NOT_CONNECT</span><span class="p">,</span> <span class="s">&quot;Could not connect to device&quot;</span><span class="p">),</span>
-  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">INVALID_PARAMS</span><span class="p">,</span>    <span class="s">&quot;One or more parameters are invalid&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>                <span class="s2">&quot;ok&quot;</span><span class="p">),</span>
+  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OPEN_FAILED</span><span class="p">,</span>       <span class="s2">&quot;Failed to open device&quot;</span><span class="p">),</span>
+  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">TIME_OUT</span><span class="p">,</span>          <span class="s2">&quot;Time-out&quot;</span><span class="p">),</span>
+  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">NO_RESPONSE</span><span class="p">,</span>       <span class="s2">&quot;No reponse from device&quot;</span><span class="p">),</span>
+  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">NAK_ERROR</span><span class="p">,</span>         <span class="s2">&quot;Command not acknowledged&quot;</span><span class="p">),</span>
+  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">COULD_NOT_CONNECT</span><span class="p">,</span> <span class="s2">&quot;Could not connect to device&quot;</span><span class="p">),</span>
+  <span class="p">(</span><span class="n">ERROR</span><span class="o">.</span><span class="n">INVALID_PARAMS</span><span class="p">,</span>    <span class="s2">&quot;One or more parameters are invalid&quot;</span><span class="p">)</span>
   <span class="p">])</span>
 
-<span class="c"># ---------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <span class="k">class</span> <span class="nc">LCException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
   <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
   <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
-<span class="c"># ---------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <span class="k">class</span> <span class="nc">CMD_FORMAT_LIST</span><span class="p">:</span>
-  <span class="n">SOURCE_SEL</span>         <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># SOURCE_SEL</span>
-  <span class="n">PIXEL_FORMAT</span>       <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># PIXEL_FORMAT</span>
-  <span class="n">CLK_SEL</span>            <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># CLK_SEL</span>
-  <span class="n">CHANNEL_SWAP</span>       <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x37</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># CHANNEL_SWAP</span>
-  <span class="n">FPD_MODE</span>           <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x04</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># FPD_MODE</span>
-  <span class="c">#CURTAIN_COLOR     = [ 0, 0, 0]               # CURTAIN_COLOR</span>
-  <span class="n">POWER_CONTROL</span>      <span class="o">=</span> <span class="p">[</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># POWER_CONTROL,</span>
-  <span class="n">FLIP_LONG</span>          <span class="o">=</span> <span class="p">[</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x08</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># FLIP_LONG,</span>
-  <span class="n">FLIP_SHORT</span>         <span class="o">=</span> <span class="p">[</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x09</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># FLIP_SHORT,</span>
-  <span class="n">TPG_SEL</span>            <span class="o">=</span> <span class="p">[</span> <span class="mh">0x12</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># TPG_SEL,</span>
-  <span class="n">PWM_INVERT</span>         <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x05</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># PWM_INVERT,</span>
-  <span class="n">LED_ENABLE</span>         <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># LED_ENABLE,</span>
-  <span class="n">GET_VERSION</span>        <span class="o">=</span> <span class="p">[</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x05</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># GET_VERSION,</span>
-  <span class="n">SW_RESET</span>           <span class="o">=</span> <span class="p">[</span> <span class="mh">0x08</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># SW_RESET,</span>
-  <span class="c">#DMD_PARK          = [ 0, 0, 0]               # DMD_PARK,</span>
-  <span class="c">#BUFFER_FREEZE     = [ 0, 0, 0]               # BUFFER_FREEZE,</span>
-  <span class="n">VIDEO_SIG_DETECT</span>   <span class="o">=</span> <span class="p">[</span> <span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x1C</span><span class="p">,</span> <span class="mh">0x1C</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># VIDEO_SIG_DETECT</span>
+  <span class="n">SOURCE_SEL</span>         <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># SOURCE_SEL</span>
+  <span class="n">PIXEL_FORMAT</span>       <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># PIXEL_FORMAT</span>
+  <span class="n">CLK_SEL</span>            <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># CLK_SEL</span>
+  <span class="n">CHANNEL_SWAP</span>       <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x37</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># CHANNEL_SWAP</span>
+  <span class="n">FPD_MODE</span>           <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x04</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># FPD_MODE</span>
+  <span class="c1">#CURTAIN_COLOR     = [ 0, 0, 0]               # CURTAIN_COLOR</span>
+  <span class="n">POWER_CONTROL</span>      <span class="o">=</span> <span class="p">[</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># POWER_CONTROL,</span>
+  <span class="n">FLIP_LONG</span>          <span class="o">=</span> <span class="p">[</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x08</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># FLIP_LONG,</span>
+  <span class="n">FLIP_SHORT</span>         <span class="o">=</span> <span class="p">[</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x09</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># FLIP_SHORT,</span>
+  <span class="n">TPG_SEL</span>            <span class="o">=</span> <span class="p">[</span> <span class="mh">0x12</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># TPG_SEL,</span>
+  <span class="n">PWM_INVERT</span>         <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x05</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># PWM_INVERT,</span>
+  <span class="n">LED_ENABLE</span>         <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># LED_ENABLE,</span>
+  <span class="n">GET_VERSION</span>        <span class="o">=</span> <span class="p">[</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x05</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># GET_VERSION,</span>
+  <span class="n">SW_RESET</span>           <span class="o">=</span> <span class="p">[</span> <span class="mh">0x08</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># SW_RESET,</span>
+  <span class="c1">#DMD_PARK          = [ 0, 0, 0]               # DMD_PARK,</span>
+  <span class="c1">#BUFFER_FREEZE     = [ 0, 0, 0]               # BUFFER_FREEZE,</span>
+  <span class="n">VIDEO_SIG_DETECT</span>   <span class="o">=</span> <span class="p">[</span> <span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x1C</span><span class="p">,</span> <span class="mh">0x1C</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># VIDEO_SIG_DETECT</span>
 
-  <span class="n">STATUS_HW</span>          <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x0A</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># STATUS_HW,</span>
-  <span class="n">STATUS_SYS</span>         <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x0B</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># STATUS_SYS,</span>
-  <span class="n">STATUS_MAIN</span>        <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x0C</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># STATUS_MAIN,</span>
-  <span class="c">#CSC_DATA          = [ 0, 0, 0],              # CSC_DATA,</span>
-  <span class="n">GAMMA_CTL</span>          <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x0E</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># GAMMA_CTL,</span>
-  <span class="c">#BC_CTL            = [ 0, 0, 0],              # BC_CTL,</span>
-  <span class="n">PWM_ENABLE</span>         <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># PWM_ENABLE,</span>
-  <span class="n">PWM_SETUP</span>          <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x11</span><span class="p">,</span> <span class="mh">0x06</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># PWM_SETUP,</span>
-  <span class="n">PWM_CAPTURE_CONFIG</span> <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x12</span><span class="p">,</span> <span class="mh">0x05</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># PWM_CAPTURE_CONFIG,</span>
-  <span class="n">GPIO_CONFIG</span>        <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x38</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># GPIO_CONFIG,</span>
-  <span class="n">LED_CURRENT</span>        <span class="o">=</span> <span class="p">[</span> <span class="mh">0x0B</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># LED_CURRENT,</span>
-  <span class="n">DISP_CONFIG</span>        <span class="o">=</span> <span class="p">[</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># DISP_CONFIG,</span>
-  <span class="c">#TEMP_CONFIG       = [ 0, 0, 0],              # TEMP_CONFIG,</span>
-  <span class="c">#TEMP_READ         = [ 0, 0, 0],              # TEMP_READ,</span>
+  <span class="n">STATUS_HW</span>          <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x0A</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># STATUS_HW,</span>
+  <span class="n">STATUS_SYS</span>         <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x0B</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># STATUS_SYS,</span>
+  <span class="n">STATUS_MAIN</span>        <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x0C</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># STATUS_MAIN,</span>
+  <span class="c1">#CSC_DATA          = [ 0, 0, 0],              # CSC_DATA,</span>
+  <span class="n">GAMMA_CTL</span>          <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x0E</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># GAMMA_CTL,</span>
+  <span class="c1">#BC_CTL            = [ 0, 0, 0],              # BC_CTL,</span>
+  <span class="n">PWM_ENABLE</span>         <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># PWM_ENABLE,</span>
+  <span class="n">PWM_SETUP</span>          <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x11</span><span class="p">,</span> <span class="mh">0x06</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># PWM_SETUP,</span>
+  <span class="n">PWM_CAPTURE_CONFIG</span> <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x12</span><span class="p">,</span> <span class="mh">0x05</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># PWM_CAPTURE_CONFIG,</span>
+  <span class="n">GPIO_CONFIG</span>        <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x38</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># GPIO_CONFIG,</span>
+  <span class="n">LED_CURRENT</span>        <span class="o">=</span> <span class="p">[</span> <span class="mh">0x0B</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># LED_CURRENT,</span>
+  <span class="n">DISP_CONFIG</span>        <span class="o">=</span> <span class="p">[</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># DISP_CONFIG,</span>
+  <span class="c1">#TEMP_CONFIG       = [ 0, 0, 0],              # TEMP_CONFIG,</span>
+  <span class="c1">#TEMP_READ         = [ 0, 0, 0],              # TEMP_READ,</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  xxx                = [ 0x1A, 0x16, 0x09, 0]   # MEM_CONTROL,</span>
 <span class="sd">  xxx                = [ 0, 0, 0],              # I2C_CONTROL,</span>
 <span class="sd">  xxx                = [ 0x1A, 0x1A, 0x01, 0]   # LUT_VALID,</span>
 <span class="sd">  &quot;&quot;&quot;</span>
-  <span class="n">DISP_MODE</span>          <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x1B</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># DISP_MODE,</span>
+  <span class="n">DISP_MODE</span>          <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x1B</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># DISP_MODE,</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  xxx                = [ 0x1A, 0x1D, 0x03, 0]   # TRIG_OUT1_CTL,</span>
 <span class="sd">  xxx                = [ 0x1A, 0x1E, 0x03, 0]   # TRIG_OUT2_CTL,</span>
@@ -198,9 +201,9 @@
 <span class="sd">  xxx                = [ 0x1A, 0x20, 0x02, 0]   # GRN_STROBE_DLY,</span>
 <span class="sd">  xxx                = [ 0x1A, 0x21, 0x02, 0]   # BLU_STROBE_DLY,</span>
 <span class="sd">  &quot;&quot;&quot;</span>
-  <span class="n">PAT_DISP_MODE</span>      <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x22</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># PAT_DISP_MODE,</span>
-  <span class="n">PAT_TRIG_MODE</span>      <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x23</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># PAT_TRIG_MODE,</span>
-  <span class="n">PAT_START_STOP</span>     <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x24</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c"># PAT_START_STOP,</span>
+  <span class="n">PAT_DISP_MODE</span>      <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x22</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># PAT_DISP_MODE,</span>
+  <span class="n">PAT_TRIG_MODE</span>      <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x23</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># PAT_TRIG_MODE,</span>
+  <span class="n">PAT_START_STOP</span>     <span class="o">=</span> <span class="p">[</span> <span class="mh">0x1A</span><span class="p">,</span> <span class="mh">0x24</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># PAT_START_STOP,</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  xxx                = [ 0, 0, 0],              # BUFFER_SWAP,</span>
 <span class="sd">  xxx                = [ 0, 0, 0],              # BUFFER_WR_DISABLE,</span>
@@ -235,9 +238,9 @@
 <span class="sd">  xxx                = [ 0x00, 0x30, 0x01, 0]   # BL_PROG_MODE,</span>
 <span class="sd">  &quot;&quot;&quot;</span>
 
-<span class="c"># ---------------------------------------------------------------------</span>
-<span class="c"># Class representing a lightcrafter device</span>
-<span class="c"># ---------------------------------------------------------------------</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
+<span class="c1"># Class representing a lightcrafter device</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="Lightcrafter"><a class="viewcode-back" href="../../lightcrafter.html#Devices.lightcrafter.Lightcrafter">[docs]</a><span class="k">class</span> <span class="nc">Lightcrafter</span><span class="p">:</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Create and initialize lightcrafter object.</span>
@@ -255,24 +258,24 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">nSeq</span>        <span class="o">=</span> <span class="mi">0</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">isVerbose</span>   <span class="o">=</span> <span class="n">_isVerbose</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">isCheckOnly</span> <span class="o">=</span> <span class="n">_isCheckOnly</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">lastMsgStr</span>  <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lastMsgStr</span>  <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-  <span class="c"># -------------------------------------------------------------------</span>
-  <span class="c"># Connect and disconnect the device</span>
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+  <span class="c1"># -------------------------------------------------------------------</span>
+  <span class="c1"># Connect and disconnect the device</span>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <div class="viewcode-block" id="Lightcrafter.connect"><a class="viewcode-back" href="../../lightcrafter.html#Devices.lightcrafter.Lightcrafter.connect">[docs]</a>  <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_devNum</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Connect to lightcrafter.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">isCheckOnly</span><span class="p">):</span>
       <span class="k">try</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;Trying to connect ...&quot;</span><span class="p">)</span>            
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Trying to connect ...&quot;</span><span class="p">)</span>            
         <span class="bp">self</span><span class="o">.</span><span class="n">LC</span> <span class="o">=</span> <span class="n">hid</span><span class="o">.</span><span class="n">device</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">LC</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">LC_VID</span><span class="p">,</span> <span class="n">LC_PID</span><span class="p">)</span>
 
       <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">LC</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;Error ({0})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>      
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Error ({0})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>      
         <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">COULD_NOT_CONNECT</span><span class="p">]</span>
 
       <span class="bp">self</span><span class="o">.</span><span class="n">LC</span><span class="o">.</span><span class="n">set_nonblocking</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -280,11 +283,11 @@
       <span class="bp">self</span><span class="o">.</span><span class="n">sProduct</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LC</span><span class="o">.</span><span class="n">get_product_string</span><span class="p">()</span>
       <span class="bp">self</span><span class="o">.</span><span class="n">sSN</span>           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LC</span><span class="o">.</span><span class="n">get_serial_number_string</span><span class="p">()</span>
   
-      <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;Connected to {0} by {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sProduct</span><span class="p">,</span> 
+      <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Connected to {0} by {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sProduct</span><span class="p">,</span> 
                                                 <span class="bp">self</span><span class="o">.</span><span class="n">sManufacturer</span><span class="p">))</span>      
-    <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">]</span></div>
 
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <div class="viewcode-block" id="Lightcrafter.disconnect"><a class="viewcode-back" href="../../lightcrafter.html#Devices.lightcrafter.Lightcrafter.disconnect">[docs]</a>  <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Disconnects the lightcrafter.</span>
@@ -293,13 +296,13 @@
       <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">LC</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">LC</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">LC</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;Disconnected&quot;</span><span class="p">)</span>         
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Disconnected&quot;</span><span class="p">)</span>         
         
-    <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">]</span>    
+    <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">]</span>    </div>
 
-  <span class="c"># -------------------------------------------------------------------</span>
-  <span class="c"># Hardware and system status-related</span>
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+  <span class="c1"># -------------------------------------------------------------------</span>
+  <span class="c1"># Hardware and system status-related</span>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <div class="viewcode-block" id="Lightcrafter.getHardwareStatus"><a class="viewcode-back" href="../../lightcrafter.html#Devices.lightcrafter.Lightcrafter.getHardwareStatus">[docs]</a>  <span class="k">def</span> <span class="nf">getHardwareStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Requests the device&#39;s hardware status and returns a list with up</span>
@@ -326,22 +329,22 @@
       <span class="n">swapError</span>  <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="mh">0x08</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
       <span class="n">seqAbort</span>   <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="mh">0x40</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
       <span class="n">seqError</span>   <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="mh">0x80</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-      <span class="n">info</span>       <span class="o">=</span> <span class="p">{</span><span class="s">&quot;initOK&quot;</span><span class="p">:</span><span class="n">initOK</span><span class="p">,</span> <span class="s">&quot;DMDError&quot;</span><span class="p">:</span><span class="n">DMDError</span><span class="p">,</span>
-                    <span class="s">&quot;swapError&quot;</span><span class="p">:</span><span class="n">swapError</span><span class="p">,</span> <span class="s">&quot;seqAbort&quot;</span><span class="p">:</span><span class="n">seqAbort</span><span class="p">,</span>
-                    <span class="s">&quot;seqError&quot;</span><span class="p">:</span><span class="n">seqError</span><span class="p">}</span>
+      <span class="n">info</span>       <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;initOK&quot;</span><span class="p">:</span><span class="n">initOK</span><span class="p">,</span> <span class="s2">&quot;DMDError&quot;</span><span class="p">:</span><span class="n">DMDError</span><span class="p">,</span>
+                    <span class="s2">&quot;swapError&quot;</span><span class="p">:</span><span class="n">swapError</span><span class="p">,</span> <span class="s2">&quot;seqAbort&quot;</span><span class="p">:</span><span class="n">seqAbort</span><span class="p">,</span>
+                    <span class="s2">&quot;seqError&quot;</span><span class="p">:</span><span class="n">seqError</span><span class="p">}</span>
 
-      <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;Hardware errors : {0} {1} {2} {3} {4}&quot;</span>
-               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;-&quot;</span> <span class="k">if</span> <span class="n">initOK</span> <span class="k">else</span> <span class="s">&quot;init&quot;</span><span class="p">,</span> 
-                       <span class="s">&quot;DMD&quot;</span> <span class="k">if</span> <span class="n">DMDError</span> <span class="k">else</span> <span class="s">&quot;-&quot;</span><span class="p">,</span> 
-                       <span class="s">&quot;swap&quot;</span> <span class="k">if</span> <span class="n">swapError</span> <span class="k">else</span> <span class="s">&quot;-&quot;</span><span class="p">,</span> 
-                       <span class="s">&quot;seq_abort&quot;</span> <span class="k">if</span> <span class="n">seqAbort</span> <span class="k">else</span> <span class="s">&quot;-&quot;</span><span class="p">,</span>
-                       <span class="s">&quot;sequence&quot;</span> <span class="k">if</span> <span class="n">seqError</span> <span class="k">else</span> <span class="s">&quot;-&quot;</span><span class="p">))</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Hardware errors : {0} {1} {2} {3} {4}&quot;</span>
+               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">initOK</span> <span class="k">else</span> <span class="s2">&quot;init&quot;</span><span class="p">,</span> 
+                       <span class="s2">&quot;DMD&quot;</span> <span class="k">if</span> <span class="n">DMDError</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> 
+                       <span class="s2">&quot;swap&quot;</span> <span class="k">if</span> <span class="n">swapError</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> 
+                       <span class="s2">&quot;seq_abort&quot;</span> <span class="k">if</span> <span class="n">seqAbort</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;sequence&quot;</span> <span class="k">if</span> <span class="n">seqError</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">))</span>
       
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">info</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <div class="viewcode-block" id="Lightcrafter.getSystemStatus"><a class="viewcode-back" href="../../lightcrafter.html#Devices.lightcrafter.Lightcrafter.getSystemStatus">[docs]</a>  <span class="k">def</span> <span class="nf">getSystemStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Requests the device&#39;s system status and returns a list with up</span>
@@ -363,15 +366,15 @@
     <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
       <span class="n">data</span>       <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">LC_firstDataByte</span><span class="p">]</span>
       <span class="n">MemoryOK</span>   <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="mh">0x01</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-      <span class="n">info</span>       <span class="o">=</span> <span class="p">{</span><span class="s">&quot;MemoryOK&quot;</span><span class="p">:</span><span class="n">MemoryOK</span><span class="p">}</span>
+      <span class="n">info</span>       <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;MemoryOK&quot;</span><span class="p">:</span><span class="n">MemoryOK</span><span class="p">}</span>
       
-      <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;System errors   : {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;-&quot;</span> <span class="k">if</span> <span class="n">MemoryOK</span> <span class="k">else</span> <span class="s">&quot;memory&quot;</span><span class="p">))</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;System errors   : {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">MemoryOK</span> <span class="k">else</span> <span class="s2">&quot;memory&quot;</span><span class="p">))</span>
       
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">info</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <div class="viewcode-block" id="Lightcrafter.getMainStatus"><a class="viewcode-back" href="../../lightcrafter.html#Devices.lightcrafter.Lightcrafter.getMainStatus">[docs]</a>  <span class="k">def</span> <span class="nf">getMainStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Requests the device&#39;s main status and returns a list with up</span>
@@ -397,20 +400,20 @@
       <span class="n">SeqRunning</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="mh">0x02</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
       <span class="n">FBufFrozen</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="mh">0x04</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
       <span class="n">GammaEnab</span>  <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="mh">0x08</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-      <span class="n">info</span>       <span class="o">=</span> <span class="p">{</span><span class="s">&quot;DMDParked&quot;</span><span class="p">:</span><span class="n">DMDParked</span><span class="p">,</span> <span class="s">&quot;SeqRunning&quot;</span><span class="p">:</span><span class="n">SeqRunning</span><span class="p">,</span>
-                    <span class="s">&quot;FBufFrozen&quot;</span><span class="p">:</span><span class="n">FBufFrozen</span><span class="p">,</span> <span class="s">&quot;GammaEnab&quot;</span><span class="p">:</span><span class="n">GammaEnab</span><span class="p">}</span>
+      <span class="n">info</span>       <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;DMDParked&quot;</span><span class="p">:</span><span class="n">DMDParked</span><span class="p">,</span> <span class="s2">&quot;SeqRunning&quot;</span><span class="p">:</span><span class="n">SeqRunning</span><span class="p">,</span>
+                    <span class="s2">&quot;FBufFrozen&quot;</span><span class="p">:</span><span class="n">FBufFrozen</span><span class="p">,</span> <span class="s2">&quot;GammaEnab&quot;</span><span class="p">:</span><span class="n">GammaEnab</span><span class="p">}</span>
 
-      <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;Hardware status : {0} {1} {2} {3}&quot;</span>
-               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;DMD_parked&quot;</span> <span class="k">if</span> <span class="n">DMDParked</span> <span class="k">else</span> <span class="s">&quot;DMD_active&quot;</span><span class="p">,</span> 
-                       <span class="s">&quot;seq_running&quot;</span> <span class="k">if</span> <span class="n">SeqRunning</span> <span class="k">else</span> <span class="s">&quot;-&quot;</span><span class="p">,</span> 
-                       <span class="s">&quot;frame_buffer_frozen&quot;</span> <span class="k">if</span> <span class="n">FBufFrozen</span> <span class="k">else</span> <span class="s">&quot;-&quot;</span><span class="p">,</span> 
-                       <span class="s">&quot;gamma_on&quot;</span> <span class="k">if</span> <span class="n">GammaEnab</span> <span class="k">else</span> <span class="s">&quot;-&quot;</span><span class="p">))</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Hardware status : {0} {1} {2} {3}&quot;</span>
+               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;DMD_parked&quot;</span> <span class="k">if</span> <span class="n">DMDParked</span> <span class="k">else</span> <span class="s2">&quot;DMD_active&quot;</span><span class="p">,</span> 
+                       <span class="s2">&quot;seq_running&quot;</span> <span class="k">if</span> <span class="n">SeqRunning</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> 
+                       <span class="s2">&quot;frame_buffer_frozen&quot;</span> <span class="k">if</span> <span class="n">FBufFrozen</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> 
+                       <span class="s2">&quot;gamma_on&quot;</span> <span class="k">if</span> <span class="n">GammaEnab</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">))</span>
                     
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">info</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <div class="viewcode-block" id="Lightcrafter.getVideoSignalDetectStatus"><a class="viewcode-back" href="../../lightcrafter.html#Devices.lightcrafter.Lightcrafter.getVideoSignalDetectStatus">[docs]</a>  <span class="k">def</span> <span class="nf">getVideoSignalDetectStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Requests the status of the video signal received by the device and</span>
@@ -452,25 +455,25 @@
 <span class="sd">      27:26 15:0 First Line (beginning of active line in the Frame)</span>
 <span class="sd">      &quot;&quot;&quot;</span>
 
-      <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s">&quot;Video signal    : {0}</span><span class="se">\n</span><span class="s">&quot;</span>
-               <span class="s">&quot;Resolution      : {1} x {2}</span><span class="se">\n</span><span class="s">&quot;</span>
-               <span class="s">&quot;Polarity        : HSync={3}, VSync={4}</span><span class="se">\n</span><span class="s">&quot;</span>
-               <span class="s">&quot;Pixel clock     : {5} kHz</span><span class="se">\n</span><span class="s">&quot;</span>
-               <span class="s">&quot;Frequency  [kHz]: HFreq={6}, VFreq={7}&quot;</span>
-               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;detected&quot;</span> <span class="k">if</span> <span class="n">SigDetect</span> <span class="k">else</span> <span class="s">&quot;-&quot;</span><span class="p">,</span> <span class="n">HRes</span><span class="p">,</span> <span class="n">VRes</span><span class="p">,</span> 
+      <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Video signal    : {0}</span><span class="se">\n</span><span class="s2">&quot;</span>
+               <span class="s2">&quot;Resolution      : {1} x {2}</span><span class="se">\n</span><span class="s2">&quot;</span>
+               <span class="s2">&quot;Polarity        : HSync={3}, VSync={4}</span><span class="se">\n</span><span class="s2">&quot;</span>
+               <span class="s2">&quot;Pixel clock     : {5} kHz</span><span class="se">\n</span><span class="s2">&quot;</span>
+               <span class="s2">&quot;Frequency  [kHz]: HFreq={6}, VFreq={7}&quot;</span>
+               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;detected&quot;</span> <span class="k">if</span> <span class="n">SigDetect</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">HRes</span><span class="p">,</span> <span class="n">VRes</span><span class="p">,</span> 
                        <span class="n">HSyncPol</span><span class="p">,</span> <span class="n">VSyncPol</span><span class="p">,</span> <span class="n">PixClk_kHz</span><span class="p">,</span> <span class="n">HFreq_kHz</span><span class="p">,</span> <span class="n">VFreq_Hz</span><span class="p">))</span> 
 
-      <span class="n">info</span>       <span class="o">=</span> <span class="p">{</span><span class="s">&quot;SigDetect&quot;</span><span class="p">:</span><span class="n">SigDetect</span><span class="p">,</span> <span class="s">&quot;HRes&quot;</span><span class="p">:</span><span class="n">HRes</span><span class="p">,</span> <span class="s">&quot;VRes&quot;</span><span class="p">:</span><span class="n">VRes</span><span class="p">,</span>
-                    <span class="s">&quot;HSyncPol&quot;</span><span class="p">:</span><span class="n">HSyncPol</span><span class="p">,</span> <span class="s">&quot;VSyncPol&quot;</span><span class="p">:</span><span class="n">VSyncPol</span><span class="p">,</span>
-                    <span class="s">&quot;PixClk_kHz&quot;</span><span class="p">:</span><span class="n">PixClk_kHz</span><span class="p">,</span> <span class="s">&quot;HFreq_kHz&quot;</span><span class="p">:</span><span class="n">HFreq_kHz</span><span class="p">,</span>
-                    <span class="s">&quot;VFreq_Hz&quot;</span><span class="p">:</span><span class="n">VFreq_Hz</span><span class="p">}</span>
+      <span class="n">info</span>       <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;SigDetect&quot;</span><span class="p">:</span><span class="n">SigDetect</span><span class="p">,</span> <span class="s2">&quot;HRes&quot;</span><span class="p">:</span><span class="n">HRes</span><span class="p">,</span> <span class="s2">&quot;VRes&quot;</span><span class="p">:</span><span class="n">VRes</span><span class="p">,</span>
+                    <span class="s2">&quot;HSyncPol&quot;</span><span class="p">:</span><span class="n">HSyncPol</span><span class="p">,</span> <span class="s2">&quot;VSyncPol&quot;</span><span class="p">:</span><span class="n">VSyncPol</span><span class="p">,</span>
+                    <span class="s2">&quot;PixClk_kHz&quot;</span><span class="p">:</span><span class="n">PixClk_kHz</span><span class="p">,</span> <span class="s2">&quot;HFreq_kHz&quot;</span><span class="p">:</span><span class="n">HFreq_kHz</span><span class="p">,</span>
+                    <span class="s2">&quot;VFreq_Hz&quot;</span><span class="p">:</span><span class="n">VFreq_Hz</span><span class="p">}</span>
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="n">info</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
-  <span class="c"># -------------------------------------------------------------------</span>
-  <span class="c"># Software reset</span>
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+  <span class="c1"># -------------------------------------------------------------------</span>
+  <span class="c1"># Software reset</span>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <div class="viewcode-block" id="Lightcrafter.softwareReset"><a class="viewcode-back" href="../../lightcrafter.html#Devices.lightcrafter.Lightcrafter.softwareReset">[docs]</a>  <span class="k">def</span> <span class="nf">softwareReset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Signal the device to do a software reset. This will take a couple</span>
@@ -483,11 +486,11 @@
     <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
-  <span class="c"># -------------------------------------------------------------------</span>
-  <span class="c"># Input source and mode selection</span>
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+  <span class="c1"># -------------------------------------------------------------------</span>
+  <span class="c1"># Input source and mode selection</span>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <div class="viewcode-block" id="Lightcrafter.setInputSource"><a class="viewcode-back" href="../../lightcrafter.html#Devices.lightcrafter.Lightcrafter.setInputSource">[docs]</a>  <span class="k">def</span> <span class="nf">setInputSource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_source</span><span class="p">,</span> <span class="n">_bitDepth</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defines the input source of the device.</span>
@@ -514,9 +517,9 @@
     <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
       
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 <div class="viewcode-block" id="Lightcrafter.setDisplayMode"><a class="viewcode-back" href="../../lightcrafter.html#Devices.lightcrafter.Lightcrafter.setDisplayMode">[docs]</a>  <span class="k">def</span> <span class="nf">setDisplayMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_mode</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets the display mode of the device.</span>
@@ -546,9 +549,9 @@
     <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+      <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
 
 
 
@@ -561,10 +564,10 @@
 
 
       
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span></div>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
   <span class="k">def</span> <span class="nf">setVideoGamma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_mode</span><span class="p">,</span> <span class="n">_enabled</span><span class="p">):</span>
-    <span class="c"># to be implemented</span>
-    <span class="c">#</span>
+    <span class="c1"># to be implemented</span>
+    <span class="c1">#</span>
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">_mode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">)):</span>
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">INVALID_PARAMS</span><span class="p">]</span>
 
@@ -572,30 +575,30 @@
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">]</span>      
       
     <span class="n">data</span>  <span class="o">=</span> <span class="p">(</span><span class="n">_mode</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">_enabled</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span><span class="p">))</span>
-    <span class="c">#data = abs(data -255)</span>
+    <span class="c1">#data = abs(data -255)</span>
     <span class="n">res</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">writeData</span><span class="p">(</span><span class="n">CMD_FORMAT_LIST</span><span class="o">.</span><span class="n">GAMMA_CTL</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
       <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
       
-  <span class="c"># -------------------------------------------------------------------</span>
-  <span class="c"># Internal test pattern-related       </span>
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+  <span class="c1"># -------------------------------------------------------------------</span>
+  <span class="c1"># Internal test pattern-related       </span>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
   <span class="k">def</span> <span class="nf">setTestPattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_pattern</span><span class="p">):</span>
-    <span class="c"># Set test pattern</span>
-    <span class="c"># _pattern : 0x0 = Solid field</span>
-    <span class="c">#            0x1 = Horizontal ramp</span>
-    <span class="c">#            0x2 = Vertical ramp</span>
-    <span class="c">#            0x3 = Horizontal lines</span>
-    <span class="c">#            0x4 = Diagonal lines</span>
-    <span class="c">#            0x5 = Vertical lines</span>
-    <span class="c">#            0x6 = Grid</span>
-    <span class="c">#            0x7 = Checkerboard</span>
-    <span class="c">#            0x8 = RGB ramp</span>
-    <span class="c">#            0x9 = Color bars</span>
-    <span class="c">#            0xA = Step bars</span>
-    <span class="c">#</span>
+    <span class="c1"># Set test pattern</span>
+    <span class="c1"># _pattern : 0x0 = Solid field</span>
+    <span class="c1">#            0x1 = Horizontal ramp</span>
+    <span class="c1">#            0x2 = Vertical ramp</span>
+    <span class="c1">#            0x3 = Horizontal lines</span>
+    <span class="c1">#            0x4 = Diagonal lines</span>
+    <span class="c1">#            0x5 = Vertical lines</span>
+    <span class="c1">#            0x6 = Grid</span>
+    <span class="c1">#            0x7 = Checkerboard</span>
+    <span class="c1">#            0x8 = RGB ramp</span>
+    <span class="c1">#            0x9 = Color bars</span>
+    <span class="c1">#            0xA = Step bars</span>
+    <span class="c1">#</span>
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">_pattern</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">)):</span>
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">INVALID_PARAMS</span><span class="p">]</span>
     
@@ -609,13 +612,13 @@
     <span class="k">else</span><span class="p">:</span>
       <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
       
-  <span class="c"># -------------------------------------------------------------------</span>
-  <span class="c"># LED-related      </span>
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+  <span class="c1"># -------------------------------------------------------------------</span>
+  <span class="c1"># LED-related      </span>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
   <span class="k">def</span> <span class="nf">getLEDCurrents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="c"># Returns the LED currents</span>
-    <span class="c"># [ErrC, [r,g,b]] with r,g,b in 0...255</span>
-    <span class="c">#</span>
+    <span class="c1"># Returns the LED currents</span>
+    <span class="c1"># [ErrC, [r,g,b]] with r,g,b in 0...255</span>
+    <span class="c1">#</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isCheckOnly</span><span class="p">:</span>
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">]</span>      
 
@@ -628,8 +631,8 @@
 
 
   <span class="k">def</span> <span class="nf">setLEDCurrents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb</span><span class="p">):</span>
-    <span class="c">#</span>
-    <span class="c">#</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isCheckOnly</span><span class="p">:</span>
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">]</span>      
 
@@ -640,11 +643,11 @@
     <span class="k">else</span><span class="p">:</span>
       <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
   <span class="k">def</span> <span class="nf">getLEDEnabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="c"># Returns the LED status</span>
-    <span class="c"># [ErrC, [isR,isG,isB, isSeqControlled]]</span>
-    <span class="c">#</span>
+    <span class="c1"># Returns the LED status</span>
+    <span class="c1"># [ErrC, [isR,isG,isB, isSeqControlled]]</span>
+    <span class="c1">#</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isCheckOnly</span><span class="p">:</span>
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">]</span>      
   
@@ -657,12 +660,12 @@
       <span class="k">raise</span> <span class="n">LCException</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
 
-  <span class="c"># ===================================================================</span>
-  <span class="c"># Read/write routines</span>
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+  <span class="c1"># ===================================================================</span>
+  <span class="c1"># Read/write routines</span>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
   <span class="k">def</span> <span class="nf">readData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_Cmd</span><span class="p">):</span>
-    <span class="c"># Read data from the device</span>
-    <span class="c">#</span>
+    <span class="c1"># Read data from the device</span>
+    <span class="c1">#</span>
     <span class="n">iSeq</span>       <span class="o">=</span> <span class="mi">0</span>
     <span class="n">LenLSB</span>     <span class="o">=</span> <span class="mi">2</span>
     <span class="n">LenMSB</span>     <span class="o">=</span> <span class="mi">0</span>
@@ -671,8 +674,8 @@
     <span class="k">if</span> <span class="n">wres</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">NO_RESPONSE</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-      <span class="c"># Device responded</span>
-      <span class="c">#</span>
+      <span class="c1"># Device responded</span>
+      <span class="c1">#</span>
       <span class="n">res</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LC</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">LC_MaxDataLen</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">LC_Timeout_ms</span><span class="p">)</span>
       <span class="n">flags</span>    <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
       <span class="n">length</span>   <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
@@ -681,11 +684,11 @@
 
     <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="n">res</span><span class="p">]</span>
 
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
   <span class="k">def</span> <span class="nf">writeData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_Cmd</span><span class="p">,</span> <span class="n">_Data</span><span class="p">):</span>
-    <span class="c"># Write data to the device</span>
-    <span class="c"># TODO: Expand to data larger than one package</span>
-    <span class="c">#</span>
+    <span class="c1"># Write data to the device</span>
+    <span class="c1"># TODO: Expand to data larger than one package</span>
+    <span class="c1">#</span>
     <span class="n">iSeq</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nSeq</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">nSeq</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="n">LenLSB</span>     <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span><span class="n">_Cmd</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
@@ -695,11 +698,11 @@
     <span class="k">if</span> <span class="n">res</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">NO_RESPONSE</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-      <span class="c"># Device responded</span>
-      <span class="c">#</span>
+      <span class="c1"># Device responded</span>
+      <span class="c1">#</span>
       <span class="k">if</span> <span class="n">_Cmd</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c"># Data is expected ...</span>
-        <span class="c">#</span>
+        <span class="c1"># Data is expected ...</span>
+        <span class="c1">#</span>
         <span class="n">res</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LC</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">LC_MaxDataLen</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">LC_Timeout_ms</span><span class="p">)</span>
         <span class="n">flags</span>   <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">length</span>  <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
@@ -708,18 +711,19 @@
 
       <span class="k">return</span> <span class="p">[</span><span class="n">ERROR</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="n">res</span><span class="p">]</span>
 
-  <span class="c"># -------------------------------------------------------------------</span>
-  <span class="c"># Logging</span>
-  <span class="c"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+  <span class="c1"># -------------------------------------------------------------------</span>
+  <span class="c1"># Logging</span>
+  <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
   <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_msg</span><span class="p">):</span>
-    <span class="c"># ...</span>
-    <span class="c">#</span>
+    <span class="c1"># ...</span>
+    <span class="c1">#</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">lastMsgStr</span> <span class="o">=</span> <span class="n">_msg</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isVerbose</span><span class="p">:</span>
-      <span class="k">print</span><span class="p">(</span><span class="n">_msg</span><span class="p">)</span>
+      <span class="k">print</span><span class="p">(</span><span class="n">_msg</span><span class="p">)</span></div>
 
-<span class="c"># ---------------------------------------------------------------------</span>
-</pre></div></div>
+<span class="c1"># ---------------------------------------------------------------------</span>
+
+</pre></div>
 
           </div>
         </div>
@@ -738,7 +742,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

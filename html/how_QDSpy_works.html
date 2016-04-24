@@ -85,9 +85,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -129,12 +126,10 @@ in the intensity range of the display device.</p>
 QDSpy currently uses Windows&#8217; <code class="docutils literal"><span class="pre">SetDeviceGammaRamp</span></code> function to change gamma.
 The advantage is that it is very simple to use, however, a side effect is that
 all connected screens are affected.</p>
-<p>To use gamma correction, see also section <a class="reference internal" href="installation.html"><em>Getting ready</em></a>. Also, a flag in
+<p>To use gamma correction, see also section <a class="reference internal" href="installation.html"><span class="doc">Getting ready</span></a>. Also, a flag in
 the configuration file (<code class="docutils literal"><span class="pre">QDSpy.ini</span></code>) needs to be set:</p>
-<div class="highlight-ini"><div class="highlight"><pre>...
-[Display]
-...
-bool_allowGammaLUT = True
+<div class="highlight-ini"><div class="highlight"><pre><span></span><span class="k">[Display]</span>
+<span class="na">bool_allowGammaLUT</span> <span class="o">=</span> <span class="s">True</span>
 </pre></div>
 </div>
 <p>There are two ways to adjust the LUT:</p>
@@ -143,10 +138,8 @@ bool_allowGammaLUT = True
 folder. This file is then automatically loaded when QDSpy is started
 (only GUI version). The name of the file has to be the same as the
 following entry in the <code class="docutils literal"><span class="pre">QDSpy.ini</span></code> file:</p>
-<div class="highlight-ini"><div class="highlight"><pre>...
-[Display]
-...
-str_userGammaLUTFileName = defaultGammaLUT
+<div class="highlight-ini"><div class="highlight"><pre><span></span><span class="k">[Display]</span>
+<span class="na">str_userGammaLUTFileName</span> <span class="o">=</span> <span class="s">defaultGammaLUT</span>
 </pre></div>
 </div>
 </li>
@@ -166,12 +159,12 @@ and are string representations of Python dictionaries.</p>
 <ol class="arabic">
 <li><p class="first">Using the function <a class="reference internal" href="commands.html#QDS.LogUserParameters" title="QDS.LogUserParameters"><code class="xref py py-func docutils literal"><span class="pre">QDS.LogUserParameters()</span></code></a> in a stimulus script,
 the user log information important for the data analysis.</p>
-<div class="highlight-python"><div class="highlight"><pre>20151220_135948    DATA {&#39;nTrials&#39;: 1, &#39;dxStim_um&#39;: 1000}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">20151220</span><span class="n">_135948</span>    <span class="n">DATA</span> <span class="p">{</span><span class="s1">&#39;nTrials&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;dxStim_um&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">}</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">The QDSpy GUI allows the user to enter comments at any timepoint.</p>
-<div class="highlight-python"><div class="highlight"><pre>20151220_135951    DATA {&#39;userComment&#39;: &#39;Cell #3 responds well&#39;}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">20151220</span><span class="n">_135951</span>    <span class="n">DATA</span> <span class="p">{</span><span class="s1">&#39;userComment&#39;</span><span class="p">:</span> <span class="s1">&#39;Cell #3 responds well&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
 </li>
@@ -180,18 +173,18 @@ the user log information important for the data analysis.</p>
 <ol class="arabic">
 <li><p class="first">Start of stimulus presentation (stimulus file name with relative path,
 state of presentation, md5 hash of stimulus pickle file).</p>
-<div class="highlight-python"><div class="highlight"><pre>20151220_135948    DATA {&#39;stimState&#39;: &#39;STARTED&#39;, &#39;stimFileName&#39;: &#39;.\\Stimuli\\RGC_Chirp_2&#39;, &#39;stimMD5&#39;: &#39;c81ec82f926eadbd3a649f861f30b5e7&#39;}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">20151220</span><span class="n">_135948</span>    <span class="n">DATA</span> <span class="p">{</span><span class="s1">&#39;stimState&#39;</span><span class="p">:</span> <span class="s1">&#39;STARTED&#39;</span><span class="p">,</span> <span class="s1">&#39;stimFileName&#39;</span><span class="p">:</span> <span class="s1">&#39;.</span><span class="se">\\</span><span class="s1">Stimuli</span><span class="se">\\</span><span class="s1">RGC_Chirp_2&#39;</span><span class="p">,</span> <span class="s1">&#39;stimMD5&#39;</span><span class="p">:</span> <span class="s1">&#39;c81ec82f926eadbd3a649f861f30b5e7&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">End of stimulus presentation (stimulus file name with relative path,
 state of presentation).</p>
-<div class="highlight-python"><div class="highlight"><pre>20151220_135951    DATA {&#39;stimState&#39;: &#39;ABORTED&#39;, &#39;stimFileName&#39;: &#39;.\\Stimuli\\RGC_Chirp_2&#39;}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">20151220</span><span class="n">_135951</span>    <span class="n">DATA</span> <span class="p">{</span><span class="s1">&#39;stimState&#39;</span><span class="p">:</span> <span class="s1">&#39;ABORTED&#39;</span><span class="p">,</span> <span class="s1">&#39;stimFileName&#39;</span><span class="p">:</span> <span class="s1">&#39;.</span><span class="se">\\</span><span class="s1">Stimuli</span><span class="se">\\</span><span class="s1">RGC_Chirp_2&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Information about presentation after the end of a stimulus.</p>
-<div class="highlight-python"><div class="highlight"><pre>20151220_135951    DATA {&#39;nFrames&#39;: 180, &#39;avgFreq_Hz&#39;: 60.001000732110455, &#39;nDroppedFrames&#39;: 1}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">20151220</span><span class="n">_135951</span>    <span class="n">DATA</span> <span class="p">{</span><span class="s1">&#39;nFrames&#39;</span><span class="p">:</span> <span class="mi">180</span><span class="p">,</span> <span class="s1">&#39;avgFreq_Hz&#39;</span><span class="p">:</span> <span class="mf">60.001000732110455</span><span class="p">,</span> <span class="s1">&#39;nDroppedFrames&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
 </pre></div>
 </div>
 </li>
@@ -222,7 +215,7 @@ state of presentation).</p>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

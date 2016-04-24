@@ -86,9 +86,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -104,7 +101,7 @@
 <div class="section" id="api">
 <span id="lightcrafter-api"></span><h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
 <p>To interact with the lightcrafter device directly in a python script
-(during <strong>compile-time</strong> of the stimulus, see section <a class="reference internal" href="how_QDSpy_works.html"><em>How QDSpy works</em></a>),
+(during <strong>compile-time</strong> of the stimulus, see section <a class="reference internal" href="how_QDSpy_works.html"><span class="doc">How QDSpy works</span></a>),
 use the follwing lightcrafter class.</p>
 <dl class="class">
 <dt id="Devices.lightcrafter.Lightcrafter">
@@ -404,15 +401,15 @@ But <strong>only 3 bit color depth</strong> for each channel blue and green.</p>
 <li>Each line = 1 scan line, fluorescence acquisition during display of r0,r1</li>
 </ul>
 <p>Pattern:</p>
-<div class="highlight-python"><div class="highlight"><pre>b0|b1|r0|r1|r0|r1| = 2.082 ms
-b2|b3|r0|r1|r0|r1|
-b4|b5|r0|r1|r0|r1|
-b6|b7|r0|r1|r0|r1|
-g0|g1|r0|r1|r0|r1|
-g2|g3|r0|r1|r0|r1|
-g4|g5|r0|r1|r0|r1|
-g6|g7|r0|r1|r0|r1|
-=16.656 ms
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">b0</span><span class="o">|</span><span class="n">b1</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span> <span class="o">=</span> <span class="mf">2.082</span> <span class="n">ms</span>
+<span class="n">b2</span><span class="o">|</span><span class="n">b3</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span>
+<span class="n">b4</span><span class="o">|</span><span class="n">b5</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span>
+<span class="n">b6</span><span class="o">|</span><span class="n">b7</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span>
+<span class="n">g0</span><span class="o">|</span><span class="n">g1</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span>
+<span class="n">g2</span><span class="o">|</span><span class="n">g3</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span>
+<span class="n">g4</span><span class="o">|</span><span class="n">g5</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span>
+<span class="n">g6</span><span class="o">|</span><span class="n">g7</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span><span class="n">r0</span><span class="o">|</span><span class="n">r1</span><span class="o">|</span>
+<span class="o">=</span><span class="mf">16.656</span> <span class="n">ms</span>
 </pre></div>
 </div>
 <p>=1 visual stimulus frame, if we drive the graphics card at 60.038 Hz
@@ -446,7 +443,7 @@ color channel, resulting in a actual bit depth of 3.</p>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

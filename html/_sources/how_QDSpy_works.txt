@@ -43,9 +43,7 @@ the configuration file (``QDSpy.ini``) needs to be set:
 
 .. code-block:: ini
   
-  ... 
   [Display]
-  ...
   bool_allowGammaLUT = True
 
 There are two ways to adjust the LUT:
@@ -56,10 +54,8 @@ There are two ways to adjust the LUT:
    following entry in the ``QDSpy.ini`` file:
    
    .. code-block:: ini
-   
-     ... 
+     
      [Display]
-     ...
      str_userGammaLUTFileName = defaultGammaLUT
 
 2) Using the function :py:func:`QDS.setColorMode` in a stimulus script to

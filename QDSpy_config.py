@@ -18,7 +18,7 @@ import configparser
 import QDSpy_stage        as stg
 import QDSpy_gamma        as gma
 import QDSpy_stim_support as ssp
-from   QDSpy_global       import *
+import QDSpy_global       as glo
 
 # ---------------------------------------------------------------------
 # Configuration file class
@@ -30,38 +30,43 @@ class Config:
     self.isLoaded     = False
     self.conf         = configparser.RawConfigParser()
 
+    # Get some information on the platform
+    #
     self.isWindows    = (sys.platform =='win32')
+    self.pyVersion    = sys.version_info[0] +sys.version_info[1]/10
 
-    self.incPP        = QDSpy_incProcessPrior
-    self.fSync        = QDSpy_tryForcingFSync
-    self.useDIO       = QDSpy_useUL_DIO
-    self.DIObrd       = QDSpy_UL_boardNum
-    self.DIOdev       = QDSpy_UL_deviceNum
-    self.DIOportOut   = QDSpy_UL_portOut
-    self.DIOportIn    = QDSpy_UL_portIn
-    self.DIOpinMarker = QDSpy_UL_pinMarkerOut
-    self.disFScr      = QDSpy_disableFullScrCmd
-    self.pathShader   = QDSpy_pathShader
-    self.pathStim     = QDSpy_pathStimuli
-    self.pathApp      = QDSpy_pathApplication
-    self.isTrackTime  = QDSpy_trackTiming
-    self.isWarnFrDrop = QDSpy_warnDroppedFrames    
-    self.maxDtTr_ms   = QDSpy_FrDurThreshold_ms
-    self.disGC        = QDSpy_disableGarbageCollect
-    self.useLCr       = QDSpy_use_Lightcrafter
-    self.LEDNames     = QDSpy_LEDNames_default
-    self.LEDPeakWLs   = QDSpy_LEDPeakWLs_default
-    self.LEDQtColors  = QDSpy_LEDQtColors_default
-    self.allowGammaLUT= QDSpy_allowGammaLUT_default
-    self.userLUTFName = QDSpy_userGammaLUTFileName
-    self.pathLogs     = QDSpy_pathLogFiles
-    self.use3DTextures= QDSpy_use3DTextures
-    self.recordStim   = QDSpy_recordStim
-    self.markShowOnScr= QDSpy_markerShowOnScr
-    self.markRGBA     = QDSpy_markerRGBA
+    # Set configuration default values
+    #
+    self.incPP        = glo.QDSpy_incProcessPrior
+    self.fSync        = glo.QDSpy_tryForcingFSync
+    self.useDIO       = glo.QDSpy_useUL_DIO
+    self.DIObrd       = glo.QDSpy_UL_boardNum
+    self.DIOdev       = glo.QDSpy_UL_deviceNum
+    self.DIOportOut   = glo.QDSpy_UL_portOut
+    self.DIOportIn    = glo.QDSpy_UL_portIn
+    self.DIOpinMarker = glo.QDSpy_UL_pinMarkerOut
+    self.disFScr      = glo.QDSpy_disableFullScrCmd
+    self.pathShader   = glo.QDSpy_pathShader
+    self.pathStim     = glo.QDSpy_pathStimuli
+    self.pathApp      = glo.QDSpy_pathApplication
+    self.isTrackTime  = glo.QDSpy_trackTiming
+    self.isWarnFrDrop = glo.QDSpy_warnDroppedFrames    
+    self.maxDtTr_ms   = glo.QDSpy_FrDurThreshold_ms
+    self.disGC        = glo.QDSpy_disableGarbageCollect
+    self.useLCr       = glo.QDSpy_use_Lightcrafter
+    self.LEDNames     = glo.QDSpy_LEDNames_default
+    self.LEDPeakWLs   = glo.QDSpy_LEDPeakWLs_default
+    self.LEDQtColors  = glo.QDSpy_LEDQtColors_default
+    self.allowGammaLUT= glo.QDSpy_allowGammaLUT_default
+    self.userLUTFName = glo.QDSpy_userGammaLUTFileName
+    self.pathLogs     = glo.QDSpy_pathLogFiles
+    self.use3DTextures= glo.QDSpy_use3DTextures
+    self.recordStim   = glo.QDSpy_recordStim
+    self.markShowOnScr= glo.QDSpy_markerShowOnScr
+    self.markRGBA     = glo.QDSpy_markerRGBA
 
     try:
-      self.conf.readfp(open(QDSpy_iniFileName))
+      self.conf.readfp(open(glo.QDSpy_iniFileName))
   
       self.incPP        = self.conf.getboolean("Timing", "bool_incr_process_prior")
       self.fSync        = self.conf.getboolean("Timing", "bool_try_forcing_fsync")
@@ -104,55 +109,85 @@ class Config:
                                "configuration file from default values")    
     
       self.conf.add_section("Stage")
-      self.conf.set("Stage", "float_refresh_frequency_Hz",QDSpy_refresh_Hz)
-      self.conf.set("Stage", "int_screen_width_pix",      QDSpy_winWidth)
-      self.conf.set("Stage", "int_screen_height_pix",     QDSpy_winHeight)
+      self.conf.set("Stage", "float_refresh_frequency_Hz",
+                    glo.QDSpy_refresh_Hz)
+      self.conf.set("Stage", "int_screen_width_pix",      
+                    glo.QDSpy_winWidth)
+      self.conf.set("Stage", "int_screen_height_pix",     
+                    glo.QDSpy_winHeight)
       self.conf.set("Stage", "int_center_offs_x_pix",     0)
       self.conf.set("Stage", "int_center_offs_y_pix",     0)
       self.conf.set("Stage", "float_center_rotation_deg", 0.0)
       self.conf.set("Stage", "float_scale_x_um_per_pix",  1.0)
       self.conf.set("Stage", "float_scale_y_um_per_pix",  1.0)
-      self.conf.set("Stage", "int_screen_index",          QDSpy_screenIndex)
-      self.conf.set("Stage", "bool_disableFullScrCmd",    QDSpy_disableFullScrCmd)
+      self.conf.set("Stage", "int_screen_index",          
+                    glo.QDSpy_screenIndex)
+      self.conf.set("Stage", "bool_disableFullScrCmd",    
+                    glo.QDSpy_disableFullScrCmd)
       self.conf.set("Stage", "int_window_left_pix",       0)
       self.conf.set("Stage", "int_window_top_pix",        0)
 
       self.conf.add_section("Timing")
-      self.conf.set("Timing","bool_incr_process_prior",   QDSpy_incProcessPrior)
-      self.conf.set("Timing","bool_try_forcing_fsync",    QDSpy_tryForcingFSync)
-      self.conf.set("Timing","bool_disable_garbage_collector", QDSpy_disableGarbageCollect)      
-      self.conf.set("Timing","bool_track_timing",         QDSpy_trackTiming)
-      self.conf.set("Timing","bool_warn_when_frames_dropped",  QDSpy_warnDroppedFrames)
-      self.conf.set("Timing","float_frame_dur_threshold_ms", QDSpy_FrDurThreshold_ms)
-      self.conf.set("Timing","bool_use_digitalIO",        QDSpy_useUL_DIO)
-      self.conf.set("Timing","int_digitalIO_board_num",   QDSpy_UL_boardNum)
-      self.conf.set("Timing","int_digitalIO_device_num",  QDSpy_UL_deviceNum)
-      self.conf.set("Timing","int_digitalio_port_out",    QDSpy_UL_portOut)
-      self.conf.set("Timing","int_digitalio_port_in",     QDSpy_UL_portIn)
-      self.conf.set("Timing","int_digitalio_pin_markerOut", QDSpy_UL_pinMarkerOut)
+      self.conf.set("Timing","bool_incr_process_prior",   
+                    glo.QDSpy_incProcessPrior)
+      self.conf.set("Timing","bool_try_forcing_fsync",    
+                    glo.QDSpy_tryForcingFSync)
+      self.conf.set("Timing","bool_disable_garbage_collector", 
+                    glo.QDSpy_disableGarbageCollect)      
+      self.conf.set("Timing","bool_track_timing",         
+                    glo.QDSpy_trackTiming)
+      self.conf.set("Timing","bool_warn_when_frames_dropped", 
+                    glo.QDSpy_warnDroppedFrames)
+      self.conf.set("Timing","float_frame_dur_threshold_ms", 
+                    glo.QDSpy_FrDurThreshold_ms)
+      self.conf.set("Timing","bool_use_digitalIO",        
+                    glo.QDSpy_useUL_DIO)
+      self.conf.set("Timing","int_digitalIO_board_num",   
+                    glo.QDSpy_UL_boardNum)
+      self.conf.set("Timing","int_digitalIO_device_num",  
+                    glo.QDSpy_UL_deviceNum)
+      self.conf.set("Timing","int_digitalio_port_out",    
+                    glo.QDSpy_UL_portOut)
+      self.conf.set("Timing","int_digitalio_port_in",     
+                    glo.QDSpy_UL_portIn)
+      self.conf.set("Timing","int_digitalio_pin_markerOut", 
+                    glo.QDSpy_UL_pinMarkerOut)
 
       self.conf.add_section("Paths")
-      self.conf.set("Paths", "str_shader",                QDSpy_pathShader)
-      self.conf.set("Paths", "str_stimuli",               QDSpy_pathStimuli)
-      self.conf.set("Paths", "str_application",           QDSpy_pathApplication)
-      self.conf.set("Paths", "str_logFiles",              QDSpy_pathLogFiles)
+      self.conf.set("Paths", "str_shader",                
+                    glo.QDSpy_pathShader)
+      self.conf.set("Paths", "str_stimuli",               
+                    glo.QDSpy_pathStimuli)
+      self.conf.set("Paths", "str_application",           
+                    glo.QDSpy_pathApplication)
+      self.conf.set("Paths", "str_logFiles",              
+                    glo.QDSpy_pathLogFiles)
       
       self.conf.add_section("Display")      
-      self.conf.set("Display","bool_use_lightcrafter",    QDSpy_use_Lightcrafter)
-      self.conf.set("Display","str_LED_names",            QDSpy_LEDNames_default)
-      self.conf.set("Display","int_LED_filter_peak_wavelengths", QDSpy_LEDPeakWLs_default)
-      self.conf.set("Display","int_LED_QtColor",          QDSpy_LEDQtColors_default)
-      self.conf.set("Display","bool_allowGammaLUT",       QDSpy_allowGammaLUT_default)
-      self.conf.set("Display","str_userGammaLUTFileName", QDSpy_userGammaLUTFileName)
-
-      self.conf.set("Display","bool_markerShowOnScreen",  QDSpy_markerShowOnScr)
-      self.conf.set("Display","int_markerRGBA",           QDSpy_markerRGBA)
+      self.conf.set("Display","bool_use_lightcrafter",   
+                    glo.QDSpy_use_Lightcrafter)
+      self.conf.set("Display","str_LED_names",            
+                    glo.QDSpy_LEDNames_default)
+      self.conf.set("Display","int_LED_filter_peak_wavelengths", 
+                    glo.QDSpy_LEDPeakWLs_default)
+      self.conf.set("Display","int_LED_QtColor",          
+                    glo.QDSpy_LEDQtColors_default)
+      self.conf.set("Display","bool_allowGammaLUT",       
+                    glo.QDSpy_allowGammaLUT_default)
+      self.conf.set("Display","str_userGammaLUTFileName", 
+                    glo.QDSpy_userGammaLUTFileName)
+      self.conf.set("Display","bool_markerShowOnScreen",  
+                    glo.QDSpy_markerShowOnScr)
+      self.conf.set("Display","int_markerRGBA",           
+                    glo.QDSpy_markerRGBA)
 
       self.conf.add_section("Tweaking")      
-      self.conf.set("Tweaking","bool_use3DTextures",      QDSpy_use3DTextures)
-      self.conf.set("Tweaking","bool_recordStim",         QDSpy_recordStim)
+      self.conf.set("Tweaking","bool_use3DTextures",      
+                    glo.QDSpy_use3DTextures)
+      self.conf.set("Tweaking","bool_recordStim",         
+                    glo.QDSpy_recordStim)
 
-      with open(QDSpy_iniFileName, 'w') as confFile:
+      with open(glo.QDSpy_iniFileName, 'w') as confFile:
         self.conf.write(confFile)
 
     self.isLoaded   = True
@@ -161,7 +196,7 @@ class Config:
   def save(self):
     # Safe configuration file
     #
-    with open(QDSpy_iniFileName, 'w') as confFile:
+    with open(glo.QDSpy_iniFileName, 'w') as confFile:
       self.conf.write(confFile)
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -189,7 +224,8 @@ class Config:
       # Read user-define gamma LUT, if one is defined
       #                          
       if (len(self.userLUTFName) > 0):
-        Stage.LUT_userDefined = gma.loadGammaLUT(self.pathApp +self.userLUTFName)
+        Stage.LUT_userDefined = gma.loadGammaLUT(self.pathApp +
+                                                 self.userLUTFName)
                           
       return Stage
   
@@ -199,11 +235,16 @@ class Config:
     # rotation) from the Stage object to the ini file
     #
     if self.isLoaded and (_Stage != None):
-      self.conf.set("Stage", "int_center_offs_x_pix",     _Stage.centOffX_pix)
-      self.conf.set("Stage", "int_center_offs_y_pix",     _Stage.centOffY_pix)
-      self.conf.set("Stage", "float_center_rotation_deg", _Stage.rot_angle)
-      self.conf.set("Stage", "float_scale_x_um_per_pix",  _Stage.scalX_umPerPix)
-      self.conf.set("Stage", "float_scale_y_um_per_pix",  _Stage.scalY_umPerPix)
+      self.conf.set("Stage", "int_center_offs_x_pix",     
+                    _Stage.centOffX_pix)
+      self.conf.set("Stage", "int_center_offs_y_pix",     
+                    _Stage.centOffY_pix)
+      self.conf.set("Stage", "float_center_rotation_deg", 
+                    _Stage.rot_angle)
+      self.conf.set("Stage", "float_scale_x_um_per_pix",  
+                    _Stage.scalX_umPerPix)
+      self.conf.set("Stage", "float_scale_y_um_per_pix",  
+                    _Stage.scalY_umPerPix)
       self.save()
   
 # ---------------------------------------------------------------------
@@ -215,7 +256,7 @@ def getParsedArgv():
   #
   parser    = argparse.ArgumentParser(description="Present a stimulus.")
   parser.add_argument("-t", "--timing", type=int, choices=[0],
-                      default=QDSpy_graphicsAPI,
+                      default=glo.QDSpy_graphicsAPI,
                       help="mechanism used for stimulus timing")
   parser.add_argument("-v", "--verbose", action="store_true",
                       help="show detailed analysis of timimg etc.")

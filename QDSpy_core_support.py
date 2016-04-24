@@ -84,12 +84,20 @@ defaultClock = Clock()
 #
 def setHighProcessPrior():
   if glb.QDSpy_incProcessPrior:
-    proc = psutil.Process(os.getpid())
-    proc.set_nice(psutil.HIGH_PRIORITY_CLASS)
+    proc      = psutil.Process(os.getpid())
+    pyVersion = sys.version_info[0] +sys.version_info[1]/10
+    if pyVersion <= 3.4:
+      proc.set_nice(psutil.HIGH_PRIORITY_CLASS)
+    else:  
+      proc.nice(psutil.HIGH_PRIORITY_CLASS)
 
 def setNormalProcessPrior():
   if glb.QDSpy_incProcessPrior:
-    proc = psutil.Process(os.getpid())
-    proc.set_nice(psutil.NORMAL_PRIORITY_CLASS)
+    proc      = psutil.Process(os.getpid())
+    pyVersion = sys.version_info[0] +sys.version_info[1]/10
+    if pyVersion <= 3.4:
+      proc.set_nice(psutil.NORMAL_PRIORITY_CLASS)
+    else:  
+      proc.nice(psutil.NORMAL_PRIORITY_CLASS)
 
 # ---------------------------------------------------------------------

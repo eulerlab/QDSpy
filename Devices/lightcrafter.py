@@ -16,8 +16,14 @@
 __author__ = "thomas.euler@eulerlab.de"
 
 # ---------------------------------------------------------------------
+import numpy as np
 import Devices.hid as hid
-import numpy       as np
+"""
+import sys
+if (sys.version_info[0] +sys.version_info[1]/10) <= 3.4:
+  import Devices.hid_py34_64 as hid
+else:
+"""
 
 # ---------------------------------------------------------------------
 LC_width             = 912

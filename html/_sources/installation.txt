@@ -5,80 +5,97 @@ Getting ready
 Installation
 ----------------------------------------------
 
-1) Install a current python distribution (**64-bit, Python 3.4.x**), e.g.
+1) Install a current python distribution (**64-bit, Python 3.5.x**), e.g.
    `Anaconda <https://store.continuum.io/cshop/anaconda/>`_. The following
    steps were tested with Anaconda3 - using a different distribution may
    require the installation of additional packages.
-
-   .. note:: Python 3.5.x is currently not recommended, because a fully 
-             functional QDSpy requires the hidapi package and that is not 
-             yet not available for the latest Python version (for details,
-             see below).
 
    You will need to start a windows shell can be started using ``cmd.exe`` or
    ``powershell.exe``. The latter is the better alternative, as it supports,
    among other things, a Unix-like syntax.
 
-2) Anaconda currently does not come with PyOpenGL, therefore execute in the 
-   shell:
+2) Anaconda may not come with PyOpenGL, therefore execute in the shell:
    :: 
      pip install pyopengl 
 
-   This does not nescessarily install the OpenGL extension GLUT. In most cases
-   QDSpy does not need GLUT. If, however, an error occurs because GLUT is 
-   missing, install GLUT following the instructions found `here 
-   <http://cim.mcgill.ca/~fmannan/comp557/Python%20and%20PyOpenGL%20Installation.html>`_.  
 
 3) Install the `pyglet <http://www.pyglet.org/>`_ extension by executing in the
    shell:
    ::
      pip install pyglet
 
-4) If you plan to use the LightCrafter 4500 not only as a displaying device
+4) Copy the content of the .zip file into a folder (e.g. ``C:\User\QDSpy``),
+   keeping the internal folder substructure intact.
+
+5) To run QDSpy, it is important to add the path to the QDSpy main folder to 
+   the ``PYTHONPATH`` environment variable. If this variable does not yet 
+   exist, it needs to be created. There are several ways to do this; an easy
+   way is using Spyder, which comes with the Anaconda package:
+  
+   a) run Spyder (note that the first start can take some time).
+   b) in the menu, select ``Tools``, then ``PYTHONPATH manager``
+   c) add the path to the QDSpy folder and press the ``synchronize`` button.
+
+   Note that open powershells need to be restarted to acknowledge this change.
+
+If you do not use any special hardware (e.g. digital I/O, a lightcrafter etc)
+or do not need gamma correction, you can proceed to the section 
+`Running the GUI version of QDSpy`_. Otherwise continue with the following 
+steps.
+
+6) If you plan to use the LightCrafter 4500 not only as a displaying device
    but also want to configure it via QDSpy (via USB), then you will need 
    the hidapi package.
 
-   *Python 3.4.x:*
+   For Python 3.4 and 3.5 (both 64 bit), pre-compiled libraries 
+   (``hid.cp3x-win_amd64.pyd``) are provided in ``...\QDSpy\Devices``. To test
+   if it works, run python in the main directory and try to import ``hid``
+   from the ``...\QDSpy\Devices`` subfolder:
+   ::
+     PS C:\User\QDSpy> python
+     Python 3.5.1 |Anaconda 4.0.0 (64-bit)| (default, Feb 16 2016, 09:49:46) [MSC v.1900 64 bit (AMD64)] on win32
+     Type "help", "copyright", "credits" or "license" for more information.
+     >>> import Devices.hid
+     >>>
+   
+   If no error occurs, your all set.
 
-   Just try to run QDSpy - the pre-compiled library ``hid.pyd`` provided in 
-   ``...\QDSpy\Devices`` should work (tested with Python 3.4.x, Windows 8.1 64-bit). 
+   If this does not work, the ``hidapi`` package needs to be installed. The 
+   installation of ``hidapi`` via pip generates an error unless the respective 
+   Microsoft Visual C++ compiler/SDK package is installed. Note that Python 3.4.x
+   and 3.5.x require different versions of Microsoft Visual C++. Currently,
+   the following steps seem to work for Python 3.5.x:
 
-   If this does not work, the ``hidapi`` package needs to be installed. Most likely, 
-   it cannot be installed via pip (see below) - this is because installing
-   ``hidapi`` under Python 3.4.x via pip requires the Microsoft Visual C++ 10.0
-   compiler being present,
-   and unfortunately there is no easy way of getting the needed components 
-   installed (so far only for Python 2, Microsoft provides a convinient installer). 
+   a) Install Microsoft Visual Studio Community 2015 (or Microsoft Visual Studio
+      Express 2015); the free version is sufficient. Make sure you choose the
+      user-defined installation, where you can include Visual C++ including its
+      tools as well as Python Tools for Visual Studio. 
+   b) Goto `hidapi <https://pypi.python.org/pypi/hidapi>`_, choose the newest
+      package (currently ``hidapi 0.7.99.post14``) and follow the instructions
+      listed under *Build from source*. To this end, use the git shell that
+      comes with `GitHub for Windows <https://desktop.github.com/>`_.
+   
+   Now try again importing ``hid`` as described above.
 
-   a) Install Microsoft Visual C++ 2010 (Express is sufficient)
-   b) Install Microsoft SDK 7.1 (Windows 7)
-   c) Create under ``C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\amd64\``
-      a .bat file called ``vcvars64.bat`` with the following content:
-      ::
-        "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
-   d) Now pip should work:
-      ::
-        pip install hidapi
+|
 
-   *Python 3.5.x:*
-
-   For Python 3.5.x, installation of ``hidapi`` now requires Microsoft 
-   Visual C++ 14.0. *Instructions to be added soon.*
-
-5) If you plan to use a digital I/O card from `Measurement Computing 
+7) If you plan to use a digital I/O card from `Measurement Computing 
    <http://www.mccdaq.com>`_, you need to install their `Universal Library
    <http://www.mccdaq.com/daq-software/universal-library.aspx>`_ 
    (the 64-bit version). Note that you'll need to reboot before the library is
    available to QDSpy. Enable the support for digital I/O in the 
    :doc:`inifile`:
-   :: 
+
+   .. code-block:: ini
+
      [Timing]
-     ...
      bool_use_digitalio = True
      int_digitalio_board_num = 0
      int_digitalio_device_num = 1
 
-6) If you need gamma correction (currently Windows-only): Depending how strongly 
+|
+
+8) If you need gamma correction (currently Windows-only): Depending how strongly 
    the color presentation needs to be changed, you may have to define/change a 
    registry key that tells Windows normally to prevents too extreme color changes 
    by the user. For details on gamma correction, see `here 
@@ -105,24 +122,8 @@ Installation
                 turn all screens unreadable!!
 
 
-7) Copy the content of the .zip file into a folder (e.g. ``C:\User\QDSpy``),
-   keeping the internal folder substructure intact.
-
-8) It is important to add the path to the QDSpy main folder to the ``PYTHONPATH``
-   environment variable. If this variable does not yet exist, it needs to be
-   created. There are several ways to do this but the easiest way is probably
-   using Spyder, which comes with the Anaconda package.
-  
-   a) run Spyder (note that the first start can take some time).
-   b) in the menu, select ``Tools``, then ``PYTHONPATH manager``
-   c) add the path to the QDSpy folder and press the ``synchronize`` button.
-
-   Note that open powershells need to be restarted to acknowledge this change.
-   
-
-
 Running the GUI version of QDSpy
-----------------------------------------------
+--------------------------------
 
 Open a windows shell (``powershell.exe``) and change to the QDSpy folder. 
 Run the GUI version of QDSpy:
