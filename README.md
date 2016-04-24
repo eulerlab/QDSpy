@@ -37,8 +37,6 @@ To get started, see ``/QDSpy/html/installation.html``.
   file for large lists or data structures; these should go into separate files
   to prevent delaying the stimulus presentation 
 * URGENT: Fix video presentation
-* URGENT: Recompile hidapi for Python 3.5. Implement use of correct pre-compiled
-  hidapi module depending on Python version (3.4 vs. 3.5)
 * Check timing of digital I/O signals (i.e. triggers).
 * Complete lightcrafter interface.
 * For color modes >1 (special lightcrafter modes), movie images need to be
@@ -71,6 +69,11 @@ To get started, see ``/QDSpy/html/installation.html``.
   prevent that new versions overwrite setup-specific settings (e.g. hardware 
   use, digital I/O configuration, etc.)
 * Removed currently unused tab "Setting" in GUI
+* Changed code for increasing process priority via `psutil` 
+* Added pre-compiled ``hidapi`` packages for Python 3.5.x (``hid.cp35-win_amd64.pyd``); 
+  the version for Python 3.4.x was renamed to ``hid.cp34-win_amd64.pyd``. 
+* **Now QDSpy fully supports Python 3.5.x.** The installation instructions were 
+  updated accordingly.
 * ...
 
 v0.6 beta (April 2016)
