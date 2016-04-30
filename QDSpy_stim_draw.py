@@ -12,8 +12,8 @@ __author__ 	= "code@eulerlab.de"
 # ---------------------------------------------------------------------
 import numpy              as np
 import QDSpy_stim         as stm
-import QDSpy_stim_support as sup
-from   QDSpy_global       import *
+import QDSpy_stim_support as spp
+import QDSpy_global       as glo
 
 # ---------------------------------------------------------------------
 def box2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
@@ -28,20 +28,20 @@ def box2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
   rect      = [-dx2, -dy2, dx2, dy2]
   newVert   = [rect[0], rect[1], rect[2], rect[1],
                rect[2], rect[3], rect[0], rect[3]]
-  newVert   = sup.rotateTranslate(newVert, rot_deg, pxy)
-  newVert   = sup.toInt(newVert)
+  newVert   = spp.rotateTranslate(newVert, rot_deg, pxy)
+  newVert   = spp.toInt(newVert)
   newiVTr   = [_nextiV, _nextiV+1, _nextiV+2, _nextiV, _nextiV+2, _nextiV+3]
   if _ob[stm.SO_field_doRGBAByVert]:
-    newRGBA = sup.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][0]) +\
-              sup.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][1]) +\
-              sup.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][2]) +\
-              sup.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][3])
+    newRGBA = spp.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][0]) +\
+              spp.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][1]) +\
+              spp.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][2]) +\
+              spp.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][3])
   else:
     tmpRGBA = _ob[stm.SO_field_fgRGB] +(_ob[stm.SO_field_alpha],)
-    newRGBA = len(newVert)//2 *sup.scaleRGB(_stim, tmpRGBA)
+    newRGBA = len(newVert)//2 *spp.scaleRGB(_stim, tmpRGBA)
 
   hList     = [stm.StimObjType.box, dy,dy, mx,my, rot_deg, pxy]
-  hStr      = sup.getHashStr(hList.__str__())
+  hStr      = spp.getHashStr(hList.__str__())
 
   return (newVert, newiVTr, newRGBA, hStr, pxy, rot_deg)
 
@@ -73,8 +73,8 @@ def ell2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
     newVert.append(round(rx*np.sin(ang)))
     newVert.append(round(ry*np.cos(ang)))
     ang     += dAng
-  newVert   = sup.rotateTranslate(newVert, rot_deg, pxy)
-  newVert   = sup.toInt(newVert)
+  newVert   = spp.rotateTranslate(newVert, rot_deg, pxy)
+  newVert   = spp.toInt(newVert)
 
   newiVTr   = []
   for i in range(nTri):
@@ -89,16 +89,16 @@ def ell2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
     #       were interpolated and arranged arround the circumfence ...
     # *************
     # *************
-    newRGBA = sup.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][0])
+    newRGBA = spp.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][0])
     tmpRGBA = (len(newVert)-1)//2 \
-               *sup.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][1])
+               *spp.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][1])
     newRGBA += tmpRGBA
   else:
     tmpRGBA = _ob[stm.SO_field_fgRGB] +(_ob[stm.SO_field_alpha],)
-    newRGBA = len(newVert)//2 *sup.scaleRGB(_stim, tmpRGBA)
+    newRGBA = len(newVert)//2 *spp.scaleRGB(_stim, tmpRGBA)
 
   hList     = [stm.StimObjType.ellipse, dy,dy, mx,my, rot_deg, pxy]
-  hStr      = sup.getHashStr(hList.__str__())
+  hStr      = spp.getHashStr(hList.__str__())
 
   return (newVert, newiVTr, newRGBA, hStr, pxy, rot_deg)
 
@@ -112,10 +112,31 @@ def sct2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
   rot_deg   = _sc[stm.SC_field_rot][_iob]
   pxy       = _sc[stm.SC_field_posXY][_iob]
 
+  if astep == None:
+    # If astep is not given, choose the best one
+    #
+    if awidth == 360:
+      # It's a full circle
+      #
+      astep = stm.Sector_maxStep
+      
+    else:
+      # Try to minimize the number of triangles needed while
+      # preserving the precission
+      #
+      for astep in range(stm.Sector_maxStep, 0, -1):
+        if (int(awidth) % astep) == 0:
+          break
+
+  nSteps    = int(min(max(1, awidth/astep), stm.Sector_maxTr))
+  """
+  spp.Log.write("DEBUG", "sct2vert: # steps={0}, angle={1}°, step angle={2}°"
+                .format(nSteps, awidth, astep))
+  """
   acenter   = -2*np.pi *acenter/360.0 +np.pi
   awidth    = 2*np.pi *awidth/360.0
   astep     = 2*np.pi *astep/360.0
-  nSteps    = int(min(max(5, round(awidth/astep)), stm.Sector_maxTr))
+  
 
   if offs > 0:
     # Is arc ...
@@ -138,15 +159,15 @@ def sct2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
       newiVTr += [_nextiV+i, _nextiV+i+1, _nextiV+i+2]
 
     if _ob[stm.SO_field_doRGBAByVert]:
-      RGBAout = sup.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][0])
-      RGBAin  = sup.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][1])
+      RGBAout = spp.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][0])
+      RGBAin  = spp.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][1])
       newRGBA = []
       for i in range(len(newVert)//4):
         newRGBA += RGBAout
         newRGBA += RGBAin
     else:
       tmpRGBA = _ob[stm.SO_field_fgRGB] +(_ob[stm.SO_field_alpha],)
-      newRGBA = len(newVert)//2 *sup.scaleRGB(_stim, tmpRGBA)
+      newRGBA = len(newVert)//2 *spp.scaleRGB(_stim, tmpRGBA)
 
   else:
     # Is sector ...
@@ -155,30 +176,30 @@ def sct2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
     ang     = acenter -awidth/2.0
     newVert = [0, 0]
     for i in range(1, nPnts):
-      newVert.append(round(r *np.sin(ang)))
-      newVert.append(round(-r *np.cos(ang)))
+      newVert.append(r *np.sin(ang))
+      newVert.append(-r *np.cos(ang))
       ang   += astep
 
     newiVTr   = []
-    for i in range(nSteps*2):
+    for i in range(nSteps +1):
       newiVTr += [_nextiV, _nextiV+i+1, _nextiV+i+2]
-    newiVTr[len(newiVTr)-1] = newiVTr[1]
+    #newiVTr[len(newiVTr)-1] = newiVTr[1]
 
     if _ob[stm.SO_field_doRGBAByVert]:
-      newRGBA = sup.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][0])
+      newRGBA = spp.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][0])
       tmpRGBA = (len(newVert)-1)//2 \
-                 *sup.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][1])
+                 *spp.scaleRGB(_stim, _ob[stm.SO_field_fgRGB][1])
       newRGBA += tmpRGBA
     else:
       tmpRGBA = _ob[stm.SO_field_fgRGB] +(_ob[stm.SO_field_alpha],)
-      newRGBA = len(newVert)//2 *sup.scaleRGB(_stim, tmpRGBA)
+      newRGBA = len(newVert)//2 *spp.scaleRGB(_stim, tmpRGBA)
 
-  newVert   = sup.rotateTranslate(newVert, rot_deg, pxy)
-  newVert   = sup.toInt(newVert)
+  newVert   = spp.rotateTranslate(newVert, rot_deg, pxy)
+  newVert   = spp.toInt(newVert)
 
   hList     = [stm.StimObjType.sector, r,offs,acenter,awidth,astep, mx,my,
                rot_deg, pxy]
-  hStr      = sup.getHashStr(hList.__str__())
+  hStr      = spp.getHashStr(hList.__str__())
 
   return (newVert, newiVTr, newRGBA, hStr, pxy, rot_deg)
 
@@ -186,13 +207,13 @@ def sct2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
 def marker2vert (_Stage, _Conf):
   # Generate vertices for the trigger marker
   #
-  dx2       = _Stage.dxScr /QDSpy_markerScrWidthFract /2
+  dx2       = _Stage.dxScr /glo.QDSpy_markerScrWidthFract /2
   pxy       = (_Stage.dxScr//2, -_Stage.dyScr//2)
   rect      = [-dx2, -dx2, dx2, dx2]
   newVert   = [rect[0], rect[1], rect[2], rect[1],
                rect[2], rect[3], rect[0], rect[3]]
-  newVert   = sup.rotateTranslate(newVert, 0, pxy)
-  newVert   = sup.toInt(newVert)
+  newVert   = spp.rotateTranslate(newVert, 0, pxy)
+  newVert   = spp.toInt(newVert)
   newiVTr   = (0, 1, 2, 0, 2, 3)
   newRGBA   = len(newVert) //2 *_Conf.markRGBA
   

@@ -11,14 +11,14 @@ __author__ 	= "code@eulerlab.de"
 
 import sys
 import ctypes
-from   QDSpy_global      import *
+import QDSpy_global      as glo
 from   OpenGL.GLUT       import *
 from   OpenGL.GLU        import *
 from   OpenGL.WGL        import *
 import pyglet
 from   pyglet.gl         import *
 from   pyglet.gl.gl_info import GLInfo
-pyglet.options['debug_gl']  = QDSpy_doOpenGLErrorChecking
+pyglet.options['debug_gl']  = glo.QDSpy_doOpenGLErrorChecking
 
 if sys.platform == 'win32':
   from win32api          import SetCursorPos
@@ -60,7 +60,7 @@ def getWindows (_View, _isFullScr):
                                      screen=_View.screens[_View.iScr],
                                      width=_View.winWidth,
                                      height=_View.winHeight,
-                                     caption=QDSpy_fullScrWinName)
+                                     caption=glo.QDSpy_fullScrWinName)
     
   else:
     winPyglet = pyglet.window.Window(vsync=True,
@@ -129,8 +129,8 @@ def setEventHandlers (_View):
       _View.onKeyboard(b"\x1B", 0, 0)
       return pyglet.event.EVENT_HANDLED
     el"""
-    if symbol == QDSpy_KEY_KillPresentPyglet:
-      _View.onKeyboard(QDSpy_KEY_KillPresent, 0, 0)
+    if symbol == glo.QDSpy_KEY_KillPresentPyglet:
+      _View.onKeyboard(glo.QDSpy_KEY_KillPresent, 0, 0)
 
 
   @_View.winPresent.event
@@ -191,20 +191,24 @@ def present (_View):
   # Swap display buffers to display new frame
   #
   pyglet.clock.tick()
-  """
-  for iWin, window in enumerate(pyglet.app.windows):
-    window.switch_to()
-    window.dispatch_events()
-    #window.dispatch_event('on_draw')
-    window.flip()
 
+  """  
   if _View.winMirror:
     _View.winMirror.switch_to()
     # ...
   _View.winPresent.switch_to()    
+  """
+  
+  for iWin, window in enumerate(pyglet.app.windows):
+    window.switch_to()
+    window.dispatch_events()
+    window.dispatch_event('on_draw')
+    window.flip()
+
   """ 
   _View.winPresent.dispatch_events()
   _View.winPresent.flip()
+  """
   glLoadIdentity()
   glBegin(GL_POINTS)
   glColor4f(0, 0, 0, 0)

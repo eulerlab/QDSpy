@@ -21,7 +21,7 @@ import time
 import os
 import sys
 from   datetime           import datetime
-from   QDSpy_global       import *
+import QDSpy_global       as glo
 import QDSpy_stim         as stm
 import QDSpy_stim_support as ssp
 import QDSpy_config       as cfg
@@ -64,7 +64,8 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   # Display startup message and return if running the up-to-date stimulus
   # immediately is not requested
   #
-  ssp.Log.write("***", QDSpy_versionStr +" Compiler - " +QDSpy_copyrightStr)
+  ssp.Log.write("***", glo.QDSpy_versionStr +
+                " Compiler - " +glo.QDSpy_copyrightStr)
   ssp.Log.write(" ", "Initializing ...")
   if _runMode == 0:
     return
@@ -318,7 +319,7 @@ def DefObj_Box(_iobj, _dx, _dy, _angle=0.0):
 
 
 # ---------------------------------------------------------------------
-def DefObj_SectorEx(_iobj, _r, _offs, _angle, _awidth, _astep=5,
+def DefObj_SectorEx(_iobj, _r, _offs, _angle, _awidth, _astep=None,
                     _enShader=0):
   """
   Defines a sector object and if shaders can be used for this object.
@@ -334,8 +335,9 @@ def DefObj_SectorEx(_iobj, _r, _offs, _angle, _awidth, _astep=5,
                   | (of the center of the arc)
   _awidth         | width of sector
                   | (angle, in degrees)
-  _astep          | "smoothness" of the curve (≥ 1),
-                  | the smaller the smoother
+  _astep          | "smoothness" of the arc 
+                  | (1° <= _astep <= 90)
+                  | if omitted, _astep is automatically optimized
   _enShader       | 0=disable shaders (default)
                   | 1=disable shaders,
                   | see :py:func:`QDS.SetObjShader`
@@ -353,7 +355,7 @@ def DefObj_SectorEx(_iobj, _r, _offs, _angle, _awidth, _astep=5,
   return _Stim.LastErrC
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-def DefObj_Sector(_iobj, _r, _offs, _angle, _awidth, _astep=5):
+def DefObj_Sector(_iobj, _r, _offs, _angle, _awidth, _astep=None):
   """
   See :py:func:`QDS.DefObj_SectorEx`
   """
@@ -892,8 +894,12 @@ def LC_setDisplayMode(_mode):
   =============== ==================================================
   """
   try:
+    """
     _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource, 
                             [_source, _bitDepth])
+    """                              
+    _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource) 
+                             
   except stm.StimException as e:
     ssp.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
                   .format(e.value, e))

@@ -91,7 +91,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span>   <span class="nn">datetime</span>           <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span>   <span class="nn">QDSpy_global</span>       <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">QDSpy_global</span>       <span class="kn">as</span> <span class="nn">glo</span>
 <span class="kn">import</span> <span class="nn">QDSpy_stim</span>         <span class="kn">as</span> <span class="nn">stm</span>
 <span class="kn">import</span> <span class="nn">QDSpy_stim_support</span> <span class="kn">as</span> <span class="nn">ssp</span>
 <span class="kn">import</span> <span class="nn">QDSpy_config</span>       <span class="kn">as</span> <span class="nn">cfg</span>
@@ -134,7 +134,8 @@
   <span class="c1"># Display startup message and return if running the up-to-date stimulus</span>
   <span class="c1"># immediately is not requested</span>
   <span class="c1">#</span>
-  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;***&quot;</span><span class="p">,</span> <span class="n">QDSpy_versionStr</span> <span class="o">+</span><span class="s2">&quot; Compiler - &quot;</span> <span class="o">+</span><span class="n">QDSpy_copyrightStr</span><span class="p">)</span>
+  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;***&quot;</span><span class="p">,</span> <span class="n">glo</span><span class="o">.</span><span class="n">QDSpy_versionStr</span> <span class="o">+</span>
+                <span class="s2">&quot; Compiler - &quot;</span> <span class="o">+</span><span class="n">glo</span><span class="o">.</span><span class="n">QDSpy_copyrightStr</span><span class="p">)</span>
   <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;Initializing ...&quot;</span><span class="p">)</span>
   <span class="k">if</span> <span class="n">_runMode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="k">return</span>
@@ -388,7 +389,7 @@
 
 
 <span class="c1"># ---------------------------------------------------------------------</span>
-<div class="viewcode-block" id="DefObj_SectorEx"><a class="viewcode-back" href="../commands.html#QDS.DefObj_SectorEx">[docs]</a><span class="k">def</span> <span class="nf">DefObj_SectorEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<div class="viewcode-block" id="DefObj_SectorEx"><a class="viewcode-back" href="../commands.html#QDS.DefObj_SectorEx">[docs]</a><span class="k">def</span> <span class="nf">DefObj_SectorEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                     <span class="n">_enShader</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Defines a sector object and if shaders can be used for this object.</span>
@@ -404,8 +405,9 @@
 <span class="sd">                  | (of the center of the arc)</span>
 <span class="sd">  _awidth         | width of sector</span>
 <span class="sd">                  | (angle, in degrees)</span>
-<span class="sd">  _astep          | &quot;smoothness&quot; of the curve (≥ 1),</span>
-<span class="sd">                  | the smaller the smoother</span>
+<span class="sd">  _astep          | &quot;smoothness&quot; of the arc </span>
+<span class="sd">                  | (1° &lt;= _astep &lt;= 90)</span>
+<span class="sd">                  | if omitted, _astep is automatically optimized</span>
 <span class="sd">  _enShader       | 0=disable shaders (default)</span>
 <span class="sd">                  | 1=disable shaders,</span>
 <span class="sd">                  | see :py:func:`QDS.SetObjShader`</span>
@@ -423,7 +425,7 @@
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
-<div class="viewcode-block" id="DefObj_Sector"><a class="viewcode-back" href="../commands.html#QDS.DefObj_Sector">[docs]</a><span class="k">def</span> <span class="nf">DefObj_Sector</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<div class="viewcode-block" id="DefObj_Sector"><a class="viewcode-back" href="../commands.html#QDS.DefObj_Sector">[docs]</a><span class="k">def</span> <span class="nf">DefObj_Sector</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  See :py:func:`QDS.DefObj_SectorEx`</span>
 <span class="sd">  &quot;&quot;&quot;</span>
@@ -962,8 +964,12 @@
 <span class="sd">  =============== ==================================================</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="k">try</span><span class="p">:</span>
-    <span class="n">_Stim</span><span class="o">.</span><span class="n">processLCrCommand</span><span class="p">(</span><span class="n">stm</span><span class="o">.</span><span class="n">StimLCrCmd</span><span class="o">.</span><span class="n">setInputSource</span><span class="p">,</span> 
-                            <span class="p">[</span><span class="n">_source</span><span class="p">,</span> <span class="n">_bitDepth</span><span class="p">])</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource, </span>
+<span class="sd">                            [_source, _bitDepth])</span>
+<span class="sd">    &quot;&quot;&quot;</span>                              
+    <span class="n">_Stim</span><span class="o">.</span><span class="n">processLCrCommand</span><span class="p">(</span><span class="n">stm</span><span class="o">.</span><span class="n">StimLCrCmd</span><span class="o">.</span><span class="n">setInputSource</span><span class="p">)</span> 
+                             
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_setInputSource: {0}, {1}&quot;</span>
                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>

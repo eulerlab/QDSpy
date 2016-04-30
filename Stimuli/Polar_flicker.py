@@ -6,8 +6,8 @@ import collections
 from functools import partial
 import matplotlib.pyplot as plt
 import numpy as np
-import QDS
-import seaborn as sns
+import QDS 
+import seaborn as sns 
 
 p = {'_sName'          : "Polar_flicker_0",
      '_sDescr'         : "Noise flicker distributed over a polar grid",

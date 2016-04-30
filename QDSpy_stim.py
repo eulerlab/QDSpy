@@ -47,8 +47,9 @@ class StimObjType:
   shader              = 201
   # ...
 
-Ellipse_maxTr         = 64
-Sector_maxTr          = 64
+Ellipse_maxTr         = 72
+Sector_maxTr          = 360
+Sector_maxStep        = 10
 
 SO_field_type         = 0
 SO_field_ID           = 1
@@ -364,9 +365,9 @@ class Stim:
       self.LastErrC = StimErrC.invalidAngles
       raise StimException(StimErrC.invalidAngles)
 
-    if (_astep <= 1)  :
-      _astep = 5
-
+    if (_astep != None) and ((_astep < 1) or (_astep > 90)):
+      _astep = None
+    
     try:
       self.ObjDict[_ID]
     except KeyError:
@@ -377,8 +378,8 @@ class Stim:
 
     newSector  = [StimObjType.sector, _ID,
                   (float(_r), float(_offs), float(_angle),
-                   float(_awidth), int(_astep)),
-			 SO_defaultFgRGB, SO_defaultAlpha, SO_default_RGBAByVert,
+                   float(_awidth), _astep),
+			    SO_defaultFgRGB, SO_defaultAlpha, SO_default_RGBAByVert,
                   _enShader, -1]
     self.ObjDict[_ID] = len(self.ObjList)
     self.ObjList.append(newSector)

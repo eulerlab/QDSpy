@@ -399,7 +399,7 @@ angle of an object is now set in the render command.</p>
 
 <dl class="function">
 <dt id="QDS.DefObj_SectorEx">
-<code class="descclassname">QDS.</code><code class="descname">DefObj_SectorEx</code><span class="sig-paren">(</span><em>_iobj</em>, <em>_r</em>, <em>_offs</em>, <em>_angle</em>, <em>_awidth</em>, <em>_astep=5</em>, <em>_enShader=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/QDS.html#DefObj_SectorEx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#QDS.DefObj_SectorEx" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">QDS.</code><code class="descname">DefObj_SectorEx</code><span class="sig-paren">(</span><em>_iobj</em>, <em>_r</em>, <em>_offs</em>, <em>_angle</em>, <em>_awidth</em>, <em>_astep=None</em>, <em>_enShader=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/QDS.html#DefObj_SectorEx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#QDS.DefObj_SectorEx" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a sector object and if shaders can be used for this object.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -447,8 +447,9 @@ angle of an object is now set in the render command.</p>
 </tr>
 <tr class="row-odd"><td>_astep</td>
 <td><div class="first last line-block">
-<div class="line">&#8220;smoothness&#8221; of the curve (≥ 1),</div>
-<div class="line">the smaller the smoother</div>
+<div class="line">&#8220;smoothness&#8221; of the arc</div>
+<div class="line">(1° &lt;= _astep &lt;= 90)</div>
+<div class="line">if omitted, _astep is automatically optimized</div>
 </div>
 </td>
 </tr>
@@ -466,7 +467,7 @@ angle of an object is now set in the render command.</p>
 
 <dl class="function">
 <dt id="QDS.DefObj_Sector">
-<code class="descclassname">QDS.</code><code class="descname">DefObj_Sector</code><span class="sig-paren">(</span><em>_iobj</em>, <em>_r</em>, <em>_offs</em>, <em>_angle</em>, <em>_awidth</em>, <em>_astep=5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/QDS.html#DefObj_Sector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#QDS.DefObj_Sector" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">QDS.</code><code class="descname">DefObj_Sector</code><span class="sig-paren">(</span><em>_iobj</em>, <em>_r</em>, <em>_offs</em>, <em>_angle</em>, <em>_awidth</em>, <em>_astep=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/QDS.html#DefObj_Sector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#QDS.DefObj_Sector" title="Permalink to this definition">¶</a></dt>
 <dd><p>See <a class="reference internal" href="#QDS.DefObj_SectorEx" title="QDS.DefObj_SectorEx"><code class="xref py py-func docutils literal"><span class="pre">QDS.DefObj_SectorEx()</span></code></a></p>
 </dd></dl>
 
