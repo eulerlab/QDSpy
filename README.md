@@ -74,7 +74,7 @@ To get started, see ``/QDSpy/html/installation.html``.
   the version for Python 3.4.x was renamed to ``hid.cp34-win_amd64.pyd``. 
 * **Now QDSpy fully supports Python 3.5.x.** The installation instructions were 
   updated accordingly.
-* ...
+* Fixed bug in drawing routines for sectors and arcs
 
 v0.6 beta (April 2016)
 * Bug fixes
