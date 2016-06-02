@@ -517,10 +517,10 @@ class Presenter:
       # rotation of the current display (stage settings)
       #
       glPushMatrix()
+      glTranslatef(self.Stage.centOffX_pix, self.Stage.centOffY_pix, 0)
       glScalef(self.Stage.scalX_umPerPix *self.Stage.winXCorrFact, 
                self.Stage.scalY_umPerPix *self.Stage.winXCorrFact, 0.0)
       glRotatef(self.Stage.rot_angle, 0, 0, 1)
-      glTranslatef(self.Stage.centOffX_pix, self.Stage.centOffY_pix, 0)
       self.currBatch.draw()    
       glPopMatrix()
       
