@@ -1,10 +1,6 @@
 ### QDSpy
 
-This is a software for generating and presenting stimuli for visual
-neuroscience. It is written in Python and based on 
-`QDS <http://wvad.mpimf-heidelberg.mpg.de/abteilungen/biomedizinischeOptik/software/qds/>`_, 
-uses 
-`OpenGL <https://www.opengl.org/>`_ and primarly targets Windows 7 (and above).
+This is a software for generating and presenting stimuli for visual neuroscience. It is written in Python and based on  (http://wvad.mpimf-heidelberg.mpg.de/abteilungen/biomedizinischeOptik/software/qds/), uses OpenGL and primarly targets Windows 7 (and above).
 
 *Note, this is an early beta version.*
 
@@ -23,15 +19,8 @@ To get started, see ``/QDSpy/html/installation.html``.
 
 * Starting a movie for the first time in a script can cause a delay of ~200 ms.
   A work-around is to start the movie right at the beginning of the script
-  starting section, for example:
-  ::
-    ...
-    QDS.StartScript()
-    QDS.Start_Movie(1, (0,0), [ 0,  0, 1,  1], (1,1), 0, 0)
-    QDS.Scene_Clear(2.00, 0)
-    ...
-
-  This avoids the delay later during the time-critical parts of a stimulus. 
+  starting section (for details, see documentation). This avoids the delay later 
+  during the time-critical parts of a stimulus. 
 
 ####To do
 
