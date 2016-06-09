@@ -1,27 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDSpy_stim.py
-#
-#  Library of stimulus routines and compiler
-#
-#  Copyright (c) 2013-2015 Thomas Euler
-#  All rights reserved.
-#
+"""
+QDSpy module - stimulus routines and classes as well as stimulus compiler
+               
+'Stim'
+  Class representing a visual stimulus        
+  This class is a graphics API independent.       
+               
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
-# ---------------------------------------------------------------------
 import pickle
-import numpy                  as np
-from   QDSpy_global           import *
-import QDSpy_stim_support     as ssp
-import QDSpy_stim_draw        as drw
-import QDSpy_stim_movie       as mov
-import QDSpy_stim_video       as vid
-import QDSpy_core_shader      as csh
+import numpy as np
+import QDSpy_global as glo
+import QDSpy_stim_support as ssp
+import QDSpy_stim_draw as drw
+import QDSpy_stim_movie as mov
+import QDSpy_stim_video as vid
+import QDSpy_core_shader as csh
 
-if QDSpy_use_Lightcrafter:
+if glo.QDSpy_use_Lightcrafter:
   import Devices.lightcrafter as lcr
   _LCr   = lcr.Lightcrafter(_isCheckOnly=True, _isVerbose=True)
 else:  
@@ -555,7 +556,7 @@ class Stim:
     self.LastErrC = StimErrC.ok
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def setColorLUTEntry(_index, _rgb):
+  def setColorLUTEntry(self, _index, _rgb):
     # Change a color LUT entry 
     # (For parameters, see QDS.py)
     #
@@ -1143,10 +1144,10 @@ class Stim:
       return
 
     ssp.Log.write(" ", "Saving stimulus...", True)
-    with open(sFileName +QDSpy_cPickleFileExt, "wb") as stimFile:
-      stimPick = pickle.Pickler(stimFile, QDSpy_cPickleProtocol)
+    with open(sFileName + glo.QDSpy_cPickleFileExt, "wb") as stimFile:
+      stimPick = pickle.Pickler(stimFile,  glo.QDSpy_cPickleProtocol)
 
-      stimPick.dump(QDSpy_fileVersionID)
+      stimPick.dump( glo.QDSpy_fileVersionID)
       stimPick.dump(self.nameStr)
       stimPick.dump(self.descrStr)
       stimPick.dump(self.cFreq_Hz)
@@ -1171,7 +1172,7 @@ class Stim:
       stimPick.dump(self.cODr_tr_vertRGBA)
 
     ssp.Log.write("ok", "Stimulus '{0}' saved to '{1}'"
-                  .format(self.nameStr, sFileName +QDSpy_cPickleFileExt))
+                  .format(self.nameStr, sFileName + glo.QDSpy_cPickleFileExt))
     self.LastErrC = StimErrC.ok
 
 
@@ -1184,13 +1185,13 @@ class Stim:
       ssp.Log.write(" ", "Loading compiled stimulus...", True)
 
     try:
-      with open(sFileName +QDSpy_cPickleFileExt, "rb") as stimFile:
+      with open(sFileName + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
 
         self.fileName = sFileName.replace("\\\\", "\\") 
         stimPick      = pickle.Unpickler(stimFile)
         ID            = stimPick.load()
 
-        if ID != QDSpy_fileVersionID:
+        if ID !=  glo.QDSpy_fileVersionID:
           self.LastErrC = StimErrC.wrongStimFileFormat
           ssp.Log.write("ERROR", self.getLastErrStr())
           raise StimException(self.LastErrC)
@@ -1226,13 +1227,13 @@ class Stim:
       
     # Get hash for pickle file  
     #
-    self.md5Str = ssp.getHashStrForFile(sFileName +QDSpy_cPickleFileExt)
+    self.md5Str = ssp.getHashStrForFile(sFileName + glo.QDSpy_cPickleFileExt)
 
     # Log some information
     # 
     if not(_onlyInfo):
       ssp.Log.write("ok", "Stimulus '{0}' loaded"
-                    .format(sFileName +QDSpy_cPickleFileExt))
+                    .format(sFileName + glo.QDSpy_cPickleFileExt))
       ssp.Log.write(" ", "Name       : {0}".format(self.nameStr))
       ssp.Log.write(" ", "Description: {0}".format(self.descrStr))
       ssp.Log.write(" ", "Frequency  : {0} Hz".format(self.cFreq_Hz))

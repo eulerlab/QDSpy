@@ -1,20 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDS_GUI_support.py
-#
-#  ...
-#
-#  Copyright (c) 2013-2015 Thomas Euler
-#  All rights reserved.
-#
+"""
+QDSpy module - support routines for the GUI version of QDSpy
+
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
 import os
-from   datetime           import datetime
-from   PyQt4              import QtCore, QtGui
-from   QDSpy_global       import *
+from   datetime import datetime
+from   PyQt4 import QtCore, QtGui
+import QDSpy_global as glo
 
 # ---------------------------------------------------------------------
 def getStimFileLists(_path):
@@ -27,11 +25,10 @@ def getStimFileLists(_path):
     f.extend(filenames)
     break
   for fName in f:
-    if (os.path.splitext(fName)[1]).lower() == QDSpy_stimFileExt:
+    if (os.path.splitext(fName)[1]).lower() == glo.QDSpy_stimFileExt:
       fName  = (os.path.splitext(os.path.basename(fName)))[0]
       stimFNames.append(_path +"\\" +fName)
   return stimFNames
-
 
 # ---------------------------------------------------------------------
 def getFNameNoExt(_fName):
@@ -39,15 +36,16 @@ def getFNameNoExt(_fName):
   #
   return (os.path.splitext(os.path.basename(_fName)))[0]
 
-
 # ---------------------------------------------------------------------
 def getStimCompileState(_fName):  
   # Check if pickle-file is current
   #
   fName  = os.path.splitext(_fName)[0]
-  tPy    = datetime.fromtimestamp(os.path.getmtime(fName +QDSpy_stimFileExt))
+  tStamp = os.path.getmtime(fName +glo.QDSpy_stimFileExt)
+  tPy    = datetime.fromtimestamp(tStamp)
   try:
-    tPck = datetime.fromtimestamp(os.path.getmtime(fName +QDSpy_cPickleFileExt))
+    tStamp = os.path.getmtime(fName +glo.QDSpy_cPickleFileExt)
+    tPck   = datetime.fromtimestamp(tStamp)
     return (tPck > tPy)
   except WindowsError:  
     pass
@@ -60,17 +58,6 @@ def getShortText(_win, _txt, _widget):
   metrics = QtGui.QFontMetrics(_win.font())
   return metrics.elidedText(_txt, QtCore.Qt.ElideRight, _widget.width())
   
-# ---------------------------------------------------------------------
-"""
-def getDictKeySafe(_dict, _key):
-  #
-  #
-  try:
-    return _dict[_key]
-  except KeyError:
-    return None
-"""
-
 # ---------------------------------------------------------------------
 def getLEDGUIObjects(_this, _index):
   #

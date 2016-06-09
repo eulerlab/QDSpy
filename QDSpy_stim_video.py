@@ -1,24 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-QDSpy module - defines video-related classes
+QDSpy module - defines video-related classes (ALPHA)
 
 'Video' 
-  A class that contains a video stream. 
+  A class that serves as a proxy for a streamed video
 
-'VidoeCtrl'
-  The video control class manages the presentation of a video stream
+'VideoCtrl'
+  The movie control class manages the streaming of the video
 
 Copyright (c) 2013-2016 Thomas Euler
 All rights reserved.
+
+***********************************************************************
+***********************************************************************
+TODO: Still uses pyglet directly ...
+***********************************************************************
+***********************************************************************
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
-# ---------------------------------------------------------------------
-import os.path
+import os
 import pyglet
-import QDSpy_stim   as stm
+import QDSpy_stim as stm
 import QDSpy_global as glo
 
 # ---------------------------------------------------------------------
@@ -147,6 +152,13 @@ class VideoCtrl:
     self.magXY     = _magXY
     self.rot       = _rot
     self.trans     = _trans
+    
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def setSpriteBatch(self, _batch):
+    # Set sprite batch
+    #
+    if self.Sprite != None:
+      self.Sprite.batch = _batch.currBatch        
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getNextFrIndex(self):

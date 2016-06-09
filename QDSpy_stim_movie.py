@@ -1,25 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDSpy_stim_movie.py
-#
-#  Movie-related classes:
-#  "Movie",     movie object class, contains a movie image as a 3D texture
-#  "MovieCtrl", movie control class, manages the presentation of a movie
-#               according to the presentation parameters
-#
-#  Copyright (c) 2013-2016 Thomas Euler
-#  All rights reserved.
-#
+"""
+QDSpy module - defines movie-related classes
+
+'Movie' 
+  A class that contains a movie image as a 3D texture. 
+
+'MovieCtrl'
+  The movie control class manages the presentation of a movie according to
+  the presentation parameters
+
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+
+***********************************************************************
+***********************************************************************
+TODO: Still uses pyglet directly ...
+***********************************************************************
+***********************************************************************
+"""
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
-# ---------------------------------------------------------------------
 import os.path
 import configparser
 import pyglet
-import QDSpy_stim   as stm
-from   QDSpy_global import *
+import QDSpy_stim as stm
+import QDSpy_global as glo
 
 # ---------------------------------------------------------------------
 # Movie object class
@@ -62,12 +69,16 @@ class Movie:
     self.Desc      = configparser.RawConfigParser()
     try:
       self.Desc.readfp(open(self.fNameDesc))
-      self.dxFr    = self.Desc.getint(QDSpy_movDescSect, QDSpy_movFrWidth)
-      self.dyFr    = self.Desc.getint(QDSpy_movDescSect, QDSpy_movFrHeight)
-      self.nFr     = self.Desc.getint(QDSpy_movDescSect, QDSpy_movFrCount)
-      self.comment = self.Desc.get(QDSpy_movDescSect, QDSpy_movComment)
-      self.is1FrBL = self.Desc.getboolean(QDSpy_movDescSect,
-                                          QDSpy_movIsFirstFrBottLeft)
+      self.dxFr    = self.Desc.getint(glo.QDSpy_movDescSect, 
+                                      glo.QDSpy_movFrWidth)
+      self.dyFr    = self.Desc.getint(glo.QDSpy_movDescSect, 
+                                      glo.QDSpy_movFrHeight)
+      self.nFr     = self.Desc.getint(glo.QDSpy_movDescSect, 
+                                      glo.QDSpy_movFrCount)
+      self.comment = self.Desc.get(glo.QDSpy_movDescSect, 
+                                   glo.QDSpy_movComment)
+      self.is1FrBL = self.Desc.getboolean(glo.QDSpy_movDescSect,
+                                          glo.QDSpy_movIsFirstFrBottLeft)
 
     except IOError:
       # Error parsing the description file
@@ -143,12 +154,12 @@ class Movie:
     tempDir         = os.path.dirname(_fName)
     if len(tempDir) > 0:
       tempDir      += "\\"
-    self.fNameDesc  = tempDir +tempStr +QDSpy_movDescFileExt
+    self.fNameDesc  = tempDir +tempStr +glo.QDSpy_movDescFileExt
     self.fNameImg   = _fName
     self.fExtImg    = os.path.splitext(_fName)[1].lower()
     self.isTestOnly = _testOnly
 
-    if self.fExtImg in QDSpy_movAllowedMovieExts:
+    if self.fExtImg in glo.QDSpy_movAllowedMovieExts:
       return self.__loadMontage()
     else:
       return stm.StimErrC.invalidMovieFormat      
@@ -236,6 +247,13 @@ class MovieCtrl:
       self.Sprite.scale    = self.magXY[0]
       self.Sprite.rotation = self.rot
       self.Sprite.opacity  = self.trans
+      
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def setSpriteBatch(self, _batch):
+    # Set sprite batch
+    #
+    if self.Sprite != None:
+      self.Sprite.batch = _batch.currBatch        
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getNextFrIndex(self):

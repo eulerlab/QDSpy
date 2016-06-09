@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDSpy_multiproc.py
-#
-#  ...
-#
-#  Copyright (c) 2013-2015 Thomas Euler
-#  Distributed under the terms of the GNU General Public License (GPL)
-#
+"""
+QDSpy module - to synchronize QDSpy processes
+
+'Sync'
+  Class to synchronize states and data (via a pipe) between the GUI process 
+  and the stimulus presenter process
+
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
@@ -26,6 +28,7 @@ class PipeValType:
   toCli_displayInfo  = 1
   toCli_TEMP         = 2
   # ...
+  toSrv_None         = 9
   toSrv_fileName     = 10
   toSrv_changedStage = 11 
 

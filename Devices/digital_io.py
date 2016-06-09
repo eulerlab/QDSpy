@@ -13,9 +13,9 @@
 __author__ 	= "code@eulerlab.de"
 
 # ---------------------------------------------------------------------
-import  ctypes
-from    ctypes                    import byref
-import  QDSpy_stim_support        as sup
+import ctypes
+from   ctypes                     import byref
+import QDSpy_stim_support         as sup
 from . import digital_io_UL_const as ULConst
 # ---------------------------------------------------------------------
 # Universal library(UL) devices (Measurement Computing)

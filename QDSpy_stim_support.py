@@ -1,26 +1,39 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDSpy_stim_support.py
-#
-#  Diverse functions to support stimulus generation and compilation
-#
-#  Copyright (c) 2013-2015 Thomas Euler
-#  All rights reserved.
-#
+"""
+QDSpy module - support functions for stimulus generation and compilation
+
+'rotateTranslate()'
+  Rotate the coordinates by the given angle
+  
+'scaleRGB()' 
+'scaleRGBShader()'
+  Scale color as RGBA depending on bit depth and color mode
+
+'getHashStr()'
+'getHashStrForFile()'
+  Get hashs for strings or files
+
+'Log'
+  Class that allows program-wide flexible logging. Only one instance that
+  is defined in this module. Writes log messages to stdout and/or sends 
+  messages via a pipe to the GUI process.
+
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-# ---------------------------------------------------------------------
 import sys
 import hashlib
 import datetime
-import numpy                   as  np
+import numpy as  np
 import Libraries.color_console as con
-import QDSpy_multiprocessing   as mpr
-import QDSpy_config            as cfg
-from   QDSpy_global            import *
-import QDSpy_stim
+import QDSpy_multiprocessing as mpr
+import QDSpy_config as cfg
+import QDSpy_global as glo
+import QDSpy_stim as stm  
 
 # ---------------------------------------------------------------------
 Msg_Prior_DEBUG    = -1
@@ -59,10 +72,10 @@ def toInt(_coords):
 def scaleRGB(_Stim, _inRGBA):
   # Scale color (RGBA) depending on bit depth and color mode (format)
   #
-  if _Stim.colorMode >= QDSpy_stim.ColorMode.LC_first:
+  if _Stim.colorMode >= stm.ColorMode.LC_first:
     # One of the lightcrafter specific modes ...
     #
-    if _Stim.colorMode == QDSpy_stim.ColorMode.LC_G9B9:
+    if _Stim.colorMode == stm.ColorMode.LC_G9B9:
       RGBA = np.clip(_inRGBA, 0, 255)
       g    = 2**int(RGBA[1]/255.0 *8) -1
       b    = 2**int(RGBA[2]/255.0 *8) -1
@@ -74,10 +87,10 @@ def scaleRGB(_Stim, _inRGBA):
   else:
     # One of the "normal" modes ...
     #
-    if _Stim.colorMode == QDSpy_stim.ColorMode._0_255:
+    if _Stim.colorMode == stm.ColorMode._0_255:
       RGBA = np.clip(_inRGBA, 0, 255)
       dv   = 255.0
-    elif _Stim.colorMode == QDSpy_stim.ColorMode._0_1:
+    elif _Stim.colorMode == stm.ColorMode._0_1:
       RGBA = np.clip(_inRGBA, 0, 1)
       dv   = 1.0
 
@@ -123,9 +136,6 @@ def getHashStrForFile(_sFName):
 # ---------------------------------------------------------------------
 # Log class
 #
-# from command line: writes log messages to stdout
-# from GUI         : sends log messages via pipe to GUI process:
-#                    [mpr.PipeValType.log, "timestamp", "formatted msg"]
 # ---------------------------------------------------------------------
 class Log:
   def __init__(self):
@@ -135,7 +145,7 @@ class Log:
     self.Sync           = None  
     self.stdFCol        = con.get_text_attr()
     self.stdBCol        = self.stdFCol & 0x0070
-    self.noMsgToStdOut  = not(QDSpy_workerMsgsToStdOut)
+    self.noMsgToStdOut  = not(glo.QDSpy_workerMsgsToStdOut)
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setGUISync(self, _Sync):
@@ -150,10 +160,10 @@ class Log:
   def write(self, _headerStr, _msgStr, _isProgress=False, _getStr=False):
     # Log a message
     #
-    if (_headerStr.upper() == "DEBUG") and not(QDSpy_isDebug):
+    if (_headerStr.upper() == "DEBUG") and not(glo.QDSpy_isDebug):
       return
 
-    if QDSpy_doLogTimeStamps:
+    if glo.QDSpy_doLogTimeStamps:
       # Generate a time stamp
       #
       tStr = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
