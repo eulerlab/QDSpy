@@ -12,9 +12,9 @@
 __author__ 	= "code@eulerlab.de"
 
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.7 beta"
+QDSpy_versionStr            = "QDSpy v0.6 beta"
 QDSpy_copyrightStr          = "(c) 2013-16 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v07beta.thomas_euler.eulerlab.de"
+QDSpy_appID                 = u"QDSpy3.v06beta.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_PRESENTATION_WIN"
 
 QDSpy_isDebug               = True
