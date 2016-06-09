@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDSpy_stim_video.py
-#
-#  Video-related classes:
-#  "Video",     video object class, a proxi to a streamed video
-#  "VideoCtrl", video control class, manages the streaming 
-#
-#  Copyright (c) 2013-2016 Thomas Euler
-#  All rights reserved.
-#
+"""
+QDSpy module - defines video-related classes
+
+'Video' 
+  A class that contains a video stream. 
+
+'VidoeCtrl'
+  The video control class manages the presentation of a video stream
+
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
@@ -17,7 +19,7 @@ __author__ = "code@eulerlab.de"
 import os.path
 import pyglet
 import QDSpy_stim   as stm
-from   QDSpy_global import *
+import QDSpy_global as glo
 
 # ---------------------------------------------------------------------
 # Video object class
@@ -78,7 +80,7 @@ class Video:
     self.fExtVideo  = os.path.splitext(_fName)[1].lower()
     self.isTestOnly = _testOnly
     
-    if self.fExtVideo in QDSpy_vidAllowedVideoExts:
+    if self.fExtVideo in glo.QDSpy_vidAllowedVideoExts:
       return self.__loadVideo()
     else:
       return stm.StimErrC.invalidVideoFormat      

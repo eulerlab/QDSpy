@@ -11,13 +11,11 @@
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-import pyglet 
-
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.6 beta"
+QDSpy_versionStr            = "QDSpy v0.7 beta"
 QDSpy_copyrightStr          = "(c) 2013-16 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v05beta.thomas_euler.eulerlab.de"
-QDSpy_fullScrWinName        = "x" #QDSPY_STIMULUS"
+QDSpy_appID                 = u"QDSpy3.v07beta.thomas_euler.eulerlab.de"
+QDSpy_fullScrWinName        = "QDSPY_PRESENTATION_WIN"
 
 QDSpy_isDebug               = True
 QDSpy_isGUIQuitWithDialog   = False
@@ -77,9 +75,6 @@ QDSpy_pathShader            = ".\\Shader\\"
 QDSpy_shaderFileExt         = ".cl"
 QDSpy_shaderFileCmdTok      = "#qds"
 QDSpy_loadShadersOnce       = True
-
-QDSpy_KEY_KillPresent       = b'q'
-QDSpy_KEY_KillPresentPyglet = pyglet.window.key.Q
 
 QDSpy_useUL_DIO             = True
 QDSpy_UL_boardNum           = 0
