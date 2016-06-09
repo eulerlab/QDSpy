@@ -31,14 +31,14 @@ To do
 * Complete lightcrafter interface.
 * For color modes >1 (special lightcrafter modes), movie images need to be
   converted with the respective cvolor scheme.
-* Add stimulus control window to be displayed on the GUI screen when stimulus
-  presentation is running fullscreen on a different display.
 * Add possibitity to control timing (i.e. sync refresh to an external source) 
   on genlock-enabled NVIDIA and/or ATI graphic cards.
 
 ----------------------------------------------
 Release notes
 ----------------------------------------------
+
+v0.7 beta (June 2016) 
 
 * Now reports GLSL version
 * Fixed error when QDSpy GUI does not find a compiled `__autorun`.
@@ -67,6 +67,23 @@ Release notes
 * **Now QDSpy fully supports Python 3.5.x.** The installation instructions were 
   updated accordingly.
 * Fixed bug in drawing routines for sectors and arcs
+* 'Q' now aborts stimulus presentation for both the command line and GUI 
+  version of QDSpy
+* Refractoring of the code that interfaces with the graphics API (currently
+  OpenGL via pyglet)
+* Fixed a bug in the way the scene is centered and scaled.
+* Added a **stimulus control window** to be displayed on the GUI screen when 
+  stimulus presentation is running fullscreen on a different display. This is beta;
+  the performance of drawing stimuli on different screens in parallel needs to
+  be carefully tested on different machines.
+  Added two entries to the `[Display]` section of the configuration file: 
+  `bool_use_control_window` activates or deactivates the control window, and 
+  `float_control_window_scale` is a scaling factor that defines the size of the
+  control window.
+* When upgrading a QDSpy installation, new configuration file parameters are now
+  automatically added.
+* Fixed a bug that caused QDSpy to freeze when changing stage parameters and
+  then playing a stimulus.  
 
 v0.6 beta (April 2016) 
 

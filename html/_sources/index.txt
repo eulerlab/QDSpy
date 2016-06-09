@@ -10,14 +10,13 @@ Welcome to QDSpy's documentation!
 .. QDSpy is provided under the 
    `GPLv3 license <http://www.gnu.org/licenses/gpl-3.0.en.html>`_.
 
-This is a simple Python software for scripting and presenting stimuli for visual
-neuroscience. It is based on 
+This is a software for generating and presenting stimuli for visual
+neuroscience. It is written in Python and based on 
 `QDS <http://wvad.mpimf-heidelberg.mpg.de/abteilungen/biomedizinischeOptik/software/qds/>`_, 
 uses 
-`OpenGL <https://www.opengl.org/>`_ and primarly targets Windows but may also 
-run on other operating systems.
+`OpenGL <https://www.opengl.org/>`_ and primarly targets Windows 7 (and above).
 
-*Note that this is an early, experimental (alpha) version. 
+*Note that this is an early beta version. 
 See also* :doc:`disclaimer`.
 
 
