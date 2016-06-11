@@ -833,7 +833,6 @@ class Presenter:
       #
       self.Batch = self.View.createBatch()
       self.Batch.set_shader_manager(self.ShManager)
-      print("self.Batch.set_shader_manager(self.ShManager)", self.ShManager)
  
       if self.isReady:
         ssp.Log.write("ok", "Stimulus '{0}' prepared".format(_Stim.nameStr))

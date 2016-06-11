@@ -83,7 +83,7 @@ class devIO_UL(devIO, object):
     super(devIO_UL, self).__init__()
 
     if   _type == devTypeUL.none:
-      return None
+      return 
 
     else:
       # Load respective hardware DLL
@@ -92,8 +92,8 @@ class devIO_UL(devIO, object):
         self.UL    = ctypes.windll.cbw64
       except WindowsError:
         sup.Log.write("ERROR", "Driver library 'cbw64.dll' not found")
-        exit()
-
+        return 
+        
       self.brdNum  = _boardNum
       self.devNum  = _devNum
       self.bData   = 0
@@ -111,7 +111,7 @@ class devIO_UL(devIO, object):
 
       else:
         sup.Log.write("ERROR", "Unknown digital I/O device")
-        exit()
+        return
 
       # Configure device
       #

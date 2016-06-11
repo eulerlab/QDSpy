@@ -175,9 +175,18 @@ Added two entries to the <cite>[Display]</cite> section of the configuration fil
 <cite>float_control_window_scale</cite> is a scaling factor that defines the size of the
 control window.</li>
 <li>When upgrading a QDSpy installation, new configuration file parameters are now
-automatically added.</li>
+automatically added.
+<strong>Important:</strong> for consistency, the names of some entries in the configuration
+file needed to be changed: <cite>str_digitalio_port_out</cite>, <cite>str_digitalio_port_in</cite>,
+<cite>str_led_filter_peak_wavelengths</cite>, <cite>str_led_names</cite>, <cite>str_led_qtcolor</cite>, and
+<cite>str_markerrgba</cite>. <strong>This needs to be corrected manually in any pre-existing
+configuration file in an existing installation.</strong> Alternatively, the configuration
+file can be deleted, triggering QDSpy to generated a new one with default values.</li>
 <li>Fixed a bug that caused QDSpy to freeze when changing stage parameters and
 then playing a stimulus.</li>
+<li>End program cleanly and with a clear error message when digital I/O is enabled
+in the configuration file but the Universal Library drivers are not installed.
+The default for the configuration file is now <cite>bool_use_digitalio = False</cite>.</li>
 </ul>
 <p>v0.6 beta (April 2016)</p>
 <ul class="simple">

@@ -81,9 +81,18 @@ v0.7 beta (June 2016)
   `float_control_window_scale` is a scaling factor that defines the size of the
   control window.
 * When upgrading a QDSpy installation, new configuration file parameters are now
-  automatically added.
+  automatically added. 
+  **Important:** for consistency, the names of some entries in the configuration 
+  file needed to be changed: `str_digitalio_port_out`, `str_digitalio_port_in`,
+  `str_led_filter_peak_wavelengths`, `str_led_names`, `str_led_qtcolor`, and 
+  `str_markerrgba`. **This needs to be corrected manually in any pre-existing
+  configuration file in an existing installation.** Alternatively, the configuration
+  file can be deleted, triggering QDSpy to generated a new one with default values.  
 * Fixed a bug that caused QDSpy to freeze when changing stage parameters and
   then playing a stimulus.  
+* End program cleanly and with a clear error message when digital I/O is enabled
+  in the configuration file but the Universal Library drivers are not installed. 
+  The default for the configuration file is now `bool_use_digitalio = False`.
 
 v0.6 beta (April 2016) 
 

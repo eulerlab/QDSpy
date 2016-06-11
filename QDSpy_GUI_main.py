@@ -126,13 +126,19 @@ class MainWinClass(QtGui.QMainWindow, form_class):
                           args=(self.currStimFName, True, self.Sync))
     self.worker.daemon = True     
     self.worker.start()    
-    self.isViewReady   = True
+    self.isViewReady = True
     self.setState(State.idle, True)
-
+    
     # Update GUI ...
     #
     self.updateStimList()
     self.updateAll()
+    
+    # Check if worker process is still alive
+    #
+    time.sleep(1.0)
+    if not(self.worker.is_alive()):
+      sys.exit(0)
 
     # Check if autorun stimulus file present and if so run it
     #

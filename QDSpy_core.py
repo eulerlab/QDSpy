@@ -140,6 +140,12 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
   #
   if _Conf.useDIO:
     _IO  = dio.devIO_UL(dio.devTypeUL.PCIDIO24, _Conf.DIObrd, _Conf.DIOdev)
+    if not(_IO.isReady):
+      ssp.Log.write("ERROR", "Universal Library not installed or no digital "+
+                    "I/O card present. Set `bool_use_digitalio` in `QDSpy.in"+
+                    "i` to False.")
+      sys.exit(0)
+
     port = _IO.getPortFromStr(_Conf.DIOportOut)
     _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
     _IO.writeDPort(port, 0)    
@@ -280,7 +286,9 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
 
       # Dispatch events for the OpenGL window and sleep for a bit
       #
-      #_View.dispatch_events()
+      '''
+      _View.dispatch_events()
+      '''
       time.sleep(0.05)
 
   # Restore gamma LUT, if nescessary
