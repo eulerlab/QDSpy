@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDSpy_stim_draw.py
-#
-#  Copyright (c) 2013-2015 Thomas Euler
-#  All rights reserved.
-#
+"""
+QDSpy module - routines to generate graphical objects as vertex lists
+
+This module is a graphics API independent.
+  
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-# ---------------------------------------------------------------------
-import numpy              as np
-import QDSpy_stim         as stm
+import numpy as np
+import QDSpy_stim as stm
 import QDSpy_stim_support as spp
-import QDSpy_global       as glo
+import QDSpy_global as glo
 
 # ---------------------------------------------------------------------
 def box2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
@@ -129,10 +130,10 @@ def sct2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
           break
 
   nSteps    = int(min(max(1, awidth/astep), stm.Sector_maxTr))
-  """
+  '''
   spp.Log.write("DEBUG", "sct2vert: # steps={0}, angle={1}°, step angle={2}°"
                 .format(nSteps, awidth, astep))
-  """
+  '''
   acenter   = -2*np.pi *acenter/360.0 +np.pi
   awidth    = 2*np.pi *awidth/360.0
   astep     = 2*np.pi *astep/360.0

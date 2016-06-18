@@ -1,30 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDS.py
-#
-#  Library for stimulus scripts
-#
-#  This is a simple Python software for scripting and presenting stimuli
-#  for visual neuroscience. It is based on QDS, uses OpenGL via pyglet
-#  and primarly targets Windows, but may also run on other operating
-#  systems.
-#
-#  Copyright (c) 2013-2016 Thomas Euler
-#  All rights reserved.
-#
+"""
+QDSpy module - stimulus script API
+
+This is a simple Python software for scripting and presenting stimuli
+for visual neuroscience. It is based on QDS, currently uses OpenGL via
+pyglet for graphics. It primarly targets Windows, but may also run on 
+other operating systems
+
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-# ---------------------------------------------------------------------
 import time
 import os
 import sys
-from   datetime           import datetime
-import QDSpy_global       as glo
-import QDSpy_stim         as stm
+from   datetime import datetime
+import QDSpy_global as glo
+import QDSpy_stim as stm
 import QDSpy_stim_support as ssp
-import QDSpy_config       as cfg
+import QDSpy_config as cfg
 
 # ---------------------------------------------------------------------
 _Stim   = stm.Stim()

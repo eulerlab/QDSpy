@@ -1,24 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDSpy_stage.py
-#
-#  The stimulus stage class (Stage) manages all parameters about the
-#  projection device (e.g. screen, beamer), including scale, center
-#  of stimulation, global rotation angle, refresh rate etc.
-#
-#  Copyright (c) 2013-2015 Thomas Euler
-#  All rights reserved.
-#
+"""
+QDSpy module - to manage all projection device-related parameters
+
+'Stage' 
+  This class manages all parameters concnerning the projection device
+  (e.g. screen, beamer), including scale, center of stimulation, global 
+  rotation angle, refresh rate, LED current etc.
+  This class is a graphics API independent.
+
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-from   QDSpy_global           import * 
-import QDSpy_stim_support     as ssp
-import QDSpy_gamma            as gma
-import pyglet
+import QDSpy_global as glo
+import QDSpy_stim_support as ssp
+import QDSpy_gamma as gma
+import Graphics.renderer_opengl as rdr
 
-if QDSpy_use_Lightcrafter:
+if glo.QDSpy_use_Lightcrafter:
   import Devices.lightcrafter as lcr
 
 # ---------------------------------------------------------------------
@@ -34,16 +36,9 @@ ScrDevStr             = dict([
 # Stimulus stage class
 # ---------------------------------------------------------------------
 class Stage:
-  """
-  def __init__(self, _winWidth=480, _winHeight=320,
-               _winLeft=0, _winTop=0, 
-               _scalX=1.0, _scalY=1.0, _offX=0, _offY=0, _rot=0, 
-               _rFreq=60.0, _scr=0, _disFSC=False, _d=None):
-  """
   def __init__(self, _winWidth, _winHeight, _winLeft, _winTop, 
                _scalX, _scalY, _offX, _offY, _rot, _rFreq, _scr, 
                _disFSC, _d=None):
-  
     # Initialize stage object from parameters or from dictionary (_d)
     #
     if _d == None:               
@@ -68,24 +63,18 @@ class Stage:
 
       # Determine the display device type
       #
-      platform            = pyglet.window.get_platform()
-      display             = platform.get_default_display()
-      screens             = display.get_screens()
-      if self.scrIndex >= len(screens):
+      R = rdr.Renderer()
+      if self.scrIndex >= R.get_screen_count():
         self.scrIndex     = 0
-      width               = screens[self.scrIndex].width 
-      height              = screens[self.scrIndex].height 
-
-      if (QDSpy_use_Lightcrafter and
+      (width, height)     = R.get_screen_size(self.scrIndex)
+      if (glo.QDSpy_use_Lightcrafter and
           (width == lcr.LC_width) and (height == lcr.LC_height)):
         self.scrDevType   = ScrDevType.DLPLCR4500EVM
       else:
         self.scrDevType   = ScrDevType.generic
-      
       self.scrDevName     = ScrDevStr[self.scrDevType]
-      mode                = screens[self.scrIndex].get_mode()      
-      self.depth          = mode.depth
-      self.scrDevFreq_Hz  = mode.rate
+      self.depth          = R.get_screen_depth(self.scrIndex)
+      self.scrDevFreq_Hz  = R.get_screen_refresh(self.scrIndex)
       self.isFullScr      = (self.dxScr == 0) or (self.dyScr == 0)
       self.LEDs           = []
       
@@ -134,7 +123,7 @@ class Stage:
     if _dur_s > 0.0:
       dur = _dur_s *self.scrReqFreq_Hz
       return (round(dur), 
-              abs(dur -round(dur)) < QDSpy_maxFrameDurDiff_s)
+              abs(dur -round(dur)) < glo.QDSpy_maxFrameDurDiff_s)
     else:
       return (-1, True)
 

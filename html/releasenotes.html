@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Known issues &mdash; QDSpy 0.6 beta documentation</title>
+    <title>Known issues &mdash; QDSpy 0.7 beta documentation</title>
     
     <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.6 beta',
+        VERSION:     '0.7 beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/bizstyle.js"></script>
-    <link rel="top" title="QDSpy 0.6 beta documentation" href="index.html" />
+    <link rel="top" title="QDSpy 0.7 beta documentation" href="index.html" />
     <link rel="next" title="Disclaimer" href="disclaimer.html" />
     <link rel="prev" title="QDS Commands" href="commands.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -47,7 +47,7 @@
         <li class="right" >
           <a href="commands.html" title="QDS Commands"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.6 beta documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.7 beta documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -78,8 +78,8 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -126,14 +126,13 @@ to prevent delaying the stimulus presentation</li>
 <li>Complete lightcrafter interface.</li>
 <li>For color modes &gt;1 (special lightcrafter modes), movie images need to be
 converted with the respective cvolor scheme.</li>
-<li>Add stimulus control window to be displayed on the GUI screen when stimulus
-presentation is running fullscreen on a different display.</li>
 <li>Add possibitity to control timing (i.e. sync refresh to an external source)
 on genlock-enabled NVIDIA and/or ATI graphic cards.</li>
 </ul>
 </div>
 <div class="section" id="release-notes">
 <h1>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
+<p>v0.7 beta (June 2016)</p>
 <ul class="simple">
 <li>Now reports GLSL version</li>
 <li>Fixed error when QDSpy GUI does not find a compiled <cite>__autorun</cite>.</li>
@@ -162,6 +161,32 @@ the version for Python 3.4.x was renamed to <code class="docutils literal"><span
 <li><strong>Now QDSpy fully supports Python 3.5.x.</strong> The installation instructions were
 updated accordingly.</li>
 <li>Fixed bug in drawing routines for sectors and arcs</li>
+<li>&#8216;Q&#8217; now aborts stimulus presentation for both the command line and GUI
+version of QDSpy</li>
+<li>Refractoring of the code that interfaces with the graphics API (currently
+OpenGL via pyglet)</li>
+<li>Fixed a bug in the way the scene is centered and scaled.</li>
+<li>Added a <strong>stimulus control window</strong> to be displayed on the GUI screen when
+stimulus presentation is running fullscreen on a different display. This is beta;
+the performance of drawing stimuli on different screens in parallel needs to
+be carefully tested on different machines.
+Added two entries to the <cite>[Display]</cite> section of the configuration file:
+<cite>bool_use_control_window</cite> activates or deactivates the control window, and
+<cite>float_control_window_scale</cite> is a scaling factor that defines the size of the
+control window.</li>
+<li>When upgrading a QDSpy installation, new configuration file parameters are now
+automatically added.
+<strong>Important:</strong> for consistency, the names of some entries in the configuration
+file needed to be changed: <cite>str_digitalio_port_out</cite>, <cite>str_digitalio_port_in</cite>,
+<cite>str_led_filter_peak_wavelengths</cite>, <cite>str_led_names</cite>, <cite>str_led_qtcolor</cite>, and
+<cite>str_markerrgba</cite>. <strong>This needs to be corrected manually in any pre-existing
+configuration file in an existing installation.</strong> Alternatively, the configuration
+file can be deleted, triggering QDSpy to generated a new one with default values.</li>
+<li>Fixed a bug that caused QDSpy to freeze when changing stage parameters and
+then playing a stimulus.</li>
+<li>End program cleanly and with a clear error message when digital I/O is enabled
+in the configuration file but the Universal Library drivers are not installed.
+The default for the configuration file is now <cite>bool_use_digitalio = False</cite>.</li>
 </ul>
 <p>v0.6 beta (April 2016)</p>
 <ul class="simple">
@@ -230,12 +255,12 @@ tags for the data analysis.</li>
         <li class="right" >
           <a href="commands.html" title="QDS Commands"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.6 beta documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.7 beta documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

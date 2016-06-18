@@ -1,40 +1,37 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDSpy_core.py
-#
-#  Command-line presentation program
-#
-#  This is a simple Python software for scripting and presenting stimuli
-#  for visual neuroscience. It is based on QDS, uses OpenGL via pyglet
-#  and primarly targets Windows, but may also run on other operating
-#  systems.
-#
-#  Copyright (c) 2013-2016 Thomas Euler
-#  All rights reserved.
-#
+"""
+QDSpy module - main program of command line-version of QDSpy
+
+This is a simple Python software for scripting and presenting stimuli
+for visual neuroscience. It is based on QDS, currently uses OpenGL via
+pyglet for graphics. It primarly targets Windows, but may also run on 
+other operating systems
+
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-# ---------------------------------------------------------------------
 import time
 import sys
 import gc
 import subprocess
 import pickle
-from   multiprocessing        import freeze_support
-from   QDSpy_global           import *
-import QDSpy_stim             as stm
-import QDSpy_stim_support     as ssp
-import QDSpy_config           as cnf
-import QDSpy_core_presenter   as cpr
-import QDSpy_core_view        as cvw
-import QDSpy_core_support     as csp
-import QDSpy_multiprocessing  as mpr
-import QDSpy_gamma            as gma
-import Devices.digital_io     as dio
+from   multiprocessing import freeze_support
+import QDSpy_global as glo
+import QDSpy_stim as stm
+import QDSpy_stim_support as ssp
+import QDSpy_config as cnf
+import QDSpy_core_presenter as cpr
+import QDSpy_core_view as cvw
+import QDSpy_core_support as csp
+import QDSpy_multiprocessing as mpr
+import QDSpy_gamma as gma
+import Devices.digital_io as dio
 
-if QDSpy_use_Lightcrafter:
+if glo.QDSpy_use_Lightcrafter:
   import Devices.lightcrafter as lcr
 
 # ---------------------------------------------------------------------
@@ -68,7 +65,7 @@ def loadStimulus(_fNameStim, _Stim):
   
       
 def connectLCr(_confirm=True):
-  if not(QDSpy_use_Lightcrafter) or not(_confirm):
+  if not(glo.QDSpy_use_Lightcrafter) or not(_confirm):
     _LCr = None
   else:
     ssp.Log.write(" ", "Trying to connect lightcrafter ...")
@@ -95,17 +92,17 @@ def switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim):
     if (_Stim != None):
       if (_Stim.colorMode in [stm.ColorMode._0_1, stm.ColorMode._0_255]):
         ssp.Log.write(" ", "Trying to set user-defined gamma LUT ...")
-        gma.setGammaLUT(_View.winPresent._dc, _Stage.LUT_userDefined)    
+        gma.setGammaLUT(_View.winPre._dc, _Stage.LUT_userDefined)    
       else:
         ssp.Log.write(" ", "Special color mode (#{0}), setting linear gamma"
                       "LUT ...".format(_Stim.colorMode))
-        gma.setGammaLUT(_View.winPresent._dc, _Stage.LUT_linDefault)    
+        gma.setGammaLUT(_View.winPre._dc, _Stage.LUT_linDefault)    
 
     
 def restoreGammaLUT(_Conf, _View):  
   if _Conf.allowGammaLUT:
     ssp.Log.write(" ", "Restoring linear gamma LUT ...")
-    gma.restoreGammaLUT(_View.winPresent._dc)    
+    gma.restoreGammaLUT(_View.winPre._dc)    
       
 # ---------------------------------------------------------------------
 # MAIN    
@@ -118,11 +115,12 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
 
   # Load configuration ...
   #
-  _Conf  = cnf.Config()
+  _Conf = cnf.Config()
 
   # Display startup message
   #
-  ssp.Log.write("***", QDSpy_versionStr +" Presenter - " +QDSpy_copyrightStr)  
+  ssp.Log.write("***", glo.QDSpy_versionStr +
+                " Presenter - " +glo.QDSpy_copyrightStr)  
   ssp.Log.write("ok", "Initializing ...")
   ssp.Log.write(" ", "{0:11}: high process priority during presentation"
                 .format("ENABLED" if _Conf.incPP else "disabled"))
@@ -132,16 +130,22 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
   # Generate stage and stimulus instances, as well as a view instance
   # (OpenGL window)
   #
-  _Stage  = _Conf.createStageFromConfig()
-  _Stim   = stm.Stim()
-  _View   = cvw.View(_Stage, _Conf)
-  _View.createWindow()
+  _Stage = _Conf.createStageFromConfig()
+  _Stim  = stm.Stim()
+  _View  = cvw.View(_Stage, _Conf)
+  _View.createStimulusWindow()
   _Stage.logInfo()
 
   # Initialize digital IO hardware, if requested
   #
   if _Conf.useDIO:
     _IO  = dio.devIO_UL(dio.devTypeUL.PCIDIO24, _Conf.DIObrd, _Conf.DIOdev)
+    if not(_IO.isReady):
+      ssp.Log.write("ERROR", "Universal Library not installed or no digital "+
+                    "I/O card present. Set `bool_use_digitalio` in `QDSpy.in"+
+                    "i` to False.")
+      sys.exit(0)
+
     port = _IO.getPortFromStr(_Conf.DIOportOut)
     _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
     _IO.writeDPort(port, 0)    
@@ -195,20 +199,33 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     #
     while(_Sync.Request.value != mpr.TERMINATING):
       try:
+        # Check if new data is in the pipe
+        #
+        data = [mpr.PipeValType.toSrv_None]
+        if _Sync.pipeSrv.poll():
+          data = _Sync.pipeSrv.recv()
+          
+          if data[0] == mpr.PipeValType.toSrv_changedStage:
+            # Stage parameter have changes, update immediately
+            #
+            _Stage.scalX_umPerPix = data[1]["scalX_umPerPix"]
+            _Stage.scalY_umPerPix = data[1]["scalY_umPerPix"]
+            _Stage.centOffX_pix   = data[1]["centOffX_pix"]
+            _Stage.centOffY_pix   = data[1]["centOffY_pix"]
+            _Stage.rot_angle      = data[1]["rot_angle"]
+            data = [mpr.PipeValType.toSrv_None]
+       
         # Parse client's request
         #
         if _Sync.Request.value == mpr.PRESENTING:
-          # Retrieve stimulus file name from pipe and load stimulus
-          #
-          if _Sync.pipeSrv.poll():
-            data = _Sync.pipeSrv.recv()
-            if data[0] == mpr.PipeValType.toSrv_fileName:
-              _fNameStim = data[1]
-              loadStimulus(_fNameStim, _Stim)
-              _Sync.setStateSafe(mpr.PRESENTING)
-            else:
-              ssp.Log.write("DEBUG", "mpr.PRESENTING, unexpected client data")
-            
+          if data[0] == mpr.PipeValType.toSrv_fileName:
+            # Retrieve stimulus file name from pipe and load stimulus
+            #
+            _fNameStim = data[1]
+            data       = [mpr.PipeValType.toSrv_None]
+            loadStimulus(_fNameStim, _Stim)
+            _Sync.setStateSafe(mpr.PRESENTING)
+              
             # Run stimulus ...
             #
             try:
@@ -222,29 +239,34 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
               _Presenter.LCr = disconnectLCr(_Presenter.LCr)
               _Presenter.finish()
               setPerformanceNormal(_Conf)
+              '''
               _Sync.setStateSafe(mpr.IDLE)
-
+              '''
+          else:
+            ssp.Log.write("DEBUG", "mpr.PRESENTING, unexpected client data")
+          
+          _Sync.setStateSafe(mpr.IDLE)  
+        
           
         elif _Sync.Request.value == mpr.COMPILING:          
-          # Retrieve stimulus file name from pipe and compile stimulus
-          #
-          if _Sync.pipeSrv.poll():
-            data = _Sync.pipeSrv.recv()
-            if data[0] == mpr.PipeValType.toSrv_fileName:
-              _fNameStim = data[1] +".py"
-              _Sync.setStateSafe(mpr.COMPILING)
-              try:
-                subprocess.check_call(["python", _fNameStim])
-                ssp.Log.write("ok", "... done")
+          if data[0] == mpr.PipeValType.toSrv_fileName:
+            # Retrieve stimulus file name from pipe and compile stimulus
+            #
+            _fNameStim = data[1] +".py"
+            data       = [mpr.PipeValType.toSrv_None]
+            _Sync.setStateSafe(mpr.COMPILING)
+            try:
+              subprocess.check_call(["python", _fNameStim])
+              ssp.Log.write("ok", "... done")
 
-              except subprocess.CalledProcessError:
-                ssp.Log.write("ERROR", "... failed.")
+            except subprocess.CalledProcessError:
+              ssp.Log.write("ERROR", "... failed.")
+
+          else:
+            ssp.Log.write("DEBUG", "mpr.COMPILING, unexpected client data")
                 
-            else:
-              ssp.Log.write("DEBUG", "mpr.COMPILING, unexpected client data")
-            
           _Sync.setStateSafe(mpr.IDLE)
-          
+
           
         elif not(_Sync.Request.value in [mpr.CANCELING, mpr.UNDEFINED]):
           # Unknown request
@@ -252,6 +274,11 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
           ssp.Log.write("DEBUG", "Request {0} unknown"
                         .format(_Sync.Request.value))
 
+
+        if data[0] != mpr.PipeValType.toSrv_None:
+          ssp.Log.write("DEBUG", "unexpected client data left after loop")
+          
+          
       finally:
         # Clear request
         #
@@ -259,7 +286,9 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
 
       # Dispatch events for the OpenGL window and sleep for a bit
       #
-      _View.winPresent.dispatch_events() 
+      '''
+      _View.dispatch_events()
+      '''
       time.sleep(0.05)
 
   # Restore gamma LUT, if nescessary
@@ -268,7 +297,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
       
   # Clean up
   #
-  _View.killWindow()
+  _View.killWindows()
   _Presenter.LCr = disconnectLCr(_Presenter.LCr)
     
   ssp.Log.write("ok", "... done")

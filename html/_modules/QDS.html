@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>QDS &mdash; QDSpy 0.6 beta documentation</title>
+    <title>QDS &mdash; QDSpy 0.7 beta documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.6 beta',
+        VERSION:     '0.7 beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="QDSpy 0.6 beta documentation" href="../index.html" />
+    <link rel="top" title="QDSpy 0.7 beta documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
@@ -40,7 +40,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../index.html">QDSpy 0.6 beta documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">QDSpy 0.7 beta documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>
@@ -52,8 +52,8 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -70,31 +70,28 @@
   <h1>Source code for QDS</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="c1"># ---------------------------------------------------------------------</span>
-<span class="c1">#  QDS.py</span>
-<span class="c1">#</span>
-<span class="c1">#  Library for stimulus scripts</span>
-<span class="c1">#</span>
-<span class="c1">#  This is a simple Python software for scripting and presenting stimuli</span>
-<span class="c1">#  for visual neuroscience. It is based on QDS, uses OpenGL via pyglet</span>
-<span class="c1">#  and primarly targets Windows, but may also run on other operating</span>
-<span class="c1">#  systems.</span>
-<span class="c1">#</span>
-<span class="c1">#  Copyright (c) 2013-2016 Thomas Euler</span>
-<span class="c1">#  All rights reserved.</span>
-<span class="c1">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">QDSpy module - stimulus script API</span>
+
+<span class="sd">This is a simple Python software for scripting and presenting stimuli</span>
+<span class="sd">for visual neuroscience. It is based on QDS, currently uses OpenGL via</span>
+<span class="sd">pyglet for graphics. It primarly targets Windows, but may also run on </span>
+<span class="sd">other operating systems</span>
+
+<span class="sd">Copyright (c) 2013-2016 Thomas Euler</span>
+<span class="sd">All rights reserved.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="c1"># ---------------------------------------------------------------------</span>
 <span class="n">__author__</span> 	<span class="o">=</span> <span class="s2">&quot;code@eulerlab.de&quot;</span>
 
-<span class="c1"># ---------------------------------------------------------------------</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span>   <span class="nn">datetime</span>           <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">import</span> <span class="nn">QDSpy_global</span>       <span class="kn">as</span> <span class="nn">glo</span>
-<span class="kn">import</span> <span class="nn">QDSpy_stim</span>         <span class="kn">as</span> <span class="nn">stm</span>
+<span class="kn">from</span>   <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">QDSpy_global</span> <span class="kn">as</span> <span class="nn">glo</span>
+<span class="kn">import</span> <span class="nn">QDSpy_stim</span> <span class="kn">as</span> <span class="nn">stm</span>
 <span class="kn">import</span> <span class="nn">QDSpy_stim_support</span> <span class="kn">as</span> <span class="nn">ssp</span>
-<span class="kn">import</span> <span class="nn">QDSpy_config</span>       <span class="kn">as</span> <span class="nn">cfg</span>
+<span class="kn">import</span> <span class="nn">QDSpy_config</span> <span class="kn">as</span> <span class="nn">cfg</span>
 
 <span class="c1"># ---------------------------------------------------------------------</span>
 <span class="n">_Stim</span>   <span class="o">=</span> <span class="n">stm</span><span class="o">.</span><span class="n">Stim</span><span class="p">()</span>
@@ -1008,13 +1005,13 @@
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../index.html">QDSpy 0.6 beta documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">QDSpy 0.7 beta documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

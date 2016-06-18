@@ -26,7 +26,7 @@ This is an exemplary configuration:
   int_screen_index = 0
   bool_disablefullscrcmd = True
   int_window_left_pix = 10
-  int_window_top_pix = 10
+  int_window_top_pix = 10  
   
   [Timing]
   bool_incr_process_prior = True
@@ -34,7 +34,7 @@ This is an exemplary configuration:
   bool_disable_garbage_collector = False
   bool_track_timing = True
   bool_warn_when_frames_dropped = True
-  float_frame_dur_threshold_ms = 2.0
+  float_frame_dur_threshold_ms = 5.0
   bool_use_digitalio = False
   int_digitalio_board_num = 0
   int_digitalio_device_num = 6
@@ -51,6 +51,8 @@ This is an exemplary configuration:
   str_userGammaLUTFileName = defaultGammaLUT
   bool_markerShowOnScreen = True
   int_markerRGBA = 255,127,127,255
+  bool_use_control_window = False
+  float_control_window_scale = 0.25
   
   [Paths]
   str_shader = ..\Shader\
@@ -61,9 +63,6 @@ This is an exemplary configuration:
   [Tweaking]
   bool_use3DTextures = 0
   bool_recordStim = 0  
-
-  
-
 
 
 

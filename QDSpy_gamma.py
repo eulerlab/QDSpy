@@ -1,23 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDSpy_gamma.py
-#
-#  Gamma correction functions
-#
-##  Copyright (c) 2013-2015 Thomas Euler
-#  All rights reserved.
-#
+"""
+QDSpy module - gamma correction functions
+
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
 import numpy
 import sys
 import time
-from   ctypes                import windll
-from   QDSpy_global          import *
-import QDSpy_stim_support    as ssp
-import QDSpy_stim            as stm
+from   ctypes             import windll
+import QDSpy_global       as glo
+import QDSpy_stim_support as ssp
+import QDSpy_stim         as stm
 
 # ---------------------------------------------------------------------
 def generateLinearLUT ():
@@ -94,7 +92,7 @@ def loadGammaLUT (_fName):
     r   = []
     g   = []
     b   = []
-    fName   = _fName +QDSpy_LUTFileExt
+    fName   = _fName +glo.QDSpy_LUTFileExt
     with open(fName, 'r') as LUTFile:
       for line in LUTFile:
         rgb = [int(v.strip()) for v in line.split(",")]

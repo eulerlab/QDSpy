@@ -1,33 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDS_GUI_main.py
-#
-#  ...
-#
-#  Copyright (c) 2013-2015 Thomas Euler
-#  All rights reserved.
-#
+"""
+QDSpy module - main program of the GUI version of QDSpy
+
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-# ---------------------------------------------------------------------
 import sys
 import time
 import os
 import pickle
-from   ctypes                 import windll
-from   PyQt4                  import QtCore, QtGui, uic
-from   multiprocessing        import Process
-import QDSpy_stim             as stm
-import QDSpy_stim_support     as ssp
-import QDSpy_config           as cfg
-import QDSpy_GUI_support      as gsu
-import QDSpy_multiprocessing  as mpr
-from   QDSpy_global           import *
+from   ctypes import windll
+from   PyQt4 import QtGui, uic
+from   multiprocessing import Process
+import QDSpy_stim as stm
+import QDSpy_stim_support as ssp
+import QDSpy_config as cfg
+import QDSpy_GUI_support as gsu
+import QDSpy_multiprocessing as mpr
+import QDSpy_global as glo
 import QDSpy_core
 
-if QDSpy_use_Lightcrafter:
+if glo.QDSpy_use_Lightcrafter:
   import Devices.lightcrafter as lcr
   
 # ---------------------------------------------------------------------
@@ -92,7 +89,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.spinBoxLED3.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
     self.spinBoxLED4.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
     self.btnSetLEDs.clicked.connect(self.OnClick_btnSetLEDs)
-    self.btnSetLEDs.setEnabled(QDSpy_use_Lightcrafter)
+    self.btnSetLEDs.setEnabled(glo.QDSpy_use_Lightcrafter)
 
     self.checkBoxStageCSEnable.clicked.connect(self.OnClick_checkStageCSEnable)
     self.spinBoxStageCS_hOffs.valueChanged.connect(
@@ -129,25 +126,32 @@ class MainWinClass(QtGui.QMainWindow, form_class):
                           args=(self.currStimFName, True, self.Sync))
     self.worker.daemon = True     
     self.worker.start()    
-    self.isViewReady   = True
+    self.isViewReady = True
     self.setState(State.idle, True)
-
+    
     # Update GUI ...
     #
     self.updateStimList()
     self.updateAll()
+    
+    # Check if worker process is still alive
+    #
+    time.sleep(1.0)
+    if not(self.worker.is_alive()):
+      sys.exit(0)
 
     # Check if autorun stimulus file present and if so run it
     #
     try:
-      self.currStimFName = self.currStimPath +QDSpy_autorunStimFileName
+      self.currStimFName = self.currStimPath +glo.QDSpy_autorunStimFileName
       self.isStimCurr    = gsu.getStimCompileState(self.currStimFName)
       if not(self.isStimCurr):
-        self.currStimFName = self.currQDSPath +"\\" +QDSpy_autorunDefFileName
+        self.currStimFName = "{0}\\{1}".format(self.currQDSPath, 
+                                               glo.QDSpy_autorunDefFileName)
         self.logWrite("ERROR", "No compiled `{0}` in current stimulus folder,"
                                " using `{1}` in `{2}`."
-                               .format(QDSpy_autorunStimFileName, 
-                                       QDSpy_autorunDefFileName, 
+                               .format(glo.QDSpy_autorunStimFileName, 
+                                       glo.QDSpy_autorunDefFileName, 
                                        self.currQDSPath))
       self.logWrite("DEBUG", "Running {0} ...".format(self.currStimFName))
       self.Stim.load(self.currStimFName, _onlyInfo=True)
@@ -164,8 +168,8 @@ class MainWinClass(QtGui.QMainWindow, form_class):
         ssp.Log.write("ERROR", "No compiled `{0}` in current stimulus folder,"
                                " and `{1}.pickle` is not in `{2}`. Program is"
                                " aborted."
-                               .format(QDSpy_autorunStimFileName, 
-                                       QDSpy_autorunDefFileName, 
+                               .format(glo.QDSpy_autorunStimFileName, 
+                                       glo.QDSpy_autorunDefFileName, 
                                        self.currQDSPath))
         sys.exit(0)
     
@@ -179,7 +183,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
   def keyPressEvent(self, e):
     # Allow pressing ESC to abort stimulus presentation ...
     #
-    if e.key() == QtCore.Qt.Key_Escape:
+    if e.key() in glo.QDSpy_KEY_KillPresent: 
       if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING]:
         self.OnClick_btnStimAbort()
 
@@ -187,7 +191,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
   def closeEvent(self, event):
     # User requested to close the application
     #
-    if QDSpy_isGUIQuitWithDialog:
+    if glo.QDSpy_isGUIQuitWithDialog:
       result = QtGui.QMessageBox.question(self, "Confirm closing QDSpy ...",
                                           "Are you sure you want to quit?",
                                           QtGui.QMessageBox.Yes | 
@@ -197,6 +201,10 @@ class MainWinClass(QtGui.QMainWindow, form_class):
         event.ignore()
         return
     
+    # Save config
+    #
+    self.Conf.save()
+        
     # Closing is immanent, stop stimulus, if running ...
     #
     if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING]:
@@ -211,7 +219,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
       fName = "{0}_{1:04d}".format(fName, j)
       j    += 1
       
-    fPath   = self.Conf.pathLogs +fName +QDSpy_logFileExtension
+    fPath   = self.Conf.pathLogs +fName +glo.QDSpy_logFileExtension
     self.logWrite(" ", "Saving log file to '{0}' ...".format(fPath))
     
     with open(fPath, 'w') as logFile:
@@ -631,7 +639,7 @@ if __name__ == "__main__":
   
   # Make sure that Windows uses its icon in the task bar
   #
-  windll.shell32.SetCurrentProcessExplicitAppUserModelID(QDSpy_appID)    
+  windll.shell32.SetCurrentProcessExplicitAppUserModelID(glo.QDSpy_appID)    
 
   # Show window and start GUI handler
   #

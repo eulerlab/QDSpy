@@ -1,32 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDSpy_core_presenter.py
-#
-#  The presenter class uses an OpenGL window (view) to sets up the
-#  stimulus screen (stage) and takes care of rendering compiled stimuli
-#
-##  Copyright (c) 2013-2016 Thomas Euler
-#  All rights reserved.
-#
+"""
+QDSpy module - interprets and presents compiled stimuli
+
+'Presenter' 
+  Presents a compiled stimulus. 
+  This class is a graphics API independent.
+ 
+Copyright (c) 2013-2016 Thomas Euler
+Distributed under the terms of the GNU General Public License (GPL)
+"""
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-import numpy                 as np
-from   QDSpy_global          import *
-import QDSpy_stim            as stm
-import QDSpy_stim_movie      as mov
-import QDSpy_stim_video      as vid
-import QDSpy_stim_draw       as drw
-import QDSpy_stim_support    as ssp
-import QDSpy_core_support    as csp
-import QDSpy_core_shader     as csh
-import QDSpy_config          as cfg
+import numpy as np
+import QDSpy_global as glo
+import QDSpy_stim as stm
+import QDSpy_stim_movie as mov
+import QDSpy_stim_video as vid
+import QDSpy_stim_draw as drw
+import QDSpy_stim_support as ssp
+import QDSpy_core_support as csp
+import QDSpy_core_shader as csh
+import QDSpy_config as cfg
 import QDSpy_multiprocessing as mpr
-import Devices.digital_io    as dio
-import pyglet
-from   pyglet.gl             import *
-pyglet.options['debug_gl']  = QDSpy_doOpenGLErrorChecking
+import Devices.digital_io as dio
 
 global Clock
 Clock  = csp.defaultClock
@@ -41,22 +39,12 @@ QDSpy_verbose = args.verbose
 if QDSpy_verbose:
   import pylab
 
-global QDSpy_graphicsAPI
-QDSpy_graphicsAPI = args.timing
-if QDSpy_graphicsAPI == 0:
-  import QDSpy_core_GL_default as grx
-"""
-elif QDSpy_graphicsAPI == 1:
-  import  QDSpy_core_GL_alter1  as grx
-elif QDSpy_graphicsAPI == 2:
-  import  QDSpy_core_GL_alter2  as grx
-"""
-
-# ---------------------------------------------------------------------
-# Presenter class
-# (based on pyOpenGL and pyglet)
+# =====================================================================
+#
 # ---------------------------------------------------------------------
 class Presenter:
+  """ Presenter class
+  """
   def __init__(self, _Stage, _IO, _Conf, _View, _View2=None, _LCr=None):
     # Initializing
     #
@@ -70,18 +58,11 @@ class Presenter:
 
     self.dtFr_meas_s  = self.Stage.dtFr_s
     self.dtFr_thres_s = self.dtFr_meas_s +(self.Conf.maxDtTr_ms)/1000.0
-    
+
     # Prepare recording of stimulus presentation, if requested
-    #
+    #      
     if self.Conf.recordStim:
-      self.bufferMan  = pyglet.image.get_buffer_manager()
-      # **********************
-      # **********************
-      # TODO: LUKE
-      # something like "function(self.Conf)"
-      # **********************
-      # **********************
-      print("called: prepare record stimulus presentation")
+      self.View.prepareGrabStim()
       
     # Define event handler(s)
     #
@@ -120,8 +101,8 @@ class Presenter:
     self.tFr          = 0.0
     self.tStart       = 0.0
 
-    if QDSpy_frRateStatsBufferLen > 0:
-      self.dataDtFr   = np.zeros(QDSpy_frRateStatsBufferLen, dtype=float)
+    if glo.QDSpy_frRateStatsBufferLen > 0:
+      self.dataDtFr   = np.zeros(glo.QDSpy_frRateStatsBufferLen, dtype=float)
     else:
       self.dataDtFr   = []
     self.dataDtFrLen  = 0
@@ -136,16 +117,10 @@ class Presenter:
     self.iVertTr      = np.array([], dtype=np.int)   # temporary index arrays
     self.vRGBTr       = np.array([], dtype=np.uint8) # temporary RGBA arrays
 
-    self.currIV       = None  # indexed VBO, not shader-enabled objects only
-    self.currIVShObj  = []    # list of current indexed VBOs for shader-
-                              # enabled objects, one VBO entry per object
     self.currShObjIDs = []    # list, IDs of current shader-enabled objects
     self.prevShObjIDs = []    # list, IDs of previously shown shader-enabled
                               # objects
     self.prevObjIDs   = []    # list, previously shown objects (all)
-
-    self.currIVGr     = None  # pyglet Group object for 'currIV' VBO
-    self.currIVShObjGr= []    # pyglet Group obhect for 'currIVShObj' VBOs
     self.ShProgList   = []    # list, available shader programs
                               # (ready to bind)
     self.MovieList    = []    # list, movie class objects
@@ -158,9 +133,7 @@ class Presenter:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def onKeyboard(self, _key, _x, _y):
-    if (not(self.isRunFromGUI) and
-        ((_key == b"\x1B") or              # ESC
-         (_key == QDSpy_KEY_KillPresent))): # Q
+    if not(self.isRunFromGUI) and _key in glo.QDSpy_KEY_KillPresent:
       self.isUserAbort = True
       self.stop()
 
@@ -199,13 +172,13 @@ class Presenter:
     elif   sc[stm.SC_field_type] == stm.StimSceType.clearSce:
       # Clear scene
       #
-      grx.clearScreen(self.View)
+      self.View.clear()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     elif   sc[stm.SC_field_type] == stm.StimSceType.changeBkgCol:
       # Change background color
       #
-      grx.clearScreen(self.View, sc[stm.SC_field_BkgRGB])
+      self.View.clear(sc[stm.SC_field_BkgRGB])
       
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     elif   sc[stm.SC_field_type] == stm.StimSceType.sendCommandToLCr:
@@ -285,14 +258,14 @@ class Presenter:
       #
       # Get movie object via movie ID
       #
-      _MovID  = sc[stm.SC_field_IDs][0]
-      _iMov   = self.Stim.MovDict[_MovID]
-      movOb   = self.MovieList[_iMov]
+      _MovID = sc[stm.SC_field_IDs][0]
+      _iMov  = self.Stim.MovDict[_MovID]
+      movOb  = self.MovieList[_iMov]
 
       # Create a new movie control object; this internally creates a
       # pyglet sprite, with the requested presentation properties
       #
-      mCtOb   = mov.MovieCtrl(sc[stm.SC_field_MovSeq], _Movie=movOb)
+      mCtOb  = mov.MovieCtrl(sc[stm.SC_field_MovSeq], _Movie=movOb)
       mCtOb.setSpriteProperties(sc[stm.SC_field_posXY], 
                                 sc[stm.SC_field_magXY],
                                 sc[stm.SC_field_rot], 
@@ -316,14 +289,14 @@ class Presenter:
       #
       # Get video object via video ID
       #
-      _VidID  = sc[stm.SC_field_IDs][0]
-      _iVid   = self.Stim.VidDict[_VidID]
-      vidOb   = self.VideoList[_iVid]
+      _VidID = sc[stm.SC_field_IDs][0]
+      _iVid  = self.Stim.VidDict[_VidID]
+      vidOb  = self.VideoList[_iVid]
 
       # Create a new movie control object; this internally creates a
       # pyglet sprite, with the requested presentation properties
       #
-      vCtOb   = vid.VideoCtrl(_Video=vidOb)
+      vCtOb  = vid.VideoCtrl(_Video=vidOb)
       vCtOb.setSpriteProperties(sc[stm.SC_field_posXY], 
                                 sc[stm.SC_field_magXY],
                                 sc[stm.SC_field_rot], 
@@ -346,8 +319,7 @@ class Presenter:
     elif sc[stm.SC_field_type] == stm.StimSceType.renderSce:
       # Render objects in scene
       #
-      grx.clearScreen(self.View)
-      #self.currBatch.invalidate()
+      self.View.clear()
       
       if self.Stim.cScOList[_iSc][0] >= 0:
           
@@ -362,32 +334,30 @@ class Presenter:
 
           # Generate pyglet Groups to bind shaders to objects, if required
           #
-          self.currIVShObjGr = []
+          self.Batch.delete_shader_handles()
 
           for iObj, ObjID in enumerate(ObjIDs):
             if ObjID < 0:
               continue
-            iObjList = self.Stim.ObjDict[ObjID]
-            iSh      = self.Stim.ObjList[iObjList][stm.SO_field_shProgIndex]
+            iObjList  = self.Stim.ObjDict[ObjID]
+            iSh       = self.Stim.ObjList[iObjList][stm.SO_field_shProgIndex]
             if iSh >= 0:
               # Create Group object referencing to requested shader and set
               # shader parameters (uniforms)
               #
-              shPar  = self.Stim.ShList[iSh][stm.SH_field_Params]
-              shType = self.Stim.ShList[iSh][stm.SH_field_shaderType]
-              shOGr  = csh.ShaderBindGroup(self.ShProgList[iSh], shType,
-                                           ObjID, self.ShManager)
-              shOGr.set_time(self.tFrRel_s)
-              x      = ObjPosXY[iObj][0] +self.Stage.dxScr
-              y      = ObjPosXY[iObj][1] +self.Stage.dyScr
-              a_rad  = (ObjRot[iObj]+90.0)*np.pi/180.0
-              shOGr.set_params([x,y], a_rad, shPar)
-              self.currIVShObjGr.append(shOGr)
+              shPar   = self.Stim.ShList[iSh][stm.SH_field_Params]
+              shType  = self.Stim.ShList[iSh][stm.SH_field_shaderType]
+              self.Batch.add_shader_handle(ObjID, self.ShProgList[iSh], shType)
+              x       = ObjPosXY[iObj][0] +self.Stage.dxScr
+              y       = ObjPosXY[iObj][1] +self.Stage.dyScr
+              a_rad   = (ObjRot[iObj]+90.0)*np.pi/180.0
+              self.Batch.set_shader_time(ObjID, self.tFrRel_s)
+              self.Batch.set_shader_parameters(ObjID, [x,y], a_rad, shPar)
+              
             else:
               # No shader
               #
-              self.currIVShObjGr.append(csh.NoneGroup())
-
+              self.Batch.add_shader_handle(ObjID)
 
           # Check if vertex list(s) need(s) to be updated or re-created
           #
@@ -398,8 +368,7 @@ class Presenter:
           # Kill vertex data of previous shader-enabled objects
           #
           self.currShObjIDs = []
-          for i in range(len(self.currIVShObj)):
-            self.currIVShObj.pop().delete()
+          self.Batch.delete_shader_object_data()
 
           for iObj in range(nObjs):
             self.iVertTr = self.Stim.cODr_tr_iVert[iODr][iObj][2]
@@ -410,33 +379,22 @@ class Presenter:
               # Not shader-enabled objects ...
               #
               if ObjNewMask[iObj] == stm.SC_ObjNewAll:
-                if self.currIV != None:
-                  self.currIV.delete()
-                self.currIV = \
-                  self.currBatch.add_indexed(len(self.vertTr)//2,
-                                             GL_TRIANGLES,
-                                             self.currIVGr, self.iVertTr,
-                                             ("v2i/stream", self.vertTr),
-                                             ("c4B/stream", self.vRGBATr))
+                self.Batch.replace_object_data(self.iVertTr, self.vertTr, 
+                                               self.vRGBATr)
               else:
                 if (ObjNewMask[iObj] & stm.SC_ObjNewiVer) > 0:
-                  self.currIV.indices  = self.iVertTr
+                  self.Batch.replace_object_data_indices(self.iVertTr)
                 if (ObjNewMask[iObj] & stm.SC_ObjNewVer) > 0:
-                  self.currIV.vertices = self.vertTr
+                  self.Batch.replace_object_data_vertices(self.vertTr)
                 if (ObjNewMask[iObj] & stm.SC_ObjNewRGBA) > 0:
-                  self.currIV.colors   = self.vRGBATr
+                  self.Batch.replace_object_data_colors(self.vRGBATr)
 
             else:
               # For each shader-enabled object ...
               #
               self.currShObjIDs.append(ObjIDs[iObj])
-              self.currIVShObj.append(self.currBatch.add_indexed(
-                                      len(self.vertTr)//2,
-                                      GL_TRIANGLES,
-                                      self.currIVShObjGr[iObj-1],
-                                      self.iVertTr,
-                                      ("v2i/stream", self.vertTr),
-                                      ("c4B/stream", self.vRGBATr)))
+              self.Batch.add_shader_object_data(ObjIDs[iObj], self.iVertTr, 
+                                                self.vertTr, self.vRGBATr)
 
           self.prevShObjIDs = self.currShObjIDs
           self.prevObjIDs   = ObjIDs
@@ -445,9 +403,7 @@ class Presenter:
           # Not first frame of a new scene, just update the shader
           # parameters, if any, ...
           #
-          for shOGr in self.currIVShObjGr:
-            if shOGr.__class__ is csh.ShaderBindGroup:
-              shOGr.set_time(self.tFrRel_s)
+          self.Batch.set_shader_time_all(self.tFrRel_s)
 
         # Draw current triangle vertices, acknowledging the scaling and
         # rotation of the current display (stage settings)
@@ -489,7 +445,7 @@ class Presenter:
                         .format(iMC, _iSc, self.nFrTotal -iFrWhenStarted))
           """
         else:
-          mCtOb.Sprite.batch = self.currBatch
+          mCtOb.setSpriteBatch(self.Batch)
           iMC += 1
 
       # Keep video control objects updated: Advance or kill, if finished
@@ -510,27 +466,19 @@ class Presenter:
           vCtOb.kill()
 
         else:
-          vCtOb.Sprite.batch = self.currBatch
+          vCtOb.setSpriteBatch(self.Batch)
           iVC += 1
           
       # Draw current triangle vertices, acknowledging the scaling and
       # rotation of the current display (stage settings)
       #
-      glPushMatrix()
-      glTranslatef(self.Stage.centOffX_pix, self.Stage.centOffY_pix, 0)
-      glScalef(self.Stage.scalX_umPerPix *self.Stage.winXCorrFact, 
-               self.Stage.scalY_umPerPix *self.Stage.winXCorrFact, 0.0)
-      glRotatef(self.Stage.rot_angle, 0, 0, 1)
-      self.currBatch.draw()    
-      glPopMatrix()
+      self.Batch.draw(self.Stage, self.View)
       
     # Show marker, if requested and present in the current scene
     #
     if self.Conf.markShowOnScr and sc[stm.SC_field_marker]:  
-      pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
-                                   self.markerVert[1],
-                                   ("v2i/stream", self.markerVert[0]),
-                                   ("c4B/stream", self.markerVert[2]))
+      self.Batch.add_marker_data(self.markerVert[1], self.markerVert[0],
+                                 self.markerVert[2])   
       
     # Track rendering timing, if requested
     #
@@ -547,8 +495,9 @@ class Presenter:
     # Check if stimulus is defined
     #
     if self.Stim == None:
-      grx.clearScreen(self.View)
+      self.View.clear()
       self.isEnd  = True
+
       if self.isIdle:
         # Stimulus has already ended; nothing to do ...
         #
@@ -649,7 +598,7 @@ class Presenter:
 
       # Flip display buffer ...
       #
-      grx.present(self.View)
+      self.View.present()
 
       # Send marker signal, if needed
       #
@@ -659,24 +608,7 @@ class Presenter:
       # Record stimulus presentation, if requested
       #
       if self.Conf.recordStim:
-        colBuf = self.bufferMan.get_color_buffer()
-        image  = colBuf.image_data.get_image_data()
-        # **********************
-        # **********************
-        # TODO: LUKE
-        # something like function(image, self.nFr), containing something like
-        '''
-        pil_image     = Image.fromstring(image.format, 
-                                         (image.width, image.height), 
-                                          image.get_data(image.format, image.pitch))
-        pil_image     = pil_image.transpose(Image.FLIP_TOP_BOTTOM)
-        pil_image     = pil_image.convert('RGB')
-        pil_image.save("D:\SCRATCH\MOVIE\{0:06d}.png".format(self.nFrTotal), "PNG")
-        '''
-        # **********************
-        # **********************
-        print("called: record stimulus presentation", self.nFr, self.nFrTotal)
-        
+        self.View.grabStimFrame()
     
     # Keep track of refresh duration
     #
@@ -724,22 +656,7 @@ class Presenter:
     ssp.Log.write("DATA", {"stimFileName": self.Stim.fileName, 
                            "stimState": "STARTED",
                            "stimMD5": self.Stim.md5Str}.__str__()) 
-    grx.startMainLoop(self)
-
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  '''
-  def onUpdate(self, dt):
-    # Needed for Pyglet-only version; unclear why empty ...
-    #
-    """
-    if not(self.isEnd):
-      self.onDraw()
-    else:
-      pyglet.app.exit()
-    """
-    pass
-  '''
+    self.View.startRenderingLoop(self)                       
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def stop(self):
@@ -747,7 +664,6 @@ class Presenter:
     #
     self.isEnd = True
     ssp.Log.write("DEBUG", "Presenter.stop()")
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def finish(self):
@@ -759,9 +675,10 @@ class Presenter:
     if self.isUserAbort:
       # Clear screen
       #
-      grx.clearScreen(self.View)
-      grx.present(self.View)
+      self.View.clear()
+      self.View.present()
       ssp.Log.write("ABORT", "User aborted program")
+      
     else:
       ssp.Log.write("ok", "Program finished")
 
@@ -775,7 +692,7 @@ class Presenter:
                     .format(self.avFrDur_s*1000.0, 1/self.avFrDur_s,
                             self.avRendDur_s*1000.0, self.nFrTotal))
 
-      if QDSpy_frRateStatsBufferLen > 0:
+      if glo.QDSpy_frRateStatsBufferLen > 0:
         if not(self.dataDtFrOver):
           data = self.dataDtFr[:self.dataDtFrLen]
         else:
@@ -839,15 +756,6 @@ class Presenter:
       self.isReady = False
       
     else:  
-      # Create pyglet batch object for rendering objects
-      #
-      self.currBatch     = pyglet.graphics.Batch()
-
-      # Create structures for batch object
-      #
-      self.currIVGr      = csh.NoneGroup()
-      self.currIVShObjGr = []
-
       # Setup digital I/O, if used
       # 
       if self.IO !=  None:
@@ -857,12 +765,12 @@ class Presenter:
       # Load and generate shader(s), if any
       #
       self.ShProgList    = []
-      if not(QDSpy_loadShadersOnce):
+      if not(glo.QDSpy_loadShadersOnce):
         self.ShManager   = csh.ShaderManager(self.Conf)
         
       if len(self.Stim.ShList) > 0:
         for iSh, Sh in enumerate(self.Stim.ShList):
-          shType         = Sh[stm.SH_field_shaderType]
+          shType = Sh[stm.SH_field_shaderType]
           if shType in self.ShManager.getShaderTypes():
             # Create shader program
             #
@@ -920,7 +828,12 @@ class Presenter:
             ssp.Log.write("ERROR", "Stimulus '{0}' uses video '{1}' that "
                           "cannot be found".format(
                           _Stim.nameStr,Mov[stm.SV_field_videoFName]))
-                      
+ 
+      # Create batch object for rendering objects
+      #
+      self.Batch = self.View.createBatch()
+      self.Batch.set_shader_manager(self.ShManager)
+ 
       if self.isReady:
         ssp.Log.write("ok", "Stimulus '{0}' prepared".format(_Stim.nameStr))
 

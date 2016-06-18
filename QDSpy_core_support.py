@@ -1,22 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  QDSpy_core_support.py
-#
-#  Diverse functions to support stimulus presentation
-#
-#  Time-related functions and classes were based on "clock.py"
-#  PsychoPy library 
-#  Copyright (C) 2015 Jonathan Peirce
-#  Distributed under the terms of the GNU General Public License (GPL)
-#
-#  Copyright (c) 2013-2015 Thomas Euler
-#  Distributed under the terms of the GNU General Public License (GPL)
-#
+"""
+QDSpy module - support routines related to timing and priority
+
+'Clock' 
+  Class that provides a high-precision clock and is based on "clock.py", from 
+  PsychoPy library Copyright (C) 2015 Jonathan Peirce, Distributed under the
+  terms of the GNU General Public License (GPL)
+  
+'setHighProcessPrior()', 'setNormalProcessPrior()'   
+  Routines to increase and reset process priority
+
+Copyright (c) 2013-2016 Thomas Euler
+Distributed under the terms of the GNU General Public License (GPL)
+"""
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-# ---------------------------------------------------------------------
 import os
 import sys
 import QDSpy_global as glb
