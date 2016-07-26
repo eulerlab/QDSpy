@@ -70,6 +70,8 @@ class Config:
     self.markRGBA     = glo.QDSpy_markerRGBA
     self.useCtrlWin   = glo.QDSpy_useCtrlWin
     self.ctrlWinScale = glo.QDSpy_ctrlWinScale
+    self.camWinGeom   = glo.QDSpy_camWinGeometry
+    self.allowCam     = glo.QDSpy_allowCam
 
     try:
       self.conf.readfp(open(glo.QDSpy_iniFileName))
@@ -167,7 +169,15 @@ class Config:
       self.recordStim   = self.getParam("Tweaking",  
                                         "bool_recordStim",
                                         glo.QDSpy_recordStim)
+      temp              = self.getParam("Tweaking",  
+                                        "str_window_geometry_cam",
+                                        glo.QDSpy_camWinGeometry)
+      self.camWinGeom   = [int(i) for i in temp.split(sep=",")]
+      self.allowCam     = self.getParam("Tweaking",  
+                                        "bool_allow_camera",
+                                        glo.QDSpy_allowCam)
 
+                                        
     except IOError:
       # Initialization file does not exist, recreate
       #
@@ -256,6 +266,10 @@ class Config:
                     glo.QDSpy_use3DTextures)
       self.conf.set("Tweaking","bool_recordStim",         
                     glo.QDSpy_recordStim)
+      self.conf.set("Tweaking","str_window_geometry_cam",         
+                    glo.QDSpy_camWinGeometry)
+      self.conf.set("Tweaking","bool_allow_camera",         
+                    glo.QDSpy_allowCam)
 
       with open(glo.QDSpy_iniFileName, 'w') as confFile:
         self.conf.write(confFile)
@@ -315,6 +329,16 @@ class Config:
                     _Stage.scalX_umPerPix)
       self.conf.set("Stage", "float_scale_y_um_per_pix",  
                     _Stage.scalY_umPerPix)
+      self.save()
+      
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def saveWinPosToConfig(self):
+    # Save window postions to the ini file
+    #
+    if self.isLoaded:
+      
+      self.conf.set("Tweaking","str_window_geometry_cam",         
+                    self.camWinGeom.__str__()[1:-1])
       self.save()
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

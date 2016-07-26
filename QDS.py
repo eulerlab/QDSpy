@@ -914,11 +914,33 @@ def LC_setLEDCurrents(_rgb):
                   | with 0 <= r,g,b <= 255
   =============== ==================================================
   """
+  print("HERE", _rgb)  
+
   try:
     _Stim.processLCrCommand(stm.StimLCrCmd.setLEDCurrents, [_rgb])
   except stm.StimException as e:
     ssp.Log.write("ERROR", "LC_setLEDCurrents: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
+
+# ---------------------------------------------------------------------  
+def LC_setLEDEnabled(_rgb):
+  """
+  Enable or disable the LEDs.
+   
+  =============== ==================================================
+  Parameters:
+  =============== ==================================================
+  _rgb            | state of LEDas a list [r,g,b] 
+                  | with True or False
+  =============== ==================================================
+  """
+  try:
+    _Stim.processLCrCommand(stm.StimLCrCmd.setLEDEnabled, [_rgb])
+  except stm.StimException as e:
+    ssp.Log.write("ERROR", "LC_setLEDEnabled: {0}, {1}"
+                  .format(e.value, e))
+  return _Stim.LastErrC
+
 
 # ---------------------------------------------------------------------

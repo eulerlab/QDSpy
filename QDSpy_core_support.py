@@ -20,6 +20,7 @@ __author__ 	= "code@eulerlab.de"
 import os
 import sys
 import QDSpy_global as glb
+from   pkgutil import iter_modules
 
 if glb.QDSpy_incProcessPrior:
   import psutil
@@ -99,5 +100,9 @@ def setNormalProcessPrior():
       proc.set_nice(psutil.NORMAL_PRIORITY_CLASS)
     else:  
       proc.nice(psutil.NORMAL_PRIORITY_CLASS)
+
+# ---------------------------------------------------------------------
+def module_exists(module_name):
+  return module_name in (name for loader, name, ispkg in iter_modules())
 
 # ---------------------------------------------------------------------

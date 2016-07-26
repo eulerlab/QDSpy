@@ -24,7 +24,7 @@ import QDSpy_core_shader as csh
 
 if glo.QDSpy_use_Lightcrafter:
   import Devices.lightcrafter as lcr
-  _LCr   = lcr.Lightcrafter(_isCheckOnly=True, _isVerbose=True)
+  _LCr   = lcr.Lightcrafter(_isCheckOnly=True, _funcLog=ssp.Log.write)
 else:  
   _LCr   = None
 
@@ -165,7 +165,8 @@ class StimLCrCmd:
   setTestPattern      = 10
   #getLEDCurrents     = 11
   setLEDCurrents      = 12
-  getLEDEnabled       = 13
+  setLEDenabled       = 13
+  getLEDEnabled       = 14
   # ...  
    
 # ---------------------------------------------------------------------
@@ -763,6 +764,8 @@ class Stim:
       res = _LCr.setTestPattern(_params[0])
     elif _cmd == StimLCrCmd.setLEDCurrents:
       res = _LCr.setLEDCurrents(_params[0])
+    elif _cmd == StimLCrCmd.setLEDEnabled:
+      res = _LCr.setLEDEnabled(_params[0], _params[1])
     
     if res[0] != lcr.ERROR.OK:
       self.LastErrC = StimErrC.DeviceError_LCr

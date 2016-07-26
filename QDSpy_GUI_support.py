@@ -13,6 +13,10 @@ import os
 from   datetime import datetime
 from   PyQt4 import QtCore, QtGui
 import QDSpy_global as glo
+'''
+if glo.QDSpy_use_Lightcrafter:
+  import Devices.lightcrafter as lcr
+'''  
 
 # ---------------------------------------------------------------------
 def getStimFileLists(_path):
@@ -63,15 +67,23 @@ def getLEDGUIObjects(_this, _index):
   #
   #
   if   _index == 0:
-    return [_this.spinBoxLED1, _this.label_LED1]
+    return [_this.spinBoxLED1, _this.label_LED1, _this.pushButtonLED1]
   elif _index == 1:
-    return [_this.spinBoxLED2, _this.label_LED2]
+    return [_this.spinBoxLED2, _this.label_LED2, _this.pushButtonLED2]
   elif _index == 2:
-    return [_this.spinBoxLED3, _this.label_LED3]
+    return [_this.spinBoxLED3, _this.label_LED3, _this.pushButtonLED3]
   elif _index == 3:
-    return [_this.spinBoxLED4, _this.label_LED4]
+    return [_this.spinBoxLED4, _this.label_LED4, _this.pushButtonLED4]
   else:
-    return [None, None]
- 
+    return [None]*3
+    
  # ---------------------------------------------------------------------
- 
+def updateToggleButton(_btn):
+  s = _btn.text().split("\n")
+  if len(s) == 1:
+    _btn.setText("{0}".format("enabled" if _btn.isChecked() else "disabled"))
+  else:  
+    _btn.setText("{0}\n{1}"
+                 .format(s[0], "enabled" if _btn.isChecked() else "disabled"))
+
+# --------------------------------------------------------------------- 

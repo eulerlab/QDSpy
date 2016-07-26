@@ -93,11 +93,14 @@ QDSpy_use_Lightcrafter      = True
 QDSpy_LEDNames_default      = "red, green, blue"
 QDSpy_LEDPeakWLs_default    = "650, 510, 450"
 QDSpy_LEDQtColors_default   = "darkRed, darkGreen, darkBlue"
+QDSpy_LCr_LogLevel          = 1 #0=only errors, 1=important 2=all
 
 QDSpy_allowGammaLUT_default = False
 QDSpy_LUTFileExt            = ".txt"
 QDSpy_userGammaLUTFileName  = "defaultGammaLUT"
 
+QDSpy_allowCam              = False
+QDSpy_camWinGeometry        = "20,30,300,200"
 # ---------------------------------------------------------------------
 
 

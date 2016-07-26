@@ -524,6 +524,12 @@ class Presenter:
            self.Stage.centOffY_pix   = data[1]["centOffY_pix"]
            self.Stage.rot_angle      = data[1]["rot_angle"]
 
+         if data[0] == mpr.PipeValType.toSrv_changedLEDs:
+           self.Stage.LEDs           = data[1][0] 
+           self.Stage.isLEDSeqEnabled= data[1][1]
+           self.Stage.sendLEDChangesToLCr(self.LCr, self.Conf)
+
+
     # Render scene
     #
     while (self.isNextSce and not(self.isEnd)):

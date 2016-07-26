@@ -4,7 +4,7 @@
 QDSpy module - to manage all projection device-related parameters
 
 'Stage' 
-  This class manages all parameters concnerning the projection device
+  This class manages all parameters concerning the projection device
   (e.g. screen, beamer), including scale, center of stimulation, global 
   rotation angle, refresh rate, LED current etc.
   This class is a graphics API independent.
@@ -66,17 +66,19 @@ class Stage:
       R = rdr.Renderer()
       if self.scrIndex >= R.get_screen_count():
         self.scrIndex     = 0
-      (width, height)     = R.get_screen_size(self.scrIndex)
-      if (glo.QDSpy_use_Lightcrafter and
-          (width == lcr.LC_width) and (height == lcr.LC_height)):
+      ver                 = self.getLCrFirmwareVer()  
+      if len(ver) > 0:
         self.scrDevType   = ScrDevType.DLPLCR4500EVM
       else:
         self.scrDevType   = ScrDevType.generic
+        ver               = [0,0,0]        
       self.scrDevName     = ScrDevStr[self.scrDevType]
+      self.scrDevVersion  = ver
       self.depth          = R.get_screen_depth(self.scrIndex)
       self.scrDevFreq_Hz  = R.get_screen_refresh(self.scrIndex)
       self.isFullScr      = (self.dxScr == 0) or (self.dyScr == 0)
       self.LEDs           = []
+      self.isLEDSeqEnabled= True
       
     else:  
       self.dxScr          = _d["dxScr"]
@@ -97,12 +99,15 @@ class Stage:
       self.dtFr_s         = 1.0 /self.scrReqFreq_Hz
       self.disFScrCmd     = False
       self.scrIndex       = _d["scrIndex"]
+      
       self.scrDevName     = _d["scrDevName"]
       self.scrDevType     = _d["scrDevType"]
+      self.scrDevVersion  = _d["scrDevVersion"]
       self.depth          = _d["depth"]
       self.scrDevFreq_Hz  = _d["scrDevFreq_Hz"]
       self.isFullScr      = _d["isFullScr"]
       self.LEDs           = []
+      self.isLEDSeqEnabled= _d["isLEDSeqEnabled"]
       
     # Generate gamma LUTs
     #
@@ -111,7 +116,8 @@ class Stage:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def logInfo(self):
-    ssp.Log.write("ok", "Stage center: {0:d},{1:d} pixels, scale: {2:.2f},"
+    ssp.Log.write("INFO", "Display    : {0}".format(self.scrDevName))
+    ssp.Log.write("ok", "Stage info : {0:d},{1:d} pixels, scale: {2:.2f},"
                   "{3:.2f} {4}m/pix, rotation: {5:.0f}{6}, refresh: "
                   "{7} Hz"
                   .format(int(self.centX_pix), int(self.centY_pix),
@@ -137,43 +143,146 @@ class Stage:
       
   # -------------------------------------------------------------------
   # LED-related functions      
-  # -------------------------------------------------------------------      
-  def updateLEDs(self, _LCr, _Conf=None):
+  # -------------------------------------------------------------------    
+  def createLEDs(self, _Conf):
+    """ Create the LED dictionary from the configuration, if available
+    """
     self.LEDs = []
-    if _LCr != None:
-      res = _LCr.getLEDCurrents()
-      if res[0] == lcr.ERROR.OK:
-        for index, curr in enumerate(res[1]):
-          if _Conf != None:
-            self.LEDs.append([_Conf.LEDNames[index], curr, 0, 
-                              _Conf.LEDPeakWLs[index], 
-                              _Conf.LEDQtColors[index]])
-          else:
-            self.LEDs.append(["#{0}".format(index), curr, 0, 0, "black"])
-      res = _LCr.getLEDEnabled()
-      if res[0] == lcr.ERROR.OK:
-        for index in range(len(self.LEDs)):
-          self.LEDs[index][2] = res[1][index]          
+    self.isLEDSeqEnabled = True
+
+    if _Conf is None:
+      d = {}
+      d["name"]     = "n/a"
+      d["current"]  = 0
+      d["enabled"]  = False
+      d["peak_nm"]  = 0
+      d["Qt_color"] = "black"
+      self.LEDs.append(d)
     
+    else:
+      for iLED, LEDName in enumerate(_Conf.LEDNames):
+        d = {}
+        d["name"]     = LEDName
+        d["current"]  = 0
+        d["enabled"]  = False
+        d["peak_nm"]  = _Conf.LEDPeakWLs[iLED]
+        d["Qt_color"] = _Conf.LEDNames[iLED]
+        self.LEDs.append(d)
+    
+      
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -      
+  def updateLEDs(self, _LCr=None, _Conf=None):
+    """ Connect to lightcrafter to get LED currents and enabled state, 
+        und update LED dictionary
+    """    
+    # Check configuration file and, if not available, also globals if 
+    # the lightcrafter should be used
+    #
+    if _Conf is None:
+      if not(glo.QDSpy_use_Lightcrafter): 
+        return
+    else:
+      if not(_Conf.useLCr):
+        return
+     
+    # Use lightcrafter object if available or generate new one
+    #
+    if _LCr is None:
+      LCr = lcr.Lightcrafter(_doLog=False)
+    else:
+      LCr = _LCr
+    
+    # Connect to lightcrafter and change LED settings
+    #      
+    result = LCr.connect()
+    errC   = result[0]
+    if errC == lcr.ERROR.OK:
+      try:
+        current = LCr.getLEDCurrents()
+        enabled = LCr.getLEDEnabled()
+        self.isLEDSeqEnabled = enabled[2]
+        
+        for iLED, LED in enumerate(self.LEDs):
+          self.LEDs[iLED]["current"] = current[1][iLED]
+          self.LEDs[iLED]["enabled"] = enabled[1][iLED]
+      finally:    
+        LCr.disconnect()   
+    
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
   def setLEDName(self, _index, _nameStr):
     if _index < len(self.LEDs):
-      self.LEDs[_index][0] = _nameStr
-    
-  def setLEDEnabled(self, _index, _state, _LCr=None):
+      self.LEDs[_index]["name"]    = _nameStr
+   
+  def setLEDEnabled(self, _index, _state):
     if _index < len(self.LEDs):
-      self.LEDs[_index][2] = _state
-      if _LCr != None:
-        res = _LCr.getLEDEnabled()
-        if res[0] == lcr.ERROR.OK:
-          self.LEDs[_index][2] = res[1][_index]      
+      self.LEDs[_index]["enabled"] = _state
 
-  def setLEDCurrent(self, _index, _current, _LCr=None):
+  def setLEDCurrent(self, _index, _current):
     if _index < len(self.LEDs):
-      self.LEDs[_index][1] = _current
-      if _LCr != None:
-        res = _LCr.getLEDCurrents()
-        if res[0] == lcr.ERROR.OK:
-          self.LEDs[_index][1] = res[1][_index]   
+      self.LEDs[_index]["current"] = _current
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def sendLEDChangesToLCr(self, _LCr=None, _Conf=None):
+    """ Connect to lightcrafter and update LED currents and enabled state
+    """
+    # Check configuration file and, if not available, also globals if 
+    # the lightcrafter should be used
+    #
+    if _Conf is None:
+      if not(glo.QDSpy_use_Lightcrafter): 
+        return
+    else:
+      if not(_Conf.useLCr):
+        return
+     
+    # Use lightcrafter object if available or generate new one
+    #
+    if _LCr is None:
+      LCr = lcr.Lightcrafter(_doLog=False)
+    else:
+      LCr = _LCr
+    
+    # Connect to lightcrafter and change LED settings
+    #      
+    result = LCr.connect()
+    errC   = result[0]
+    if errC == lcr.ERROR.OK:
+      try:
+        currents = []
+        enabled  = []
+        for LED in self.LEDs:
+          currents.append(LED["current"])
+          enabled.append(LED["enabled"])
+        LCr.setLEDCurrents(currents[0:3])
+        LCr.setLEDEnabled(enabled[0:3], self.isLEDSeqEnabled)
+
+      finally:    
+        LCr.disconnect()   
+    
+  # -------------------------------------------------------------------
+  # Lightcrafter-related functions      
+  # -------------------------------------------------------------------      
+  def getLCrFirmwareVer(self):
+    """ Return firmware version of connected lightcrafter as list
+        (e.g. [3,0,0]) or an empty list, if lightcrafter use is not 
+        enabled or device could not be connected
+    """    
+    ver = []
+    
+    if glo.QDSpy_use_Lightcrafter: 
+      LCr = lcr.Lightcrafter(_logLevel=0)
+      result = LCr.connect()
+      errC   = result[0]
+      if errC == lcr.ERROR.OK:
+        try:
+          result = LCr.getFirmwareVersion()
+          errC   = result[0]
+          if errC == lcr.ERROR.OK:
+            ver  = result[2]["applicationSoftwareRev"]
+        finally:    
+          LCr.disconnect()   
+
+    return ver
 
 # ---------------------------------------------------------------------
 
