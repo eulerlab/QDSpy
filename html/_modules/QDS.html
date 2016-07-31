@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>QDS &mdash; QDSpy 0.7 beta documentation</title>
+    <title>QDS &mdash; QDSpy 0.71 beta documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.7 beta',
+        VERSION:     '0.71 beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,13 +24,8 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="QDSpy 0.7 beta documentation" href="../index.html" />
-    <link rel="up" title="Module code" href="index.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="top" title="QDSpy 0.71 beta documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -40,27 +34,10 @@
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../index.html">QDSpy 0.7 beta documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">QDSpy 0.71 beta documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
-            </a></p>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -87,11 +64,11 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span>   <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">import</span> <span class="nn">QDSpy_global</span> <span class="kn">as</span> <span class="nn">glo</span>
-<span class="kn">import</span> <span class="nn">QDSpy_stim</span> <span class="kn">as</span> <span class="nn">stm</span>
-<span class="kn">import</span> <span class="nn">QDSpy_stim_support</span> <span class="kn">as</span> <span class="nn">ssp</span>
-<span class="kn">import</span> <span class="nn">QDSpy_config</span> <span class="kn">as</span> <span class="nn">cfg</span>
+<span class="kn">from</span>   <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">QDSpy_global</span> <span class="k">as</span> <span class="nn">glo</span>
+<span class="kn">import</span> <span class="nn">QDSpy_stim</span> <span class="k">as</span> <span class="nn">stm</span>
+<span class="kn">import</span> <span class="nn">QDSpy_stim_support</span> <span class="k">as</span> <span class="nn">ssp</span>
+<span class="kn">import</span> <span class="nn">QDSpy_config</span> <span class="k">as</span> <span class="nn">cfg</span>
 
 <span class="c1"># ---------------------------------------------------------------------</span>
 <span class="n">_Stim</span>   <span class="o">=</span> <span class="n">stm</span><span class="o">.</span><span class="n">Stim</span><span class="p">()</span>
@@ -116,7 +93,7 @@
   <span class="n">_Stim</span><span class="o">.</span><span class="n">descrStr</span>  <span class="o">=</span> <span class="n">_sDescr</span>
   <span class="n">_Stim</span><span class="o">.</span><span class="n">ErrC</span>      <span class="o">=</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimErrC</span><span class="o">.</span><span class="n">ok</span>
   <span class="n">_Stim</span><span class="o">.</span><span class="n">tStart</span>    <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-  <span class="n">_Stim</span><span class="o">.</span><span class="n">isRunSect</span> <span class="o">=</span> <span class="bp">False</span>
+  <span class="n">_Stim</span><span class="o">.</span><span class="n">isRunSect</span> <span class="o">=</span> <span class="kc">False</span>
   <span class="n">_Stim</span><span class="o">.</span><span class="n">Conf</span>      <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">Config</span><span class="p">()</span>
 
   <span class="c1"># Parse command-line arguments</span>
@@ -145,9 +122,9 @@
     <span class="n">tLastUpt_pick</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getmtime</span><span class="p">(</span><span class="n">fNameDir_pk</span><span class="p">))</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">tLastUpt_pick</span> <span class="o">&gt;</span> <span class="n">tLastUpt_py</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">compile</span><span class="p">):</span>
       <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;Script has not changed, running stimulus now ...&quot;</span><span class="p">)</span>
-      <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;python ..\QDSpy_core.py -t={0} {1} {2}&quot;</span>
+      <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;python ..\QDSpy_core.py -t=</span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> </span><span class="si">{2}</span><span class="s2">&quot;</span>
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">timing</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">fName</span><span class="p">))</span>
-      <span class="nb">exit</span><span class="p">()</span>
+      <span class="n">exit</span><span class="p">()</span>
   <span class="k">except</span> <span class="ne">WindowsError</span><span class="p">:</span>
     <span class="k">pass</span></div>
 
@@ -192,7 +169,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">logUserParameters</span><span class="p">(</span><span class="n">_dict</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;logUserParameters: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;logUserParameters: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 <span class="c1"># ---------------------------------------------------------------------</span>
@@ -234,7 +211,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">setColorLUTEntry</span><span class="p">(</span><span class="n">_index</span><span class="p">,</span> <span class="n">_rgb</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LUT_changeEntry(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LUT_changeEntry(Ex): </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 <span class="c1"># ---------------------------------------------------------------------</span>
@@ -292,10 +269,10 @@
 <span class="sd">  stimulus scenes are called.</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="c1"># ...</span>
-  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;{0} object(s) defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ObjList</span><span class="p">)))</span>
-  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;{0} shader(s) defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ShList</span><span class="p">)))</span>
+  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> object(s) defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ObjList</span><span class="p">)))</span>
+  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> shader(s) defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">ShList</span><span class="p">)))</span>
   <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span>   <span class="s2">&quot;Generating scenes ...&quot;</span><span class="p">)</span>
-  <span class="n">_Stim</span><span class="o">.</span><span class="n">isRunSect</span> <span class="o">=</span> <span class="bp">True</span>
+  <span class="n">_Stim</span><span class="o">.</span><span class="n">isRunSect</span> <span class="o">=</span> <span class="kc">True</span>
   <span class="k">return</span></div>
 
 <span class="c1"># ---------------------------------------------------------------------</span>
@@ -325,7 +302,7 @@
 <span class="sd">  Must be called after all stimulus scenes have been created, i.e.</span>
 <span class="sd">  at the end of the script.</span>
 <span class="sd">  &quot;&quot;&quot;</span>
-  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;{0} scene(s) defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">nSce</span><span class="p">))</span>
+  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> scene(s) defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">nSce</span><span class="p">))</span>
 
   <span class="c1"># Compile stimulus</span>
   <span class="c1">#</span>
@@ -341,7 +318,7 @@
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="n">_Stim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">_Stim</span><span class="o">.</span><span class="n">fNameDir</span><span class="p">)</span>
 
-  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;... done in {0:.3f} s&quot;</span>
+  <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;... done in </span><span class="si">{0:.3f}</span><span class="s2"> s&quot;</span>
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span><span class="n">_Stim</span><span class="o">.</span><span class="n">tStart</span><span class="p">))</span></div>
 
 <span class="c1"># ---------------------------------------------------------------------</span>
@@ -369,7 +346,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">defObj_box</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_dx</span><span class="p">,</span> <span class="n">_dy</span><span class="p">,</span> <span class="n">_enShader</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Box(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Box(Ex): </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
@@ -386,7 +363,7 @@
 
 
 <span class="c1"># ---------------------------------------------------------------------</span>
-<div class="viewcode-block" id="DefObj_SectorEx"><a class="viewcode-back" href="../commands.html#QDS.DefObj_SectorEx">[docs]</a><span class="k">def</span> <span class="nf">DefObj_SectorEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+<div class="viewcode-block" id="DefObj_SectorEx"><a class="viewcode-back" href="../commands.html#QDS.DefObj_SectorEx">[docs]</a><span class="k">def</span> <span class="nf">DefObj_SectorEx</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">_enShader</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Defines a sector object and if shaders can be used for this object.</span>
@@ -418,11 +395,11 @@
                         <span class="n">_enShader</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Sector(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Sector(Ex): </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
-<div class="viewcode-block" id="DefObj_Sector"><a class="viewcode-back" href="../commands.html#QDS.DefObj_Sector">[docs]</a><span class="k">def</span> <span class="nf">DefObj_Sector</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DefObj_Sector"><a class="viewcode-back" href="../commands.html#QDS.DefObj_Sector">[docs]</a><span class="k">def</span> <span class="nf">DefObj_Sector</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="n">_offs</span><span class="p">,</span> <span class="n">_angle</span><span class="p">,</span> <span class="n">_awidth</span><span class="p">,</span> <span class="n">_astep</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  See :py:func:`QDS.DefObj_SectorEx`</span>
 <span class="sd">  &quot;&quot;&quot;</span>
@@ -451,7 +428,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">defObj_ellipse</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_dx</span><span class="p">,</span> <span class="n">_dy</span><span class="p">,</span> <span class="n">_enShader</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Ellipse: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Ellipse: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
   <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
@@ -509,7 +486,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">defObj_movie</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_fName</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Movie: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Movie: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 <span class="c1"># ---------------------------------------------------------------------</span>
@@ -527,16 +504,16 @@
 <span class="sd">  =============== ==================================================</span>
 <span class="sd">  Returns:</span>
 <span class="sd">  =============== ==================================================</span>
-<span class="sd">  list            | [dx,dy,nFr]</span>
-<span class="sd">                  | with dx,dy the frame size in pixels</span>
-<span class="sd">                  | and nFr the number of frames  </span>
+<span class="sd">  dictionary      | &quot;dxFr&quot;, &quot;dyFr&quot;, and &quot;nFr&quot;</span>
+<span class="sd">                  | with dx,dy the frame size in pixels,</span>
+<span class="sd">                  | and nFr the number of frames</span>
 <span class="sd">  =============== ==================================================</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="k">try</span><span class="p">:</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">getMovieParams</span><span class="p">(</span><span class="n">_iobj</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;getMovieParameters: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;getMovieParameters: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">params</span></div>
 
 
@@ -562,7 +539,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">defObj_video</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_fName</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Video: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefObj_Video: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
   
 <span class="c1"># ---------------------------------------------------------------------</span>
@@ -580,16 +557,17 @@
 <span class="sd">  =============== ==================================================</span>
 <span class="sd">  Returns:</span>
 <span class="sd">  =============== ==================================================</span>
-<span class="sd">  list            | [dx,dy,nFr]</span>
-<span class="sd">                  | with dx,dy the frame size in pixels</span>
-<span class="sd">                  | and nFr the number of frames  </span>
+<span class="sd">  dictionary      | &quot;dxFr&quot;, &quot;dyFr&quot;, &quot;nFr&quot;, and &quot;fps&quot;</span>
+<span class="sd">                  | with dx,dy the frame size in pixels,</span>
+<span class="sd">                  | nFr the number of frames, and fps</span>
+<span class="sd">                  | refresh rate in frames per second</span>
 <span class="sd">  =============== ==================================================</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="k">try</span><span class="p">:</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">getVideoParams</span><span class="p">(</span><span class="n">_iobj</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;getVideoParams: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;getVideoParams: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">params</span></div>
 
   
@@ -616,7 +594,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">defShader</span><span class="p">(</span><span class="n">_ishd</span><span class="p">,</span> <span class="n">_shType</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefShader: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;DefShader: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
@@ -650,7 +628,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">setObjColor</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">,</span> <span class="n">_ocols</span><span class="p">,</span> <span class="n">_alphas</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetObjColor(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetObjColor(Ex): </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
@@ -690,7 +668,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">setObjColorAlphaByVertex</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">,</span> <span class="n">_oRGBAs</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetObjColorAlphaByVertex: {0}, {1}&quot;</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetObjColorAlphaByVertex: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span>
                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
@@ -728,7 +706,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">setShaderParams</span><span class="p">(</span><span class="n">_ishd</span><span class="p">,</span> <span class="n">_shParams</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetShaderParams: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetShaderParams: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
@@ -763,7 +741,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">setObjShader</span><span class="p">(</span><span class="n">_iobjs</span><span class="p">,</span> <span class="n">_ishds</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetObjShader: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetObjShader: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
@@ -782,7 +760,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">setBkgColor</span><span class="p">(</span><span class="n">_col</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetBkgColor: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SetBkgColor: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
@@ -806,7 +784,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">clearScene</span><span class="p">(</span><span class="n">_dur</span><span class="p">,</span> <span class="p">(</span><span class="n">_marker</span><span class="o">==</span><span class="mi">1</span><span class="p">))</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;Scene_Clear: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;Scene_Clear: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
@@ -841,7 +819,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">renderScene</span><span class="p">(</span><span class="n">_dur</span><span class="p">,</span> <span class="n">_iobjs</span><span class="p">,</span> <span class="n">_opos</span><span class="p">,</span> <span class="n">_omag</span><span class="p">,</span> <span class="n">_oang</span><span class="p">,</span> <span class="p">(</span><span class="n">_marker</span><span class="o">==</span><span class="mi">1</span><span class="p">))</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;Scene_Render(Ex): {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;Scene_Render(Ex): </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
@@ -875,7 +853,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">startMovie</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_opos</span><span class="p">,</span> <span class="n">_seq</span><span class="p">,</span> <span class="n">_omag</span><span class="p">,</span> <span class="n">_trans</span><span class="p">,</span> <span class="n">_oang</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;Start_Movie: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;Start_Movie: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 <span class="c1"># ---------------------------------------------------------------------</span>
@@ -897,7 +875,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">startVideo</span><span class="p">(</span><span class="n">_iobj</span><span class="p">,</span> <span class="n">_opos</span><span class="p">,</span> <span class="n">_omag</span><span class="p">,</span> <span class="n">_trans</span><span class="p">,</span> <span class="n">_oang</span><span class="p">)</span>
 
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;Start_Video: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;Start_Video: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 
@@ -913,7 +891,7 @@
   <span class="k">try</span><span class="p">:</span>
     <span class="n">_Stim</span><span class="o">.</span><span class="n">processLCrCommand</span><span class="p">(</span><span class="n">stm</span><span class="o">.</span><span class="n">StimLCrCmd</span><span class="o">.</span><span class="n">softwareReset</span><span class="p">)</span>
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_softwareReset: {0}, {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_softwareReset: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
 <span class="c1"># ---------------------------------------------------------------------  </span>
@@ -936,7 +914,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">processLCrCommand</span><span class="p">(</span><span class="n">stm</span><span class="o">.</span><span class="n">StimLCrCmd</span><span class="o">.</span><span class="n">setInputSource</span><span class="p">,</span> 
                             <span class="p">[</span><span class="n">_source</span><span class="p">,</span> <span class="n">_bitDepth</span><span class="p">])</span>
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_setInputSource: {0}, {1}&quot;</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_setInputSource: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span>
                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
@@ -968,7 +946,7 @@
     <span class="n">_Stim</span><span class="o">.</span><span class="n">processLCrCommand</span><span class="p">(</span><span class="n">stm</span><span class="o">.</span><span class="n">StimLCrCmd</span><span class="o">.</span><span class="n">setInputSource</span><span class="p">)</span> 
                              
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_setInputSource: {0}, {1}&quot;</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_setInputSource: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span>
                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
 
@@ -984,17 +962,56 @@
 <span class="sd">                  | with 0 &lt;= r,g,b &lt;= 255</span>
 <span class="sd">  =============== ==================================================</span>
 <span class="sd">  &quot;&quot;&quot;</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HERE&quot;</span><span class="p">,</span> <span class="n">_rgb</span><span class="p">)</span>  
+
   <span class="k">try</span><span class="p">:</span>
     <span class="n">_Stim</span><span class="o">.</span><span class="n">processLCrCommand</span><span class="p">(</span><span class="n">stm</span><span class="o">.</span><span class="n">StimLCrCmd</span><span class="o">.</span><span class="n">setLEDCurrents</span><span class="p">,</span> <span class="p">[</span><span class="n">_rgb</span><span class="p">])</span>
   <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_setLEDCurrents: {0}, {1}&quot;</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_setLEDCurrents: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span>
                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span></div>
+
+<span class="c1"># ---------------------------------------------------------------------  </span>
+<span class="k">def</span> <span class="nf">LC_setLEDEnabled</span><span class="p">(</span><span class="n">_rgb</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Enable or disable the LEDs.</span>
+<span class="sd">   </span>
+<span class="sd">  =============== ==================================================</span>
+<span class="sd">  Parameters:</span>
+<span class="sd">  =============== ==================================================</span>
+<span class="sd">  _rgb            | state of LEDas a list [r,g,b] </span>
+<span class="sd">                  | with True or False</span>
+<span class="sd">  =============== ==================================================</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">try</span><span class="p">:</span>
+    <span class="n">_Stim</span><span class="o">.</span><span class="n">processLCrCommand</span><span class="p">(</span><span class="n">stm</span><span class="o">.</span><span class="n">StimLCrCmd</span><span class="o">.</span><span class="n">setLEDEnabled</span><span class="p">,</span> <span class="p">[</span><span class="n">_rgb</span><span class="p">])</span>
+  <span class="k">except</span> <span class="n">stm</span><span class="o">.</span><span class="n">StimException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">ssp</span><span class="o">.</span><span class="n">Log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;LC_setLEDEnabled: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+  <span class="k">return</span> <span class="n">_Stim</span><span class="o">.</span><span class="n">LastErrC</span>
+
 
 <span class="c1"># ---------------------------------------------------------------------</span>
 </pre></div>
 
           </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -1005,13 +1022,13 @@
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../index.html">QDSpy 0.7 beta documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">QDSpy 0.71 beta documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
     </div>
   </body>
 </html>

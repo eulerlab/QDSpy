@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Known issues &mdash; QDSpy 0.7 beta documentation</title>
+    <title>Known issues &mdash; QDSpy 0.71 beta documentation</title>
     
-    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.7 beta',
+        VERSION:     '0.71 beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,14 +24,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/bizstyle.js"></script>
-    <link rel="top" title="QDSpy 0.7 beta documentation" href="index.html" />
+    <link rel="top" title="QDSpy 0.71 beta documentation" href="index.html" />
     <link rel="next" title="Disclaimer" href="disclaimer.html" />
-    <link rel="prev" title="QDS Commands" href="commands.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="QDS Commands" href="commands.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -47,46 +41,9 @@
         <li class="right" >
           <a href="commands.html" title="QDS Commands"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.7 beta documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.71 beta documentation</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
-            </a></p>
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Known issues</a></li>
-<li><a class="reference internal" href="#to-do">To do</a></li>
-<li><a class="reference internal" href="#release-notes">Release notes</a></li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="commands.html"
-                        title="previous chapter">QDS Commands</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="disclaimer.html"
-                        title="next chapter">Disclaimer</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/releasenotes.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -96,9 +53,7 @@
   <div class="section" id="known-issues">
 <h1>Known issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h1>
 <ul>
-<li><p class="first">Videos won&#8217;t stop correctly; do not use yet.
-Minor: While partial transparency and scaling works with videos, rotation
-does not yet (wrong rotation axis?)</p>
+<li><p class="first">The rotation parameter for videos rotates around a corner, not the center.</p>
 </li>
 <li><p class="first">Shader-enabled objects may not be drawn in the correct order, which means
 that shader objects can flicker when they overlap.</p>
@@ -121,7 +76,6 @@ starting section, for example:</p>
 <li>URGENT: Check dictionaries that are written by the user to history and log
 file for large lists or data structures; these should go into separate files
 to prevent delaying the stimulus presentation</li>
-<li>URGENT: Fix video presentation</li>
 <li>Check timing of digital I/O signals (i.e. triggers).</li>
 <li>Complete lightcrafter interface.</li>
 <li>For color modes &gt;1 (special lightcrafter modes), movie images need to be
@@ -132,7 +86,26 @@ on genlock-enabled NVIDIA and/or ATI graphic cards.</li>
 </div>
 <div class="section" id="release-notes">
 <h1>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
-<p>v0.7 beta (June 2016)</p>
+<p>v0.71 beta (July 2016)</p>
+<ul class="simple">
+<li><strong>Videos (AVI containers) now work</strong> except for the rotation parameter, which uses
+a corner instead of the centre. The commands are <cite>DefObj_Video()</cite>, <cite>Start_Video()</cite>
+and <cite>GetVideoParamters()</cite>. Note that the latter now returns a dictionary instead
+of a list.</li>
+<li>Like <cite>GetVideoParamters()</cite>, <cite>GetMovieParamters()</cite> now also returns a dictionary.</li>
+<li>The GUI has been reorganized:<ul>
+<li>A font is used that works on all Window versions (7 and higher).</li>
+<li><em>Lightcrafter only</em>: The <cite>LEDs: enable</cite> button allows switching off the LEDs
+and changes to manual LED control (for details, see section <a class="reference internal" href="lightcrafter.html"><span class="doc">Lightcrafter</span></a>).</li>
+<li>A new tab called &#8220;tools&#8221; was added; currently in contains a very simple
+interface to a USB camera (e.g. for observing the stimulus).</li>
+<li>A &#8220;Wait for trigger: ...&#8221; button has been added; <em>this is not yet functional</em>.</li>
+<li>Duration of stimulus is shown.</li>
+<li>Minor fixes.</li>
+</ul>
+</li>
+</ul>
+<p>v0.70 beta (July 2016)</p>
 <ul class="simple">
 <li>Now reports GLSL version</li>
 <li>Fixed error when QDSpy GUI does not find a compiled <cite>__autorun</cite>.</li>
@@ -191,7 +164,7 @@ The default for the configuration file is now <cite>bool_use_digitalio = False</
 <p>v0.6 beta (April 2016)</p>
 <ul class="simple">
 <li>Bug fixes</li>
-<li>Added <cite>DefObj_Video()</cite>, <cite>Start_Video()`and `GetVideoParamters()</cite> commands.
+<li>Added <cite>DefObj_Video()</cite>, <cite>Start_Video()</cite> and <cite>GetVideoParamters()</cite> commands.
 Not yet fully implemented and tested; do not use yet.</li>
 <li>Added <cite>GetMovieParameters()</cite> command</li>
 <li>Fixed <cite>GetDefaultRefreshRate()</cite> command; now reports requested frame rate.</li>
@@ -241,6 +214,43 @@ tags for the data analysis.</li>
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Known issues</a></li>
+<li><a class="reference internal" href="#to-do">To do</a></li>
+<li><a class="reference internal" href="#release-notes">Release notes</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="commands.html"
+                        title="previous chapter">QDS Commands</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="disclaimer.html"
+                        title="next chapter">Disclaimer</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/releasenotes.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -255,12 +265,12 @@ tags for the data analysis.</li>
         <li class="right" >
           <a href="commands.html" title="QDS Commands"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.7 beta documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.71 beta documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
     </div>
   </body>
 </html>

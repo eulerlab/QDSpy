@@ -13,7 +13,7 @@ __author__ 	= "code@eulerlab.de"
 QDSpy_versionStr            = "QDSpy v0.7 beta"
 QDSpy_copyrightStr          = "(c) 2013-16 Thomas Euler"
 QDSpy_appID                 = u"QDSpy3.v07beta.thomas_euler.eulerlab.de"
-QDSpy_fullScrWinName        = "x" #QDSPY_STIMULUS"
+QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 
 QDSpy_isDebug               = True
 QDSpy_isGUIQuitWithDialog   = False
@@ -47,7 +47,7 @@ QDSpy_refresh_Hz            = 60.0
 
 QDSpy_cPickleProtocol       = 3
 QDSpy_cPickleFileExt        = ".pickle"
-QDSpy_fileVersionID         = 6
+QDSpy_fileVersionID         = 7
 QDSpy_stimFileExt           = ".py"
 QDSpy_pathStimuli           = ".\\Stimuli\\"
 QDSpy_autorunStimFileName   = "__autorun"

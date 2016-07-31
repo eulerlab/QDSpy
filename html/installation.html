@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Getting ready &mdash; QDSpy 0.7 beta documentation</title>
+    <title>Getting ready &mdash; QDSpy 0.71 beta documentation</title>
     
-    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.7 beta',
+        VERSION:     '0.71 beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,14 +24,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/bizstyle.js"></script>
-    <link rel="top" title="QDSpy 0.7 beta documentation" href="index.html" />
+    <link rel="top" title="QDSpy 0.71 beta documentation" href="index.html" />
     <link rel="next" title="Configuration file" href="inifile.html" />
-    <link rel="prev" title="How QDSpy works" href="how_QDSpy_works.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="How QDSpy works" href="how_QDSpy_works.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -47,49 +41,9 @@
         <li class="right" >
           <a href="how_QDSpy_works.html" title="How QDSpy works"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.7 beta documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.71 beta documentation</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
-            </a></p>
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Getting ready</a><ul>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#running-the-gui-version-of-qdspy">Running the GUI version of QDSpy</a></li>
-<li><a class="reference internal" href="#using-qdspy-with-the-shell">Using QDSpy with the shell</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="how_QDSpy_works.html"
-                        title="previous chapter">How QDSpy works</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="inifile.html"
-                        title="next chapter">Configuration file</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/installation.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -120,6 +74,24 @@ shell:</p>
 </pre></div>
 </div>
 </li>
+<li><p class="first">Install <a class="reference external" href="http://zulko.github.io/moviepy/">MoviePy</a>, which is a Python module
+for script-based movie editing and that QDSpy uses to display videos:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">moviepy</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When Python imports moviepy for the first time - and this will
+happen when QDSpy is started - moviepy checks if the software
+FFMPEG for video reading and writing is present on the machine.
+If not, it automatically downloads <cite>ffmpeg.win32.exe</cite> from
+<cite>https://github.com/imageio/imageio-binaries/tree/master/ffmpeg</cite>
+and stores it under <code class="docutils literal"><span class="pre">...\AppData\Local\imageio\ffmpeg</span></code>.
+If you consider this behaviour irritating, please find instructions
+for manual installation on the
+<a class="reference external" href="https://anaconda.org/pypi/moviepy">Anaconda site</a>.</p>
+</div>
+</li>
 <li><p class="first">Copy the content of the .zip file into a folder (e.g. <code class="docutils literal"><span class="pre">C:\User\QDSpy</span></code>),
 keeping the internal folder substructure intact.</p>
 </li>
@@ -139,7 +111,7 @@ way is using Spyder, which comes with the Anaconda package:</p>
 or do not need gamma correction, you can proceed to the section
 <a class="reference internal" href="#running-the-gui-version-of-qdspy">Running the GUI version of QDSpy</a>. Otherwise continue with the following
 steps.</p>
-<ol class="arabic" start="6">
+<ol class="arabic" start="7">
 <li><p class="first">If you plan to use the LightCrafter 4500 not only as a displaying device
 but also want to configure it via QDSpy (via USB), then you will need
 the hidapi package.</p>
@@ -176,7 +148,7 @@ comes with <a class="reference external" href="https://desktop.github.com/">GitH
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<ol class="arabic" start="7">
+<ol class="arabic" start="8">
 <li><p class="first">If you plan to use a digital I/O card from <a class="reference external" href="http://www.mccdaq.com">Measurement Computing</a>, you need to install their <a class="reference external" href="http://www.mccdaq.com/daq-software/universal-library.aspx">Universal Library</a>
 (the 64-bit version). Note that you&#8217;ll need to reboot before the library is
 available to QDSpy. Enable the support for digital I/O in the
@@ -192,7 +164,7 @@ available to QDSpy. Enable the support for digital I/O in the
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<ol class="arabic" start="8">
+<ol class="arabic" start="9">
 <li><p class="first">If you need gamma correction (currently Windows-only): Depending how strongly
 the color presentation needs to be changed, you may have to define/change a
 registry key that tells Windows normally to prevents too extreme color changes
@@ -327,6 +299,46 @@ the focus has to be on the stimulus window for these keys to be active.</p>
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Getting ready</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#running-the-gui-version-of-qdspy">Running the GUI version of QDSpy</a></li>
+<li><a class="reference internal" href="#using-qdspy-with-the-shell">Using QDSpy with the shell</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="how_QDSpy_works.html"
+                        title="previous chapter">How QDSpy works</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inifile.html"
+                        title="next chapter">Configuration file</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/installation.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -341,12 +353,12 @@ the focus has to be on the stimulus window for these keys to be active.</p>
         <li class="right" >
           <a href="how_QDSpy_works.html" title="How QDSpy works"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.7 beta documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.71 beta documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
     </div>
   </body>
 </html>

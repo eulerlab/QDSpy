@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Lighcrafter API
+Lightcrafter API
+
+Note that this library requires firmware 3.0 and higher
 
 Copyright (c) 2013-2016 Thomas Euler
 All rights reserved.
@@ -226,6 +228,7 @@ class Lightcrafter:
   def getFirmwareVersion(self):
     """
     Get firmware version
+    
     =============== ==================================================
     Result:
     =============== ==================================================

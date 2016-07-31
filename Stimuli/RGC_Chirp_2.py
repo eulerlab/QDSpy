@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-import QDS
+import QDS   
 import math 
 
 QDS.Initialize("RGC_Chirp", "'chirp' in fingerprinting stimulus set")
 
 # Define global stimulus parameters
 # 
-p = {"nTrials"         : 1, 
+p = {"nTrials"         : 3, 
      "chirpDur_s"      : 8.0,    # Rising chirp phase
      "chirpMaxFreq_Hz" : 8.0,    # Peak frequency of chirp (Hz)
      "ContrastFreq_Hz" : 2.0,    # Freqency at which contrast 

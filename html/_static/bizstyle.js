@@ -36,6 +36,6 @@ $(window).resize(function(){
         $("li.nav-item-0 a").text("Top");
     }
     else {
-        $("li.nav-item-0 a").text("QDSpy 0.7 beta documentation");
+        $("li.nav-item-0 a").text("QDSpy 0.71 beta documentation");
     }
 });

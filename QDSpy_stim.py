@@ -79,6 +79,7 @@ SV_field_videoFName   = 2
 SV_field_nFr          = 3
 SV_field_dxFr         = 4
 SV_field_dyFr         = 5
+SV_field_fps          = 6
 
 # - - - - - -  - - - - - -  - - - - - -  - - - - - -  - - - - - -  - -
 SO_defaultFgRGB       = (255, 255, 255)
@@ -453,7 +454,11 @@ class Stim:
       self.LastErrC = StimErrC.noMatchingID
       raise StimException
       
-    return([MvOb[SM_field_dxFr], MvOb[SM_field_dyFr], MvOb[SM_field_nFr]])
+    d = {}  
+    d["dxFr"] = MvOb[SM_field_dxFr]
+    d["dyFr"] = MvOb[SM_field_dyFr]
+    d["nFr"]  = MvOb[SM_field_nFr]
+    return(d)
 
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -475,7 +480,8 @@ class Stim:
       raise StimException(self.LastErrC)
 
     newVideo = [StimObjType.video, _ID,
-                _fName, tempVideo.nFr, tempVideo.dxFr, tempVideo.dyFr]
+                _fName, tempVideo.nFr, tempVideo.dxFr, tempVideo.dyFr,
+                tempVideo.fps]
     self.VidDict[_ID] = len(self.VidList)
     self.VidList.append(newVideo)
     self.LastErrC = StimErrC.ok
@@ -492,8 +498,12 @@ class Stim:
       self.LastErrC = StimErrC.noMatchingID
       raise StimException
       
-    return([VdOb[SV_field_dxFr], VdOb[SV_field_dyFr], VdOb[SV_field_nFr]])
-    
+    d = {}  
+    d["dxFr"] = VdOb[SV_field_dxFr]
+    d["dyFr"] = VdOb[SV_field_dyFr]
+    d["nFr"]  = VdOb[SV_field_nFr]
+    d["fps"]  = VdOb[SV_field_fps]
+    return(d)
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setObjColor(self, _IDs, _newRGBs, _newAlphas):
@@ -926,6 +936,9 @@ class Stim:
     # ...
     self.cFreq_Hz          = _Stage.scrReqFreq_Hz
     self.maxShObjPerRender = 0
+    self.lenStim_s         = 0.0
+    
+    isInLoop               = False
 
     # Analyze scene list
     #
@@ -940,9 +953,30 @@ class Stim:
       #
       (dur, isIntNumFrames) = _Stage.durToFrames(sc[SC_field_duration_s])
       self.cScDurList.append(dur)
+      if dur > 0:
+        self.lenStim_s += sc[SC_field_duration_s]
       if not(isIntNumFrames):
         ssp.Log.write("WARNING", "Scene #{0} duration unequals integer number"
                       " of frames".format(sc[SC_field_index]))
+                      
+      # Track the duration
+      #                
+      if sc[SC_field_type] == StimSceType.beginLoop:
+        lenInLoop_s = 0
+        nTrialsLoop = sc[SC_field_nLoopTrials]
+        isInLoop    = True
+        print(lenInLoop_s, nTrialsLoop, isInLoop)
+        
+      if sc[SC_field_type] == StimSceType.endLoop:
+        print(lenInLoop_s, nTrialsLoop, isInLoop)
+        isInLoop    = False
+        self.lenStim_s += lenInLoop_s *nTrialsLoop
+      
+      if dur > 0:
+        if isInLoop:
+          lenInLoop_s += sc[SC_field_duration_s]
+        else:  
+          self.lenStim_s += sc[SC_field_duration_s]
 
       # If scene request marker to be shown, set flag
       #
@@ -1155,6 +1189,7 @@ class Stim:
       stimPick.dump(self.descrStr)
       stimPick.dump(self.cFreq_Hz)
       stimPick.dump(self.isUseLCr)
+      stimPick.dump(self.lenStim_s)
       stimPick.dump(self.maxShObjPerRender)
       stimPick.dump(self.ObjList)
       stimPick.dump(self.ObjDict)
@@ -1203,6 +1238,7 @@ class Stim:
         self.descrStr            = stimPick.load()
         self.cFreq_Hz            = stimPick.load()
         self.isUseLCr            = stimPick.load()
+        self.lenStim_s           = stimPick.load()
         if not(_onlyInfo):
           self.maxShObjPerRender = stimPick.load()
           self.ObjList           = stimPick.load()

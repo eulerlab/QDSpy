@@ -2,9 +2,7 @@
 Known issues
 ----------------------------------------------
 
-* Videos won't stop correctly; do not use yet.
-  Minor: While partial transparency and scaling works with videos, rotation
-  does not yet (wrong rotation axis?)
+* The rotation parameter for videos rotates around a corner, not the center.
 
 * Shader-enabled objects may not be drawn in the correct order, which means
   that shader objects can flicker when they overlap.
@@ -26,7 +24,6 @@ To do
 * URGENT: Check dictionaries that are written by the user to history and log
   file for large lists or data structures; these should go into separate files
   to prevent delaying the stimulus presentation 
-* URGENT: Fix video presentation
 * Check timing of digital I/O signals (i.e. triggers).
 * Complete lightcrafter interface.
 * For color modes >1 (special lightcrafter modes), movie images need to be
@@ -38,7 +35,26 @@ To do
 Release notes
 ----------------------------------------------
 
-v0.7 beta (June 2016) 
+v0.71 beta (July 2016) 
+
+* **Videos (AVI containers) now work** except for the rotation parameter, which uses
+  a corner instead of the centre. The commands are `DefObj_Video()`, `Start_Video()` 
+  and `GetVideoParamters()`. Note that the latter now returns a dictionary instead
+  of a list.
+* Like `GetVideoParamters()`, `GetMovieParamters()` now also returns a dictionary.
+* The GUI has been reorganized:
+
+  * A font is used that works on all Window versions (7 and higher).
+  * *Lightcrafter only*: The `LEDs: enable` button allows switching off the LEDs
+    and changes to manual LED control (for details, see section :doc:`lightcrafter`).
+  * A new tab called "tools" was added; currently in contains a very simple 
+    interface to a USB camera (e.g. for observing the stimulus).
+  * A "Wait for trigger: ..." button has been added; *this is not yet functional*.
+  * Duration of stimulus is shown.
+  * Minor fixes.
+
+
+v0.70 beta (July 2016) 
 
 * Now reports GLSL version
 * Fixed error when QDSpy GUI does not find a compiled `__autorun`.
@@ -94,10 +110,11 @@ v0.7 beta (June 2016)
   in the configuration file but the Universal Library drivers are not installed. 
   The default for the configuration file is now `bool_use_digitalio = False`.
 
+
 v0.6 beta (April 2016) 
 
 * Bug fixes
-* Added `DefObj_Video()`, `Start_Video()`and `GetVideoParamters()` commands. 
+* Added `DefObj_Video()`, `Start_Video()` and `GetVideoParamters()` commands. 
   Not yet fully implemented and tested; do not use yet.
 * Added `GetMovieParameters()` command
 * Fixed `GetDefaultRefreshRate()` command; now reports requested frame rate.

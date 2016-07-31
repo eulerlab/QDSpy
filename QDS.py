@@ -457,9 +457,9 @@ def GetMovieParameters(_iobj):
   =============== ==================================================
   Returns:
   =============== ==================================================
-  list            | [dx,dy,nFr]
-                  | with dx,dy the frame size in pixels
-                  | and nFr the number of frames  
+  dictionary      | "dxFr", "dyFr", and "nFr"
+                  | with dx,dy the frame size in pixels,
+                  | and nFr the number of frames
   =============== ==================================================
   """
   try:
@@ -510,9 +510,10 @@ def GetVideoParameters(_iobj):
   =============== ==================================================
   Returns:
   =============== ==================================================
-  list            | [dx,dy,nFr]
-                  | with dx,dy the frame size in pixels
-                  | and nFr the number of frames  
+  dictionary      | "dxFr", "dyFr", "nFr", and "fps"
+                  | with dx,dy the frame size in pixels,
+                  | nFr the number of frames, and fps
+                  | refresh rate in frames per second
   =============== ==================================================
   """
   try:

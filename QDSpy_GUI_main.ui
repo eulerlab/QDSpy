@@ -38,7 +38,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>C:/Users/Thomas/.designer/backup/QDSpy.png</normaloff>C:/Users/Thomas/.designer/backup/QDSpy.png</iconset>
+    <normaloff>QDSpy_32x32.png</normaloff>QDSpy_32x32.png</iconset>
   </property>
   <property name="locale">
    <locale language="English" country="UnitedKingdom"/>
@@ -988,7 +988,7 @@ p, li { white-space: pre-wrap; }
        <x>85</x>
        <y>48</y>
        <width>217</width>
-       <height>49</height>
+       <height>33</height>
       </rect>
      </property>
      <property name="baseSize">
@@ -1127,7 +1127,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>92</y>
+       <y>76</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -1146,7 +1146,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>85</x>
-       <y>92</y>
+       <y>76</y>
        <width>217</width>
        <height>16</height>
       </rect>
@@ -1185,7 +1185,7 @@ p, li { white-space: pre-wrap; }
       <rect>
        <x>85</x>
        <y>16</y>
-       <width>217</width>
+       <width>209</width>
        <height>16</height>
       </rect>
      </property>
@@ -1209,8 +1209,8 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>85</x>
-       <y>48</y>
-       <width>217</width>
+       <y>64</y>
+       <width>209</width>
        <height>41</height>
       </rect>
      </property>
@@ -1259,7 +1259,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>48</y>
+       <y>64</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -1298,7 +1298,51 @@ p, li { white-space: pre-wrap; }
       <rect>
        <x>85</x>
        <y>32</y>
-       <width>217</width>
+       <width>209</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="text">
+      <string>n/a</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_StInfo4">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>48</y>
+       <width>69</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>Duration:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblSelStimDuration">
+     <property name="geometry">
+      <rect>
+       <x>85</x>
+       <y>48</y>
+       <width>209</width>
        <height>16</height>
       </rect>
      </property>
@@ -1386,7 +1430,7 @@ display info</string>
      <x>0</x>
      <y>0</y>
      <width>780</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

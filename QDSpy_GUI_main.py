@@ -78,6 +78,8 @@ class MainWinClass(QtGui.QMainWindow, form_class):
 
     QtGui.QMainWindow.__init__(self, parent)
     self.setupUi(self)
+    self.setWindowTitle(glo.QDSpy_versionStr)
+
     
     # Bind GUI ...
     #
@@ -465,6 +467,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     #
     txtInfo            = "n/a"
     txtCompState       = "n/a"
+    txtDuration        = "n/a"
     self.isStimReady   = False
     self.isStimCurr    = False
     self.currStimName  = _selItem.text()
@@ -487,8 +490,13 @@ class MainWinClass(QtGui.QMainWindow, form_class):
           txtCompState   = fStrPreGreen +"compiled (.pickle) is up-to-date" +\
                            fStrPost
         else:
-          txtCompState   = "compiled (.pickle) predates .py"
+          txtCompState   = "compiled (.pickle), pre-dates .py"
         txtInfo          = self.Stim.descrStr
+        mins, secs       = divmod(self.Stim.lenStim_s, 60)    
+        hours, mins      = divmod(mins, 60)
+        txtDuration      = "{0:.3f} s ({1:02d}:{2:02d}:{3:02d})".format(
+                            self.Stim.lenStim_s, 
+                            int(hours), int(mins), int(secs))
         self.updateStatusBar()
 
       except:
@@ -503,6 +511,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
       self.lblSelStimName.setText(self.currStimName)
       self.lblSelStimInfo.setText(txtInfo)
       self.lblSelStimStatus.setText(txtCompState)
+      self.lblSelStimDuration.setText(txtDuration)
       self.updateAll()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
