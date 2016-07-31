@@ -1,29 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  lightcrafter.py
-#
-#  ...
-#
-# ---------------------------------------------------------------------
-#  Internal:
-#
-#
-#  Copyright (c) 2014-2016 Thomas Euler
-#  All rights reserved.
-#
+"""
+Lightcrafter API
+
+Note that this library requires firmware 3.0 and higher
+
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ = "thomas.euler@eulerlab.de"
 
 # ---------------------------------------------------------------------
 import numpy as np
 import Devices.hid as hid
-"""
-import sys
-if (sys.version_info[0] +sys.version_info[1]/10) <= 3.4:
-  import Devices.hid_py34_64 as hid
-else:
-"""
 
 # ---------------------------------------------------------------------
 LC_width             = 912
@@ -32,6 +22,7 @@ LC_height            = 1140
 # ---------------------------------------------------------------------
 LC_VID               = 0x0451
 LC_PID               = 0x6401
+LC_IDStr             = "LCr"
 
 LC_MaxDataLen        = 64
 LC_Timeout_ms        = 2000
@@ -182,14 +173,14 @@ class Lightcrafter:
   _isVerbose      | send messages to stdout
   =============== ==================================================
   """
-  
-  def __init__(self, _isCheckOnly=False, _isVerbose=True):
+  def __init__(self, _isCheckOnly=False, _funcLog=None, _logLevel=2):
     self.LC          = None
     self.nSeq        = 0
-    self.isVerbose   = _isVerbose
     self.isCheckOnly = _isCheckOnly
     self.lastMsgStr  = ""
-
+    self.funcLog     = _funcLog
+    self.logLevel    = _logLevel
+    
   # -------------------------------------------------------------------
   # Connect and disconnect the device
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -199,22 +190,23 @@ class Lightcrafter:
     """
     if not(self.isCheckOnly):
       try:
-        self.log("Trying to connect ...")            
+        self.log(" ", "Trying to connect ...", 2)            
         self.LC = hid.device()
         self.LC.open(LC_VID, LC_PID)
 
       except IOError as ex:
         self.LC = None
-        self.log("Error ({0})".format(ex))      
-        return [ERROR.COULD_NOT_CONNECT]
+        errC    = ERROR.COULD_NOT_CONNECT
+        self.log("ERROR", ErrorStr[errC] +", Code '{0}'".format(ex), 0)      
+        return [errC]
 
       self.LC.set_nonblocking(1)
       self.sManufacturer = self.LC.get_manufacturer_string()
       self.sProduct      = self.LC.get_product_string()
       self.sSN           = self.LC.get_serial_number_string()
   
-      self.log("Connected to {0} by {1}".format(self.sProduct, 
-                                                self.sManufacturer))      
+      self.log("ok", "Connected to {0} by {1}".format(self.sProduct, 
+                                                      self.sManufacturer), 2)      
     return [ERROR.OK]
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -226,12 +218,50 @@ class Lightcrafter:
       if self.LC != None:
         self.LC.close()
         self.LC = None
-        self.log("Disconnected")         
+        self.log("ok", "Disconnected", 2)         
         
     return [ERROR.OK]    
 
   # -------------------------------------------------------------------
   # Hardware and system status-related
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def getFirmwareVersion(self):
+    """
+    Get firmware version
+    
+    =============== ==================================================
+    Result:
+    =============== ==================================================
+    code            | 0=ok or error code
+    data            | the original data byte(s) returned by the device
+    info            | a dictionary with following entries:
+                    | applicationSoftwareRev, APISoftwareRevision, 
+                    | softwareConfigurationRevision, 
+                    | sequenceConfigurationRevision
+    =============== ==================================================
+    """
+    if self.isCheckOnly:
+      return [ERROR.OK]      
+
+    res    = self.readData(CMD_FORMAT_LIST.GET_VERSION)
+    if res[0] == ERROR.OK:
+      data    = res[1][LC_firstDataByte:]
+      appVer  = self.verListFromInt32(data, 0)
+      APIVer  = self.verListFromInt32(data, 4)
+      confVer = self.verListFromInt32(data, 8)
+      seqVer  = self.verListFromInt32(data, 12)
+      info    = {"applicationSoftwareRev": appVer, 
+                 "APISoftwareRevision": APIVer, 
+                 "softwareConfigurationRevision": confVer, 
+                 "sequenceConfigurationRevision": seqVer}
+
+      self.log(" ", "Firmware version: {0}.{1}.{2}"
+                    .format(appVer[0], appVer[1], appVer[2]), 1)
+
+      return [ERROR.OK, data, info]
+    else:
+      raise LCException(res[0])
+    
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getHardwareStatus(self):
     """
@@ -263,12 +293,12 @@ class Lightcrafter:
                     "swapError":swapError, "seqAbort":seqAbort,
                     "seqError":seqError}
 
-      self.log("Hardware errors : {0} {1} {2} {3} {4}"
+      self.log("ERROR", "Hardware errors : {0} {1} {2} {3} {4}"
                .format("-" if initOK else "init", 
                        "DMD" if DMDError else "-", 
                        "swap" if swapError else "-", 
                        "seq_abort" if seqAbort else "-",
-                       "sequence" if seqError else "-"))
+                       "sequence" if seqError else "-"), 1)
       
       return [ERROR.OK, data, info]
     else:
@@ -298,7 +328,8 @@ class Lightcrafter:
       MemoryOK   = (data & 0x01) > 0
       info       = {"MemoryOK":MemoryOK}
       
-      self.log("System errors   : {0}".format("-" if MemoryOK else "memory"))
+      self.log("ERROR", "System errors   : {0}"
+               .format("-" if MemoryOK else "memory"), 1)
       
       return [ERROR.OK, data, info]
     else:
@@ -333,11 +364,11 @@ class Lightcrafter:
       info       = {"DMDParked":DMDParked, "SeqRunning":SeqRunning,
                     "FBufFrozen":FBufFrozen, "GammaEnab":GammaEnab}
 
-      self.log("Hardware status : {0} {1} {2} {3}"
-               .format("DMD_parked" if DMDParked else "DMD_active", 
-                       "seq_running" if SeqRunning else "-", 
-                       "frame_buffer_frozen" if FBufFrozen else "-", 
-                       "gamma_on" if GammaEnab else "-"))
+      self.log(" ", "Hardware status : {0} {1} {2} {3}"
+                    .format("DMD_parked" if DMDParked else "DMD_active", 
+                            "seq_running" if SeqRunning else "-", 
+                            "frame_buffer_frozen" if FBufFrozen else "-", 
+                            "gamma_on" if GammaEnab else "-"), 1)
                     
       return [ERROR.OK, data, info]
     else:
@@ -385,13 +416,14 @@ class Lightcrafter:
       27:26 15:0 First Line (beginning of active line in the Frame)
       """
 
-      self.log("Video signal    : {0}\n"
+      self.log(" ", 
+               "Video signal    : {0}\n"
                "Resolution      : {1} x {2}\n"
                "Polarity        : HSync={3}, VSync={4}\n"
                "Pixel clock     : {5} kHz\n"
                "Frequency  [kHz]: HFreq={6}, VFreq={7}"
                .format("detected" if SigDetect else "-", HRes, VRes, 
-                       HSyncPol, VSyncPol, PixClk_kHz, HFreq_kHz, VFreq_Hz)) 
+                       HSyncPol, VSyncPol, PixClk_kHz, HFreq_kHz, VFreq_Hz), 1) 
 
       info       = {"SigDetect":SigDetect, "HRes":HRes, "VRes":VRes,
                     "HSyncPol":HSyncPol, "VSyncPol":VSyncPol,
@@ -496,8 +528,8 @@ class Lightcrafter:
       
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setVideoGamma(self, _mode, _enabled):
-    # to be implemented
-    #
+    """ To be implemented
+    """
     if not(_mode in range(0,4)):
       return [ERROR.INVALID_PARAMS]
 
@@ -516,19 +548,25 @@ class Lightcrafter:
   # Internal test pattern-related       
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setTestPattern(self, _pattern):
-    # Set test pattern
-    # _pattern : 0x0 = Solid field
-    #            0x1 = Horizontal ramp
-    #            0x2 = Vertical ramp
-    #            0x3 = Horizontal lines
-    #            0x4 = Diagonal lines
-    #            0x5 = Vertical lines
-    #            0x6 = Grid
-    #            0x7 = Checkerboard
-    #            0x8 = RGB ramp
-    #            0x9 = Color bars
-    #            0xA = Step bars
-    #
+    """ 
+    Set test pattern.
+     
+    =============== ==================================================
+    Parameters:
+    =============== ==================================================
+    _pattern        | 0x0 = Solid field
+                    | 0x1 = Horizontal ramp
+                    | 0x2 = Vertical ramp
+                    | 0x3 = Horizontal lines
+                    | 0x4 = Diagonal lines
+                    | 0x5 = Vertical lines
+                    | 0x6 = Grid
+                    | 0x7 = Checkerboard
+                    | 0x8 = RGB ramp
+                    | 0x9 = Color bars
+                    | 0xA = Step bars
+    =============== ==================================================
+    """
     if not(_pattern in range(0,10)):
       return [ERROR.INVALID_PARAMS]
     
@@ -546,46 +584,101 @@ class Lightcrafter:
   # LED-related      
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getLEDCurrents(self):
-    # Returns the LED currents
-    # [ErrC, [r,g,b]] with r,g,b in 0...255
-    #
+    """ 
+    Get LED currents and returns these as list [code, [r,g,b]] with:
+   
+    =============== ==================================================
+    Result:
+    =============== ==================================================
+    code            | 0=ok or error code
+    [r,g,b]         | LED currents as PWM, 0..255
+    =============== ==================================================
+    """
     if self.isCheckOnly:
       return [ERROR.OK]      
 
     res    = self.readData(CMD_FORMAT_LIST.LED_CURRENT)
     if res[0] == ERROR.OK:
       rgb  = 255 -np.array(res[1][LC_firstDataByte:LC_firstDataByte+3])
+      self.log("ok", "getLEDCurrents " +rgb.__str__(), 1)
       return [ERROR.OK, rgb]
     else:
       raise LCException(res[0])
 
 
-  def setLEDCurrents(self, rgb):
-    #
-    #
+  def setLEDCurrents(self, _rgb):
+    """ 
+    Set LED currents.
+    
+    =============== ==================================================
+    Parameters:
+    =============== ==================================================
+    _rgb            | [r,g,b] with LED currents as PWM, 0..255
+    =============== ==================================================
+    """
     if self.isCheckOnly:
       return [ERROR.OK]      
 
-    newRGB = list(abs(np.clip(rgb, 0,255) -255))
+    newRGB = list(abs(np.clip(_rgb, 0,255) -255))
     res    = self.writeData(CMD_FORMAT_LIST.LED_CURRENT, newRGB)
     if res[0] == ERROR.OK:
+      self.log("ok", "setLEDCurrents " +_rgb.__str__(), 1)
       return [ERROR.OK]
     else:
       raise LCException(res[0])
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getLEDEnabled(self):
-    # Returns the LED status
-    # [ErrC, [isR,isG,isB, isSeqControlled]]
-    #
+    """ 
+    Returns state of LED pins (enabled/disabled) and if the sequence
+    controls these pins as list [code, [isR,isG,isB], isSeqCtrl]]
+    with:
+
+    =============== ==================================================
+    Result:
+    =============== ==================================================
+    code            | 0=ok or error code
+    [isR,isG,isB]   | list of boolean values, one for each LED
+    isSeqCtrl       | if True, the all LED enables are controlled
+                    | by the sequencer and _rgb is ignored
+    =============== ==================================================
+        
+    """
     if self.isCheckOnly:
       return [ERROR.OK]      
   
     res    = self.readData(CMD_FORMAT_LIST.LED_ENABLE)
     if res[0] == ERROR.OK:
       data = res[1][LC_firstDataByte]
-      return [ERROR.OK, [int((data & 0x01)>0), int((data & 0x02)>0),
-                         int((data & 0x04)>0), (data & 0x08)>0]]
+      res1 = [int((data & 0x01)>0), int((data & 0x02)>0), int((data & 0x04)>0)]
+      res2 = (data & 0x08)>0
+      self.log("ok", "getLEDEnabled " +res1.__str__() +" " +res2.__str__(), 1)
+      return [ERROR.OK, res1, res2]
+    else:
+      raise LCException(res[0])
+
+
+  def setLEDEnabled(self, _rgb, _enableSeqCtrl):
+    """ 
+    Enable or disable LEDs or allow sequencer to control LED pins
+    
+    =============== ==================================================
+    Parameters:
+    =============== ==================================================
+    _rgb            | list of boolean values, one for each LED
+    _enableSeqCtrl  | if True, the all LED enables are controlled
+                    | by the sequencer and _rgb is ignored
+    =============== ==================================================
+    """
+    if self.isCheckOnly:
+      return [ERROR.OK]      
+
+    data   = _rgb[0] | (_rgb[1] << 1) | (_rgb[2] << 2) | (_enableSeqCtrl << 3)
+    res    = self.writeData(CMD_FORMAT_LIST.LED_ENABLE, [data])
+    if res[0] == ERROR.OK:
+      self.log("ok", "setLEDEnabled " +_rgb.__str__() +
+                     " " +_enableSeqCtrl.__str__(), 1)
+      return [ERROR.OK]
     else:
       raise LCException(res[0])
 
@@ -638,18 +731,28 @@ class Lightcrafter:
         length  = res[2]
         if ((flags & 0x20) > 0) or (length == 0):
           return [ERROR.NAK_ERROR]
+    
+    return [ERROR.OK]
 
-      return [ERROR.OK, res]
+  # -------------------------------------------------------------------
+  # Helpers
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def verListFromInt32 (self, data, i):
+    ver = (data[i+3] << 24) | (data[i+2] << 16) | (data[i+1] << 8) | data[i]
+    return [(ver & 0xFF000000) >> 24, (ver & 0xFF0000) >> 16, ver & 0xFFFF]        
 
   # -------------------------------------------------------------------
   # Logging
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def log(self, _msg):
-    # ...
+  def log(self, _sHeader, _sMsg, _logLevel):
+    # Write message to log
     #
-    self.lastMsgStr = _msg
-    if self.isVerbose:
-      print(_msg)
+    self.lastMsgStr = _sMsg
+    if _logLevel <= self.logLevel:
+      if self.funcLog is None:
+        print("{0!s:>8} {1}".format(_sHeader, _sMsg))
+      else:
+        self.funcLog(_sHeader, LC_IDStr + "|" +_sMsg)
 
 # ---------------------------------------------------------------------
 

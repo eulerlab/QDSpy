@@ -457,9 +457,9 @@ def GetMovieParameters(_iobj):
   =============== ==================================================
   Returns:
   =============== ==================================================
-  list            | [dx,dy,nFr]
-                  | with dx,dy the frame size in pixels
-                  | and nFr the number of frames  
+  dictionary      | "dxFr", "dyFr", and "nFr"
+                  | with dx,dy the frame size in pixels,
+                  | and nFr the number of frames
   =============== ==================================================
   """
   try:
@@ -510,9 +510,10 @@ def GetVideoParameters(_iobj):
   =============== ==================================================
   Returns:
   =============== ==================================================
-  list            | [dx,dy,nFr]
-                  | with dx,dy the frame size in pixels
-                  | and nFr the number of frames  
+  dictionary      | "dxFr", "dyFr", "nFr", and "fps"
+                  | with dx,dy the frame size in pixels,
+                  | nFr the number of frames, and fps
+                  | refresh rate in frames per second
   =============== ==================================================
   """
   try:
@@ -914,11 +915,33 @@ def LC_setLEDCurrents(_rgb):
                   | with 0 <= r,g,b <= 255
   =============== ==================================================
   """
+  print("HERE", _rgb)  
+
   try:
     _Stim.processLCrCommand(stm.StimLCrCmd.setLEDCurrents, [_rgb])
   except stm.StimException as e:
     ssp.Log.write("ERROR", "LC_setLEDCurrents: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
+
+# ---------------------------------------------------------------------  
+def LC_setLEDEnabled(_rgb):
+  """
+  Enable or disable the LEDs.
+   
+  =============== ==================================================
+  Parameters:
+  =============== ==================================================
+  _rgb            | state of LEDas a list [r,g,b] 
+                  | with True or False
+  =============== ==================================================
+  """
+  try:
+    _Stim.processLCrCommand(stm.StimLCrCmd.setLEDEnabled, [_rgb])
+  except stm.StimException as e:
+    ssp.Log.write("ERROR", "LC_setLEDEnabled: {0}, {1}"
+                  .format(e.value, e))
+  return _Stim.LastErrC
+
 
 # ---------------------------------------------------------------------

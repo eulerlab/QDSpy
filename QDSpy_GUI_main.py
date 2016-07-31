@@ -20,15 +20,20 @@ import QDSpy_stim as stm
 import QDSpy_stim_support as ssp
 import QDSpy_config as cfg
 import QDSpy_GUI_support as gsu
+from   QDSpy_GUI_cam import CamWinClass
 import QDSpy_multiprocessing as mpr
+import QDSpy_stage as stg
 import QDSpy_global as glo
 import QDSpy_core
+import QDSpy_core_support as csp
 
-if glo.QDSpy_use_Lightcrafter:
-  import Devices.lightcrafter as lcr
-  
+if csp.module_exists("cv2"):
+  import Devices.camera as cam
+
 # ---------------------------------------------------------------------
-form_class   = uic.loadUiType("QDSpy_GUI_main.ui")[0]
+form_class           = uic.loadUiType("QDSpy_GUI_main.ui")[0]
+toggle_btn_style_str = "QPushButton:checked{background-color: lightGreen;"\
+                       "border: none; }"
 
 # ---------------------------------------------------------------------
 fStrPreRed   = '<html><head/><body><p><span style="color:#ff0000;">'
@@ -67,11 +72,14 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.isStimReady   = False
     self.isStimCurr    = False
     self.isViewReady   = False
+    self.isLCrUsed     = False
     self.Stage         = None
     self.noMsgToStdOut = cfg.getParsedArgv().gui
 
     QtGui.QMainWindow.__init__(self, parent)
     self.setupUi(self)
+    self.setWindowTitle(glo.QDSpy_versionStr)
+
     
     # Bind GUI ...
     #
@@ -84,12 +92,37 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.btnChangeStimFolder.clicked.connect(self.OnClick_btnChangeStimFolder)
     self.checkShowHistory.clicked.connect(self.OnClick_checkShowHistory)
     
+    self.pushButtonLED1.clicked.connect(self.OnClick_pushButtonLED)    
+    self.pushButtonLED2.clicked.connect(self.OnClick_pushButtonLED)    
+    self.pushButtonLED3.clicked.connect(self.OnClick_pushButtonLED)    
+    self.pushButtonLED4.clicked.connect(self.OnClick_pushButtonLED)    
+    self.pushButtonLED1.setStyleSheet(toggle_btn_style_str)
+    self.pushButtonLED2.setStyleSheet(toggle_btn_style_str)
+    self.pushButtonLED3.setStyleSheet(toggle_btn_style_str)
+    self.pushButtonLED4.setStyleSheet(toggle_btn_style_str)
+    
     self.spinBoxLED1.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
     self.spinBoxLED2.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
     self.spinBoxLED3.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
     self.spinBoxLED4.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
-    self.btnSetLEDs.clicked.connect(self.OnClick_btnSetLEDs)
-    self.btnSetLEDs.setEnabled(glo.QDSpy_use_Lightcrafter)
+    self.btnSetLEDCurrents.clicked.connect(self.OnClick_btnSetLEDCurrents)
+    self.btnRefreshDisplayInfo.clicked.connect(self.OnClick_btnRefreshDisplayInfo)
+    
+    self.btnToggleLEDEnable.clicked.connect(self.OnClick_btnToggleLEDEnable)
+    self.btnToggleLEDEnable.setStyleSheet(toggle_btn_style_str)      
+    self.btnToggleSeqControl.clicked.connect(self.OnClick_btnToggleSeqControl)
+    self.btnToggleSeqControl.setStyleSheet(toggle_btn_style_str)
+
+    self.winCam  = None
+    self.camList = []
+    if self.Conf.allowCam and csp.module_exists("cv2"):
+      self.camList = cam.get_camera_list()
+      for c in self.camList:
+        self.comboBoxCams.addItems([c["string"]])
+      self.checkBoxCamEnable.clicked.connect(self.OnClick_checkBoxCamEnable)
+      
+    else:
+      self.checkBoxCamEnable.setEnabled(False)
 
     self.checkBoxStageCSEnable.clicked.connect(self.OnClick_checkStageCSEnable)
     self.spinBoxStageCS_hOffs.valueChanged.connect(
@@ -103,6 +136,9 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.spinBoxStageCS_rot.valueChanged.connect(
       self.OnClick_spinBoxStageCS_rot_valueChanged)
     self.btnSaveStageCS.clicked.connect(self.OnClick_btnSaveStageCS)
+    
+    self.btnToggleWaitForTrigger.clicked.connect(self.OnClick_btnToggleWaitForTrigger)
+    self.btnToggleWaitForTrigger.setStyleSheet(toggle_btn_style_str)
 
     self.stbarErrMsg   = QtGui.QLabel()
     self.stbarStimMsg  = QtGui.QLabel()
@@ -115,8 +151,8 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     # Create status objects and a pipe for communicating with the
     # presentation process (see below)    
     #
-    self.state         = State.undefined
-    self.Sync          = mpr.Sync()
+    self.state = State.undefined
+    self.Sync  = mpr.Sync()
     ssp.Log.setGUISync(self.Sync)
     
     # Create process that opens a view (an OpenGL window) and waits for
@@ -201,8 +237,15 @@ class MainWinClass(QtGui.QMainWindow, form_class):
         event.ignore()
         return
     
+    # Save position of camera window, and close it if open
+    #
+    if not(self.winCam is None):   
+      self.Conf.camWinGeom = self.winCam.geometry().getRect()
+      self.winCam.close()
+    
     # Save config
     #
+    self.Conf.saveWinPosToConfig()
     self.Conf.save()
         
     # Closing is immanent, stop stimulus, if running ...
@@ -269,7 +312,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.btnStimCompile.setEnabled(not(self.isStimCurr))
     self.btnStimAbort.setText("Abort")
     self.btnStimAbort.setEnabled(self.state == State.playing)
-
+    
     if   self.state == State.loading:
       self.btnStimPlay.setText("Loading\n...")
       self.btnStimPlay.setEnabled(False)
@@ -291,6 +334,35 @@ class MainWinClass(QtGui.QMainWindow, form_class):
       self.btnStimPlay.setText("Playing\n...")
       self.btnStimPlay.setEnabled(False)
       self.btnStimCompile.setEnabled(False)
+      
+    if not(self.winCam is None):
+      self.checkBoxCamEnable.setCheckState(self.winCam.isHidden())
+
+    if not(self.Stage is None):
+      enabledSeq = self.Stage.isLEDSeqEnabled
+    else:
+      enabledSeq = True
+    self.btnSetLEDCurrents.setEnabled(self.isLCrUsed)
+    self.btnToggleLEDEnable.setEnabled(self.isLCrUsed)
+    self.btnToggleSeqControl.setEnabled(False)
+    '''
+    enabledLEDs = self.btnToggleLEDEnable.isChecked()
+    self.btnToggleSeqControl.setEnabled(self.isLCrUsed and not(enabledLEDs))
+    '''
+    self.btnToggleSeqControl.setChecked(enabledSeq)
+    gsu.updateToggleButton(self.btnToggleSeqControl)
+    
+    self.btnRefreshDisplayInfo.setEnabled(self.isLCrUsed)
+    if self.Stage:
+      for iLED, LED in enumerate(self.Stage.LEDs):
+        [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, iLED)
+        spinBoxLED.setEnabled(self.isLCrUsed)
+        btnLED.setEnabled(self.isLCrUsed and not(enabledSeq))
+        if not(self.Stage is None):
+          btnLED.setChecked(LED["enabled"])
+        else:
+          btnLED.setChecked(True)
+        gsu.updateToggleButton(btnLED)
 
     self.processPipe()
     self.updateStatusBar(stateWorker)
@@ -339,21 +411,27 @@ class MainWinClass(QtGui.QMainWindow, form_class):
           self.Stage.scalY_umPerPix,
           self.Stage.centX_pix, self.Stage.centY_pix,
           self.Stage.rot_angle))
-      
+
       if len(self.Stage.LEDs) == 0:
         self.lblDisplDevLEDs.setText("n/a")
+
       else:  
-        sTemp = ""
-        pal   = QtGui.QPalette()
+        sTemp       = ""
+        pal         = QtGui.QPalette()
+        LEDsEnabled = self.btnToggleLEDEnable.isChecked()
+
         for iLED, LED in enumerate(self.Stage.LEDs):
-          sTemp += "{0}={1} ".format(LED[0], LED[1])
-          pal.setColor(QtGui.QPalette.Window, QtGui.QColor(LED[4]))
+          sTemp += "{0}={1} ".format(LED["name"], LED["current"])
+          pal.setColor(QtGui.QPalette.Window, QtGui.QColor(LED["Qt_color"]))
           pal.setColor(QtGui.QPalette.WindowText, QtGui.QColor("white"))
-          [spinBoxLED, label_LED] = gsu.getLEDGUIObjects(self, iLED)
-          spinBoxLED.setValue(LED[1])
-          spinBoxLED.setEnabled(True)
-          label_LED.setPalette(pal)
-          label_LED.setText(LED[0])
+          [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, iLED)
+          spinBoxLED.setValue(LED["current"])
+          spinBoxLED.setEnabled(not(LEDsEnabled))
+          labelLED.setPalette(pal)
+          labelLED.setText(LED["name"])
+          btnLED.setEnabled(not(LEDsEnabled))
+          btnLED.setText("")
+          gsu.updateToggleButton(btnLED)
         self.lblDisplDevLEDs.setText(sTemp)      
         
       self.spinBoxStageCS_hOffs.setValue(self.Stage.centOffX_pix)
@@ -389,6 +467,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     #
     txtInfo            = "n/a"
     txtCompState       = "n/a"
+    txtDuration        = "n/a"
     self.isStimReady   = False
     self.isStimCurr    = False
     self.currStimName  = _selItem.text()
@@ -411,8 +490,13 @@ class MainWinClass(QtGui.QMainWindow, form_class):
           txtCompState   = fStrPreGreen +"compiled (.pickle) is up-to-date" +\
                            fStrPost
         else:
-          txtCompState   = "compiled (.pickle) predates .py"
+          txtCompState   = "compiled (.pickle), pre-dates .py"
         txtInfo          = self.Stim.descrStr
+        mins, secs       = divmod(self.Stim.lenStim_s, 60)    
+        hours, mins      = divmod(mins, 60)
+        txtDuration      = "{0:.3f} s ({1:02d}:{2:02d}:{3:02d})".format(
+                            self.Stim.lenStim_s, 
+                            int(hours), int(mins), int(secs))
         self.updateStatusBar()
 
       except:
@@ -427,6 +511,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
       self.lblSelStimName.setText(self.currStimName)
       self.lblSelStimInfo.setText(txtInfo)
       self.lblSelStimStatus.setText(txtCompState)
+      self.lblSelStimDuration.setText(txtDuration)
       self.updateAll()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -435,7 +520,32 @@ class MainWinClass(QtGui.QMainWindow, form_class):
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_spinBoxLED_valueChanged(self, _val):
-    self.btnSetLEDs.setEnabled(True)
+    self.btnSetLEDCurrents.setEnabled(True)
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_pushButtonLED(self):
+    self.handleLEDStateChanged()
+
+  def handleLEDStateChanged(self):
+    '''
+    if len(self.Stage.LEDs) == 0:
+      return
+    '''    
+    enabled     = []
+    LEDsEnabled = not(self.btnToggleLEDEnable.isChecked())
+
+    for iLED, LED in enumerate(self.Stage.LEDs):
+      (spinBoxLED, labelLED, btnLED) = gsu.getLEDGUIObjects(self, iLED)
+      btnLED.setEnabled(LEDsEnabled)
+      val = btnLED.isChecked() 
+      enabled.append(val)
+      spinBoxLED.setEnabled(LEDsEnabled and not(val))
+      self.Stage.setLEDEnabled(iLED, val)
+      
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_changedLEDs, 
+                           [self.Stage.LEDs, self.Stage.isLEDSeqEnabled]])
+    self.updateDisplayInfo()
+        
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_AddComment(self):
@@ -444,26 +554,65 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.lineEditComment.setText("")    
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def OnClick_btnSetLEDs(self):
+  def OnClick_btnRefreshDisplayInfo(self):
+    print("TO BE IMPLEMENTED")       
+    # *****************************
+    # *****************************
+ 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_btnToggleLEDEnable(self):
+    checked = self.btnToggleLEDEnable.isChecked()
+    for iLED, LED in enumerate(self.Stage.LEDs):
+       self.Stage.LEDs[iLED]["enabled"] = checked
+    self.Stage.isLEDSeqEnabled = checked
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_changedLEDs, 
+                           [self.Stage.LEDs, self.Stage.isLEDSeqEnabled]])
+    gsu.updateToggleButton(self.btnToggleLEDEnable)
+    self.updateDisplayInfo()
+    self.updateAll()
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_btnToggleSeqControl(self):
+    gsu.updateToggleButton(self.btnToggleSeqControl)
+    print("OnClick_btnToggleSeqControl.TO BE IMPLEMENTED")       
+    # *****************************
+    # *****************************
+    
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_btnToggleWaitForTrigger(self):
+    gsu.updateToggleButton(self.btnToggleWaitForTrigger)
+    print("TO BE IMPLEMENTED")       
+    # *****************************
+    # *****************************
+    
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_btnSetLEDCurrents(self):
     if len(self.Stage.LEDs) == 0:
       return
-    else:  
-      curr  = []
-      for iLED, LED in enumerate(self.Stage.LEDs):
-        (spinBoxLED, label_LED) = gsu.getLEDGUIObjects(self, iLED)
-        val = spinBoxLED.value()
-        curr.append(val)
-        self.Stage.setLEDCurrent(iLED, val)
+ 
+    curr  = []
+    for iLED, LED in enumerate(self.Stage.LEDs):
+      (spinBoxLED, labelLED, btnLED) = gsu.getLEDGUIObjects(self, iLED)
+      val = spinBoxLED.value()
+      curr.append(val)
+      self.Stage.setLEDCurrent(iLED, val)
         
-    LCr    = lcr.Lightcrafter(_isCheckOnly=False, _isVerbose=False)
-    result = LCr.connect()
-    if result[0] == lcr.ERROR.OK:
-      LCr.setLEDCurrents(curr[0:3])
-      LCr.disconnect()   
-
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_changedLEDs, 
+                           [self.Stage.LEDs, self.Stage.isLEDSeqEnabled]])
     self.updateDisplayInfo()
-    self.btnSetLEDs.setEnabled(False)    
-    
+    self.btnSetLEDCurrents.setEnabled(False)   
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  '''
+  def OnClick_btnGetLEDs(self):
+    if len(self.Stage.LEDs) == 0:
+      return
+    # *****************************
+    # *****************************
+    print("TO BE IMPLEMENTED")  
+    # *****************************
+    # *****************************      
+  '''   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_checkStageCSEnable(self, _checked):
     self.spinBoxStageCS_hOffs.setEnabled(_checked)
@@ -529,7 +678,21 @@ class MainWinClass(QtGui.QMainWindow, form_class):
   def OnDblClick_listStim(self, _selItem):
     self.runStim()
 
-
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_checkBoxCamEnable(self, _checked):
+    if _checked:
+      if self.winCam is None:
+        self.winCam = CamWinClass(self, self.updateAll, self.logWrite)
+        self.winCam.show()
+        geo = self.Conf.camWinGeom
+        self.winCam.setGeometry(geo[0], geo[1], geo[2], geo[3])
+      else:        
+        self.winCam.show()
+        
+    else:
+      if not(self.winCam is None):
+        self.winCam.close()
+    
   # -------------------------------------------------------------------
   # Compiling and running stimuli 
   # -------------------------------------------------------------------
@@ -596,7 +759,10 @@ class MainWinClass(QtGui.QMainWindow, form_class):
       elif data[0] == mpr.PipeValType.toCli_displayInfo:
         # Handle display information data -> update GUI
         #
-        self.Stage = pickle._loads(data[1])
+        self.Stage     = pickle._loads(data[1])
+        self.isLCrUsed = (self.Conf.useLCr and (self.Stage.scrDevType == 
+                          stg.ScrDevType.DLPLCR4500EVM))
+        self.updateAll()
         self.updateDisplayInfo()
         
       else:

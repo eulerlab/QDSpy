@@ -24,7 +24,9 @@ __author__ = "code@eulerlab.de"
 import os
 import pyglet
 import QDSpy_stim as stm
+import QDSpy_stim_support as ssp
 import QDSpy_global as glo
+import moviepy.editor as mpe
 
 # ---------------------------------------------------------------------
 # Video object class
@@ -41,8 +43,8 @@ class Video:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def __loadVideo(self):
-    # Loads "real" movie file
-    #
+    """ Loads a "real" movie file
+    """
     # Check if movie file exists ...
     #
     if not(os.path.isfile(self.fNameVideo)):
@@ -51,36 +53,41 @@ class Video:
     try: 
       # Load video
       #
-      self.video = pyglet.media.load(self.fNameVideo, streaming=True)
+      self.video = mpe.VideoFileClip(self.fNameVideo)
       
     except IOError:  
       return stm.StimErrC.invalidVideoFormat
       
     # Retrieve video description
     #
-    v_format     = self.video.video_format
-    self.dxFr    = v_format.width
-    self.dyFr    = v_format.height
-    self.nFr     = round(v_format.frame_rate)*self.video.duration
+    self.dxFr = self.video.size[0]
+    self.dyFr = self.video.size[1]
+    self.nFr  = self.video.duration *self.video.fps
+    self.fps  = self.video.fps
+    ssp.Log.write("DEBUG", "stim_video: {0}x{1} pixel, {2} frames, {3} fps"
+                           .format(self.dxFr, self.dyFr, self.nFr, self.fps))
       
     if self.isTestOnly:
       # Return here if the video was only loaded to test if it is ok
       #
-      self.video.delete()
+      self.video = None
       return stm.StimErrC.ok
       
+    # Load movie frames (note that frames is a generator!)
+    #
+    self.frames  = self.video.iter_frames()  
     self.isReady = True
     return stm.StimErrC.ok
     
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def load(self, _fName, _testOnly=False):
-    # Reads a movie file (e.g. AVI); a description file is not needed
-    # Returns an error of the QDSpy_stim.StimErrC class
-    #
-    tempDir         = os.path.dirname(_fName)
+    """ Reads a movie file (e.g. AVI); a description file is not needed
+        Returns an error of the QDSpy_stim.StimErrC class
+    """   
+    tempDir = os.path.dirname(_fName)
     if len(tempDir) > 0:
-      tempDir      += "\\"
+      tempDir += "\\"
     self.fNameVideo = _fName
     self.fExtVideo  = os.path.splitext(_fName)[1].lower()
     self.isTestOnly = _testOnly
@@ -105,9 +112,9 @@ class VideoCtrl:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def reset(self):
-    # Reset parameters, delete sprite and recreate it (this way it
-    # looses its membership to a pyglet drawing batch)
-    #
+    """ Resets parameters, delete sprite and recreate it (this way it
+        looses its membership to a pyglet drawing batch)
+    """
     self.posXY   = (0,0)
     self.magXY   = (1.0,1.0)
     self.rot     = 0.0
@@ -121,20 +128,18 @@ class VideoCtrl:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def kill(self):
-    # ...
-    #
-    self.isReady   = False
+    """ Kill internal objects
+    """
+    self.isReady  = False
     if self.Sprite != None:
       self.Sprite.delete()
-      self.Sprite  = None
-      self.Group   = None
-      self.Player.delete()
-      self.Player  = None
-      print("killed")
+      self.Sprite = None
+      self.Group  = None
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def check(self):
-    # Returns True if the video is valid
+    """ Returns True if the video is valid
+    """
     #
     # *****************
     # *****************
@@ -145,54 +150,50 @@ class VideoCtrl:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setSpriteProperties(self, _posXY, _magXY, _rot, _trans):
-    # Set sprite properties
-    #
-    self.posXY     = (_posXY[0] -self.Video.dxFr//2 *_magXY[0],
-                      _posXY[1] -self.Video.dyFr//2 *_magXY[1])
-    self.magXY     = _magXY
-    self.rot       = _rot
-    self.trans     = _trans
+    """ Set sprite properties
+    """
+    self.posXY = (_posXY[0] -self.Video.dxFr//2 *_magXY[0],
+                  _posXY[1] -self.Video.dyFr//2 *_magXY[1])
+    self.magXY = _magXY
+    self.rot   = _rot
+    self.trans = _trans
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setSpriteBatch(self, _batch):
-    # Set sprite batch
-    #
+    """ Set sprite batch
+    """
     if self.Sprite != None:
       self.Sprite.batch = _batch.currBatch        
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getNextFrIndex(self):
-    # ...
-    #
+    """ Retrieve next frame index 
+    """
     if self.isDone or not(self.isReady):
       return -1
 
     if self.isFirst:
       self.isFirst  = False
       self.iCurrFr  = 0
-      self.Player   = pyglet.media.Player()
-      print("now queue ...")
-      self.Player.queue(self.Video.video)
       
     else:
       self.iCurrFr += 1
-      self.isDone   = not(self.iCurrFr < self.Video.nFr-10)
+      self.isDone   = not(self.iCurrFr < self.Video.nFr)
       
     if not(self.isDone):
-      if self.iCurrFr == 0:
-        self.Player.play()
-      tex = self.Player.get_texture()
-      self.Sprite = pyglet.sprite.Sprite(tex, usage="stream", group=self.Group)
+      frame      = next(self.Video.frames) 
+      pyglet_img = pyglet.image.ImageData(self.Video.dxFr, self.Video.dyFr, 
+                                          "RGB", frame.tostring(), 
+                                          pitch=self.Video.dxFr *3)
+      self.Sprite = pyglet.sprite.Sprite(pyglet_img.get_texture(), 
+                                         usage="stream", group=self.Group)
       self.Sprite.set_position(self.posXY[0], y=self.posXY[1])
       self.Sprite.scale    = self.magXY[0]
       self.Sprite.rotation = self.rot
       self.Sprite.opacity  = self.trans
-      print(self.iCurrFr, self.Player.time, self.Player.playing)      
       
     else:  
       print("IS DONE")
-      #self.Player.pause()
-      #self.Player.delete()
       self.iCurrFr = -1
       
     return self.iCurrFr

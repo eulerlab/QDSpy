@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>QDS Commands &mdash; QDSpy 0.7 beta documentation</title>
+    <title>QDS Commands &mdash; QDSpy 0.71 beta documentation</title>
     
-    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.7 beta',
+        VERSION:     '0.71 beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,14 +24,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/bizstyle.js"></script>
-    <link rel="top" title="QDSpy 0.7 beta documentation" href="index.html" />
+    <link rel="top" title="QDSpy 0.71 beta documentation" href="index.html" />
     <link rel="next" title="Known issues" href="releasenotes.html" />
-    <link rel="prev" title="Lightcrafter" href="lightcrafter.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="Lightcrafter" href="lightcrafter.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -47,53 +41,9 @@
         <li class="right" >
           <a href="lightcrafter.html" title="Lightcrafter"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.7 beta documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.71 beta documentation</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
-            </a></p>
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">QDS Commands</a><ul>
-<li><a class="reference internal" href="#control-stimulus-generation">Control stimulus generation</a></li>
-<li><a class="reference internal" href="#generate-objects">Generate objects</a></li>
-<li><a class="reference internal" href="#scene-and-object-color">Scene and object color</a></li>
-<li><a class="reference internal" href="#shader-related">Shader-related</a></li>
-<li><a class="reference internal" href="#render-stimulus-scenes">Render stimulus scenes</a></li>
-<li><a class="reference internal" href="#other-functions">Other functions</a></li>
-<li><a class="reference internal" href="#lightcrafter-related-functions">Lightcrafter-related functions</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="lightcrafter.html"
-                        title="previous chapter">Lightcrafter</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="releasenotes.html"
-                        title="next chapter">Known issues</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/commands.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -1068,10 +1018,10 @@ object must have been loaded.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>list</td>
+<tr class="row-even"><td>dictionary</td>
 <td><div class="first last line-block">
-<div class="line">[dx,dy,nFr]</div>
-<div class="line">with dx,dy the frame size in pixels</div>
+<div class="line">&#8220;dxFr&#8221;, &#8220;dyFr&#8221;, and &#8220;nFr&#8221;</div>
+<div class="line">with dx,dy the frame size in pixels,</div>
 <div class="line">and nFr the number of frames</div>
 </div>
 </td>
@@ -1115,11 +1065,12 @@ object must have been loaded.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>list</td>
+<tr class="row-even"><td>dictionary</td>
 <td><div class="first last line-block">
-<div class="line">[dx,dy,nFr]</div>
-<div class="line">with dx,dy the frame size in pixels</div>
-<div class="line">and nFr the number of frames</div>
+<div class="line">&#8220;dxFr&#8221;, &#8220;dyFr&#8221;, &#8220;nFr&#8221;, and &#8220;fps&#8221;</div>
+<div class="line">with dx,dy the frame size in pixels,</div>
+<div class="line">nFr the number of frames, and fps</div>
+<div class="line">refresh rate in frames per second</div>
 </div>
 </td>
 </tr>
@@ -1293,6 +1244,50 @@ of seconds. After the reset the device is disconnected.</p>
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">QDS Commands</a><ul>
+<li><a class="reference internal" href="#control-stimulus-generation">Control stimulus generation</a></li>
+<li><a class="reference internal" href="#generate-objects">Generate objects</a></li>
+<li><a class="reference internal" href="#scene-and-object-color">Scene and object color</a></li>
+<li><a class="reference internal" href="#shader-related">Shader-related</a></li>
+<li><a class="reference internal" href="#render-stimulus-scenes">Render stimulus scenes</a></li>
+<li><a class="reference internal" href="#other-functions">Other functions</a></li>
+<li><a class="reference internal" href="#lightcrafter-related-functions">Lightcrafter-related functions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="lightcrafter.html"
+                        title="previous chapter">Lightcrafter</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="releasenotes.html"
+                        title="next chapter">Known issues</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/commands.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -1307,12 +1302,12 @@ of seconds. After the reset the device is disconnected.</p>
         <li class="right" >
           <a href="lightcrafter.html" title="Lightcrafter"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.7 beta documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.71 beta documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
     </div>
   </body>
 </html>

@@ -24,13 +24,13 @@ print("---")
 
 # Requires at least one (dummy) object
 #
-QDS.DefObj_Box(1, 10,10,)
+QDS.DefObj_Box(1, 10,10,) 
 
 # Just clear screen
 #
 QDS.StartScript()
 
-QDS.LC_setLEDCurrents([0,50,0])
+QDS.LC_setLEDCurrents([0,5,5])
 
 QDS.SetBkgColor((0,0,0))
 QDS.Scene_Clear(0.1, 0)

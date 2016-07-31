@@ -123,11 +123,13 @@ class View:
       '''
       ssp.Log.write("ok", "Window mode, {0}x{1} pixels".format(width, height))
     
+      '''
       if self.Conf.useCtrlWin:                    
         div = int(1/self.Conf.ctrlWinScale)
         self.winPreview = self.Renderer.create_window(1, "", width//div, 
                                                       height//div, 50,50, 
                                                       self.Conf.ctrlWinScale)                     
+      '''                                                
       
     # Update self and stage object
     #

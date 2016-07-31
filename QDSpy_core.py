@@ -64,25 +64,26 @@ def loadStimulus(_fNameStim, _Stim):
       return False
   
       
-def connectLCr(_confirm=True):
-  if not(glo.QDSpy_use_Lightcrafter) or not(_confirm):
-    _LCr = None
+def connectLCr(_Conf=None, _Stim=None):
+  if not(_Stim is None) and not(_Stim.isUseLCr):
+    return None
+  if _Conf is None:
+    if not(glo.QDSpy_use_Lightcrafter): 
+      return None
   else:
-    ssp.Log.write(" ", "Trying to connect lightcrafter ...")
-    _LCr   = lcr.Lightcrafter(_isCheckOnly=False, _isVerbose=False)
-    result = _LCr.connect()
-    if result[0] != lcr.ERROR.OK:
-      ssp.Log.write(" ", "... failed")
-      ssp.Log.write("WARNING", "This script requires a lightcrafter")
-      _LCr = None
-    else:
-      ssp.Log.write("ok", "... done")
+    if not(_Conf.useLCr):
+      return None
+  _LCr   = lcr.Lightcrafter(_isCheckOnly=False, _funcLog=ssp.Log.write,
+                            _logLevel=glo.QDSpy_LCr_LogLevel)
+  result = _LCr.connect()
+  if result[0] != lcr.ERROR.OK:
+    ssp.Log.write("WARNING", "This script requires a lightcrafter")
+    _LCr = None
   return _LCr  
-
+  
 
 def disconnectLCr(_LCr):
   if _LCr != None:
-    ssp.Log.write("ok", "Lightcrafter disconnected")
     _LCr.disconnect()
   return None
   
@@ -136,6 +137,13 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
   _View.createStimulusWindow()
   _Stage.logInfo()
 
+  # Update representation of lightcrafter hardware, if present  
+  #
+  _LCr = connectLCr(_Conf)
+  _Stage.createLEDs(_Conf)
+  _Stage.updateLEDs(_LCr, _Conf)
+  _LCr = disconnectLCr(_LCr)
+
   # Initialize digital IO hardware, if requested
   #
   if _Conf.useDIO:
@@ -169,7 +177,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
       
     # Connect to lightcrafter, if required
     #
-    _Presenter.LCr = connectLCr(_Conf.useLCr and _Stim.isUseLCr)
+    _Presenter.LCr = connectLCr(_Conf, _Stim)
       
     # Present stimulus, with increased process priority and 
     # disabled automatic garbage collector, if requested      
@@ -189,9 +197,6 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     #
     # Notify GUI of display parameters
     #
-    _LCr = connectLCr(_Conf.useLCr)
-    _Stage.updateLEDs(_LCr, _Conf)
-    _LCr = disconnectLCr(_LCr)
     _Sync.pipeSrv.send([mpr.PipeValType.toCli_displayInfo, 
                         pickle.dumps(_Stage)])
     
@@ -214,6 +219,18 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             _Stage.centOffY_pix   = data[1]["centOffY_pix"]
             _Stage.rot_angle      = data[1]["rot_angle"]
             data = [mpr.PipeValType.toSrv_None]
+
+          if data[0] == mpr.PipeValType.toSrv_changedLEDs:
+            # LED currents and/or enabled state have changes, update
+            # immediately
+            #
+            _LCr = connectLCr(_Conf)
+            _Stage.LEDs           = data[1][0]
+            _Stage.isLEDSeqEnabled= data[1][1]
+            _Stage.sendLEDChangesToLCr(_LCr, _Conf)
+            _LCr = disconnectLCr(_LCr)
+            data = [mpr.PipeValType.toSrv_None]
+
        
         # Parse client's request
         #
@@ -230,7 +247,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             #
             try:
               switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim)    
-              _Presenter.LCr = connectLCr(_Conf.useLCr and _Stim.isUseLCr)
+              _Presenter.LCr = connectLCr(_Conf, _Stim)
               _Presenter.prepare(_Stim, _Sync)
               setPerformanceHigh(_Conf)
               _Presenter.run()

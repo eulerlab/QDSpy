@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # --------------------------------------------------------------------------
-import collections
+import collections 
 from functools import partial
 import QDS
 import math 

@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Lightcrafter &mdash; QDSpy 0.7 beta documentation</title>
+    <title>Lightcrafter &mdash; QDSpy 0.71 beta documentation</title>
     
-    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.7 beta',
+        VERSION:     '0.71 beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,14 +24,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/bizstyle.js"></script>
-    <link rel="top" title="QDSpy 0.7 beta documentation" href="index.html" />
+    <link rel="top" title="QDSpy 0.71 beta documentation" href="index.html" />
     <link rel="next" title="QDS Commands" href="commands.html" />
-    <link rel="prev" title="Shader description files" href="shaderfiles.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="Shader description files" href="shaderfiles.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -47,49 +41,9 @@
         <li class="right" >
           <a href="shaderfiles.html" title="Shader description files"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.7 beta documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.71 beta documentation</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
-            </a></p>
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Lightcrafter</a><ul>
-<li><a class="reference internal" href="#api">API</a></li>
-<li><a class="reference internal" href="#native-resolution">Native resolution</a></li>
-<li><a class="reference internal" href="#timing">Timing</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="shaderfiles.html"
-                        title="previous chapter">Shader description files</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="commands.html"
-                        title="next chapter">QDS Commands</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/lightcrafter.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -98,14 +52,26 @@
             
   <div class="section" id="lightcrafter">
 <h1>Lightcrafter<a class="headerlink" href="#lightcrafter" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="general-notes">
+<h2>General notes<a class="headerlink" href="#general-notes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>There are two modes for LED control, &#8220;manual&#8221; and &#8220;sequencer&#8221;. When disabling
+the lightcrafter LEDs in the GUI, control is switched to manual and the LEDs
+can be individually turned on and off (by cutting the power supply). When the
+LEDs are enabled in the GUI, &#8220;sequencer&#8221; is the mode of operation. Now the
+lightcrafter takes control and switches them depending on the way the incoming
+video stream (via HDMI) is interpreted.</li>
+</ul>
+</div>
 <div class="section" id="api">
 <span id="lightcrafter-api"></span><h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
 <p>To interact with the lightcrafter device directly in a python script
 (during <strong>compile-time</strong> of the stimulus, see section <a class="reference internal" href="how_QDSpy_works.html"><span class="doc">How QDSpy works</span></a>),
 use the follwing lightcrafter class.</p>
+<p>Note that this library requires firmware 3.0 and higher.</p>
 <dl class="class">
 <dt id="Devices.lightcrafter.Lightcrafter">
-<em class="property">class </em><code class="descclassname">Devices.lightcrafter.</code><code class="descname">Lightcrafter</code><span class="sig-paren">(</span><em>_isCheckOnly=False</em>, <em>_isVerbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Devices.lightcrafter.</code><code class="descname">Lightcrafter</code><span class="sig-paren">(</span><em>_isCheckOnly=False</em>, <em>_funcLog=None</em>, <em>_logLevel=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create and initialize lightcrafter object.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -145,6 +111,46 @@ use the follwing lightcrafter class.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.getFirmwareVersion">
+<code class="descname">getFirmwareVersion</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.getFirmwareVersion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.getFirmwareVersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get firmware version</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Result:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>code</td>
+<td><div class="first last line-block">
+<div class="line">0=ok or error code</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>data</td>
+<td><div class="first last line-block">
+<div class="line">the original data byte(s) returned by the device</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>info</td>
+<td><div class="first last line-block">
+<div class="line">a dictionary with following entries:</div>
+<div class="line">applicationSoftwareRev, APISoftwareRevision,</div>
+<div class="line">softwareConfigurationRevision,</div>
+<div class="line">sequenceConfigurationRevision</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="Devices.lightcrafter.Lightcrafter.getHardwareStatus">
 <code class="descname">getHardwareStatus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.getHardwareStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.getHardwareStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Requests the device&#8217;s hardware status and returns a list with up
@@ -177,6 +183,77 @@ to three elements:</p>
 <div class="line">a dictionary with following entries:</div>
 <div class="line">initOK, DMDError, swapError, seqAbort,</div>
 <div class="line">seqError</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.getLEDCurrents">
+<code class="descname">getLEDCurrents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.getLEDCurrents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.getLEDCurrents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get LED currents and returns these as list [code, [r,g,b]] with:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Result:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>code</td>
+<td><div class="first last line-block">
+<div class="line">0=ok or error code</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>[r,g,b]</td>
+<td><div class="first last line-block">
+<div class="line">LED currents as PWM, 0..255</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.getLEDEnabled">
+<code class="descname">getLEDEnabled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.getLEDEnabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.getLEDEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns state of LED pins (enabled/disabled) and if the sequence
+controls these pins as list [code, [isR,isG,isB], isSeqCtrl]]
+with:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Result:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>code</td>
+<td><div class="first last line-block">
+<div class="line">0=ok or error code</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>[isR,isG,isB]</td>
+<td><div class="first last line-block">
+<div class="line">list of boolean values, one for each LED</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>isSeqCtrl</td>
+<td><div class="first last line-block">
+<div class="line">if True, the all LED enables are controlled</div>
+<div class="line">by the sequencer and _rgb is ignored</div>
 </div>
 </td>
 </tr>
@@ -373,6 +450,104 @@ returns a list with up to three elements:</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.setLEDCurrents">
+<code class="descname">setLEDCurrents</code><span class="sig-paren">(</span><em>_rgb</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.setLEDCurrents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.setLEDCurrents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set LED currents.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameters:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_rgb</td>
+<td><div class="first last line-block">
+<div class="line">[r,g,b] with LED currents as PWM, 0..255</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.setLEDEnabled">
+<code class="descname">setLEDEnabled</code><span class="sig-paren">(</span><em>_rgb</em>, <em>_enableSeqCtrl</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.setLEDEnabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.setLEDEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable or disable LEDs or allow sequencer to control LED pins</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameters:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_rgb</td>
+<td><div class="first last line-block">
+<div class="line">list of boolean values, one for each LED</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>_enableSeqCtrl</td>
+<td><div class="first last line-block">
+<div class="line">if True, the all LED enables are controlled</div>
+<div class="line">by the sequencer and _rgb is ignored</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.setTestPattern">
+<code class="descname">setTestPattern</code><span class="sig-paren">(</span><em>_pattern</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.setTestPattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.setTestPattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set test pattern.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameters:</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_pattern</td>
+<td><div class="first last line-block">
+<div class="line">0x0 = Solid field</div>
+<div class="line">0x1 = Horizontal ramp</div>
+<div class="line">0x2 = Vertical ramp</div>
+<div class="line">0x3 = Horizontal lines</div>
+<div class="line">0x4 = Diagonal lines</div>
+<div class="line">0x5 = Vertical lines</div>
+<div class="line">0x6 = Grid</div>
+<div class="line">0x7 = Checkerboard</div>
+<div class="line">0x8 = RGB ramp</div>
+<div class="line">0x9 = Color bars</div>
+<div class="line">0xA = Step bars</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Devices.lightcrafter.Lightcrafter.setVideoGamma">
+<code class="descname">setVideoGamma</code><span class="sig-paren">(</span><em>_mode</em>, <em>_enabled</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.setVideoGamma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.setVideoGamma" title="Permalink to this definition">¶</a></dt>
+<dd><p>To be implemented</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="Devices.lightcrafter.Lightcrafter.softwareReset">
 <code class="descname">softwareReset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Devices/lightcrafter.html#Lightcrafter.softwareReset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Devices.lightcrafter.Lightcrafter.softwareReset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signal the device to do a software reset. This will take a couple
@@ -424,6 +599,47 @@ color channel, resulting in a actual bit depth of 3.</p>
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/QDSpy_Logo_smaller.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Lightcrafter</a><ul>
+<li><a class="reference internal" href="#general-notes">General notes</a></li>
+<li><a class="reference internal" href="#api">API</a></li>
+<li><a class="reference internal" href="#native-resolution">Native resolution</a></li>
+<li><a class="reference internal" href="#timing">Timing</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="shaderfiles.html"
+                        title="previous chapter">Shader description files</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="commands.html"
+                        title="next chapter">QDS Commands</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/lightcrafter.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -438,12 +654,12 @@ color channel, resulting in a actual bit depth of 3.</p>
         <li class="right" >
           <a href="shaderfiles.html" title="Shader description files"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.7 beta documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">QDSpy 0.71 beta documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016 Thomas Euler, eulerlab @ CIN/University of Tübingen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
     </div>
   </body>
 </html>

@@ -13,7 +13,7 @@ __author__ 	= "code@eulerlab.de"
 QDSpy_versionStr            = "QDSpy v0.7 beta"
 QDSpy_copyrightStr          = "(c) 2013-16 Thomas Euler"
 QDSpy_appID                 = u"QDSpy3.v07beta.thomas_euler.eulerlab.de"
-QDSpy_fullScrWinName        = "x" #QDSPY_STIMULUS"
+QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 
 QDSpy_isDebug               = True
 QDSpy_isGUIQuitWithDialog   = False
@@ -47,7 +47,7 @@ QDSpy_refresh_Hz            = 60.0
 
 QDSpy_cPickleProtocol       = 3
 QDSpy_cPickleFileExt        = ".pickle"
-QDSpy_fileVersionID         = 6
+QDSpy_fileVersionID         = 7
 QDSpy_stimFileExt           = ".py"
 QDSpy_pathStimuli           = ".\\Stimuli\\"
 QDSpy_autorunStimFileName   = "__autorun"
@@ -93,11 +93,14 @@ QDSpy_use_Lightcrafter      = True
 QDSpy_LEDNames_default      = "red, green, blue"
 QDSpy_LEDPeakWLs_default    = "650, 510, 450"
 QDSpy_LEDQtColors_default   = "darkRed, darkGreen, darkBlue"
+QDSpy_LCr_LogLevel          = 1 #0=only errors, 1=important 2=all
 
 QDSpy_allowGammaLUT_default = False
 QDSpy_LUTFileExt            = ".txt"
 QDSpy_userGammaLUTFileName  = "defaultGammaLUT"
 
+QDSpy_allowCam              = False
+QDSpy_camWinGeometry        = "20,30,300,200"
 # ---------------------------------------------------------------------
 
 

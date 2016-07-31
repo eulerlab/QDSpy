@@ -31,6 +31,7 @@ class PipeValType:
   toSrv_None         = 9
   toSrv_fileName     = 10
   toSrv_changedStage = 11 
+  toSrv_changedLEDs  = 12 
 
 # ---------------------------------------------------------------------
 # Sync class

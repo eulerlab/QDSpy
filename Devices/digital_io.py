@@ -1,21 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#  digital_io.py
-#
-#  Digital I/O using Measurement Computing's Universal Library
-#  http://www.mccdaq.com/daq-software/universal-library.aspx
-#
-#  Copyright (c) 2013-2016 Thomas Euler
-#  All rights reserved.
-#
+"""
+Digital I/O API
+
+Digital I/O using Measurement Computing's Universal Library
+http://www.mccdaq.com/daq-software/universal-library.aspx
+
+Copyright (c) 2013-2016 Thomas Euler
+All rights reserved.
+"""
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
 # ---------------------------------------------------------------------
 import ctypes
 from   ctypes                     import byref
-import QDSpy_stim_support         as sup
 from . import digital_io_UL_const as ULConst
 # ---------------------------------------------------------------------
 # Universal library(UL) devices (Measurement Computing)
@@ -46,17 +45,22 @@ dictUL        = dict([
 # I/O base class
 # ---------------------------------------------------------------------
 class devIO(object):
-  def __init__(self):
+  def __init__(self, _funcLog):
     # Initializing and testing the device
     #
-    self.isReady   = False
-    self.devName   = "n/a"
-    self.devType   = None
+    self.isReady = False
+    self.devName = "n/a"
+    self.devType = None
+    
+    if _funcLog == None:
+      self.log   = self.__log
+    else:
+      self.log   = _funcLog
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def _setIsReady(self):
     self.isReady   = True
-    sup.Log.write("ok", "I/O device '{0}' is ready".format(self.devName))
+    self.log("ok", "I/O device '{0}' is ready".format(self.devName))
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def configDPort(self, _port, _dir):
@@ -74,13 +78,20 @@ class devIO(object):
     # Write byte to digital port
     #
     pass
+  
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def __log(self, _sHeader, _sMsg):
+    # ...
+    #
+    print("{0!s:>8} {1}".format(_sHeader, _sMsg))
+  
 
 # =====================================================================
 # I/O class using the Universal Library/Measurement Computing
 # ---------------------------------------------------------------------
 class devIO_UL(devIO, object):
-  def __init__(self, _type, _boardNum, _devNum):
-    super(devIO_UL, self).__init__()
+  def __init__(self, _type, _boardNum, _devNum, _funcLog=None):
+    super(devIO_UL, self).__init__(_funcLog)
 
     if   _type == devTypeUL.none:
       return 
@@ -91,7 +102,7 @@ class devIO_UL(devIO, object):
       try:
         self.UL    = ctypes.windll.cbw64
       except WindowsError:
-        sup.Log.write("ERROR", "Driver library 'cbw64.dll' not found")
+        self.log("ERROR", "Driver library 'cbw64.dll' not found")
         return 
         
       self.brdNum  = _boardNum
@@ -110,7 +121,7 @@ class devIO_UL(devIO, object):
         self.devType = devTypeUL.PCIDIO24
 
       else:
-        sup.Log.write("ERROR", "Unknown digital I/O device")
+        self.log("ERROR", "Unknown digital I/O device")
         return
 
       # Configure device

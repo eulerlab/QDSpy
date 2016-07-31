@@ -2,6 +2,17 @@
 Lightcrafter 
 ----------------------------------------------
 
+General notes
+----------------------------------------------
+
+* There are two modes for LED control, "manual" and "sequencer". When disabling
+  the lightcrafter LEDs in the GUI, control is switched to manual and the LEDs
+  can be individually turned on and off (by cutting the power supply). When the 
+  LEDs are enabled in the GUI, "sequencer" is the mode of operation. Now the 
+  lightcrafter takes control and switches them depending on the way the incoming
+  video stream (via HDMI) is interpreted. 
+
+
 .. _lightcrafter_API:
 
 API
@@ -10,6 +21,8 @@ API
 To interact with the lightcrafter device directly in a python script 
 (during **compile-time** of the stimulus, see section :doc:`how_QDSpy_works`),
 use the follwing lightcrafter class.
+
+Note that this library requires firmware 3.0 and higher.
 
 .. autoclass:: Devices.lightcrafter.Lightcrafter
    :members:

@@ -476,9 +476,10 @@ class Presenter:
       
     # Show marker, if requested and present in the current scene
     #
-    if self.Conf.markShowOnScr and sc[stm.SC_field_marker]:  
-      self.Batch.add_marker_data(self.markerVert[1], self.markerVert[0],
-                                 self.markerVert[2])   
+    if self.Conf.markShowOnScr:
+      if sc[stm.SC_field_marker]:  
+        self.Batch.add_marker_data(self.markerVert[1], self.markerVert[0],
+                                   self.markerVert[2])   
       
     # Track rendering timing, if requested
     #
@@ -523,6 +524,12 @@ class Presenter:
            self.Stage.centOffX_pix   = data[1]["centOffX_pix"]
            self.Stage.centOffY_pix   = data[1]["centOffY_pix"]
            self.Stage.rot_angle      = data[1]["rot_angle"]
+
+         if data[0] == mpr.PipeValType.toSrv_changedLEDs:
+           self.Stage.LEDs           = data[1][0] 
+           self.Stage.isLEDSeqEnabled= data[1][1]
+           self.Stage.sendLEDChangesToLCr(self.LCr, self.Conf)
+
 
     # Render scene
     #
@@ -827,7 +834,7 @@ class Presenter:
             self.isReady = False
             ssp.Log.write("ERROR", "Stimulus '{0}' uses video '{1}' that "
                           "cannot be found".format(
-                          _Stim.nameStr,Mov[stm.SV_field_videoFName]))
+                          _Stim.nameStr, Vid[stm.SV_field_videoFName]))
  
       # Create batch object for rendering objects
       #

@@ -24,10 +24,25 @@ Installation
    ::
      pip install pyglet
 
-4) Copy the content of the .zip file into a folder (e.g. ``C:\User\QDSpy``),
+4) Install `MoviePy <http://zulko.github.io/moviepy/>`_, which is a Python module
+   for script-based movie editing and that QDSpy uses to display videos:
+   ::
+     pip install moviepy
+
+   .. note:: When Python imports moviepy for the first time - and this will
+                happen when QDSpy is started - moviepy checks if the software 
+                FFMPEG for video reading and writing is present on the machine. 
+                If not, it automatically downloads `ffmpeg.win32.exe` from 
+                `https://github.com/imageio/imageio-binaries/tree/master/ffmpeg` 
+                and stores it under ``...\AppData\Local\imageio\ffmpeg``.
+                If you consider this behaviour irritating, please find instructions
+                for manual installation on the 
+                `Anaconda site <https://anaconda.org/pypi/moviepy>`_.
+
+5) Copy the content of the .zip file into a folder (e.g. ``C:\User\QDSpy``),
    keeping the internal folder substructure intact.
 
-5) To run QDSpy, it is important to add the path to the QDSpy main folder to 
+6) To run QDSpy, it is important to add the path to the QDSpy main folder to 
    the ``PYTHONPATH`` environment variable. If this variable does not yet 
    exist, it needs to be created. There are several ways to do this; an easy
    way is using Spyder, which comes with the Anaconda package:
@@ -38,12 +53,13 @@ Installation
 
    Note that open powershells need to be restarted to acknowledge this change.
 
+
 If you do not use any special hardware (e.g. digital I/O, a lightcrafter etc)
 or do not need gamma correction, you can proceed to the section 
 `Running the GUI version of QDSpy`_. Otherwise continue with the following 
 steps.
 
-6) If you plan to use the LightCrafter 4500 not only as a displaying device
+7) If you plan to use the LightCrafter 4500 not only as a displaying device
    but also want to configure it via QDSpy (via USB), then you will need 
    the hidapi package.
 
@@ -79,7 +95,7 @@ steps.
 
 |
 
-7) If you plan to use a digital I/O card from `Measurement Computing 
+8) If you plan to use a digital I/O card from `Measurement Computing 
    <http://www.mccdaq.com>`_, you need to install their `Universal Library
    <http://www.mccdaq.com/daq-software/universal-library.aspx>`_ 
    (the 64-bit version). Note that you'll need to reboot before the library is
@@ -95,7 +111,7 @@ steps.
 
 |
 
-8) If you need gamma correction (currently Windows-only): Depending how strongly 
+9) If you need gamma correction (currently Windows-only): Depending how strongly 
    the color presentation needs to be changed, you may have to define/change a 
    registry key that tells Windows normally to prevents too extreme color changes 
    by the user. For details on gamma correction, see `here 
