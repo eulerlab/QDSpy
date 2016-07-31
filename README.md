@@ -4,7 +4,7 @@ This is a software for generating and presenting stimuli for visual neuroscience
 
 *Note, this is an early beta version.*
 
-See documentation in ``/QDSpy/html/index.html``.
+See documentation in ``/QDSpy/html/index.html`` or ``qdspy.eulerlab.de``.
 
 To get started, see ``/QDSpy/html/installation.html``.
 
