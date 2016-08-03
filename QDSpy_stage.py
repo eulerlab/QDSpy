@@ -188,7 +188,8 @@ class Stage:
     # Use lightcrafter object if available or generate new one
     #
     if _LCr is None:
-      LCr = lcr.Lightcrafter(_logLevel=glo.QDSpy_LCr_LogLevel)
+      LCr = lcr.Lightcrafter(_logLevel=glo.QDSpy_LCr_LogLevel,
+                             _funcLog=ssp.Log.write)
     else:
       LCr = _LCr
     
@@ -238,7 +239,8 @@ class Stage:
     # Use lightcrafter object if available or generate new one
     #
     if _LCr is None:
-      LCr = lcr.Lightcrafter(_logLevel=glo.QDSpy_LCr_LogLevel)
+      LCr = lcr.Lightcrafter(_logLevel=glo.QDSpy_LCr_LogLevel,
+                             _funcLog=ssp.Log.write)
     else:
       LCr = _LCr
     

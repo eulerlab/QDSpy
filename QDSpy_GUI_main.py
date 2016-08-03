@@ -209,6 +209,11 @@ class MainWinClass(QtGui.QMainWindow, form_class):
                                        self.currQDSPath))
         sys.exit(0)
     
+    # Update display info    
+    #
+    self.Stage.updateLEDs(_Conf=self.Conf)
+    self.updateDisplayInfo()        
+    
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def __del__(self):
     # ...
@@ -426,7 +431,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
           pal.setColor(QtGui.QPalette.WindowText, QtGui.QColor("white"))
           [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, iLED)
           spinBoxLED.setValue(LED["current"])
-          spinBoxLED.setEnabled(not(LEDsEnabled))
+          spinBoxLED.setEnabled(LEDsEnabled)
           labelLED.setPalette(pal)
           labelLED.setText(LED["name"])
           btnLED.setEnabled(not(LEDsEnabled))
@@ -527,10 +532,6 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.handleLEDStateChanged()
 
   def handleLEDStateChanged(self):
-    '''
-    if len(self.Stage.LEDs) == 0:
-      return
-    '''    
     enabled     = []
     LEDsEnabled = not(self.btnToggleLEDEnable.isChecked())
 
@@ -555,9 +556,8 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_btnRefreshDisplayInfo(self):
-    print("TO BE IMPLEMENTED")       
-    # *****************************
-    # *****************************
+    self.Stage.updateLEDs(_Conf=self.Conf)
+    self.updateDisplayInfo()
  
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_btnToggleLEDEnable(self):
@@ -599,8 +599,8 @@ class MainWinClass(QtGui.QMainWindow, form_class):
         
     self.Sync.pipeCli.send([mpr.PipeValType.toSrv_changedLEDs, 
                            [self.Stage.LEDs, self.Stage.isLEDSeqEnabled]])
+    self.btnSetLEDCurrents.setEnabled(False)                              
     self.updateDisplayInfo()
-    self.btnSetLEDCurrents.setEnabled(False)   
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   '''
