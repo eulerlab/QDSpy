@@ -9,8 +9,9 @@ All rights reserved.
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-from   PyQt4 import QtGui, QtCore, uic
-from   PyQt4.QtCore import QTimer
+from   PyQt5 import QtGui, QtCore, uic
+from   PyQt5.QtCore import QTimer
+from   PyQt5.QtWidgets import QDialog
 import QDSpy_core_support as csp
 
 if csp.module_exists("cv2"):
@@ -23,7 +24,7 @@ grab_interval_ms = 50
 # ---------------------------------------------------------------------
 # Camera dialog window
 # ---------------------------------------------------------------------
-class CamWinClass(QtGui.QDialog, form_class):
+class CamWinClass(QDialog, form_class):
   def __init__(self, parent=None, _funcUpdate=None, _funcLog=None):
     QtGui.QDialog.__init__(self, parent)
     

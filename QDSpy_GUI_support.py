@@ -11,7 +11,7 @@ __author__ 	= "code@eulerlab.de"
 
 import os
 from   datetime import datetime
-from   PyQt4 import QtCore, QtGui
+from   PyQt5 import QtCore, QtGui
 import QDSpy_global as glo
 '''
 if glo.QDSpy_use_Lightcrafter:

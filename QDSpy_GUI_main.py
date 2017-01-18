@@ -14,7 +14,11 @@ import time
 import os
 import pickle
 from   ctypes import windll
-from   PyQt4 import QtGui, uic
+from   PyQt5 import uic 
+from   PyQt5.QtWidgets import QMessageBox, QMainWindow, QLabel, QApplication
+from   PyQt5.QtWidgets import QFileDialog, QListWidgetItem, QWidget
+from   PyQt5.QtGui     import QPalette, QColor, QBrush, QTextCharFormat
+from   PyQt5.QtCore    import QRect, QSize
 from   multiprocessing import Process
 import QDSpy_stim as stm
 import QDSpy_stim_support as ssp
@@ -59,7 +63,7 @@ class Canceled(Exception) :pass
 # ---------------------------------------------------------------------
 # Main application window
 # ---------------------------------------------------------------------
-class MainWinClass(QtGui.QMainWindow, form_class):
+class MainWinClass(QMainWindow, form_class):
   def __init__(self, parent=None):
     # Initialize
     #
@@ -76,7 +80,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.Stage         = None
     self.noMsgToStdOut = cfg.getParsedArgv().gui
 
-    QtGui.QMainWindow.__init__(self, parent)
+    QMainWindow.__init__(self, parent)
     self.setupUi(self)
     self.setWindowTitle(glo.QDSpy_versionStr)
 
@@ -140,8 +144,8 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.btnToggleWaitForTrigger.clicked.connect(self.OnClick_btnToggleWaitForTrigger)
     self.btnToggleWaitForTrigger.setStyleSheet(toggle_btn_style_str)
 
-    self.stbarErrMsg   = QtGui.QLabel()
-    self.stbarStimMsg  = QtGui.QLabel()
+    self.stbarErrMsg   = QLabel()
+    self.stbarStimMsg  = QLabel()
     self.statusbar.addWidget(self.stbarErrMsg, 2)
     self.statusbar.addPermanentWidget(self.stbarStimMsg, 2)
     self.lblSelStimName.setText(self.currStimName)
@@ -169,6 +173,59 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     #
     self.updateStimList()
     self.updateAll()
+
+    # If screen resolution is above a certain dpi levels (->HD), all GUI 
+    # elements are scaled in order to keep the GUI readable
+    #
+    nHDScr  = 0
+    maxdpi  = 0
+    screens = QDSApp.screens()
+    for s in screens:
+      dpi = s.logicalDotsPerInch()
+      if dpi > maxdpi:
+        maxdpi = dpi
+      if dpi > glo.QDSpy_dpiThresholdForHD:
+        nHDScr += 1
+        
+    if nHDScr == 0:
+      # "Normal" display
+      #
+      self.HDMagFactor = 1.0
+      
+    else:  
+      # Scale all GUI elements to account for HD display
+      #
+      self.HDMagFactor = maxdpi /100.0
+      listChildren = self.findChildren(QWidget)
+      for child in listChildren:
+        rect = child.geometry().getRect()
+        child.setGeometry(QRect(rect[0]*self.HDMagFactor, rect[1]*self.HDMagFactor, 
+                                rect[2]*self.HDMagFactor, rect[3]*self.HDMagFactor))
+
+      rect = self.minimumSize()
+      self.setMinimumSize(QSize(rect.width()*self.HDMagFactor, 
+                                rect.height()*self.HDMagFactor))
+      rect = self.maximumSize()
+      self.setMaximumSize(QSize(rect.width()*self.HDMagFactor, 
+                                rect.height()*self.HDMagFactor))
+      self.resize(self.maximumSize())  
+
+      self.logWrite("INFO", "High display pixel density ({0} dpi), scaling GUI"
+                    "by a factor of {1:.2f}".format(maxdpi, self.HDMagFactor))
+    
+    
+    # ************************
+    # ************************
+    # ************************
+    '''
+    self.winStimView = StimViewWinClass(self, self.updateAll, self.logWrite,      
+                                        self.Sync) 
+    self.winStimView.show()
+    '''
+        
+    # ************************
+    # ************************
+    # ************************
     
     # Check if worker process is still alive
     #
@@ -233,12 +290,11 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     # User requested to close the application
     #
     if glo.QDSpy_isGUIQuitWithDialog:
-      result = QtGui.QMessageBox.question(self, "Confirm closing QDSpy ...",
-                                          "Are you sure you want to quit?",
-                                          QtGui.QMessageBox.Yes | 
-                                          QtGui.QMessageBox.No)
+      result = QMessageBox.question(self, "Confirm closing QDSpy ...",
+                                    "Are you sure you want to quit?",
+                                    QMessageBox.Yes | QMessageBox.No)
       event.ignore()
-      if result == QtGui.QMessageBox.No:
+      if result == QMessageBox.No:
         event.ignore()
         return
     
@@ -371,7 +427,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
 
     self.processPipe()
     self.updateStatusBar(stateWorker)
-    QtGui.QApplication.processEvents()
+    QApplication.processEvents()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def updateStimList(self):
@@ -422,13 +478,13 @@ class MainWinClass(QtGui.QMainWindow, form_class):
 
       else:  
         sTemp       = ""
-        pal         = QtGui.QPalette()
+        pal         = QPalette()
         LEDsEnabled = self.btnToggleLEDEnable.isChecked()
 
         for iLED, LED in enumerate(self.Stage.LEDs):
           sTemp += "{0}={1} ".format(LED["name"], LED["current"])
-          pal.setColor(QtGui.QPalette.Window, QtGui.QColor(LED["Qt_color"]))
-          pal.setColor(QtGui.QPalette.WindowText, QtGui.QColor("white"))
+          pal.setColor(QPalette.Window, QColor(LED["Qt_color"]))
+          pal.setColor(QPalette.WindowText, QColor("white"))
           [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, iLED)
           spinBoxLED.setValue(LED["current"])
           spinBoxLED.setEnabled(LEDsEnabled)
@@ -456,9 +512,9 @@ class MainWinClass(QtGui.QMainWindow, form_class):
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_btnChangeStimFolder(self):
     # ...
-    newPath = QtGui.QFileDialog.getExistingDirectory(self, 
+    newPath = QFileDialog.getExistingDirectory(self, 
                 "Select new stimulus folder", self.currStimPath, 
-                options=QtGui.QFileDialog.ShowDirsOnly) 
+                options=QFileDialog.ShowDirsOnly) 
     if len(newPath) > 0:
       # Change path and update stimulus list ...
       #
@@ -581,7 +637,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_btnToggleWaitForTrigger(self):
     gsu.updateToggleButton(self.btnToggleWaitForTrigger)
-    print("TO BE IMPLEMENTED")       
+    print("OnClick_btnToggleWaitForTrigger.TO BE IMPLEMENTED")       
     # *****************************
     # *****************************
     
@@ -602,17 +658,6 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     self.btnSetLEDCurrents.setEnabled(False)                              
     self.updateDisplayInfo()
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  '''
-  def OnClick_btnGetLEDs(self):
-    if len(self.Stage.LEDs) == 0:
-      return
-    # *****************************
-    # *****************************
-    print("TO BE IMPLEMENTED")  
-    # *****************************
-    # *****************************      
-  '''   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_checkStageCSEnable(self, _checked):
     self.spinBoxStageCS_hOffs.setEnabled(_checked)
@@ -713,7 +758,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
       # GUI alive
       #
       self.Sync.waitForState(mpr.IDLE, 0.0, self.updateAll)
-      self.OnClick_listStim(QtGui.QListWidgetItem(self.currStimFName))
+      self.OnClick_listStim(QListWidgetItem(self.currStimFName))
       self.updateAll()
       
     else:
@@ -788,8 +833,13 @@ class MainWinClass(QtGui.QMainWindow, form_class):
     msg    = _data[2] +"\r"
     colStr = _data[3]
     cursor = self.textBrowserHistory.textCursor()
-    form   = QtGui.QTextCharFormat() 
-    form.setForeground(QtGui.QBrush(QtGui.QColor(colStr)))
+    form   = QTextCharFormat() 
+    form.setForeground(QBrush(QColor(colStr)))
+    if self.HDMagFactor > 1.0:
+      form.setFontPointSize(glo.QDSpy_fontPntSizeHistoryHD)
+    else:
+      form.setFontPointSize(glo.QDSpy_fontPntSizeHistory)
+      
     cursor.setCharFormat(form)
     cursor.insertText(msg)
     self.textBrowserHistory.setTextCursor(cursor)
@@ -800,7 +850,7 @@ class MainWinClass(QtGui.QMainWindow, form_class):
 if __name__ == "__main__":
   # Create GUI
   #
-  QDSApp = QtGui.QApplication(sys.argv)
+  QDSApp = QApplication(sys.argv)
   QDSWin = MainWinClass(None)
   
   # Make sure that Windows uses its icon in the task bar

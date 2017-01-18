@@ -43,6 +43,17 @@ class Sync:
     self.Request       = Manager().Value("i", IDLE)
     self.State         = Manager().Value("i", UNDEFINED)
     self.pipeCli, self.pipeSrv = Pipe()
+    
+    """
+    dx = 64  #912 //6
+    dy = 128 #1140 //6
+    self.FrameSize = (dx, dy)
+    self.Frame     = Manager().Array("B", [0]*dx*dy*3)
+    '''
+    multiprocessing.sharedctypes.Array(typecode_or_type, size_or_initializer, *args[, lock])
+    '''
+    print("class Sync|_init__|len(self.Frame)=", len(self.Frame))
+    """
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setStateSafe(self, _newState):
