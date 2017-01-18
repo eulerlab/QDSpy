@@ -1,3 +1,4 @@
+
 ## QDSpy v.73 beta
 
 This is a software for generating and presenting stimuli for visual neuroscience. It is written in Python and based on  (http://wvad.mpimf-heidelberg.mpg.de/abteilungen/biomedizinischeOptik/software/qds/), uses OpenGL and primarly targets Windows 7 (and above).
@@ -160,4 +161,3 @@ v0.3 alpha (March 2015)
 v0.2 alpha (before 2015)
 
 * Basic functionality, proof of concept
-

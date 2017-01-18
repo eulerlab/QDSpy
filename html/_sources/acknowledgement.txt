@@ -1,7 +1,0 @@
-----------------------------------------------
-Acknowledgements
-----------------------------------------------
-
-QDSpy uses `Pyglet <http://www.pyglet.org/>`_ and Tristam Macdonald's 
-`Shader class <https://swiftcoder.wordpress.com/2008/12/19/simple-glsl-wrapper-for-pyglet/>`_.
-

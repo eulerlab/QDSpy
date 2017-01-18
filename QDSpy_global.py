@@ -10,15 +10,19 @@ All rights reserved.
 __author__ 	= "code@eulerlab.de"
 
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.7 beta"
-QDSpy_copyrightStr          = "(c) 2013-16 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v07beta.thomas_euler.eulerlab.de"
+QDSpy_versionStr            = "QDSpy v0.73 beta"
+QDSpy_copyrightStr          = "(c) 2013-17 Thomas Euler"
+QDSpy_appID                 = u"QDSpy3.v073beta.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 
 QDSpy_isDebug               = True
 QDSpy_isGUIQuitWithDialog   = False
 QDSpy_workerMsgsToStdOut    = True
 QDSpy_noStimArg             = False
+
+QDSpy_dpiThresholdForHD     = 110
+QDSpy_fontPntSizeHistoryHD  = 9
+QDSpy_fontPntSizeHistory    = 8
 
 QDSpy_winWidth              = 640
 QDSpy_winHeight             = 480
