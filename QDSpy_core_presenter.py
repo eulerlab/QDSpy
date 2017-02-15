@@ -96,6 +96,7 @@ class Presenter:
     self.tFrRel_s     = 0.0
     self.avFrDur_s    = 0.0
     self.nRendTotal   = 0
+    self.avPresDur_s  = 0.0
     self.avRendDur_s  = 0.0
     self.rendDur_s    = 0.0
     self.tFr          = 0.0
@@ -605,8 +606,25 @@ class Presenter:
 
       # Flip display buffer ...
       #
+      t1  = Clock.getTime_s()
       self.View.present()
-
+      self.avPresDur_s += Clock.getTime_s() -t1
+      
+      # ****************************
+      # ****************************
+      # ****************************
+      # ****************************
+      # ****************************
+      '''
+      if self.isRunFromGUI and not(self.View.Renderer.pil_img_data is None):
+        print("******************", len(self.View.Renderer.pil_img_data))
+        #self.Sync.Frame.value = self.View.Renderer.pil_img_data
+      '''  
+      # ****************************      
+      # ****************************
+      # ****************************
+      # ****************************
+        
       # Send marker signal, if needed
       #
       if isMaskChanged:
@@ -693,11 +711,14 @@ class Presenter:
     #
     if self.Conf.isTrackTime:
       self.avRendDur_s  = self.avRendDur_s /self.nRendTotal
+      self.avPresDur_s  = self.avPresDur_s /self.nRendTotal
       self.avFrDur_s    = self.avFrDur_s /self.nFrTotal
       ssp.Log.write("INFO", "{0:.3f} ms/frame ({1:.3f} Hz), rendering: "
-                    "{2:.3f} ms ({3} frames in total)"
+                    "{2:.3f} ms/frame ({3} frames in total)"
                     .format(self.avFrDur_s*1000.0, 1/self.avFrDur_s,
                             self.avRendDur_s*1000.0, self.nFrTotal))
+      ssp.Log.write("INFO", "presenting: {0:.3f} ms/frame"
+                    .format(self.avPresDur_s*1000.0))
 
       if glo.QDSpy_frRateStatsBufferLen > 0:
         if not(self.dataDtFrOver):
