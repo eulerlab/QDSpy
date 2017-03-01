@@ -53,7 +53,7 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   #
   fName           = (os.path.splitext(os.path.basename(sys.argv[0])))[0]
   fNameOnlyDir    = os.path.dirname(sys.argv[0])
-  _Stim.fNameDir  = fNameOnlyDir +"\\" +fName
+  _Stim.fNameDir  = fNameOnlyDir +"/" +fName
   fNameDir_py     = _Stim.fNameDir +".py"
   fNameDir_pk     = _Stim.fNameDir +".pickle"
   args            = cfg.getParsedArgv()
@@ -97,9 +97,10 @@ def GetStimulusPath():
   (e.g. a random number series for a noise stimulus):
   ::
     path = QDS.getStimulusPath()
-    file = open(path +"parameters.txt", "r")
+    file = open(path +"\\parameters.txt", "r")
   """
-  return _Stim.Conf.pathStim
+  #return _Stim.Conf.pathStim
+  return os.path.split(_Stim.fNameDir)[0]
 
 # ---------------------------------------------------------------------
 def LogUserParameters(_dict):

@@ -17,6 +17,7 @@ __author__ 	= "code@eulerlab.de"
 import time
 import sys
 import gc
+import os
 import subprocess
 import pickle
 from   multiprocessing import freeze_support
@@ -238,7 +239,8 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
           if data[0] == mpr.PipeValType.toSrv_fileName:
             # Retrieve stimulus file name from pipe and load stimulus
             #
-            _fNameStim = data[1]
+            _fPathStim = data[2]
+            _fNameStim = _fPathStim +"/" +os.path.basename(data[1])
             data       = [mpr.PipeValType.toSrv_None]
             loadStimulus(_fNameStim, _Stim)
             _Sync.setStateSafe(mpr.PRESENTING)
@@ -269,7 +271,8 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
           if data[0] == mpr.PipeValType.toSrv_fileName:
             # Retrieve stimulus file name from pipe and compile stimulus
             #
-            _fNameStim = data[1] +".py"
+            _fPathStim = data[2]
+            _fNameStim = _fPathStim +"/" +os.path.basename(data[1]) +".py"
             data       = [mpr.PipeValType.toSrv_None]
             _Sync.setStateSafe(mpr.COMPILING)
             try:
@@ -306,7 +309,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
       '''
       _View.dispatch_events()
       '''
-      time.sleep(0.05)
+      time.sleep(0.02) # 0.05
 
   # Restore gamma LUT, if nescessary
   #
