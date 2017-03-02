@@ -953,8 +953,10 @@ class Stim:
       #
       (dur, isIntNumFrames) = _Stage.durToFrames(sc[SC_field_duration_s])
       self.cScDurList.append(dur)
+      '''
       if dur > 0:
         self.lenStim_s += sc[SC_field_duration_s]
+      '''  
       if not(isIntNumFrames):
         ssp.Log.write("WARNING", "Scene #{0} duration unequals integer number"
                       " of frames".format(sc[SC_field_index]))

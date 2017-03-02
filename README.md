@@ -11,7 +11,7 @@ For documentation, see http://qdspy.eulerlab.de.
 
 ###Release notes
 
-v0.73beta (January 2017)
+v0.73beta (January - February 2017)
 
 * Installation instructions extended (2016-12-20 and 2017-01-18).
 * Dependencies changed from Qt4 to Qt5. The background is that many packages, 
@@ -27,6 +27,9 @@ v0.73beta (January 2017)
   detected one of two pre-defined font sizes are used 
   (see `QDSpy_fontPntSizeHistoryHD` and `QDSpy_fontPntSizeHistoryHD` in 
   ``QDSpy_global.py``).
+* Bug fix: Stimulus duration now calculated correctly.
+* Bug fix: `GetStimulusPath()` now returns also to correct path for stimulus
+  files in a subfolder of the default stimulus folder.
            
 
 v0.72 beta (August 2016) 

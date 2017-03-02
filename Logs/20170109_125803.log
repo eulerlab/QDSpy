@@ -1,0 +1,39 @@
+20170109_125208   ERROR No compiled `__autorun` in current stimulus folder, using `__autorun_default` in `C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy`.
+20170109_125208   DEBUG Running C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\__autorun_default ...
+20170109_125208         Presenting stimulus ...
+20170109_125209     *** QDSpy v0.72 beta Presenter - (c) 2013-16 Thomas Euler
+20170109_125209      ok Initializing ...
+20170109_125209         ENABLED    : high process priority during presentation
+20170109_125209         enabled    : automatic garbage collection
+20170109_125209         Loading user-defined gamma LUT file ...
+20170109_125209      ok ... done
+20170109_125209    INFO OpenGL     : v4.5.0 NVIDIA 362.56
+20170109_125209    INFO GLSL       : v4.50 NVIDIA
+20170109_125209    INFO Renderer   : Quadro K420/PCIe/SSE2 by NVIDIA Corporation
+20170109_125209    INFO Timing     : vsync-based (pyglet calls)
+20170109_125209    INFO Expected   : 60.0 Hz
+20170109_125209      ok Window mode, 640x480 pixels
+20170109_125209         ENABLED    : forced fsync
+20170109_125209      ok SwapIntervalEXT() reported success
+20170109_125209    INFO Display    : generic
+20170109_125209      ok Stage info : 0,0 pixels, scale: 1.00,1.00 µm/pix, rotation: 0°, refresh: 60.0 Hz
+20170109_125209   ERROR LCr|Could not connect to device, Code 'open failed'
+20170109_125209 WARNING This script requires a lightcrafter
+20170109_125209   ERROR LCr|Could not connect to device, Code 'open failed'
+20170109_125209         3 shader type(s) found
+20170109_125209         Loading compiled stimulus...
+20170109_125209      ok Stimulus 'C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\__autorun_default.pickle' loaded
+20170109_125209         Name       : __autorun_default
+20170109_125209         Description: 
+20170109_125209         Frequency  : 60.0 Hz
+20170109_125209      ok Stimulus '__autorun_default' prepared
+20170109_125209      ok Running...
+20170109_125209    DATA {'stimMD5': 'b9df3671bfa94c27ef1e769fc7d8d03f', 'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\__autorun_default', 'stimState': 'STARTED'}
+20170109_125209      ok Done
+20170109_125209    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\__autorun_default', 'stimState': 'FINISHED'}
+20170109_125209      ok Program finished
+20170109_125209    INFO 9.987 ms/frame (100.132 Hz), rendering: 0.237 ms (3 frames in total)
+20170109_125209    INFO 14.980 +/- 1.632 ms/frame (over the last 2 frames) = 66.8 Hz
+20170109_125209    DATA {'nFrames': 3, 'nDroppedFrames': 0, 'avgFreq_Hz': 100.13167131292661}
+20170109_125213   DEBUG runStim, timeout waiting for PRESENTING
+20170109_125803         Saving log file to '.\Logs\20170109_125803.log' ...

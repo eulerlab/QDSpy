@@ -69,7 +69,7 @@ class MainWinClass(QMainWindow, form_class):
     #
     self.Conf          = cfg.Config()
     self.Stim          = stm.Stim()
-    self.currStimPath  = self.Conf.pathStim
+    self.currStimPath = self.Conf.pathStim
     self.currQDSPath   = os.getcwd()
     self.currStimName  = "n/a"
     self.currStimFName = ""
@@ -269,6 +269,7 @@ class MainWinClass(QMainWindow, form_class):
     # Update display info    
     #
     self.Stage.updateLEDs(_Conf=self.Conf)
+    self.currStimPath  = os.path.abspath(self.currStimPath)
     self.updateDisplayInfo()        
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -745,7 +746,8 @@ class MainWinClass(QMainWindow, form_class):
     # Send stimulus file name via pipe and signal worker thread to 
     # compile the stimulus
     #
-    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_fileName, self.currStimFName])
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_fileName, 
+                            self.currStimFName, self.currStimPath])
     self.Sync.setRequestSafe(mpr.COMPILING)
     self.logWrite(" ", "Compiling stimulus script ...")
     
@@ -769,7 +771,8 @@ class MainWinClass(QMainWindow, form_class):
     # Send stimulus file name via pipe and signal worker thread to 
     # start presenting the stimulus
     #
-    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_fileName, self.currStimFName])
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_fileName, 
+                            self.currStimFName, self.currStimPath])
     self.Sync.setRequestSafe(mpr.PRESENTING)
     self.logWrite(" ", "Presenting stimulus ...")
     
