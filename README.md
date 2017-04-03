@@ -5,11 +5,11 @@ This is a software for generating and presenting stimuli for visual neuroscience
 
 *Note, this is an early beta version.*
 
-###Documentation
+### Documentation
 
 For documentation, see http://qdspy.eulerlab.de.
 
-###Release notes
+### Release notes
 
 v0.74beta (March 2017)
 
