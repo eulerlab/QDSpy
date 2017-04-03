@@ -1,5 +1,5 @@
 
-## QDSpy v.73 beta
+## QDSpy v.74 beta (branch "experimental")
 
 This is a software for generating and presenting stimuli for visual neuroscience. It is written in Python and based on  (http://wvad.mpimf-heidelberg.mpg.de/abteilungen/biomedizinischeOptik/software/qds/), uses OpenGL and primarly targets Windows 7 (and above).
 
@@ -11,7 +11,34 @@ For documentation, see http://qdspy.eulerlab.de.
 
 ###Release notes
 
-v0.73beta (January 2017)
+v0.74beta (March 2017)
+
+* Added `hid.cp36-win_amd64.pyd` to ``.\Devices`` to enable ``hid`` under Python
+  3.6 (comes with Anaconda version 4.3.x). This means that now QDSpy should 
+  be compatible with the newest Anaconda distribution.
+* Attempted to simplify path management: ``__autorun.pickle`` is not anymore
+  required in the stimulus folder
+* LED pre-settings for lightcrafter was extended: now for each LED also 
+  the default current, the maximal current, the index of the lightcrafter
+  device (0 or 1), and the LED index (which LED position within the 
+  lightcrafter) are defined in ``QDSpy.ini``.
+* Up to two lightcrafters can be handled; the GUI has been changed accordingly.
+* **IMPORTANT**: Note that the ``.pickle`` format has changed and therefore all stimuli need to
+  be recompiled. To avoid confusion, delete all ``.pickle`` files in the 
+  ``\QDSpy\Stimulus`` folder.
+* **IMPORTANT**: The ``QDSpy.ini`` file contains a couple of new parameters, including a new
+  section called ``[Overlay]`` (the latter is work in progress and concerns a 
+  feature that is not yet fully implemented yet. Please ignore for now). Thus,
+  the new parameters need to be added to the existing ``QDSpy.ini`` file,
+  otherwise QDSpy will crash. The easiest way to do so, is to rename the file 
+  to, for example, ``QDSpy.ini_COPY``. Then start QDSpy and let it generate
+  a fresh configuration file. Open both the new file and your copy in parallel
+  and change the parameters in the new file according to your previous 
+  settings. See see :doc:`inifile` for further details on the new parameters.
+* Documentation was updated and extended (including, for example, a detailed
+  explanation of the parameters in ``QDSpy.ini``).
+
+v0.73beta (January - February 2017)
 
 * Installation instructions extended (2016-12-20 and 2017-01-18).
 * Dependencies changed from Qt4 to Qt5. The background is that many packages, 
@@ -27,6 +54,10 @@ v0.73beta (January 2017)
   detected one of two pre-defined font sizes are used 
   (see `QDSpy_fontPntSizeHistoryHD` and `QDSpy_fontPntSizeHistoryHD` in 
   ``QDSpy_global.py``).
+* Bug fix: Stimulus duration now calculated correctly.
+* Bug fix: `GetStimulusPath()` now returns also to correct path for stimulus
+  files in a subfolder of the default stimulus folder.   
+
            
 
 v0.72 beta (August 2016) 
