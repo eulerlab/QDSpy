@@ -3,7 +3,7 @@
 """
 QDSpy module - main program of the GUI version of QDSpy
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2017 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -100,15 +100,22 @@ class MainWinClass(QMainWindow, form_class):
     self.pushButtonLED2.clicked.connect(self.OnClick_pushButtonLED)    
     self.pushButtonLED3.clicked.connect(self.OnClick_pushButtonLED)    
     self.pushButtonLED4.clicked.connect(self.OnClick_pushButtonLED)    
+    self.pushButtonLED5.clicked.connect(self.OnClick_pushButtonLED)    
+    self.pushButtonLED6.clicked.connect(self.OnClick_pushButtonLED)    
+    
     self.pushButtonLED1.setStyleSheet(toggle_btn_style_str)
     self.pushButtonLED2.setStyleSheet(toggle_btn_style_str)
     self.pushButtonLED3.setStyleSheet(toggle_btn_style_str)
     self.pushButtonLED4.setStyleSheet(toggle_btn_style_str)
+    self.pushButtonLED5.setStyleSheet(toggle_btn_style_str)
+    self.pushButtonLED6.setStyleSheet(toggle_btn_style_str)
     
     self.spinBoxLED1.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
     self.spinBoxLED2.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
     self.spinBoxLED3.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
     self.spinBoxLED4.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
+    self.spinBoxLED5.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
+    self.spinBoxLED6.valueChanged.connect(self.OnClick_spinBoxLED_valueChanged)
     self.btnSetLEDCurrents.clicked.connect(self.OnClick_btnSetLEDCurrents)
     self.btnRefreshDisplayInfo.clicked.connect(self.OnClick_btnRefreshDisplayInfo)
     
@@ -129,6 +136,7 @@ class MainWinClass(QMainWindow, form_class):
       self.checkBoxCamEnable.setEnabled(False)
 
     self.checkBoxStageCSEnable.clicked.connect(self.OnClick_checkStageCSEnable)
+    self.checkBoxDualScrCSEnable.clicked.connect(self.OnClick_checkBoxDualScrCSEnable)
     self.spinBoxStageCS_hOffs.valueChanged.connect(
       self.OnClick_spinBoxStageCS_hOffs_valueChanged)
     self.spinBoxStageCS_vOffs.valueChanged.connect(
@@ -236,11 +244,12 @@ class MainWinClass(QMainWindow, form_class):
     # Check if autorun stimulus file present and if so run it
     #
     try:
-      self.currStimFName = self.currStimPath +glo.QDSpy_autorunStimFileName
+      self.currStimFName = os.path.join(self.currStimPath, 
+                                        glo.QDSpy_autorunStimFileName)
       self.isStimCurr    = gsu.getStimCompileState(self.currStimFName)
       if not(self.isStimCurr):
-        self.currStimFName = "{0}\\{1}".format(self.currQDSPath, 
-                                               glo.QDSpy_autorunDefFileName)
+        self.currStimFName = os.path.join(self.currQDSPath, 
+                                          glo.QDSpy_autorunDefFileName)
         self.logWrite("ERROR", "No compiled `{0}` in current stimulus folder,"
                                " using `{1}` in `{2}`."
                                .format(glo.QDSpy_autorunStimFileName, 
@@ -249,7 +258,7 @@ class MainWinClass(QMainWindow, form_class):
       self.logWrite("DEBUG", "Running {0} ...".format(self.currStimFName))
       self.Stim.load(self.currStimFName, _onlyInfo=True)
       self.setState(State.ready)
-      self.isStimReady = True
+      self.isStimReady  = True
       self.runStim()
 
     except:
@@ -265,11 +274,13 @@ class MainWinClass(QMainWindow, form_class):
                                        glo.QDSpy_autorunDefFileName, 
                                        self.currQDSPath))
         sys.exit(0)
-    
+
     # Update display info    
     #
-    self.Stage.updateLEDs(_Conf=self.Conf)
-    self.updateDisplayInfo()        
+    self.Stage.updateLEDs(self.Conf)
+    self.currStimPath  = os.path.abspath(self.currStimPath)
+    self.updateDisplayInfo()      
+
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def __del__(self):
@@ -400,7 +411,7 @@ class MainWinClass(QMainWindow, form_class):
       self.checkBoxCamEnable.setCheckState(self.winCam.isHidden())
 
     if not(self.Stage is None):
-      enabledSeq = self.Stage.isLEDSeqEnabled
+      enabledSeq = self.Stage.isLEDSeqEnabled[0]
     else:
       enabledSeq = True
     self.btnSetLEDCurrents.setEnabled(self.isLCrUsed)
@@ -416,8 +427,9 @@ class MainWinClass(QMainWindow, form_class):
     self.btnRefreshDisplayInfo.setEnabled(self.isLCrUsed)
     if self.Stage:
       for iLED, LED in enumerate(self.Stage.LEDs):
-        [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, iLED)
+        [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, LED)
         spinBoxLED.setEnabled(self.isLCrUsed)
+        spinBoxLED.setMaximum(LED["max_current"])
         btnLED.setEnabled(self.isLCrUsed and not(enabledSeq))
         if not(self.Stage is None):
           btnLED.setChecked(LED["enabled"])
@@ -485,7 +497,7 @@ class MainWinClass(QMainWindow, form_class):
           sTemp += "{0}={1} ".format(LED["name"], LED["current"])
           pal.setColor(QPalette.Window, QColor(LED["Qt_color"]))
           pal.setColor(QPalette.WindowText, QColor("white"))
-          [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, iLED)
+          [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, LED)
           spinBoxLED.setValue(LED["current"])
           spinBoxLED.setEnabled(LEDsEnabled)
           labelLED.setPalette(pal)
@@ -592,13 +604,13 @@ class MainWinClass(QMainWindow, form_class):
     LEDsEnabled = not(self.btnToggleLEDEnable.isChecked())
 
     for iLED, LED in enumerate(self.Stage.LEDs):
-      (spinBoxLED, labelLED, btnLED) = gsu.getLEDGUIObjects(self, iLED)
+      (spinBoxLED, labelLED, btnLED) = gsu.getLEDGUIObjects(self, LED)
       btnLED.setEnabled(LEDsEnabled)
       val = btnLED.isChecked() 
       enabled.append(val)
       spinBoxLED.setEnabled(LEDsEnabled and not(val))
       self.Stage.setLEDEnabled(iLED, val)
-      
+
     self.Sync.pipeCli.send([mpr.PipeValType.toSrv_changedLEDs, 
                            [self.Stage.LEDs, self.Stage.isLEDSeqEnabled]])
     self.updateDisplayInfo()
@@ -620,7 +632,8 @@ class MainWinClass(QMainWindow, form_class):
     checked = self.btnToggleLEDEnable.isChecked()
     for iLED, LED in enumerate(self.Stage.LEDs):
        self.Stage.LEDs[iLED]["enabled"] = checked
-    self.Stage.isLEDSeqEnabled = checked
+
+    self.Stage.isLEDSeqEnabled = [checked] *glo.QDSpy_MaxLightcrafterDev
     self.Sync.pipeCli.send([mpr.PipeValType.toSrv_changedLEDs, 
                            [self.Stage.LEDs, self.Stage.isLEDSeqEnabled]])
     gsu.updateToggleButton(self.btnToggleLEDEnable)
@@ -648,7 +661,7 @@ class MainWinClass(QMainWindow, form_class):
  
     curr  = []
     for iLED, LED in enumerate(self.Stage.LEDs):
-      (spinBoxLED, labelLED, btnLED) = gsu.getLEDGUIObjects(self, iLED)
+      (spinBoxLED, labelLED, btnLED) = gsu.getLEDGUIObjects(self, LED)
       val = spinBoxLED.value()
       curr.append(val)
       self.Stage.setLEDCurrent(iLED, val)
@@ -665,6 +678,16 @@ class MainWinClass(QMainWindow, form_class):
     self.spinBoxStageCS_hScale.setEnabled(_checked)
     self.spinBoxStageCS_vScale.setEnabled(_checked)
     self.spinBoxStageCS_rot.setEnabled(_checked)
+    self.btnSaveStageCS.setEnabled(_checked)
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_checkBoxDualScrCSEnable(self, _checked):
+    self.spinBoxStageCS_hOffs_Scr1.setEnabled(_checked)
+    self.spinBoxStageCS_vOffs_Scr1.setEnabled(_checked)
+    self.spinBoxStageCS_hOffs_Scr2.setEnabled(_checked)
+    self.spinBoxStageCS_vOffs_Scr2.setEnabled(_checked)
+    self.spinBoxStageCS_wideScrHeight.setEnabled(_checked)
+    self.spinBoxStageCS_wideScrWidth.setEnabled(_checked)
     self.btnSaveStageCS.setEnabled(_checked)
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -745,7 +768,8 @@ class MainWinClass(QMainWindow, form_class):
     # Send stimulus file name via pipe and signal worker thread to 
     # compile the stimulus
     #
-    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_fileName, self.currStimFName])
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_fileName, 
+                            self.currStimFName, self.currStimPath])
     self.Sync.setRequestSafe(mpr.COMPILING)
     self.logWrite(" ", "Compiling stimulus script ...")
     
@@ -769,7 +793,8 @@ class MainWinClass(QMainWindow, form_class):
     # Send stimulus file name via pipe and signal worker thread to 
     # start presenting the stimulus
     #
-    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_fileName, self.currStimFName])
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_fileName, 
+                            self.currStimFName, self.currStimPath])
     self.Sync.setRequestSafe(mpr.PRESENTING)
     self.logWrite(" ", "Presenting stimulus ...")
     

@@ -8,7 +8,7 @@ for visual neuroscience. It is based on QDS, currently uses OpenGL via
 pyglet for graphics. It primarly targets Windows, but may also run on 
 other operating systems
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2017 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -53,7 +53,7 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   #
   fName           = (os.path.splitext(os.path.basename(sys.argv[0])))[0]
   fNameOnlyDir    = os.path.dirname(sys.argv[0])
-  _Stim.fNameDir  = fNameOnlyDir +"\\" +fName
+  _Stim.fNameDir  = fNameOnlyDir +"/" +fName
   fNameDir_py     = _Stim.fNameDir +".py"
   fNameDir_pk     = _Stim.fNameDir +".pickle"
   args            = cfg.getParsedArgv()
@@ -75,7 +75,7 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
     tLastUpt_pick = datetime.fromtimestamp(os.path.getmtime(fNameDir_pk))
     if (tLastUpt_pick > tLastUpt_py) and not(args.compile):
       ssp.Log.write("INFO", "Script has not changed, running stimulus now ...")
-      os.system("python ..\QDSpy_core.py -t={0} {1} {2}"
+      os.system("python .\QDSpy_core.py -t={0} {1} {2}"
                 .format(args.timing, "-v" if args.verbose else "", fName))
       exit()
   except WindowsError:
@@ -97,9 +97,9 @@ def GetStimulusPath():
   (e.g. a random number series for a noise stimulus):
   ::
     path = QDS.getStimulusPath()
-    file = open(path +"parameters.txt", "r")
+    file = open(path +"/parameters.txt", "r")
   """
-  return _Stim.Conf.pathStim
+  return os.path.split(os.path.abspath(_Stim.fNameDir))[0]
 
 # ---------------------------------------------------------------------
 def LogUserParameters(_dict):
@@ -124,15 +124,6 @@ def LogUserParameters(_dict):
   except stm.StimException as e:
     ssp.Log.write("ERROR", "logUserParameters: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
-
-# ---------------------------------------------------------------------
-#def getScreenSize():
-#  """
-#  Returns the current screen size as (dx,dy) tupple.
-#  """
-#  _Stage = cfg.Config().createStageFromConfig()
-#  return (_Stage.dxScr, _Stage.dyScr)
-
 
 # ---------------------------------------------------------------------
 def SetColorLUTEntry (_index, _rgb):
@@ -742,7 +733,8 @@ def Scene_Clear(_dur, _marker=0):
 
 
 # ---------------------------------------------------------------------
-def Scene_RenderEx(_dur, _iobjs, _opos, _omag, _oang, _marker=0):
+def Scene_RenderEx(_dur, _iobjs, _opos, _omag, _oang, _marker=0, 
+                   _screen=0):
   """
   Draw objects and wait.
 
@@ -783,7 +775,7 @@ def Scene_Render(_dur, _nobjs, _iobjs, _opos, _marker=0):
 
 
 # ---------------------------------------------------------------------
-def Start_Movie(_iobj, _opos, _seq, _omag, _trans, _oang):
+def Start_Movie(_iobj, _opos, _seq, _omag, _trans, _oang, _screen=0):
   """
   Start playing a movie object.
  
@@ -800,17 +792,19 @@ def Start_Movie(_iobj, _opos, _seq, _omag, _trans, _oang):
   _omag           | object magification as (mx,my)
   _trans          | transparency, 0=transparent ... 255=opaque
   _oang           | object rotation angles in degree
+  _screen         | 0=standard, 1=render on 2nd screen (=2nd half
+                  | of wide screen) in screen overlay mode
   =============== ==================================================
   """
   try:
-    _Stim.startMovie(_iobj, _opos, _seq, _omag, _trans, _oang)
+    _Stim.startMovie(_iobj, _opos, _seq, _omag, _trans, _oang, _screen)
 
   except stm.StimException as e:
     ssp.Log.write("ERROR", "Start_Movie: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
-def Start_Video(_iobj, _opos, _omag, _trans, _oang):
+def Start_Video(_iobj, _opos, _omag, _trans, _oang, _screen=0):
   """
   Start playing a movie object.
  
@@ -822,10 +816,12 @@ def Start_Video(_iobj, _opos, _omag, _trans, _oang):
   _omag           | object magification as (mx,my)
   _trans          | transparency, 0=transparent ... 255=opaque
   _oang           | object rotation angles in degree
+  _screen         | 0=standard, 1=render on 2nd screen (=2nd half
+                  | of wide screen) in screen overlay mode
   =============== ==================================================
   """
   try:
-    _Stim.startVideo(_iobj, _opos, _omag, _trans, _oang)
+    _Stim.startVideo(_iobj, _opos, _omag, _trans, _oang, _screen)
 
   except stm.StimException as e:
     ssp.Log.write("ERROR", "Start_Video: {0}, {1}".format(e.value, e))
@@ -836,25 +832,33 @@ def Start_Video(_iobj, _opos, _omag, _trans, _oang):
 # Lightcrafter-related commands
 
 # ---------------------------------------------------------------------
-def LC_softwareReset():
+def LC_softwareReset(_devIndex):
   """
-  Signal the device to do a software reset. This will take a couple
-  of seconds. After the reset the device is disconnected. 
+  Signal the device (_devIndex) to do a software reset. This will take a 
+  couple of seconds. After the reset the device is disconnected. 
+  
+  =============== ==================================================
+  Parameters:
+  =============== ==================================================
+  _devIndex       | index of device (starting with 0)
+  =============== ==================================================
   """
   try:
-    _Stim.processLCrCommand(stm.StimLCrCmd.softwareReset)
+    _Stim.processLCrCommand(stm.StimLCrCmd.softwareReset,
+                            [_devIndex])
   except stm.StimException as e:
     ssp.Log.write("ERROR", "LC_softwareReset: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------  
-def LC_setInputSource(_source, _bitDepth):
+def LC_setInputSource(_devIndex, _source, _bitDepth):
   """
   Defines the input source of the device.
    
   =============== ==================================================
   Parameters:
   =============== ==================================================
+  _devIndex       | index of device (starting with 0)
   _source         | 0=parallel interface (PP), 
                   | 1=internal test pattern,
                   | 2=Flash
@@ -865,20 +869,21 @@ def LC_setInputSource(_source, _bitDepth):
   """
   try:
     _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource, 
-                            [_source, _bitDepth])
+                            [_devIndex, _source, _bitDepth])
   except stm.StimException as e:
     ssp.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------  
-def LC_setDisplayMode(_mode):
+def LC_setDisplayMode(_devIndex, _mode):
   """
   Sets the display mode of the device.
    
   =============== ==================================================
   Parameters:
   =============== ==================================================
+  _devIndex       | index of device (starting with 0)
   _mode           | 0=video display mode, 
                   | Assumes streaming video image from the
                   | 30-bit RGB or FPD-link interface with a 
@@ -896,7 +901,8 @@ def LC_setDisplayMode(_mode):
     _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource, 
                             [_source, _bitDepth])
     """                              
-    _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource) 
+    _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource,
+                            [_devIndex]) 
                              
   except stm.StimException as e:
     ssp.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
@@ -904,40 +910,42 @@ def LC_setDisplayMode(_mode):
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------  
-def LC_setLEDCurrents(_rgb):
+def LC_setLEDCurrents(_devIndex, _rgb):
   """
   Sets the current of the LEDs.
    
   =============== ==================================================
   Parameters:
   =============== ==================================================
+  _devIndex       | index of device (starting with 0)
   _rgb            | currents as a list [r,g,b] 
                   | with 0 <= r,g,b <= 255
   =============== ==================================================
   """
-  print("HERE", _rgb)  
-
   try:
-    _Stim.processLCrCommand(stm.StimLCrCmd.setLEDCurrents, [_rgb])
+    _Stim.processLCrCommand(stm.StimLCrCmd.setLEDCurrents, 
+                            [_devIndex, _rgb])
   except stm.StimException as e:
     ssp.Log.write("ERROR", "LC_setLEDCurrents: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------  
-def LC_setLEDEnabled(_rgb):
+def LC_setLEDEnabled(_devIndex, _rgb):
   """
   Enable or disable the LEDs.
    
   =============== ==================================================
   Parameters:
   =============== ==================================================
+  _devIndex       | index of device (starting with 0)
   _rgb            | state of LEDas a list [r,g,b] 
                   | with True or False
   =============== ==================================================
   """
   try:
-    _Stim.processLCrCommand(stm.StimLCrCmd.setLEDEnabled, [_rgb])
+    _Stim.processLCrCommand(stm.StimLCrCmd.setLEDEnabled, 
+                            [_devIndex, _rgb])
   except stm.StimException as e:
     ssp.Log.write("ERROR", "LC_setLEDEnabled: {0}, {1}"
                   .format(e.value, e))

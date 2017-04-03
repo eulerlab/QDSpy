@@ -69,6 +69,21 @@ def toInt(_coords):
   return coords
 
 # ---------------------------------------------------------------------
+def completeRGBList(_RGBs):
+  # Complete each RGBx2 tuple if incomplete in the given list
+  #
+  return [tuple(list(rgb) +[0]*(stm.RGB_MAX -len(rgb))) for rgb in _RGBs]        
+
+
+def completeRGBAList(_RGBAs):
+  # Complete each RGBAx2 tuple if incomplete in the given list
+  #
+  res = []
+  for obj in _RGBAs:
+    res.append([rgba +(0,)*(stm.RGBA_MAX -len(rgba)) for rgba in obj])       
+  return res  
+
+# ---------------------------------------------------------------------
 def scaleRGB(_Stim, _inRGBA):
   # Scale color (RGBA) depending on bit depth and color mode (format)
   #

@@ -38,6 +38,9 @@ class ColorMode:
 COL_bitDepthRGB_888   = (8,8,8)
 COL_bitShiftRGB_000   = (0,0,0)
 
+RGB_MAX               = 6
+RGBA_MAX              = 8
+
 # ---------------------------------------------------------------------
 class StimObjType:
   box                 = 101
@@ -82,7 +85,8 @@ SV_field_dyFr         = 5
 SV_field_fps          = 6
 
 # - - - - - -  - - - - - -  - - - - - -  - - - - - -  - - - - - -  - -
-SO_defaultFgRGB       = (255, 255, 255)
+#SO_defaultFgRGB      = (255, 255, 255)
+SO_defaultFgRGBEx     = (255,255,255, 255,255,255)
 SO_defaultAlpha       = 255
 SO_default_RGBAByVert = 0
 SO_default_useShader  = 0
@@ -114,6 +118,9 @@ SC_field_IDs          = 4
 SC_field_posXY        = 5
 SC_field_magXY        = 6
 SC_field_rot          = 7
+'''
+SC_field_screen       = 8
+'''
 
 SC_field_RGBs         = 5
 SC_field_Alphas       = 6
@@ -130,15 +137,18 @@ SC_field_ShIDs        = 5
 
 SC_field_MovSeq       = 8
 SC_field_MovTrans     = 9
+SC_field_MovScreen    = 10
 
 SC_field_VidTrans     = 8
+SC_field_VidScreen    = 9
 
 SC_field_LCrParams    = 4
 
 SC_field_userParams   = 4
 
 # - - - - - -  - - - - - -  - - - - - -  - - - - - -  - - - - - -  - -
-SC_defaultBgRGB       = (0, 0, 0)
+#SC_defaultBgRGB      = (0, 0, 0)
+SC_defaultBgRGBEx     = (0,0,0, 0,0,0)
 SC_enableRGBAByVert   = 1
 SC_disableRGBAByVert  = 0
 
@@ -278,7 +288,7 @@ class Stim:
     self.VidDict   = dict()
     self.SceList   = []
     self.nSce      = 0
-    self.curBgRGB  = SC_defaultBgRGB
+    self.curBgRGB  = SC_defaultBgRGBEx
 
     self.LastErrC  = StimErrC.ok
     self.tStart    = 0.0
@@ -323,7 +333,7 @@ class Stim:
 
     newBox    = [StimObjType.box, _ID,
                  (float(_dx_um), float(_dy_um)),
-			SO_defaultFgRGB, SO_defaultAlpha, SO_default_RGBAByVert,
+                 SO_defaultFgRGBEx, SO_defaultAlpha, SO_default_RGBAByVert,
                  _enShader, -1]
     self.ObjDict[_ID] = len(self.ObjList)
     self.ObjList.append(newBox)
@@ -348,7 +358,7 @@ class Stim:
 
     newEllipse = [StimObjType.ellipse, _ID,
                   (float(_dx_um), float(_dy_um)),
-			 SO_defaultFgRGB, SO_defaultAlpha, SO_default_RGBAByVert,
+                  SO_defaultFgRGBEx, SO_defaultAlpha, SO_default_RGBAByVert,
                   _enShader, -1]
     self.ObjDict[_ID] = len(self.ObjList)
     self.ObjList.append(newEllipse)
@@ -382,7 +392,7 @@ class Stim:
     newSector  = [StimObjType.sector, _ID,
                   (float(_r), float(_offs), float(_angle),
                    float(_awidth), _astep),
-			    SO_defaultFgRGB, SO_defaultAlpha, SO_default_RGBAByVert,
+                  SO_defaultFgRGBEx, SO_defaultAlpha, SO_default_RGBAByVert,
                   _enShader, -1]
     self.ObjDict[_ID] = len(self.ObjList)
     self.ObjList.append(newSector)
@@ -530,10 +540,11 @@ class Stim:
       except KeyError:
         self.LastErrC = StimErrC.noMatchingID
         raise StimException
-
+        
+    RGBEx  = ssp.completeRGBList(_newRGBs)     
     newSce = [StimSceType.changeObjCol, -1, self.nSce, False,
               _IDs,
-              _newRGBs, _newAlphas, len(_IDs)*[SC_disableRGBAByVert]]
+              RGBEx, _newAlphas, len(_IDs)*[SC_disableRGBAByVert]]
     self.SceList.append(newSce)
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
@@ -559,9 +570,10 @@ class Stim:
         self.LastErrC = StimErrC.noMatchingID
         raise StimException
 
+    RGBAEx = ssp.completeRGBAList(_newRGBAs)    
     newSce = [StimSceType.changeObjCol, -1, self.nSce, False,
               _IDs,
-              _newRGBAs, len(_IDs)*[0], len(_IDs)*[SC_enableRGBAByVert]]
+              RGBAEx, len(_IDs)*[0], len(_IDs)*[SC_enableRGBAByVert]]
     self.SceList.append(newSce)
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
@@ -573,7 +585,7 @@ class Stim:
     #
     if ((_index < 0) or (_index > 255) 
         or not(isinstance(_rgb, tuple))
-        or not(len(_rgb) == 3)):
+        or not(len(_rgb) in [3, 6])):
       self.LastErrC = StimErrC.invalidParamType
       raise StimException
 
@@ -672,8 +684,9 @@ class Stim:
       self.LastErrC = StimErrC.invalidParamType
       raise StimException
 
+    RGBEx  = ssp.completeRGBList([_newRGB])
     newSce = [StimSceType.changeBkgCol, -1, self.nSce, False,
-              _newRGB]
+              RGBEx[0]]
     self.SceList.append(newSce)
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
@@ -763,19 +776,24 @@ class Stim:
       self.LastErrC = StimErrC.ok
       return
       
+    # Check if parameters are valid for the respective lightcrafter commands
+    # using a "dummy" LCr object
+    # (Note that params[0] is always the lightcrafter device index; nescessary
+    # for the case that there are more than one devices connected.)
+    #
     res = [lcr.ERROR.OK]
     if   _cmd == StimLCrCmd.softwareReset:
       res = _LCr.softwareReset()
     elif _cmd == StimLCrCmd.setInputSource:
-      res = _LCr.setInputSource(_params[0], _params[1])
+      res = _LCr.setInputSource(_params[1], _params[2])
     elif _cmd == StimLCrCmd.setDisplayMode:
-      res = _LCr.setDisplayMode(_params[0])
+      res = _LCr.setDisplayMode(_params[1])
     elif _cmd == StimLCrCmd.setTestPattern:
-      res = _LCr.setTestPattern(_params[0])
+      res = _LCr.setTestPattern(_params[1])
     elif _cmd == StimLCrCmd.setLEDCurrents:
-      res = _LCr.setLEDCurrents(_params[0])
+      res = _LCr.setLEDCurrents(_params[1])
     elif _cmd == StimLCrCmd.setLEDEnabled:
-      res = _LCr.setLEDEnabled(_params[0], _params[1])
+      res = _LCr.setLEDEnabled(_params[1], _params[2])
     
     if res[0] != lcr.ERROR.OK:
       self.LastErrC = StimErrC.DeviceError_LCr
@@ -831,14 +849,15 @@ class Stim:
 
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def startMovie(self, _ID, _posXY, _seq, _magXY, _trans, _rot):
+  def startMovie(self, _ID, _posXY, _seq, _magXY, _trans, _rot, _screen=0):
     # Start playing a movie object
     # (For parameters, see QDS.py)
     #
     if (not(isinstance(_posXY, tuple))
         or not(isinstance(_magXY, tuple))
         or not(isinstance(_seq, list)) or not(len(_seq) == 4)
-        or (_trans < 0) or (_trans > 255)):
+        or (_trans < 0) or (_trans > 255)
+        or not(_screen in [0, 1])):
       self.LastErrC = StimErrC.invalidParamType
       raise StimException
 
@@ -857,31 +876,32 @@ class Stim:
       raise StimException
 
     newSce  = [StimSceType.startMovie, -1, self.nSce, False,
-               [_ID], _posXY, _magXY, _rot, _seq, _trans]
+               [_ID], _posXY, _magXY, _rot, _seq, _trans, _screen]
     self.SceList.append(newSce)
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
 
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def startVideo(self, _ID, _posXY, _magXY, _trans, _rot):
+  def startVideo(self, _ID, _posXY, _magXY, _trans, _rot, _screen=0):
     # Start playing a video object
     # (For parameters, see QDS.py)
     #
     if (not(isinstance(_posXY, tuple))
         or not(isinstance(_magXY, tuple)) 
-        or (_trans < 0) or (_trans > 255)):
+        or (_trans < 0) or (_trans > 255)
+        or not(_screen in [0, 1])):
       self.LastErrC = StimErrC.invalidParamType
       raise StimException
 
     try:
-      VdOb = self.VidDict[_ID]
+      dummy = self.VidDict[_ID]
     except KeyError:
       self.LastErrC = StimErrC.noMatchingID
       raise StimException
 
     newSce = [StimSceType.startVideo, -1, self.nSce, False,
-               [_ID], _posXY, _magXY, _rot, _trans]
+               [_ID], _posXY, _magXY, _rot, _trans, _screen]
     self.SceList.append(newSce)
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
@@ -931,13 +951,14 @@ class Stim:
     self.cODr_tr_iVert     = []  # triangle vertex indices
     self.cODr_tr_vertCoord = []  # list of coordinate pair lists
     self.cODr_tr_vertRGBA  = []  # list of color/alpha lists
+    self.cODr_tr_vertRGBA2 = []  # list of color/alpha lists (screen2)
     self.cODr_tr_hash      = []  # list of object hashes (=unique IDs)
     self.ncODr             = 0
     # ...
     self.cFreq_Hz          = _Stage.scrReqFreq_Hz
     self.maxShObjPerRender = 0
     self.lenStim_s         = 0.0
-    
+
     isInLoop               = False
 
     # Analyze scene list
@@ -953,8 +974,7 @@ class Stim:
       #
       (dur, isIntNumFrames) = _Stage.durToFrames(sc[SC_field_duration_s])
       self.cScDurList.append(dur)
-      if dur > 0:
-        self.lenStim_s += sc[SC_field_duration_s]
+
       if not(isIntNumFrames):
         ssp.Log.write("WARNING", "Scene #{0} duration unequals integer number"
                       " of frames".format(sc[SC_field_index]))
@@ -1063,9 +1083,10 @@ class Stim:
           newVert      = tmp[0]
           newiVTr      = tmp[1]
           newRGBA      = tmp[2]
-          hStr         = tmp[3]
-          posxy        = tmp[4]
-          rot          = tmp[5]
+          newRGBA2     = tmp[3]
+          hStr         = tmp[4]
+          posxy        = tmp[5]
+          rot          = tmp[6]
 
           # Add object vertex etc. data to respective lists (see above)
           #
@@ -1208,6 +1229,7 @@ class Stim:
       stimPick.dump(self.cODr_tr_iVert)
       stimPick.dump(self.cODr_tr_vertCoord)
       stimPick.dump(self.cODr_tr_vertRGBA)
+      stimPick.dump(self.cODr_tr_vertRGBA2)
 
     ssp.Log.write("ok", "Stimulus '{0}' saved to '{1}'"
                   .format(self.nameStr, sFileName + glo.QDSpy_cPickleFileExt))
@@ -1258,6 +1280,7 @@ class Stim:
           self.cODr_tr_iVert     = stimPick.load()
           self.cODr_tr_vertCoord = stimPick.load()
           self.cODr_tr_vertRGBA  = stimPick.load()
+          self.cODr_tr_vertRGBA2 = stimPick.load()
 
     except IOError:
       self.LastErrC = StimErrC.noCompiledStim

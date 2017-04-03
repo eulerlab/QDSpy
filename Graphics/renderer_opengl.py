@@ -13,7 +13,7 @@ Graphics-API dependent classes for rendering visual stimuli in QDSpy
 'Window' 
   A class that encapsulates the actual graphics API windows.
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2017 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -22,13 +22,23 @@ __author__ 	= "code@eulerlab.de"
 import sys
 import ctypes
 import pyglet
+'''
+import numpy as np
+import scipy
+import PIL
+'''
 pyglet.options["debug_gl"] = True
 import pyglet.gl as GL
 from   pyglet.gl.gl_info import GLInfo
 
 if sys.platform == "win32":
   from win32api import SetCursorPos
-  
+'''
+from   pkgutil import iter_modules  
+if "cv2" in (name for loader, name, ispkg in iter_modules()):
+  import cv2
+'''  
+
 # ---------------------------------------------------------------------  
 timing_implementation_str  = "vsync-based (pyglet calls)"
 
@@ -52,6 +62,8 @@ class Renderer:
     self.bufMan   = None
     self.isReady  = True
     self.keysExit = _KeysExit
+    
+    self.isFirst  = True
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def get_info_renderer_str(self):
@@ -127,13 +139,13 @@ class Renderer:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -        
   def create_window(self, _iScr=0, _title="", _dx=0, _dy=0, _left=0, _top=0,
-                    _scale=1.0):
+                    _scale=1.0, _isScrOvl=False, _iScrGUI=0, _offset=(0,0)):
     """ If the renderer was initialized, create a window instance and store
         it in the internal window list. For parameters, see Window class.
     """
     if self.isReady:
       self.winList.append(Window(self, _iScr, _title, _dx, _dy, _left, _top,
-                                 _scale))    
+                                 _scale, _isScrOvl, _iScrGUI, _offset))    
       '''
       if len(self.winList) == 1:
       # Is the first window, set some general OpenGL properties
@@ -170,19 +182,26 @@ class Renderer:
     pyglet.clock.tick(poll=True)
     for win in pyglet.app.windows:
       win.switch_to()
-      '''  
-      # *************
-      # *************
-      # Not needed when resizing directly in Batch.draw (?)
-      # *************
-      # *************
-      win.dispatch_events()
-      win.dispatch_event('on_draw')
-      '''
+
       if len(pyglet.app.windows) == 1:
+        win.dispatch_event("on_draw")      
         win.dispatch_events()
-      
-      win.flip()
+        
+      # ******************************      
+      # ******************************
+      # ******************************
+      '''
+      if self.isFirst:
+        self.isFirst = False
+        self.bufMan  = pyglet.image.get_buffer_manager()
+        self.pil_img_data = None
+      '''  
+      # ******************************      
+      # ******************************      
+      # ******************************      
+        
+      win.flip()      
+      """
       if win.isPresent:
         GL.glLoadIdentity()
         GL.glBegin(GL.GL_POINTS)
@@ -190,6 +209,39 @@ class Renderer:
         GL.glVertex2i(10, 10)
         GL.glEnd()
         GL.glFinish()
+      """  
+      # ******************************      
+      # ******************************      
+      # ******************************      
+      """  
+      if win.isPresent:  
+        colBuf  = self.bufMan.get_color_buffer()
+        imgData = colBuf.get_image_data()
+        dx      = imgData.width
+        dy      = imgData.height
+
+        #np_img  = np.fromstring(imgData.data, np.uint8).reshape(dx, dy, 4)
+        #scp_img = scipy.
+        '''
+        np_img2 = np.delete(np_img, np.s_[3], 2) # slow!!!
+        '''
+        
+        #print(" def present(self)", np_img.shape)
+        
+        '''
+        pil_img = PIL.Image.frombytes('RGBA', (dx, dy), imgData.data)
+        pil_img_small = pil_img.resize((dx//2,dy//2), PIL.Image.NEAREST)
+        pil_img_small2 = pil_img_small.convert("RGB")
+        self.pil_img_data = pil_img_small2.tobytes()
+        #print(" def present(self)", len(self.pil_img_data))
+        '''
+        #cv2.
+        #res = cv2.resize cv2.resize(img,(2*width, 2*height), interpolation = cv2.INTER_AREA)
+      """
+      # ******************************      
+      # ******************************      
+      # ******************************      
+        
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -        
   '''     
@@ -251,27 +303,47 @@ class Window(pyglet.window.Window):
   """
   Encapsulates the actual graphics API windows
   """
-  def __init__(self, _Renderer, _iScr, _title, _dx, _dy, _left, _top, _scale):
+  def __init__(self, _Renderer, _iScr, _title, _dx, _dy, _left, _top, _scale,
+               _isScrOvl, _iScrGUI, _offset):
     """ Generate new window
           _Renderer  := reference of Renderer instance
           _iScr      := index of screen (only for full-screen)
           _title     := title string
           _dx,_dy    := window size in pixels or (0,0) for full-screen
           _left,_top := coordinates of top-left corner in pixels
+          _isScrOvl  := if True, generates an large window across two devices
+          _iScrGUI   := index of GUI screen
+          _offset    := additional x-y offset to correct large window position
+                        (in pixels)
     """  
     self.isPresent = not(_scale < 1.0)
     self.scale     = _scale
     self.bufferMan = None
     self.Renderer  = _Renderer
-    self.isFullScr = (_dx == 0) or (_dy == 0)
+    self.isFullScr = _isScrOvl or ((_dx == 0) or (_dy == 0))
 
     if self.isFullScr and self.isPresent:
-      super().__init__(vsync=True, fullscreen=True,
-                       screen=self.Renderer.Screens[_iScr],
-                       width=self.Renderer.Screens[_iScr].width, 
-                       height=self.Renderer.Screens[_iScr].height,
-                       caption=_title)
-                       
+      if _isScrOvl:
+        super().__init__(vsync=True, fullscreen=False,
+                         width=_dx, height=_dy,
+                         caption=_title,
+                         style=pyglet.window.Window.WINDOW_STYLE_BORDERLESS)
+        self.set_location(self.Renderer.Screens[_iScrGUI].width +_offset[0], 
+                          _offset[1])     
+        '''
+        print("width            =", _dx)
+        print("height           =", _dy)
+        print("lateral offset   =", self.Renderer.Screens[_iScrGUI].width)
+        print("fine scr1 offset =", _offset)
+        '''
+        
+      else:  
+        super().__init__(vsync=True, fullscreen=True,
+                         screen=self.Renderer.Screens[_iScr],
+                         width=self.Renderer.Screens[_iScr].width, 
+                         height=self.Renderer.Screens[_iScr].height,
+                         caption=_title)
+        
     else:
       super().__init__(vsync=True,
                        width=_dx, height=_dy, 
@@ -290,6 +362,13 @@ class Window(pyglet.window.Window):
       self.Renderer.View.onKeyboard(symbol, 0, 0)
       return pyglet.event.EVENT_HANDLED
 
+  ''' 
+  def on_draw(self):
+    self.switch_to()
+    print("on_draw")
+    return pyglet.event.EVENT_HANDLED
+  '''  
+    
   '''
   # *************
   # *************
@@ -446,33 +525,33 @@ class Batch:
     """ Draw current batch of triangle vertices, acknowledging the scaling
         and rotation of the current display (stage settings)
     """
-    '''
-    _View.winPre.switch_to()
-    '''
     for iWin, win in enumerate(pyglet.app.windows):     
       win.switch_to()
     
-      # *************
-      # *************
-      # From Window.on_resize(...)    
-      # *************
-      # *************
       GL.glMatrixMode(GL.GL_PROJECTION)
       GL.glLoadIdentity()
       GL.glOrtho(-win.width//2, win.width//2, 
                  -win.height//2, win.height//2, -1, 1)
       GL.glMatrixMode(GL.GL_MODELVIEW)
       GL.glLoadIdentity()
-  
+
       GL.glPushMatrix()
-      GL.glTranslatef(_Stage.centOffX_pix, _Stage.centOffY_pix, 0)
+      x = _Stage.centOffX_pix
+      y = _Stage.centOffY_pix
+      '''
+      if _Stage.useScrOvl:      
+        x -= _Stage.dxScr12//4
+        if _View.iWideScreen == 1:
+          	x += _Stage.dxScr12//2
+      '''      
+      GL.glTranslatef(x, y, 0)
       GL.glScalef(_Stage.scalX_umPerPix *_Stage.winXCorrFact *win.scale, 
                   _Stage.scalY_umPerPix *_Stage.winXCorrFact *win.scale, 0.0)
       GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
       
       self.currBatch.draw()    
       GL.glPopMatrix()
-        
+          
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                     
   def add_marker_data(self, _indices, _tri, _RGBA):   
     """ Add marker data to lined up rendering commands

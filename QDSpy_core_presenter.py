@@ -45,7 +45,7 @@ if QDSpy_verbose:
 class Presenter:
   """ Presenter class
   """
-  def __init__(self, _Stage, _IO, _Conf, _View, _View2=None, _LCr=None):
+  def __init__(self, _Stage, _IO, _Conf, _View, _View2=None, _LCr=[]):
     # Initializing
     #
     self.Stage        = _Stage
@@ -117,6 +117,7 @@ class Presenter:
     self.vertTr       = np.array([], dtype=np.int)   # temporary vertex arrays
     self.iVertTr      = np.array([], dtype=np.int)   # temporary index arrays
     self.vRGBTr       = np.array([], dtype=np.uint8) # temporary RGBA arrays
+    #self.vRGBTr2     = np.array([], dtype=np.uint8) 
 
     self.currShObjIDs = []    # list, IDs of current shader-enabled objects
     self.prevShObjIDs = []    # list, IDs of previously shown shader-enabled
@@ -185,10 +186,10 @@ class Presenter:
     elif   sc[stm.SC_field_type] == stm.StimSceType.sendCommandToLCr:
       # Change LED currents
       #
-      if self.LCr != None:
-        _params = sc[stm.SC_field_LCrParams]
-        if _params[0] == stm.StimLCrCmd.setLEDCurrents:
-          self.LCr.setLEDCurrents(_params[1])
+      _params = sc[stm.SC_field_LCrParams]
+      if ((_params[0] == stm.StimLCrCmd.setLEDCurrents) and
+          (_params[1] >= 0) and (_params[1] < len(self.LCr))):
+        self.LCr[_params[1]].setLEDCurrents(_params[2])
           
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     elif   sc[stm.SC_field_type] == stm.StimSceType.logUserParams:
@@ -271,18 +272,11 @@ class Presenter:
                                 sc[stm.SC_field_magXY],
                                 sc[stm.SC_field_rot], 
                                 sc[stm.SC_field_MovTrans])
+      self.View.iWideScreen = sc[stm.SC_field_MovScreen]
 
-      # Add the sprite to the general (current) pyglet drawing batch)
-      # and the move control object to the list of active movies
+      # Add the move control object to the list of active movies
       #
-      """
-      mCtOb.Sprite.batch = self.currBatch
-      """
       self.MovieCtrlList.append([mCtOb, _iSc, self.nFrTotal])
-      """
-      ssp.Log.write("DEBUG", "StimSceType.startMovie _iSc={0} iFr={1}"
-                    .format(_iSc, self.nFrTotal))
-      """
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     elif   sc[stm.SC_field_type] == stm.StimSceType.startVideo:
@@ -302,19 +296,11 @@ class Presenter:
                                 sc[stm.SC_field_magXY],
                                 sc[stm.SC_field_rot], 
                                 sc[stm.SC_field_VidTrans])
+      self.View.iWideScreen = sc[stm.SC_field_VidScreen]
 
-      # Add the sprite to the general (current) pyglet drawing batch)
-      # and the video control object to the list of active videos
+      # Add the video control object to the list of active videos
       #
-      """
-      mCtOb.Sprite.batch = self.currBatch
-      """
       self.VideoCtrlList.append([vCtOb, _iSc, self.nFrTotal])
-      """
-      ssp.Log.write("DEBUG", "StimSceType.startMovie _iSc={0} iFr={1}"
-                    .format(_iSc, self.nFrTotal))
-      """
-
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     elif sc[stm.SC_field_type] == stm.StimSceType.renderSce:
@@ -520,16 +506,16 @@ class Presenter:
       if self.Sync.pipeSrv.poll():
          data = self.Sync.pipeSrv.recv()
          if data[0] == mpr.PipeValType.toSrv_changedStage:
-           self.Stage.scalX_umPerPix = data[1]["scalX_umPerPix"]
-           self.Stage.scalY_umPerPix = data[1]["scalY_umPerPix"]
-           self.Stage.centOffX_pix   = data[1]["centOffX_pix"]
-           self.Stage.centOffY_pix   = data[1]["centOffY_pix"]
-           self.Stage.rot_angle      = data[1]["rot_angle"]
+           self.Stage.scalX_umPerPix  = data[1]["scalX_umPerPix"]
+           self.Stage.scalY_umPerPix  = data[1]["scalY_umPerPix"]
+           self.Stage.centOffX_pix    = data[1]["centOffX_pix"]
+           self.Stage.centOffY_pix    = data[1]["centOffY_pix"]
+           self.Stage.rot_angle       = data[1]["rot_angle"]
 
          if data[0] == mpr.PipeValType.toSrv_changedLEDs:
-           self.Stage.LEDs           = data[1][0] 
-           self.Stage.isLEDSeqEnabled= data[1][1]
-           self.Stage.sendLEDChangesToLCr(self.LCr, self.Conf)
+           self.Stage.LEDs            = data[1][0] 
+           self.Stage.isLEDSeqEnabled = data[1][1]
+           self.Stage.sendLEDChangesToLCr(self.Conf)
 
 
     # Render scene
