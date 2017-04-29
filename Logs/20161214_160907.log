@@ -1,0 +1,799 @@
+20161214_140801   ERROR No compiled `__autorun` in current stimulus folder, using `__autorun_default` in `C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy`.
+20161214_140801   DEBUG Running C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\__autorun_default ...
+20161214_140801         Presenting stimulus ...
+20161214_140801     *** QDSpy v0.72 beta Presenter - (c) 2013-16 Thomas Euler
+20161214_140801      ok Initializing ...
+20161214_140801         ENABLED    : high process priority during presentation
+20161214_140801         enabled    : automatic garbage collection
+20161214_140801         Loading user-defined gamma LUT file ...
+20161214_140801      ok ... done
+20161214_140801    INFO OpenGL     : v4.5.0 NVIDIA 362.56
+20161214_140801    INFO GLSL       : v4.50 NVIDIA
+20161214_140801    INFO Renderer   : Quadro K420/PCIe/SSE2 by NVIDIA Corporation
+20161214_140801    INFO Timing     : vsync-based (pyglet calls)
+20161214_140801    INFO Expected   : 60.0 Hz
+20161214_140801      ok Window mode, 640x480 pixels
+20161214_140801         ENABLED    : forced fsync
+20161214_140801      ok SwapIntervalEXT() reported success
+20161214_140801    INFO Display    : generic
+20161214_140801      ok Stage info : 0,0 pixels, scale: 1.00,1.00 µm/pix, rotation: 0°, refresh: 60.0 Hz
+20161214_140801   ERROR LCr|Could not connect to device, Code 'open failed'
+20161214_140801 WARNING This script requires a lightcrafter
+20161214_140801   ERROR LCr|Could not connect to device, Code 'open failed'
+20161214_140801         3 shader type(s) found
+20161214_140801         Loading compiled stimulus...
+20161214_140801      ok Stimulus 'C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\__autorun_default.pickle' loaded
+20161214_140801         Name       : __autorun_default
+20161214_140801         Description: 
+20161214_140801         Frequency  : 60.0 Hz
+20161214_140801      ok Stimulus '__autorun_default' prepared
+20161214_140801      ok Running...
+20161214_140801    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\__autorun_default', 'stimMD5': 'b9df3671bfa94c27ef1e769fc7d8d03f', 'stimState': 'STARTED'}
+20161214_140801      ok Done
+20161214_140801    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\__autorun_default', 'stimState': 'FINISHED'}
+20161214_140801      ok Program finished
+20161214_140801    INFO 10.013 ms/frame (99.870 Hz), rendering: 0.228 ms (3 frames in total)
+20161214_140801    INFO 15.020 +/- 1.174 ms/frame (over the last 2 frames) = 66.6 Hz
+20161214_140801    DATA {'nFrames': 3, 'avgFreq_Hz': 99.8695739117438, 'nDroppedFrames': 0}
+20161214_140801   ERROR LCr|Could not connect to device, Code 'open failed'
+20161214_140807   ERROR Stimulus needs to be compiled
+20161214_140808         Compiling stimulus script ...
+20161214_140813      ok ... done
+20161214_140814         Presenting stimulus ...
+20161214_140814         Loading compiled stimulus...
+20161214_140814      ok Stimulus '.\Stimuli\\RGC_Chirp_2.pickle' loaded
+20161214_140814         Name       : RGC_Chirp
+20161214_140814         Description: 'chirp' in fingerprinting stimulus set
+20161214_140814         Frequency  : 60.0 Hz
+20161214_140814      ok Stimulus 'RGC_Chirp' prepared
+20161214_140814      ok Running...
+20161214_140814    DATA {'stimFileName': '.\\Stimuli\\RGC_Chirp_2', 'stimMD5': '952e854caccf9612ae2ff14155a3068f', 'stimState': 'STARTED'}
+20161214_140814    DATA {'chirpDur_s': 8.0, 'stimFileName': '.\\Stimuli\\RGC_Chirp_2', 'tSteadyOFF_s': 3.0, 'IHalf': 127, 'IFull': 254, 'tSteadyON_s': 3.0, 'StimType': 2, 'tSteadyMID_s': 2.0, 'chirpMaxFreq_Hz': 8.0, 'durFr_s': 0.016666666666666666, 'ContrastFreq_Hz': 2.0, 'nTrials': 3, 'nFrPerMarker': 3, 'tSteadyOFF2_s': 2.0, 'dxStim_um': 1000}
+20161214_140823   DEBUG Presenter.stop()
+20161214_140823      ok Aborted by user
+20161214_140823    DATA {'stimFileName': '.\\Stimuli\\RGC_Chirp_2', 'stimState': 'ABORTED'}
+20161214_140823   ABORT User aborted program
+20161214_140823    INFO 16.624 ms/frame (60.153 Hz), rendering: 0.402 ms (530 frames in total)
+20161214_140823    INFO 16.656 +/- 1.345 ms/frame (over the last 529 frames) = 60.0 Hz
+20161214_140823    DATA {'nFrames': 530, 'avgFreq_Hz': 60.15316877597579, 'nDroppedFrames': 0}
+20161214_140838   ERROR Stimulus needs to be compiled
+20161214_140839         Compiling stimulus script ...
+20161214_140929      ok ... done
+20161214_140932         Presenting stimulus ...
+20161214_140932         Loading compiled stimulus...
+20161214_140932      ok Stimulus '.\Stimuli\\BC_BWNoise20.pickle' loaded
+20161214_140932         Name       : RGC_Noise
+20161214_140932         Description: 'noise' in fingerprinting stimulus set
+20161214_140932         Frequency  : 60.0 Hz
+20161214_140932      ok Stimulus 'RGC_Noise' prepared
+20161214_140932      ok Running...
+20161214_140932    DATA {'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'stimMD5': '2680f3fd183f74559d934aeaff9a1674', 'stimState': 'STARTED'}
+20161214_140932    DATA {'fNameNoise': 'RGC_BWNoise_official', 'fIntenW': 255, 'durStim_s': 0.2, 'boxDx_um': 20, 'nFrPerMarker': 3, 'durFr_s': 0.016666666666666666, 'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'boxDy_um': 20}
+20161214_140936   DEBUG Presenter.stop()
+20161214_140936      ok Aborted by user
+20161214_140936    DATA {'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'stimState': 'ABORTED'}
+20161214_140936   ABORT User aborted program
+20161214_140936    INFO 16.593 ms/frame (60.267 Hz), rendering: 0.591 ms (277 frames in total)
+20161214_140936    INFO 16.653 +/- 0.575 ms/frame (over the last 276 frames) = 60.0 Hz
+20161214_140936    DATA {'nFrames': 277, 'avgFreq_Hz': 60.2674663415204, 'nDroppedFrames': 0}
+20161214_140939   ERROR Stimulus needs to be compiled
+20161214_140940         Compiling stimulus script ...
+20161214_140942      ok ... done
+20161214_140943         Presenting stimulus ...
+20161214_140943         Loading compiled stimulus...
+20161214_140943      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_140943         Name       : video_perlin
+20161214_140943         Description: Perlin noise test
+20161214_140943         Frequency  : 60.0 Hz
+20161214_140943   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_140943      ok Stimulus 'video_perlin' prepared
+20161214_140943      ok Running...
+20161214_140943    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '088ff4961acf2d6c2e74d8c7abcb2a24', 'stimState': 'STARTED'}
+20161214_140943    DATA {'MarkPer_s': 5.0, 'vidScale': (6.5, 6.5), 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'nFr': 7200.0, 'dxFr': 60, 'fps': 20.0}, 'nFrPerMarker': 3, 'durFr_s': 0.05, 'vidOrient': 0, 'vidAlpha': 255, 'vidName': 'Perlin_f12_r2_b.avi'}
+20161214_140944 WARNING dt of frame #60 was 38.970 ms
+20161214_141000      ok Done
+20161214_141000    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'FINISHED'}
+20161214_141000      ok Program finished
+20161214_141000    INFO 16.655 ms/frame (60.044 Hz), rendering: 1.473 ms (984 frames in total)
+20161214_141000    INFO 16.672 +/- 0.945 ms/frame (over the last 983 frames) = 60.0 Hz
+20161214_141000 WARNING 1 frames dropped (=0.102 %)
+20161214_141000    DATA {'nFrames': 984, 'avgFreq_Hz': 60.043512048753485, 'nDroppedFrames': 1}
+20161214_141256   ERROR Stimulus needs to be compiled
+20161214_141257         Compiling stimulus script ...
+20161214_141259      ok ... done
+20161214_141310         Presenting stimulus ...
+20161214_141310         Loading compiled stimulus...
+20161214_141310      ok Stimulus '.\Stimuli\\video_perlin16.pickle' loaded
+20161214_141310         Name       : video_perlin16
+20161214_141310         Description: Perlin noise test
+20161214_141310         Frequency  : 60.0 Hz
+20161214_141310   DEBUG stim_video: 128x96 pixel, 6000.0 frames, 20.0 fps
+20161214_141310      ok Stimulus 'video_perlin16' prepared
+20161214_141310      ok Running...
+20161214_141310    DATA {'stimFileName': '.\\Stimuli\\video_perlin16', 'stimMD5': 'c4562e35416df8391306db740c3a5982', 'stimState': 'STARTED'}
+20161214_141310    DATA {'vidScale': (3.0, 3.0), 'MarkPer_s': 1.0, 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin16', 'vidName': 'Perlin16.avi', 'vidparams': {'dyFr': 96, 'dxFr': 128, 'fps': 20.0, 'nFr': 6000.0}, 'nFrPerMarker': 3, 'vidOrient': 0, 'vidAlpha': 255, 'durFr_s': 0.016666666666666666}
+20161214_141316   DEBUG Presenter.stop()
+20161214_141316      ok Aborted by user
+20161214_141316    DATA {'stimFileName': '.\\Stimuli\\video_perlin16', 'stimState': 'ABORTED'}
+20161214_141316   ABORT User aborted program
+20161214_141316    INFO 16.613 ms/frame (60.195 Hz), rendering: 1.324 ms (380 frames in total)
+20161214_141316    INFO 16.657 +/- 0.275 ms/frame (over the last 379 frames) = 60.0 Hz
+20161214_141316    DATA {'nFrames': 380, 'avgFreq_Hz': 60.194510130159195, 'nDroppedFrames': 0}
+20161214_141332         Compiling stimulus script ...
+20161214_141334      ok ... done
+20161214_141335         Presenting stimulus ...
+20161214_141335         Loading compiled stimulus...
+20161214_141335      ok Stimulus '.\Stimuli\\video_perlin16.pickle' loaded
+20161214_141335         Name       : video_perlin16
+20161214_141335         Description: Perlin noise test
+20161214_141335         Frequency  : 60.0 Hz
+20161214_141335   DEBUG stim_video: 128x96 pixel, 6000.0 frames, 20.0 fps
+20161214_141335      ok Stimulus 'video_perlin16' prepared
+20161214_141335      ok Running...
+20161214_141335    DATA {'stimFileName': '.\\Stimuli\\video_perlin16', 'stimMD5': 'eba1b05fd020cf3d4f3ab21c929c814e', 'stimState': 'STARTED'}
+20161214_141335    DATA {'vidScale': (3.0, 3.0), 'MarkPer_s': 1.0, 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin16', 'vidparams': {'dyFr': 96, 'nFr': 6000.0, 'fps': 20.0, 'dxFr': 128}, 'nFrPerMarker': 3, 'durFr_s': 0.05, 'vidOrient': 0, 'vidAlpha': 255, 'vidName': 'Perlin16.avi'}
+20161214_141339   DEBUG Presenter.stop()
+20161214_141339      ok Aborted by user
+20161214_141339    DATA {'stimFileName': '.\\Stimuli\\video_perlin16', 'stimState': 'ABORTED'}
+20161214_141339   ABORT User aborted program
+20161214_141339    INFO 16.581 ms/frame (60.311 Hz), rendering: 1.197 ms (244 frames in total)
+20161214_141339    INFO 16.649 +/- 0.570 ms/frame (over the last 243 frames) = 60.1 Hz
+20161214_141339    DATA {'nFrames': 244, 'avgFreq_Hz': 60.3112485209281, 'nDroppedFrames': 0}
+20161214_141919         Presenting stimulus ...
+20161214_141919         Loading compiled stimulus...
+20161214_141919      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_141919         Name       : video_perlin
+20161214_141919         Description: Perlin noise test
+20161214_141919         Frequency  : 60.0 Hz
+20161214_141919   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_141919      ok Stimulus 'video_perlin' prepared
+20161214_141919      ok Running...
+20161214_141919    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '088ff4961acf2d6c2e74d8c7abcb2a24', 'stimState': 'STARTED'}
+20161214_141919    DATA {'MarkPer_s': 5.0, 'vidScale': (6.5, 6.5), 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'nFr': 7200.0, 'dxFr': 60, 'fps': 20.0}, 'nFrPerMarker': 3, 'durFr_s': 0.05, 'vidOrient': 0, 'vidAlpha': 255, 'vidName': 'Perlin_f12_r2_b.avi'}
+20161214_141935   DEBUG Presenter.stop()
+20161214_141935      ok Aborted by user
+20161214_141935    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_141935   ABORT User aborted program
+20161214_141935    INFO 16.640 ms/frame (60.095 Hz), rendering: 1.440 ms (963 frames in total)
+20161214_141935    INFO 16.658 +/- 0.390 ms/frame (over the last 962 frames) = 60.0 Hz
+20161214_141935    DATA {'nFrames': 963, 'avgFreq_Hz': 60.094734964016865, 'nDroppedFrames': 0}
+20161214_142105         Presenting stimulus ...
+20161214_142105         Loading compiled stimulus...
+20161214_142105      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_142105         Name       : video_perlin
+20161214_142105         Description: Perlin noise test
+20161214_142105         Frequency  : 60.0 Hz
+20161214_142105   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_142105      ok Stimulus 'video_perlin' prepared
+20161214_142105      ok Running...
+20161214_142105    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '088ff4961acf2d6c2e74d8c7abcb2a24', 'stimState': 'STARTED'}
+20161214_142105    DATA {'MarkPer_s': 5.0, 'vidScale': (6.5, 6.5), 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'nFr': 7200.0, 'dxFr': 60, 'fps': 20.0}, 'nFrPerMarker': 3, 'durFr_s': 0.05, 'vidOrient': 0, 'vidAlpha': 255, 'vidName': 'Perlin_f12_r2_b.avi'}
+20161214_142122      ok Done
+20161214_142122    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'FINISHED'}
+20161214_142122      ok Program finished
+20161214_142122    INFO 16.644 ms/frame (60.081 Hz), rendering: 1.451 ms (984 frames in total)
+20161214_142122    INFO 16.661 +/- 0.258 ms/frame (over the last 983 frames) = 60.0 Hz
+20161214_142122    DATA {'nFrames': 984, 'avgFreq_Hz': 60.08130788703928, 'nDroppedFrames': 0}
+20161214_142134   ERROR Stimulus needs to be compiled
+20161214_142136   ERROR Stimulus needs to be compiled
+20161214_142136         Compiling stimulus script ...
+20161214_142138      ok ... done
+20161214_142141   ERROR Stimulus needs to be compiled
+20161214_142142         Compiling stimulus script ...
+20161214_142144      ok ... done
+20161214_142157         Compiling stimulus script ...
+20161214_142159      ok ... done
+20161214_142212         Presenting stimulus ...
+20161214_142212         Loading compiled stimulus...
+20161214_142212      ok Stimulus '.\Stimuli\\video_perlin16.pickle' loaded
+20161214_142212         Name       : video_perlin16
+20161214_142212         Description: Perlin noise test
+20161214_142212         Frequency  : 60.0 Hz
+20161214_142212   DEBUG stim_video: 128x96 pixel, 6000.0 frames, 20.0 fps
+20161214_142212      ok Stimulus 'video_perlin16' prepared
+20161214_142212      ok Running...
+20161214_142212    DATA {'stimFileName': '.\\Stimuli\\video_perlin16', 'stimMD5': '19bc19a3f4c586045c1eafd940404624', 'stimState': 'STARTED'}
+20161214_142212    DATA {'MarkPer_s': 1.0, 'vidScale': (3.0, 3.0), 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin16', 'vidName': 'Perlin16.avi', 'vidparams': {'dyFr': 96, 'nFr': 6000.0, 'fps': 20.0, 'dxFr': 128}, 'nFrPerMarker': 3, 'vidOrient': 0, 'vidAlpha': 255, 'durFr_s': 0.05}
+20161214_142219 WARNING dt of frame #402 was 28.854 ms
+20161214_142221   DEBUG Presenter.stop()
+20161214_142221      ok Aborted by user
+20161214_142221    DATA {'stimFileName': '.\\Stimuli\\video_perlin16', 'stimState': 'ABORTED'}
+20161214_142221   ABORT User aborted program
+20161214_142221    INFO 16.611 ms/frame (60.202 Hz), rendering: 1.450 ms (525 frames in total)
+20161214_142221    INFO 16.642 +/- 0.983 ms/frame (over the last 524 frames) = 60.1 Hz
+20161214_142221 WARNING 1 frames dropped (=0.190 %)
+20161214_142221    DATA {'nFrames': 525, 'avgFreq_Hz': 60.202056464666384, 'nDroppedFrames': 1}
+20161214_142222         Presenting stimulus ...
+20161214_142222         Loading compiled stimulus...
+20161214_142222      ok Stimulus '.\Stimuli\\video_perlin32.pickle' loaded
+20161214_142222         Name       : video_perlin32
+20161214_142222         Description: Perlin noise test
+20161214_142222         Frequency  : 60.0 Hz
+20161214_142222   DEBUG stim_video: 128x96 pixel, 6000.0 frames, 20.0 fps
+20161214_142222      ok Stimulus 'video_perlin32' prepared
+20161214_142222      ok Running...
+20161214_142222    DATA {'stimFileName': '.\\Stimuli\\video_perlin32', 'stimMD5': '64feac459e6574e420ae2823c44e2ef1', 'stimState': 'STARTED'}
+20161214_142222    DATA {'vidScale': (3.0, 3.0), 'MarkPer_s': 1.0, 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin32', 'vidparams': {'dyFr': 96, 'nFr': 6000.0, 'dxFr': 128, 'fps': 20.0}, 'nFrPerMarker': 3, 'durFr_s': 0.016666666666666666, 'vidName': 'Perlin32.avi', 'vidAlpha': 255, 'vidOrient': 0}
+20161214_142226   DEBUG Presenter.stop()
+20161214_142226      ok Aborted by user
+20161214_142226    DATA {'stimFileName': '.\\Stimuli\\video_perlin32', 'stimState': 'ABORTED'}
+20161214_142226   ABORT User aborted program
+20161214_142226    INFO 16.528 ms/frame (60.505 Hz), rendering: 1.130 ms (210 frames in total)
+20161214_142226    INFO 16.607 +/- 0.930 ms/frame (over the last 209 frames) = 60.2 Hz
+20161214_142226    DATA {'nFrames': 210, 'avgFreq_Hz': 60.505191590428424, 'nDroppedFrames': 0}
+20161214_142242         Compiling stimulus script ...
+20161214_142244      ok ... done
+20161214_142247         Presenting stimulus ...
+20161214_142247         Loading compiled stimulus...
+20161214_142247      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_142247         Name       : video_perlin
+20161214_142247         Description: Perlin noise test
+20161214_142247         Frequency  : 60.0 Hz
+20161214_142247   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_142247      ok Stimulus 'video_perlin' prepared
+20161214_142247      ok Running...
+20161214_142247    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': 'c613089ed76561f303cdf403fa2c8c57', 'stimState': 'STARTED'}
+20161214_142247    DATA {'MarkPer_s': 1.0, 'vidScale': (6.5, 6.5), 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'nFr': 7200.0, 'fps': 20.0, 'dxFr': 60}, 'nFrPerMarker': 3, 'durFr_s': 0.05, 'vidOrient': 0, 'vidAlpha': 255, 'vidName': 'Perlin_f12_r2_b.avi'}
+20161214_142317   DEBUG Presenter.stop()
+20161214_142317      ok Aborted by user
+20161214_142317    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_142317   ABORT User aborted program
+20161214_142317    INFO 16.649 ms/frame (60.065 Hz), rendering: 1.390 ms (1799 frames in total)
+20161214_142317    INFO 16.658 +/- 0.456 ms/frame (over the last 1798 frames) = 60.0 Hz
+20161214_142317    DATA {'nFrames': 1799, 'avgFreq_Hz': 60.064975107481715, 'nDroppedFrames': 0}
+20161214_142329         Compiling stimulus script ...
+20161214_142331      ok ... done
+20161214_142332         Presenting stimulus ...
+20161214_142332         Loading compiled stimulus...
+20161214_142332      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_142332         Name       : video_perlin
+20161214_142332         Description: Perlin noise test
+20161214_142332         Frequency  : 60.0 Hz
+20161214_142332   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_142332      ok Stimulus 'video_perlin' prepared
+20161214_142332      ok Running...
+20161214_142332    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '3694827e5c7d8d36cb54392b1b8a0354', 'stimState': 'STARTED'}
+20161214_142332    DATA {'MarkPer_s': 2.0, 'vidScale': (6.5, 6.5), 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'nFr': 7200.0, 'dxFr': 60, 'fps': 20.0}, 'nFrPerMarker': 3, 'durFr_s': 0.05, 'vidOrient': 0, 'vidAlpha': 255, 'vidName': 'Perlin_f12_r2_b.avi'}
+20161214_142355   DEBUG Presenter.stop()
+20161214_142355      ok Aborted by user
+20161214_142355    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_142355   ABORT User aborted program
+20161214_142355    INFO 16.647 ms/frame (60.072 Hz), rendering: 1.367 ms (1370 frames in total)
+20161214_142355    INFO 16.659 +/- 0.321 ms/frame (over the last 1369 frames) = 60.0 Hz
+20161214_142355    DATA {'nFrames': 1370, 'avgFreq_Hz': 60.071976523781366, 'nDroppedFrames': 0}
+20161214_142402         Compiling stimulus script ...
+20161214_142403      ok ... done
+20161214_142404         Presenting stimulus ...
+20161214_142404         Loading compiled stimulus...
+20161214_142404      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_142404         Name       : video_perlin
+20161214_142404         Description: Perlin noise test
+20161214_142404         Frequency  : 60.0 Hz
+20161214_142405   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_142405      ok Stimulus 'video_perlin' prepared
+20161214_142405      ok Running...
+20161214_142405    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '5441ce9b68a7df6fd2f298efa3c42ef0', 'stimState': 'STARTED'}
+20161214_142405    DATA {'MarkPer_s': 1.0, 'vidScale': (6.5, 6.5), 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidName': 'Perlin_f12_r2_b.avi', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 20.0, 'nFr': 7200.0}, 'nFrPerMarker': 3, 'vidOrient': 0, 'vidAlpha': 255, 'durFr_s': 0.05}
+20161214_142412 WARNING dt of frame #424 was 36.894 ms
+20161214_142419   DEBUG Presenter.stop()
+20161214_142419      ok Aborted by user
+20161214_142419    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_142419   ABORT User aborted program
+20161214_142419    INFO 16.659 ms/frame (60.029 Hz), rendering: 1.366 ms (869 frames in total)
+20161214_142419    INFO 16.678 +/- 0.993 ms/frame (over the last 868 frames) = 60.0 Hz
+20161214_142419 WARNING 1 frames dropped (=0.115 %)
+20161214_142419    DATA {'nFrames': 869, 'avgFreq_Hz': 60.02927047163145, 'nDroppedFrames': 1}
+20161214_142421         Presenting stimulus ...
+20161214_142421         Loading compiled stimulus...
+20161214_142421      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_142421         Name       : video_perlin
+20161214_142421         Description: Perlin noise test
+20161214_142421         Frequency  : 60.0 Hz
+20161214_142422   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_142422      ok Stimulus 'video_perlin' prepared
+20161214_142422      ok Running...
+20161214_142422    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '5441ce9b68a7df6fd2f298efa3c42ef0', 'stimState': 'STARTED'}
+20161214_142422    DATA {'MarkPer_s': 1.0, 'vidScale': (6.5, 6.5), 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidName': 'Perlin_f12_r2_b.avi', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 20.0, 'nFr': 7200.0}, 'nFrPerMarker': 3, 'vidOrient': 0, 'vidAlpha': 255, 'durFr_s': 0.05}
+20161214_142429   DEBUG Presenter.stop()
+20161214_142429      ok Aborted by user
+20161214_142429    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_142429   ABORT User aborted program
+20161214_142429    INFO 16.606 ms/frame (60.219 Hz), rendering: 1.241 ms (429 frames in total)
+20161214_142429    INFO 16.645 +/- 0.578 ms/frame (over the last 428 frames) = 60.1 Hz
+20161214_142429    DATA {'nFrames': 429, 'avgFreq_Hz': 60.21947253730343, 'nDroppedFrames': 0}
+20161214_142526         Presenting stimulus ...
+20161214_142526         Loading compiled stimulus...
+20161214_142526      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_142526         Name       : video_perlin
+20161214_142526         Description: Perlin noise test
+20161214_142526         Frequency  : 60.0 Hz
+20161214_142526   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_142526      ok Stimulus 'video_perlin' prepared
+20161214_142526      ok Running...
+20161214_142526    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '5441ce9b68a7df6fd2f298efa3c42ef0', 'stimState': 'STARTED'}
+20161214_142526    DATA {'MarkPer_s': 1.0, 'vidScale': (6.5, 6.5), 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidName': 'Perlin_f12_r2_b.avi', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 20.0, 'nFr': 7200.0}, 'nFrPerMarker': 3, 'vidOrient': 0, 'vidAlpha': 255, 'durFr_s': 0.05}
+20161214_142531   DEBUG Presenter.stop()
+20161214_142531      ok Aborted by user
+20161214_142531    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_142531   ABORT User aborted program
+20161214_142531    INFO 16.598 ms/frame (60.248 Hz), rendering: 1.198 ms (314 frames in total)
+20161214_142531    INFO 16.651 +/- 0.373 ms/frame (over the last 313 frames) = 60.1 Hz
+20161214_142531    DATA {'nFrames': 314, 'avgFreq_Hz': 60.24793434167287, 'nDroppedFrames': 0}
+20161214_143019         Compiling stimulus script ...
+20161214_143021      ok ... done
+20161214_143023         Presenting stimulus ...
+20161214_143023         Loading compiled stimulus...
+20161214_143023      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_143023         Name       : video_perlin
+20161214_143023         Description: Perlin noise test
+20161214_143023         Frequency  : 60.0 Hz
+20161214_143023   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_143023      ok Stimulus 'video_perlin' prepared
+20161214_143023      ok Running...
+20161214_143023    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '174e83d241ddd1e4af22ed7e4221f97d', 'stimState': 'STARTED'}
+20161214_143023    DATA {'MarkPer_s': 1.0, 'vidScale': (6.5, 6.5), 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidName': 'Perlin_f12_r1.5_b.avi', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'nFr': 7200.0, 'fps': 20.0}, 'nFrPerMarker': 3, 'vidOrient': 0, 'vidAlpha': 255, 'durFr_s': 0.05}
+20161214_143045   DEBUG Presenter.stop()
+20161214_143045      ok Aborted by user
+20161214_143045    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_143045   ABORT User aborted program
+20161214_143045    INFO 16.651 ms/frame (60.057 Hz), rendering: 1.308 ms (1335 frames in total)
+20161214_143045    INFO 16.663 +/- 0.265 ms/frame (over the last 1334 frames) = 60.0 Hz
+20161214_143045    DATA {'nFrames': 1335, 'avgFreq_Hz': 60.057432183381984, 'nDroppedFrames': 0}
+20161214_143101         Compiling stimulus script ...
+20161214_143103      ok ... done
+20161214_143110         Compiling stimulus script ...
+20161214_143112      ok ... done
+20161214_143122         Compiling stimulus script ...
+20161214_143124      ok ... done
+20161214_143159         Compiling stimulus script ...
+20161214_143201      ok ... done
+20161214_143210         Compiling stimulus script ...
+20161214_143211      ok ... done
+20161214_143216   ERROR Stimulus needs to be compiled
+20161214_143217         Compiling stimulus script ...
+20161214_143219      ok ... done
+20161214_143230         Compiling stimulus script ...
+20161214_143232      ok ... done
+20161214_143248         Compiling stimulus script ...
+20161214_143249      ok ... done
+20161214_143256         Compiling stimulus script ...
+20161214_143258      ok ... done
+20161214_143305         Compiling stimulus script ...
+20161214_143307      ok ... done
+20161214_143316         Compiling stimulus script ...
+20161214_143318      ok ... done
+20161214_143327         Compiling stimulus script ...
+20161214_143329      ok ... done
+20161214_143347         Compiling stimulus script ...
+20161214_143349      ok ... done
+20161214_143358         Compiling stimulus script ...
+20161214_143400      ok ... done
+20161214_143413         Presenting stimulus ...
+20161214_143413         Loading compiled stimulus...
+20161214_143413      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_143413         Name       : video_perlin
+20161214_143413         Description: Perlin noise test
+20161214_143413         Frequency  : 60.0 Hz
+20161214_143413   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_143413      ok Stimulus 'video_perlin' prepared
+20161214_143413      ok Running...
+20161214_143413    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '8c735f8409525dd4f782e4edec727f73', 'stimState': 'STARTED'}
+20161214_143413    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'nFr': 7200.0, 'fps': 20.0}, 'vidOrient': 0, 'nFrPerMarker': 1, 'vidName': 'Perlin_f12_r1.5_b.avi', 'vidAlpha': 255, 'durFr_s': 0.025}
+20161214_143429   DEBUG Presenter.stop()
+20161214_143429      ok Aborted by user
+20161214_143429    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_143429   ABORT User aborted program
+20161214_143429    INFO 16.638 ms/frame (60.103 Hz), rendering: 1.265 ms (938 frames in total)
+20161214_143429    INFO 16.656 +/- 0.550 ms/frame (over the last 937 frames) = 60.0 Hz
+20161214_143429    DATA {'nFrames': 938, 'avgFreq_Hz': 60.10336819907913, 'nDroppedFrames': 0}
+20161214_143709         Compiling stimulus script ...
+20161214_143711      ok ... done
+20161214_143712         Presenting stimulus ...
+20161214_143712         Loading compiled stimulus...
+20161214_143712      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_143712         Name       : video_perlin
+20161214_143712         Description: Perlin noise test
+20161214_143712         Frequency  : 60.0 Hz
+20161214_143713   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_143713      ok Stimulus 'video_perlin' prepared
+20161214_143713      ok Running...
+20161214_143713    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '6eed29ecb3c8b73bdcd493a8f5e06cb0', 'stimState': 'STARTED'}
+20161214_143713    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidName': 'Perlin_f12_r1_b.avi', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'nFr': 7200.0, 'fps': 20.0}, 'nFrPerMarker': 1, 'vidOrient': 0, 'vidAlpha': 255, 'durFr_s': 0.025}
+20161214_143737   DEBUG Presenter.stop()
+20161214_143737      ok Aborted by user
+20161214_143737    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_143737   ABORT User aborted program
+20161214_143737    INFO 16.646 ms/frame (60.076 Hz), rendering: 1.284 ms (1481 frames in total)
+20161214_143737    INFO 16.657 +/- 0.421 ms/frame (over the last 1480 frames) = 60.0 Hz
+20161214_143737    DATA {'nFrames': 1481, 'avgFreq_Hz': 60.07586811219024, 'nDroppedFrames': 0}
+20161214_143748         Compiling stimulus script ...
+20161214_143750      ok ... done
+20161214_143750         Presenting stimulus ...
+20161214_143750         Loading compiled stimulus...
+20161214_143750      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_143750         Name       : video_perlin
+20161214_143750         Description: Perlin noise test
+20161214_143750         Frequency  : 60.0 Hz
+20161214_143751   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_143751      ok Stimulus 'video_perlin' prepared
+20161214_143751      ok Running...
+20161214_143751    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': 'f6613089fcf4ac4811527ac63be85224', 'stimState': 'STARTED'}
+20161214_143751    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidName': 'Perlin_f12_r1_b.avi', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'nFr': 7200.0, 'fps': 20.0}, 'nFrPerMarker': 1, 'vidOrient': 0, 'vidAlpha': 255, 'durFr_s': 0.05}
+20161214_143824 WARNING dt of frame #2019 was 29.022 ms
+20161214_143833   DEBUG Presenter.stop()
+20161214_143833      ok Aborted by user
+20161214_143833    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_143833   ABORT User aborted program
+20161214_143833    INFO 16.653 ms/frame (60.049 Hz), rendering: 1.307 ms (2535 frames in total)
+20161214_143833    INFO 16.660 +/- 0.523 ms/frame (over the last 2534 frames) = 60.0 Hz
+20161214_143833 WARNING 1 frames dropped (=0.039 %)
+20161214_143833    DATA {'nFrames': 2535, 'avgFreq_Hz': 60.04893880099176, 'nDroppedFrames': 1}
+20161214_144208         Presenting stimulus ...
+20161214_144208         Loading compiled stimulus...
+20161214_144208      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_144208         Name       : video_perlin
+20161214_144208         Description: Perlin noise test
+20161214_144208         Frequency  : 60.0 Hz
+20161214_144209   DEBUG stim_video: 60x45 pixel, 7200.0 frames, 20.0 fps
+20161214_144209      ok Stimulus 'video_perlin' prepared
+20161214_144209      ok Running...
+20161214_144209    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': 'f6613089fcf4ac4811527ac63be85224', 'stimState': 'STARTED'}
+20161214_144209    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidName': 'Perlin_f12_r1_b.avi', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'nFr': 7200.0, 'fps': 20.0}, 'nFrPerMarker': 1, 'vidOrient': 0, 'vidAlpha': 255, 'durFr_s': 0.05}
+20161214_144215   DEBUG Presenter.stop()
+20161214_144215      ok Aborted by user
+20161214_144215    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_144215   ABORT User aborted program
+20161214_144215    INFO 16.579 ms/frame (60.318 Hz), rendering: 1.236 ms (360 frames in total)
+20161214_144215    INFO 16.625 +/- 0.882 ms/frame (over the last 359 frames) = 60.2 Hz
+20161214_144215    DATA {'nFrames': 360, 'avgFreq_Hz': 60.317822130285144, 'nDroppedFrames': 0}
+20161214_150140         Compiling stimulus script ...
+20161214_150142      ok ... done
+20161214_150155         Compiling stimulus script ...
+20161214_150157      ok ... done
+20161214_150207         Presenting stimulus ...
+20161214_150207         Loading compiled stimulus...
+20161214_150207      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_150207         Name       : video_perlin
+20161214_150207         Description: Perlin noise test
+20161214_150207         Frequency  : 60.0 Hz
+20161214_150208   DEBUG stim_video: 60x45 pixel, 21600.0 frames, 60.0 fps
+20161214_150208      ok Stimulus 'video_perlin' prepared
+20161214_150208      ok Running...
+20161214_150208    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '5820ddd822a38de22d792aa600e770c5', 'stimState': 'STARTED'}
+20161214_150208    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 60.0, 'nFr': 21600.0}, 'vidOrient': 0, 'nFrPerMarker': 1, 'vidName': 'Perlin_f12_r0.66_b.avi', 'vidAlpha': 255, 'durFr_s': 0.016666666666666666}
+20161214_150231   DEBUG Presenter.stop()
+20161214_150231      ok Aborted by user
+20161214_150231    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_150231   ABORT User aborted program
+20161214_150231    INFO 16.652 ms/frame (60.053 Hz), rendering: 1.437 ms (1437 frames in total)
+20161214_150231    INFO 16.663 +/- 0.808 ms/frame (over the last 1436 frames) = 60.0 Hz
+20161214_150231    DATA {'nFrames': 1437, 'avgFreq_Hz': 60.05324337141874, 'nDroppedFrames': 0}
+20161214_150237         Presenting stimulus ...
+20161214_150237   DEBUG unexpected client data left after loop
+20161214_150237         Presenting stimulus ...
+20161214_150237         Loading compiled stimulus...
+20161214_150237      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_150237         Name       : video_perlin
+20161214_150237         Description: Perlin noise test
+20161214_150237         Frequency  : 60.0 Hz
+20161214_150237   DEBUG stim_video: 60x45 pixel, 21600.0 frames, 60.0 fps
+20161214_150237      ok Stimulus 'video_perlin' prepared
+20161214_150237      ok Running...
+20161214_150237    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '5820ddd822a38de22d792aa600e770c5', 'stimState': 'STARTED'}
+20161214_150237    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 60.0, 'nFr': 21600.0}, 'vidOrient': 0, 'nFrPerMarker': 1, 'vidName': 'Perlin_f12_r0.66_b.avi', 'vidAlpha': 255, 'durFr_s': 0.016666666666666666}
+20161214_150252 WARNING dt of frame #897 was 23.564 ms
+20161214_150252 WARNING dt of frame #899 was 21.803 ms
+20161214_150252 WARNING dt of frame #902 was 22.797 ms
+20161214_150359   DEBUG Presenter.stop()
+20161214_150359      ok Aborted by user
+20161214_150359    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_150359   ABORT User aborted program
+20161214_150359    INFO 16.660 ms/frame (60.025 Hz), rendering: 1.397 ms (4896 frames in total)
+20161214_150359    INFO 16.663 +/- 1.171 ms/frame (over the last 4895 frames) = 60.0 Hz
+20161214_150359 WARNING 3 frames dropped (=0.061 %)
+20161214_150359    DATA {'nFrames': 4896, 'avgFreq_Hz': 60.024702008048735, 'nDroppedFrames': 3}
+20161214_150359   DEBUG runStim, timeout waiting for PRESENTING
+20161214_151520         Presenting stimulus ...
+20161214_151520         Loading compiled stimulus...
+20161214_151521      ok Stimulus '.\Stimuli\\BC_BWNoise20.pickle' loaded
+20161214_151521         Name       : RGC_Noise
+20161214_151521         Description: 'noise' in fingerprinting stimulus set
+20161214_151521         Frequency  : 60.0 Hz
+20161214_151521      ok Stimulus 'RGC_Noise' prepared
+20161214_151521      ok Running...
+20161214_151521    DATA {'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'stimMD5': '2680f3fd183f74559d934aeaff9a1674', 'stimState': 'STARTED'}
+20161214_151521    DATA {'fNameNoise': 'RGC_BWNoise_official', 'fIntenW': 255, 'durStim_s': 0.2, 'boxDx_um': 20, 'nFrPerMarker': 3, 'durFr_s': 0.016666666666666666, 'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'boxDy_um': 20}
+20161214_151523   DEBUG Presenter.stop()
+20161214_151523      ok Aborted by user
+20161214_151523    DATA {'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'stimState': 'ABORTED'}
+20161214_151524   ABORT User aborted program
+20161214_151524    INFO 16.537 ms/frame (60.472 Hz), rendering: 0.530 ms (168 frames in total)
+20161214_151524    INFO 16.636 +/- 0.723 ms/frame (over the last 167 frames) = 60.1 Hz
+20161214_151524    DATA {'nFrames': 168, 'avgFreq_Hz': 60.471708468849314, 'nDroppedFrames': 0}
+20161214_151526         Presenting stimulus ...
+20161214_151526         Loading compiled stimulus...
+20161214_151526      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_151526         Name       : video_perlin
+20161214_151526         Description: Perlin noise test
+20161214_151526         Frequency  : 60.0 Hz
+20161214_151527   DEBUG stim_video: 60x45 pixel, 21600.0 frames, 60.0 fps
+20161214_151527      ok Stimulus 'video_perlin' prepared
+20161214_151527      ok Running...
+20161214_151527    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '5820ddd822a38de22d792aa600e770c5', 'stimState': 'STARTED'}
+20161214_151527    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 60.0, 'nFr': 21600.0}, 'vidOrient': 0, 'nFrPerMarker': 1, 'vidName': 'Perlin_f12_r0.66_b.avi', 'vidAlpha': 255, 'durFr_s': 0.016666666666666666}
+20161214_151529   DEBUG Presenter.stop()
+20161214_151529      ok Aborted by user
+20161214_151529    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_151529   ABORT User aborted program
+20161214_151529    INFO 16.499 ms/frame (60.608 Hz), rendering: 1.030 ms (171 frames in total)
+20161214_151529    INFO 16.596 +/- 0.956 ms/frame (over the last 170 frames) = 60.3 Hz
+20161214_151529    DATA {'nFrames': 171, 'avgFreq_Hz': 60.60835099300562, 'nDroppedFrames': 0}
+20161214_151535         Presenting stimulus ...
+20161214_151535         Loading compiled stimulus...
+20161214_151535      ok Stimulus '.\Stimuli\\BC_BWNoise20.pickle' loaded
+20161214_151535         Name       : RGC_Noise
+20161214_151535         Description: 'noise' in fingerprinting stimulus set
+20161214_151535         Frequency  : 60.0 Hz
+20161214_151535      ok Stimulus 'RGC_Noise' prepared
+20161214_151535      ok Running...
+20161214_151535    DATA {'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'stimMD5': '2680f3fd183f74559d934aeaff9a1674', 'stimState': 'STARTED'}
+20161214_151535    DATA {'fNameNoise': 'RGC_BWNoise_official', 'fIntenW': 255, 'durStim_s': 0.2, 'boxDx_um': 20, 'nFrPerMarker': 3, 'durFr_s': 0.016666666666666666, 'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'boxDy_um': 20}
+20161214_151538   DEBUG Presenter.stop()
+20161214_151538      ok Aborted by user
+20161214_151538    DATA {'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'stimState': 'ABORTED'}
+20161214_151538   ABORT User aborted program
+20161214_151538    INFO 16.549 ms/frame (60.426 Hz), rendering: 0.531 ms (189 frames in total)
+20161214_151538    INFO 16.637 +/- 1.477 ms/frame (over the last 188 frames) = 60.1 Hz
+20161214_151538    DATA {'nFrames': 189, 'avgFreq_Hz': 60.42610393556279, 'nDroppedFrames': 0}
+20161214_151539         Presenting stimulus ...
+20161214_151539         Loading compiled stimulus...
+20161214_151540      ok Stimulus '.\Stimuli\\BC_BWNoise20.pickle' loaded
+20161214_151540         Name       : RGC_Noise
+20161214_151540         Description: 'noise' in fingerprinting stimulus set
+20161214_151540         Frequency  : 60.0 Hz
+20161214_151540      ok Stimulus 'RGC_Noise' prepared
+20161214_151540      ok Running...
+20161214_151540    DATA {'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'stimMD5': '2680f3fd183f74559d934aeaff9a1674', 'stimState': 'STARTED'}
+20161214_151540    DATA {'fNameNoise': 'RGC_BWNoise_official', 'fIntenW': 255, 'durStim_s': 0.2, 'boxDx_um': 20, 'nFrPerMarker': 3, 'durFr_s': 0.016666666666666666, 'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'boxDy_um': 20}
+20161214_151543   DEBUG Presenter.stop()
+20161214_151543      ok Aborted by user
+20161214_151543    DATA {'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'stimState': 'ABORTED'}
+20161214_151544   ABORT User aborted program
+20161214_151544    INFO 16.565 ms/frame (60.368 Hz), rendering: 0.578 ms (219 frames in total)
+20161214_151544    INFO 16.641 +/- 1.435 ms/frame (over the last 218 frames) = 60.1 Hz
+20161214_151544    DATA {'nFrames': 219, 'avgFreq_Hz': 60.368321074716235, 'nDroppedFrames': 0}
+20161214_151546         Presenting stimulus ...
+20161214_151546         Loading compiled stimulus...
+20161214_151546      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_151546         Name       : video_perlin
+20161214_151546         Description: Perlin noise test
+20161214_151546         Frequency  : 60.0 Hz
+20161214_151546   DEBUG stim_video: 60x45 pixel, 21600.0 frames, 60.0 fps
+20161214_151546      ok Stimulus 'video_perlin' prepared
+20161214_151546      ok Running...
+20161214_151546    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '5820ddd822a38de22d792aa600e770c5', 'stimState': 'STARTED'}
+20161214_151546    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 60.0, 'nFr': 21600.0}, 'vidOrient': 0, 'nFrPerMarker': 1, 'vidName': 'Perlin_f12_r0.66_b.avi', 'vidAlpha': 255, 'durFr_s': 0.016666666666666666}
+20161214_151626   DEBUG Presenter.stop()
+20161214_151626      ok Aborted by user
+20161214_151626    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_151626   ABORT User aborted program
+20161214_151626    INFO 16.654 ms/frame (60.046 Hz), rendering: 1.494 ms (2363 frames in total)
+20161214_151626    INFO 16.661 +/- 0.801 ms/frame (over the last 2362 frames) = 60.0 Hz
+20161214_151626    DATA {'nFrames': 2363, 'avgFreq_Hz': 60.04630901671768, 'nDroppedFrames': 0}
+20161214_151628         Presenting stimulus ...
+20161214_151628         Loading compiled stimulus...
+20161214_151628      ok Stimulus '.\Stimuli\\BC_BWNoise20.pickle' loaded
+20161214_151628         Name       : RGC_Noise
+20161214_151628         Description: 'noise' in fingerprinting stimulus set
+20161214_151628         Frequency  : 60.0 Hz
+20161214_151628      ok Stimulus 'RGC_Noise' prepared
+20161214_151628      ok Running...
+20161214_151628    DATA {'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'stimMD5': '2680f3fd183f74559d934aeaff9a1674', 'stimState': 'STARTED'}
+20161214_151628    DATA {'fNameNoise': 'RGC_BWNoise_official', 'fIntenW': 255, 'durStim_s': 0.2, 'boxDx_um': 20, 'nFrPerMarker': 3, 'durFr_s': 0.016666666666666666, 'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'boxDy_um': 20}
+20161214_151632   DEBUG Presenter.stop()
+20161214_151632      ok Aborted by user
+20161214_151632    DATA {'stimFileName': '.\\Stimuli\\BC_BWNoise20', 'stimState': 'ABORTED'}
+20161214_151632   ABORT User aborted program
+20161214_151632    INFO 16.587 ms/frame (60.290 Hz), rendering: 0.599 ms (262 frames in total)
+20161214_151632    INFO 16.650 +/- 1.396 ms/frame (over the last 261 frames) = 60.1 Hz
+20161214_151632    DATA {'nFrames': 262, 'avgFreq_Hz': 60.28967839990876, 'nDroppedFrames': 0}
+20161214_151634         Presenting stimulus ...
+20161214_151634         Loading compiled stimulus...
+20161214_151634      ok Stimulus '.\Stimuli\\video_perlin.pickle' loaded
+20161214_151634         Name       : video_perlin
+20161214_151634         Description: Perlin noise test
+20161214_151634         Frequency  : 60.0 Hz
+20161214_151635   DEBUG stim_video: 60x45 pixel, 21600.0 frames, 60.0 fps
+20161214_151635      ok Stimulus 'video_perlin' prepared
+20161214_151635      ok Running...
+20161214_151635    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimMD5': '5820ddd822a38de22d792aa600e770c5', 'stimState': 'STARTED'}
+20161214_151635    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': '.\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 60.0, 'nFr': 21600.0}, 'vidOrient': 0, 'nFrPerMarker': 1, 'vidName': 'Perlin_f12_r0.66_b.avi', 'vidAlpha': 255, 'durFr_s': 0.016666666666666666}
+20161214_151651   DEBUG Presenter.stop()
+20161214_151651      ok Aborted by user
+20161214_151651    DATA {'stimFileName': '.\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_151651   ABORT User aborted program
+20161214_151651    INFO 16.643 ms/frame (60.086 Hz), rendering: 1.453 ms (989 frames in total)
+20161214_151651    INFO 16.660 +/- 0.847 ms/frame (over the last 988 frames) = 60.0 Hz
+20161214_151651    DATA {'nFrames': 989, 'avgFreq_Hz': 60.08577109010237, 'nDroppedFrames': 0}
+20161214_151832         New stimulus folder `C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\Stimuli`
+20161214_151838   ERROR Stimulus needs to be compiled
+20161214_151839         Compiling stimulus script ...
+20161214_151931      ok ... done
+20161214_151938         Presenting stimulus ...
+20161214_151938         Loading compiled stimulus...
+20161214_151938      ok Stimulus 'C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\Stimuli\RGC_BWNoise_2.pickle' loaded
+20161214_151938         Name       : RGC_Noise
+20161214_151938         Description: 'noise' in fingerprinting stimulus set
+20161214_151938         Frequency  : 60.0 Hz
+20161214_151938      ok Stimulus 'RGC_Noise' prepared
+20161214_151938      ok Running...
+20161214_151938    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\RGC_BWNoise_2', 'stimMD5': 'e1f57750d8eefeec3495682fd067e8f6', 'stimState': 'STARTED'}
+20161214_151938    DATA {'boxDy_um': 40, 'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\RGC_BWNoise_2', 'fIntenW': 255, 'durStim_s': 0.2, 'boxDx_um': 40, 'nFrPerMarker': 3, 'fNameNoise': 'RGC_BWNoise_official', 'durFr_s': 0.016666666666666666}
+20161214_151947   DEBUG Presenter.stop()
+20161214_151947      ok Aborted by user
+20161214_151947    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\RGC_BWNoise_2', 'stimState': 'ABORTED'}
+20161214_151947   ABORT User aborted program
+20161214_151947    INFO 16.621 ms/frame (60.163 Hz), rendering: 0.583 ms (525 frames in total)
+20161214_151947    INFO 16.653 +/- 0.563 ms/frame (over the last 524 frames) = 60.0 Hz
+20161214_151947    DATA {'nFrames': 525, 'avgFreq_Hz': 60.163071282903736, 'nDroppedFrames': 0}
+20161214_151949         Presenting stimulus ...
+20161214_151949         Loading compiled stimulus...
+20161214_151950      ok Stimulus 'C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\Stimuli\RGC_BWNoise_2.pickle' loaded
+20161214_151950         Name       : RGC_Noise
+20161214_151950         Description: 'noise' in fingerprinting stimulus set
+20161214_151950         Frequency  : 60.0 Hz
+20161214_151950      ok Stimulus 'RGC_Noise' prepared
+20161214_151950      ok Running...
+20161214_151950    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\RGC_BWNoise_2', 'stimMD5': 'e1f57750d8eefeec3495682fd067e8f6', 'stimState': 'STARTED'}
+20161214_151950    DATA {'boxDy_um': 40, 'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\RGC_BWNoise_2', 'fIntenW': 255, 'durStim_s': 0.2, 'boxDx_um': 40, 'nFrPerMarker': 3, 'fNameNoise': 'RGC_BWNoise_official', 'durFr_s': 0.016666666666666666}
+20161214_151954   DEBUG Presenter.stop()
+20161214_151954      ok Aborted by user
+20161214_151954    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\RGC_BWNoise_2', 'stimState': 'ABORTED'}
+20161214_151954   ABORT User aborted program
+20161214_151954    INFO 16.562 ms/frame (60.381 Hz), rendering: 0.510 ms (244 frames in total)
+20161214_151954    INFO 16.630 +/- 1.144 ms/frame (over the last 243 frames) = 60.1 Hz
+20161214_151954    DATA {'nFrames': 244, 'avgFreq_Hz': 60.380982092911196, 'nDroppedFrames': 0}
+20161214_151958         Presenting stimulus ...
+20161214_151958         Loading compiled stimulus...
+20161214_151958      ok Stimulus 'C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\Stimuli\video_perlin.pickle' loaded
+20161214_151958         Name       : video_perlin
+20161214_151958         Description: Perlin noise test
+20161214_151958         Frequency  : 60.0 Hz
+20161214_151958   DEBUG stim_video: 60x45 pixel, 21600.0 frames, 60.0 fps
+20161214_151958      ok Stimulus 'video_perlin' prepared
+20161214_151958      ok Running...
+20161214_151958    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'stimMD5': '5820ddd822a38de22d792aa600e770c5', 'stimState': 'STARTED'}
+20161214_151958    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 60.0, 'nFr': 21600.0}, 'vidOrient': 0, 'nFrPerMarker': 1, 'vidName': 'Perlin_f12_r0.66_b.avi', 'vidAlpha': 255, 'durFr_s': 0.016666666666666666}
+20161214_152034 WARNING dt of frame #2175 was 25.931 ms
+20161214_152034   DEBUG Presenter.stop()
+20161214_152034      ok Aborted by user
+20161214_152034    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_152034   ABORT User aborted program
+20161214_152034    INFO 16.660 ms/frame (60.022 Hz), rendering: 1.348 ms (2176 frames in total)
+20161214_152034    INFO 16.668 +/- 0.472 ms/frame (over the last 2175 frames) = 60.0 Hz
+20161214_152034 WARNING 1 frames dropped (=0.046 %)
+20161214_152034    DATA {'nFrames': 2176, 'avgFreq_Hz': 60.02244319994215, 'nDroppedFrames': 1}
+20161214_152036         Presenting stimulus ...
+20161214_152036         Loading compiled stimulus...
+20161214_152036      ok Stimulus 'C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\Stimuli\BC_BWNoise20.pickle' loaded
+20161214_152036         Name       : RGC_Noise
+20161214_152036         Description: 'noise' in fingerprinting stimulus set
+20161214_152036         Frequency  : 60.0 Hz
+20161214_152036      ok Stimulus 'RGC_Noise' prepared
+20161214_152036      ok Running...
+20161214_152036    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\BC_BWNoise20', 'stimMD5': '2680f3fd183f74559d934aeaff9a1674', 'stimState': 'STARTED'}
+20161214_152036    DATA {'fNameNoise': 'RGC_BWNoise_official', 'fIntenW': 255, 'durStim_s': 0.2, 'boxDx_um': 20, 'nFrPerMarker': 3, 'durFr_s': 0.016666666666666666, 'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\BC_BWNoise20', 'boxDy_um': 20}
+20161214_152055   DEBUG Presenter.stop()
+20161214_152055      ok Aborted by user
+20161214_152055    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\BC_BWNoise20', 'stimState': 'ABORTED'}
+20161214_152055   ABORT User aborted program
+20161214_152055    INFO 16.638 ms/frame (60.103 Hz), rendering: 0.587 ms (1098 frames in total)
+20161214_152055    INFO 16.653 +/- 1.096 ms/frame (over the last 1097 frames) = 60.0 Hz
+20161214_152055    DATA {'nFrames': 1098, 'avgFreq_Hz': 60.10302670148312, 'nDroppedFrames': 0}
+20161214_152059         Presenting stimulus ...
+20161214_152059         Loading compiled stimulus...
+20161214_152059      ok Stimulus 'C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\Stimuli\video_perlin.pickle' loaded
+20161214_152059         Name       : video_perlin
+20161214_152059         Description: Perlin noise test
+20161214_152059         Frequency  : 60.0 Hz
+20161214_152059   DEBUG stim_video: 60x45 pixel, 21600.0 frames, 60.0 fps
+20161214_152059      ok Stimulus 'video_perlin' prepared
+20161214_152059      ok Running...
+20161214_152059    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'stimMD5': '5820ddd822a38de22d792aa600e770c5', 'stimState': 'STARTED'}
+20161214_152059    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 60.0, 'nFr': 21600.0}, 'vidOrient': 0, 'nFrPerMarker': 1, 'vidName': 'Perlin_f12_r0.66_b.avi', 'vidAlpha': 255, 'durFr_s': 0.016666666666666666}
+20161214_152101   DEBUG Presenter.stop()
+20161214_152101      ok Aborted by user
+20161214_152101    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_152101   ABORT User aborted program
+20161214_152101    INFO 16.443 ms/frame (60.817 Hz), r20161214_152256         Presenting stimulus ...
+20161214_152256         Loading compiled stimulus...
+20161214_152256      ok Stimulus 'C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\Stimuli\video_perlin.pickle' loaded
+20161214_152256         Name       : video_perlin
+20161214_152256         Description: Perlin noise test
+20161214_152256         Frequency  : 60.0 Hz
+20161214_152256   DEBUG stim_video: 60x45 pixel, 21600.0 frames, 60.0 fps
+20161214_152256      ok Stimulus 'video_perlin' prepared
+20161214_152256      ok Running...
+20161214_152256    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'stimMD5': '5820ddd822a38de22d792aa600e770c5', 'stimState': 'STARTED'}
+20161214_152256    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 60.0, 'nFr': 21600.0}, 'vidOrient': 0, 'nFrPerMarker': 1, 'vidName': 'Perlin_f12_r0.66_b.avi', 'vidAlpha': 255, 'durFr_s': 0.016666666666666666}
+20161214_152331   DEBUG Presenter.stop()
+20161214_152331      ok Aborted by user
+20161214_152331    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_152331   ABORT User aborted program
+20161214_152331    INFO 16.652 ms/frame (60.053 Hz), rendering: 1.348 ms (2111 frames in total)
+20161214_152331    INFO 16.660 +/- 0.519 ms/frame (over the last 2110 frames) = 60.0 Hz
+20161214_152331    DATA {'nFrames': 2111, 'avgFreq_Hz': 60.05339355034691, 'nDroppedFrames': 0}
+20161214_154243         Presenting stimulus ...
+20161214_154243         Loading compiled stimulus...
+20161214_154243      ok Stimulus 'C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\Stimuli\video_perlin.pickle' loaded
+20161214_154243         Name       : video_perlin
+20161214_154243         Description: Perlin noise test
+20161214_154243         Frequency  : 60.0 Hz
+20161214_154244   DEBUG stim_video: 60x45 pixel, 21600.0 frames, 60.0 fps
+20161214_154244      ok Stimulus 'video_perlin' prepared
+20161214_154244      ok Running...
+20161214_154244    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'stimMD5': '5820ddd822a38de22d792aa600e770c5', 'stimState': 'STARTED'}
+20161214_154244    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 60.0, 'nFr': 21600.0}, 'vidOrient': 0, 'nFrPerMarker': 1, 'vidName': 'Perlin_f12_r0.66_b.avi', 'vidAlpha': 255, 'durFr_s': 0.016666666666666666}
+20161214_154253   DEBUG Presenter.stop()
+20161214_154253      ok Aborted by user
+20161214_154253    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_154253   ABORT User aborted program
+20161214_154253    INFO 16.620 ms/frame (60.168 Hz), rendering: 1.238 ms (585 frames in total)
+20161214_154253    INFO 16.649 +/- 0.594 ms/frame (over the last 584 frames) = 60.1 Hz
+20161214_154253    DATA {'nFrames': 585, 'avgFreq_Hz': 60.16765151358041, 'nDroppedFrames': 0}
+20161214_154256         Presenting stimulus ...
+20161214_154256         Loading compiled stimulus...
+20161214_154256      ok Stimulus 'C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\Stimuli\BC_BWNoise20.pickle' loaded
+20161214_154256         Name       : RGC_Noise
+20161214_154256         Description: 'noise' in fingerprinting stimulus set
+20161214_154256         Frequency  : 60.0 Hz
+20161214_154256      ok Stimulus 'RGC_Noise' prepared
+20161214_154256      ok Running...
+20161214_154256    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\BC_BWNoise20', 'stimMD5': '2680f3fd183f74559d934aeaff9a1674', 'stimState': 'STARTED'}
+20161214_154256    DATA {'fNameNoise': 'RGC_BWNoise_official', 'fIntenW': 255, 'durStim_s': 0.2, 'boxDx_um': 20, 'nFrPerMarker': 3, 'durFr_s': 0.016666666666666666, 'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\BC_BWNoise20', 'boxDy_um': 20}
+20161214_154304   DEBUG Presenter.stop()
+20161214_154304      ok Aborted by user
+20161214_154304    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\BC_BWNoise20', 'stimState': 'ABORTED'}
+20161214_154304   ABORT User aborted program
+20161214_154304    INFO 16.627 ms/frame (60.144 Hz), rendering: 0.553 ms (501 frames in total)
+20161214_154304    INFO 16.660 +/- 1.272 ms/frame (over the last 500 frames) = 60.0 Hz
+20161214_154304    DATA {'nFrames': 501, 'avgFreq_Hz': 60.144284534276174, 'nDroppedFrames': 0}
+20161214_154306         Presenting stimulus ...
+20161214_154306         Loading compiled stimulus...
+20161214_154307      ok Stimulus 'C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\Stimuli\RGC_BWNoise_2.pickle' loaded
+20161214_154307         Name       : RGC_Noise
+20161214_154307         Description: 'noise' in fingerprinting stimulus set
+20161214_154307         Frequency  : 60.0 Hz
+20161214_154307      ok Stimulus 'RGC_Noise' prepared
+20161214_154307      ok Running...
+20161214_154307    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\RGC_BWNoise_2', 'stimMD5': 'e1f57750d8eefeec3495682fd067e8f6', 'stimState': 'STARTED'}
+20161214_154307    DATA {'boxDy_um': 40, 'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\RGC_BWNoise_2', 'fIntenW': 255, 'durStim_s': 0.2, 'boxDx_um': 40, 'nFrPerMarker': 3, 'fNameNoise': 'RGC_BWNoise_official', 'durFr_s': 0.016666666666666666}
+20161214_154310   DEBUG Presenter.stop()
+20161214_154310      ok Aborted by user
+20161214_154310    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\RGC_BWNoise_2', 'stimState': 'ABORTED'}
+20161214_154311   ABORT User aborted program
+20161214_154311    INFO 16.556 ms/frame (60.402 Hz), rendering: 0.547 ms (227 frames in total)
+20161214_154311    INFO 16.629 +/- 1.351 ms/frame (over the last 226 frames) = 60.1 Hz
+20161214_154311    DATA {'nFrames': 227, 'avgFreq_Hz': 60.40234833508602, 'nDroppedFrames': 0}
+20161214_154313         Presenting stimulus ...
+20161214_154313         Loading compiled stimulus...
+20161214_154313      ok Stimulus 'C:\Users\Luke Edward Rogerson\Documents\GitHub\QDSpy\Stimuli\video_perlin.pickle' loaded
+20161214_154313         Name       : video_perlin
+20161214_154313         Description: Perlin noise test
+20161214_154313         Frequency  : 60.0 Hz
+20161214_154313   DEBUG stim_video: 60x45 pixel, 21600.0 frames, 60.0 fps
+20161214_154313      ok Stimulus 'video_perlin' prepared
+20161214_154313      ok Running...
+20161214_154313    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'stimMD5': '5820ddd822a38de22d792aa600e770c5', 'stimState': 'STARTED'}
+20161214_154313    DATA {'vidScale': (6.5, 6.5), 'MarkPer_s': 1, 'nTrials': 1, 'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'vidparams': {'dyFr': 45, 'dxFr': 60, 'fps': 60.0, 'nFr': 21600.0}, 'vidOrient': 0, 'nFrPerMarker': 1, 'vidName': 'Perlin_f12_r0.66_b.avi', 'vidAlpha': 255, 'durFr_s': 0.016666666666666666}
+20161214_154330   DEBUG Presenter.stop()
+20161214_154330      ok Aborted by user
+20161214_154330    DATA {'stimFileName': 'C:\\Users\\Luke Edward Rogerson\\Documents\\GitHub\\QDSpy\\Stimuli\\video_perlin', 'stimState': 'ABORTED'}
+20161214_154330   ABORT User aborted program
+20161214_154330    INFO 16.633 ms/frame (60.123 Hz), rendering: 1.263 ms (1001 frames in total)
+20161214_154330    INFO 16.649 +/- 1.111 ms/frame (over the last 1000 frames) = 60.1 Hz
+20161214_154330    DATA {'nFrames': 1001, 'avgFreq_Hz': 60.122919233257065, 'nDroppedFrames': 0}
+20161214_160907         Saving log file to '.\Logs\20161214_160907.log' ...
+endering: 0.839 ms (134 frames in total)
+20161214_152101    INFO 16.566 +/- 1.368 ms/frame (over the last 133 frames) = 60.4 Hz
+20161214_152101    DATA {'nFrames': 134, 'avgFreq_Hz': 60.81674001351468, 'nDroppedFrames': 0}
