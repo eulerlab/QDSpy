@@ -5,11 +5,62 @@ This is a software for generating and presenting stimuli for visual neuroscience
 
 *Note, this is an early beta version.*
 
-###Documentation
+### Documentation
 
 For documentation, see http://qdspy.eulerlab.de.
 
-###Release notes
+### Release notes
+
+v0.75beta (April 2017)
+
+* Bug fix: Problems with "ghost images" when playing more than one movie or 
+  video were fixed. Now movie/video objects that are restarted before the 
+  previous run was finished are first automatically stopped and ended. Also,
+  movies/videos were also forwarded for no-duration scenes (e.g. a change in
+  object colour), which led to changes in the movie/video frame rate. This
+  should now be fixed as well.
+* Bug fix: The first command in a loop was ignored; this is fixed now.
+* **New feature**: Using the "screen overlay mode", stimuli with up to 6 different
+  wavelengths (hexachromatic) can be shown by extending the presentation area to 
+  two neighbouring display devices (i.e. two lightcrafters with different sets of 
+  LEDs). See :doc:`inifile` for details on the new configuration parameters in 
+  section ``[Overlay]`` and :ref:`Screen overlay mode <screen-overlay-mode-label>` 
+  for instructions.
+* **Known issues**:
+
+  * The GUI controls for the "screen overlay mode" are already present but not
+    yet working. A work-around is changing the settings directly in ``QDSpy.ini``. 
+  * Objects that use shaders are not yet correctly displayed in "screen overlay 
+    mode".
+  * ``SetColorLUTEntry()`` does not yet handle a LUT with more than 3 colours.
+
+v0.74beta (March 2017)
+
+* Added `hid.cp36-win_amd64.pyd` to ``.\Devices`` to enable ``hid`` under Python
+  3.6 (comes with Anaconda version 4.3.x). This means that now QDSpy should 
+  be compatible with the newest Anaconda distribution.
+* Attempted to simplify path management: ``__autorun.pickle`` is not anymore
+  required in the stimulus folder
+* LED pre-settings for lightcrafter was extended: now for each LED also 
+  the default current, the maximal current, the index of the lightcrafter
+  device (0 or 1), and the LED index (which LED position within the 
+  lightcrafter) are defined in ``QDSpy.ini``.
+* Up to two lightcrafters can be handled; the GUI has been changed accordingly.
+* **IMPORTANT**: Note that the ``.pickle`` format has changed and therefore all stimuli need to
+  be recompiled. To avoid confusion, delete all ``.pickle`` files in the 
+  ``\QDSpy\Stimulus`` folder.
+* **IMPORTANT**: The ``QDSpy.ini`` file contains a couple of new parameters, 
+  including a new section called ``[Overlay]`` (the latter is work in progress 
+  and concerns a feature that is not yet fully implemented yet. Please ignore 
+  for now). 
+  Thus, the new parameters need to be added to the existing ``QDSpy.ini`` file,
+  otherwise QDSpy will crash. The easiest way to do so, is to rename the file 
+  to, for example, ``QDSpy.ini_COPY``. Then start QDSpy and let it generate
+  a fresh configuration file. Open both the new file and your copy in parallel
+  and change the parameters in the new file according to your previous 
+  settings. See see :doc:`inifile` for further details on the new parameters.
+* Documentation was updated and extended (including, for example, a detailed
+  explanation of the parameters in ``QDSpy.ini``).
 
 v0.73beta (January - February 2017)
 
