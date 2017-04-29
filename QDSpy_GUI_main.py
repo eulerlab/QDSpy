@@ -69,7 +69,7 @@ class MainWinClass(QMainWindow, form_class):
     #
     self.Conf          = cfg.Config()
     self.Stim          = stm.Stim()
-    self.currStimPath  = self.Conf.pathStim
+    self.currStimPath = self.Conf.pathStim
     self.currQDSPath   = os.getcwd()
     self.currStimName  = "n/a"
     self.currStimFName = ""
@@ -277,10 +277,16 @@ class MainWinClass(QMainWindow, form_class):
 
     # Update display info    
     #
+<<<<<<< HEAD
+    self.Stage.updateLEDs(_Conf=self.Conf)
+    self.currStimPath  = os.path.abspath(self.currStimPath)
+    self.updateDisplayInfo()        
+=======
     self.Stage.updateLEDs(self.Conf)
     self.currStimPath  = os.path.abspath(self.currStimPath)
     self.updateDisplayInfo()      
 
+>>>>>>> refs/remotes/origin/experimental
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def __del__(self):
