@@ -870,7 +870,7 @@ class Stim:
       self.LastErrC = StimErrC.noMatchingID
       raise StimException
 
-    tmpMCtr = mov.MovieCtrl(_seq, _nFr=self.MovList[iMvOb][SM_field_nFr])
+    tmpMCtr = mov.MovieCtrl(_seq, _ID, _nFr=self.MovList[iMvOb][SM_field_nFr])
     if not(tmpMCtr.check()):
       self.LastErrC = StimErrC.invalidMovieSeq
       raise StimException
@@ -985,10 +985,8 @@ class Stim:
         lenInLoop_s = 0
         nTrialsLoop = sc[SC_field_nLoopTrials]
         isInLoop    = True
-        print(lenInLoop_s, nTrialsLoop, isInLoop)
         
       if sc[SC_field_type] == StimSceType.endLoop:
-        print(lenInLoop_s, nTrialsLoop, isInLoop)
         isInLoop    = False
         self.lenStim_s += lenInLoop_s *nTrialsLoop
       
@@ -1048,6 +1046,7 @@ class Stim:
         iVertTr        = [[]]
         vertTr         = [[]]
         RGBATr         = [[]]
+        RGBATr2        = [[]]
         ObjIDs         = [-1]
         ObjNewMask     = [SC_ObjNewNone]
         ObjHash        = ['']
@@ -1078,12 +1077,15 @@ class Stim:
             tmp = drw.sct2vert(ob, iObj, sc, _Stage, self, iNextVTr)
 
           else:
-            tmp = [[], [], [], '', (0,0), 0]
+            tmp = [[], [], [], [], '', (0,0), 0]
 
           newVert      = tmp[0]
           newiVTr      = tmp[1]
           newRGBA      = tmp[2]
           newRGBA2     = tmp[3]
+          if len(newRGBA) != len(newRGBA2):
+            print("LENGTH MISMATCH")
+ 
           hStr         = tmp[4]
           posxy        = tmp[5]
           rot          = tmp[6]
@@ -1094,6 +1096,7 @@ class Stim:
             iVertTr.append(newiVTr)
             vertTr.append(newVert)
             RGBATr.append(newRGBA)
+            RGBATr2.append(newRGBA2)
             ObjIDs.append(ID)
             ObjNewMask.append(SC_ObjNewAll)
             ObjHash.append(hStr)
@@ -1104,6 +1107,7 @@ class Stim:
             iVertTr[0]    += newiVTr
             vertTr[0]     += newVert
             RGBATr[0]     += newRGBA
+            RGBATr2[0]    += newRGBA2
             ObjNewMask[0] = SC_ObjNewAll
 
         # Keep track of the maximal number of objects per render call
@@ -1117,6 +1121,7 @@ class Stim:
         _iVertTr     = []
         _vertTr      = []
         _RGBATr      = []
+        _RGBATr2     = []
         for iObj in range(nObjs):
           np_iVertTr = np.array(iVertTr[iObj], dtype=np.int)
           _iVertTr.append([SC_vertDataChanged, ObjIDs[iObj], np_iVertTr])
@@ -1124,6 +1129,8 @@ class Stim:
           _vertTr.append([SC_vertDataChanged, ObjIDs[iObj], np_vertTr])
           np_RGBATr  = np.array(RGBATr[iObj], dtype=np.uint8)
           _RGBATr.append([SC_vertDataChanged, ObjIDs[iObj], np_RGBATr])
+          np_RGBATr2 = np.array(RGBATr2[iObj], dtype=np.uint8)
+          _RGBATr2.append([SC_vertDataChanged, ObjIDs[iObj], np_RGBATr2])
 
           # Check if one or more aspects of the vertex data have remained
           # the same compared to the previous set; if so don't save it
@@ -1169,11 +1176,13 @@ class Stim:
 
             if (np_RGBATr == self.cODr_tr_vertRGBA[iLastODr][iObj][2]).all():
               _RGBATr[iObj]    = [SC_vertDataSame, -1, []]
+              _RGBATr2[iObj]   = [SC_vertDataSame, -1, []]
               ObjNewMask[iObj] = ObjNewMask[iObj] & ~SC_ObjNewRGBA
 
         self.cODr_tr_vertCoord.append(_vertTr)
         self.cODr_tr_iVert.append(_iVertTr)
         self.cODr_tr_vertRGBA.append(_RGBATr)
+        self.cODr_tr_vertRGBA2.append(_RGBATr2)
         self.cODr_tr_hash.append(ObjHash)
         icODrEntry    = self.ncODr
         self.ncODr    += 1

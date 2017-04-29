@@ -4,12 +4,12 @@
 import collections 
 from functools import partial
 import QDS
-import math 
+import math   
 
 # Define global stimulus parameters
 p = {'_sName'          : "RGC_MovingBar",
      '_sDescr'         : "'moving bar' in fingerprinting stimulus set",
-     "nTrials"         : 2, 
+     "nTrials"         : 3, 
      "DirList"         : [0,180, 45,225, 90,270, 135,315],   
 
      "vel_umSec"       : 1000.0, # speed of moving bar in um/sec
@@ -45,7 +45,7 @@ def MoveBarSeq():
     # Move the bar stepwise across the screen (as smooth as permitted
     # by the refresh frequency)
     QDS.Scene_Clear(p['durMarker_s'], 1)
-    for iStep in range(int(p['nFrToMove'])):
+    for iStep in range(round(p['nFrToMove'])):
       showMarker = iStep < p["nFrPerMarker"]
       QDS.Scene_RenderEx(p["durFr_s"], [1], [(x,y)], [(1.0,1.0)], [rot_deg], showMarker)
       x -= math.cos(rot_rad) *p['umPerFr']

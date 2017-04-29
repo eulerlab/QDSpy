@@ -49,7 +49,6 @@ class Movie:
     self.movTex   = None
     self.use3DTex = _Config.use3DTextures
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def __loadMontage(self):
     # Check if image montage and description files exist ...
@@ -169,22 +168,16 @@ class Movie:
 # Movie control class object
 # ---------------------------------------------------------------------
 class MovieCtrl:
-  def __init__(self, _seq, _Movie=None, _nFr=0, _order=2):
+  def __init__(self, _seq, _ID, _Movie=None, _nFr=0, _order=2):
     # Initializing
     #
     self.Movie     = _Movie
-    """
-    if _Movie: 
-      self.fr0     = 0             # first frame
-      self.fr1     = _Movie.nFr-1  # last frame
-      self.frreps  = 1             # number of frame repeats
-      self.sqreps  = 1             # number of sequence repeats
-    else:  
-    """  
-    self.fr0     = _seq[0]       # first frame
-    self.fr1     = _seq[1]       # last frame
-    self.frreps  = _seq[2]       # number of frame repeats
-    self.sqreps  = _seq[3]       # number of sequence repeats
+    self.fr0       = _seq[0]       # first frame
+    self.fr1       = _seq[1]       # last frame
+    self.frreps    = _seq[2]       # number of frame repeats
+    self.sqreps    = _seq[3]       # number of sequence repeats
+    self.iScr      = 0
+    self.ID        = _ID
     
     self.isReverse = (self.fr0 > self.fr1)
     self.order     = _order
@@ -211,7 +204,8 @@ class MovieCtrl:
     if self.Movie != None:
       self.Group    = pyglet.graphics.OrderedGroup(self.order)
       self.Sprite   = pyglet.sprite.Sprite(self.Movie.imgSeq[0],
-                                           usage="stream", group=self.Group)
+                                           usage="dynamic", group=self.Group)
+                                          #usage="stream", group=self.Group)
     self.isReady    = self.check()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -253,7 +247,16 @@ class MovieCtrl:
     # Set sprite batch
     #
     if self.Sprite != None:
-      self.Sprite.batch = _batch.currBatch        
+      if _batch.isScrOvl:
+        if self.iScr == 0:
+          #self.Sprite.batch = _batch.Batch 
+          self.Sprite.batch = _batch.BatchSpr        
+        else:  
+          #self.Sprite.batch = _batch.Batch2        
+          self.Sprite.batch = _batch.Batch2Spr        
+      else:  
+        #self.Sprite.batch = _batch.Batch
+        self.Sprite.batch = _batch.BatchSpr
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getNextFrIndex(self):

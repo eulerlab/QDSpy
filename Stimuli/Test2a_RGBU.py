@@ -29,7 +29,7 @@ if p['useStripes']:
   nCols       = 3
   Grad_boxDx  = p['dxScr']/float(nCols)
   Grad_boxDy  = p['dyScr']/float(nRows)
-  Grad_Colors = [(0,255,0),(0,0,255),(0,255,255)]
+  Grad_Colors = [(0,255,0,255),(0,0,255,0),(0,255,255,0)]
 
   nB          = nRows*nCols
   for iB in range(1, nB+1):
@@ -50,9 +50,10 @@ if p['useStripes']:
       r  = Grad_Colors[iX][0]*iY/nRows
       g  = Grad_Colors[iX][1]*iY/nRows
       b  = Grad_Colors[iX][2]*iY/nRows
+      u  = Grad_Colors[iX][2]*iY/nRows
       Grad_indL.append(iB)
       Grad_posL.append((x,y))
-      Grad_colL.append((r,g,b))
+      Grad_colL.append((r,g,b,u))
       Grad_rotL.append(0)
       Grad_alpL.append(255)
       Grad_magL.append((1,1))
@@ -105,7 +106,7 @@ Spot_ID_sect  = Spot_ID_sinB +5
 Spot_r        = 150
 Spot_SinPer_s = 2.0
 
-isShad        = 0 
+isShad        = 0
 QDS.DefObj_EllipseEx(Spot_ID_sinB, Spot_r, Spot_r, isShad)
 QDS.DefObj_EllipseEx(Spot_ID_sinG, Spot_r, Spot_r, isShad)
 QDS.DefObj_EllipseEx(Spot_ID_sinW, Spot_r, Spot_r, isShad)
@@ -124,11 +125,13 @@ Spots_rotL = [0,0,0,0,0,0]
 Spots_alpL = [255,255,255,255,255,128]
 
 
-QDS.DefObj_Movie(1, "rabbit.png")  
+QDS.DefObj_Movie(1, "rabbit.png") 
+QDS.DefObj_Movie(2, "rabbit.png") 
 
 # ---------------------------------------------------------------------
 def myLoop():
-  QDS.Start_Movie(1, (-200,-200), [0,39,3,1], (1.0,1.0), 128, 0)
+  QDS.Start_Movie(1, (-200,-200), [0,39,3,1], (1.0,1.0), 128, 0, _screen=0)
+  QDS.Start_Movie(2, (-200,-200), [0,39,3,1], (1.0,1.0), 128, 0, _screen=1)
 
   for iT in range(p['nTrials']):
     isMark   =  int((iT % 20) == 0)
@@ -142,17 +145,19 @@ def myLoop():
     r          = 0
     g          = 0
     b          = int(255 *iSin)
-    Spots_colL.append((r,g,b))
+    u          = int(255 *iSin)
+    Spots_colL.append((r,g,b,u))
     g          = int(255 *iSin)
     b          = 0
-    Spots_colL.append((r,g,b))
+    Spots_colL.append((r,g,b,u))
     g          = int(255 *iCos)
     b          = g
-    Spots_colL.append((r,g,b))
+    Spots_colL.append((r,g,b,0))
 
     g          = int(255 *(iT % 2))
     b          = g
-    Spots_colL.append((r,g,b))
+    u          = int(255 *iCos)
+    Spots_colL.append((r,g,b,u))
     g          = int(255 *(1- (iT % 2)))
     b          = g
     Spots_colL.append((r,g,b))
@@ -170,22 +175,22 @@ def myLoop():
     posL       = Spots_posL
     rotL       = Spots_rotL
     """
-    
+
     QDS.SetObjColorEx(Spots_indL, Spots_colL, Spots_alpL)
     #QDS.SetObjColorAlphaByVertex([Spot_ID_sinW], [[(255,0,0,200),(0,55,0,128)]])
     if not(p['useStripes']):
       QDS.SetObjColorAlphaByVertex(Grad_indL, Grad_colL)
     QDS.Scene_RenderEx(p['dt_s'], indL, posL, magL, rotL, isMark)
-    
-    #QDS.Scene_Clear(p['dt_s'], isMark)
 
 # ---------------------------------------------------------------------
 QDS.StartScript()
-QDS.Start_Movie(1, (0,0), [0,0,1,1], (1.0,1.0), 0, 0)
+QDS.Start_Movie(1, (0,0), [0,0,1,1], (1.0,1.0), 0, 0, _screen=0)
+QDS.Start_Movie(2, (0,0), [0,0,1,1], (1.0,1.0), 0, 0, _screen=1)
 
+QDS.SetBkgColor((50,0,100, 50,50,0))
 QDS.Scene_Clear(1.0, 0)
 
-QDS.Loop(5, myLoop)
+QDS.Loop(3, myLoop)
 
 QDS.Scene_Clear(1.0, 0)
 QDS.EndScript()

@@ -19,7 +19,12 @@ FrRefr_Hz = QDS.GetDefaultRefreshRate()
 # Define objects
 #
 QDS.DefObj_Movie(1, "rabbit.jpg")
-[dxFr, dyFr, nFr] = QDS.GetMovieParameters(1)
+
+# Update parameter dictionary with the movie parameters
+# -> "dxFr", "dyFr", "nFr"
+#
+p.update(QDS.GetMovieParameters(1))
+print(p)
 
 # Start of stimulus run
 #
@@ -28,20 +33,30 @@ QDS.Scene_Clear(1.00, 0)
 
 for iT in range(p['nTrials']):
   for iOrient in p['mOrient']:
-    QDS.Start_Movie(1, (0,0), [0, 0, FrRefr_Hz, 1], p['mScal'], p['mAlpha'], iOrient)
+    QDS.Start_Movie(1, (0,0), [0, 0, FrRefr_Hz, 1], 
+                    p['mScal'], p['mAlpha'], iOrient)
     QDS.Scene_Clear(1.00, 0)
-    QDS.Start_Movie(1, (0,0), [0,nFr-1, 3, 1], p['mScal'], p['mAlpha'], iOrient)
+    
+    QDS.Start_Movie(1, (0,0), [0,p['nFr']-1, 3, 1], 
+                    p['mScal'], p['mAlpha'], iOrient)
     QDS.Scene_Clear(0.05, 1)
     QDS.Scene_Clear(1.95, 0)
-    QDS.Start_Movie(1, (0,0), [nFr-1, nFr-1, 2*FrRefr_Hz, 1], p['mScal'], p['mAlpha'], iOrient)
+    
+    QDS.Start_Movie(1, (0,0), [p['nFr']-1, p['nFr']-1, 2*FrRefr_Hz, 1], 
+                    p['mScal'], p['mAlpha'], iOrient)
     QDS.Scene_Clear(2.00, 0)
 
-    QDS.Start_Movie(1, (0,0), [nFr-1, nFr-1, FrRefr_Hz,  1], p['mScal'], p['mAlpha'], iOrient)
+    QDS.Start_Movie(1, (0,0), [p['nFr']-1, p['nFr']-1, FrRefr_Hz,  1], 
+                    p['mScal'], p['mAlpha'], iOrient)
     QDS.Scene_Clear(1.00, 0)
-    QDS.Start_Movie(1, (0,0), [nFr-1, 0, 3, 1], p['mScal'], p['mAlpha'], iOrient)
+    
+    QDS.Start_Movie(1, (0,0), [p['nFr']-1, 0, 3, 1], 
+                    p['mScal'], p['mAlpha'], iOrient)
     QDS.Scene_Clear(0.05, 1)
     QDS.Scene_Clear(1.95, 0)
-    QDS.Start_Movie(1, (0,0), [0, 0, 2*FrRefr_Hz, 1], p['mScal'], p['mAlpha'], iOrient)
+    
+    QDS.Start_Movie(1, (0,0), [0, 0, 2*FrRefr_Hz, 1], 
+                    p['mScal'], p['mAlpha'], iOrient)
     QDS.Scene_Clear(2.00, 0)
 
 QDS.Scene_Clear(1.00, 0)

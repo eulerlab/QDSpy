@@ -225,6 +225,12 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             _Stage.centOffX_pix   = data[1]["centOffX_pix"]
             _Stage.centOffY_pix   = data[1]["centOffY_pix"]
             _Stage.rot_angle      = data[1]["rot_angle"]
+            _Stage.dxScr12        = data[1]["dxScr12"]
+            _Stage.dyScr12        = data[1]["dyScr12"]
+            _Stage.offXScr1_pix   = data[1]["offXScr1_pix"]
+            _Stage.offYScr1_pix   = data[1]["offYScr1_pix"]
+            _Stage.offXScr2_pix   = data[1]["offXScr2_pix"]
+            _Stage.offYScr2_pix   = data[1]["offYScr2_pix"]
             data = [mpr.PipeValType.toSrv_None]
 
           if data[0] == mpr.PipeValType.toSrv_changedLEDs:
@@ -243,10 +249,6 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
           if data[0] == mpr.PipeValType.toSrv_fileName:
             # Retrieve stimulus file name from pipe and load stimulus
             #
-            '''
-            _fPathStim = data[2]
-            _fNameStim = _fPathStim +"\\" +os.path.basename(data[1])
-            '''
             _fNameStim = os.path.normpath(data[1])
             data       = [mpr.PipeValType.toSrv_None]
             loadStimulus(_fNameStim, _Stim)

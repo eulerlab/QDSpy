@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 import QDS
+import os
 
 # Initialize QDS
 #
 QDS.Initialize("RGC_Noise", "'noise' in fingerprinting stimulus set")
 
 # Define global stimulus parameters
-#
+# 
 p = {"durStim_s"       : 0.200, 
-     "boxDx_um"        : 40,  
+     "boxDx_um"        : 40,   
      "boxDy_um"        : 40,   
      "fIntenW"         : 255,    # intensity factor 
                                  # (pixel value(0,1) x fIntenW)
@@ -25,7 +26,8 @@ QDS.LogUserParameters(p)
 fPath       = QDS.GetStimulusPath()
 durMarker_s = p["durFr_s"] *p["nFrPerMarker"]
 
-# Read file with M sequence
+print(os.getcwd(), fPath)
+# Read file with M sequence 
 #
 try:
   f         = open(fPath +"\\" +p["fNameNoise"] +'.txt', 'r')

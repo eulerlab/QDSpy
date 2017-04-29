@@ -5,9 +5,9 @@
 import  random
 import  QDS
 
-QDS.Initialize("noise_Colored1", "Example for random-colored boxes flickering")
+QDS.Initialize("noise_Colored1_RGBU", "Example for random-colored boxes flickering")
 
-# Set random generator seed 
+# Set random generator seed  
 #
 random.seed(1)
 
@@ -15,7 +15,7 @@ random.seed(1)
 #
 p = {}
 p['dtFr_s']    = 3/60.0  # presentation time per pattern
-p['nTrials']   = 50      # # of repeats
+p['nTrials']   = 50 #  0     # # of repeats
 p['nPrMark']   = 20      # present marker every p['nPrMark']*p['dtFr_s']
 p['nRows']     = 30      # dimensions of pattern grid
 p['nCols']     = 30
@@ -50,6 +50,9 @@ for iX in range(p['nCols']):
 # Start of stimulus run
 #
 QDS.StartScript()
+QDS.SetBkgColor((100,0,50, 0,50,50))
+QDS.Scene_Clear(1.0, 0)
+QDS.SetBkgColor((0,100,50, 50,0,50))
 QDS.Scene_Clear(1.0, 0)
 
 # Present grid
@@ -63,7 +66,8 @@ for iT in range(p['nTrials']):
     r = random.randint(5, 250)
     g = random.randint(5, 250)
     b = random.randint(5, 250)
-    BoxColList.append((r, g, b))
+    u = random.randint(5, 250)
+    BoxColList.append((r, g, b, 0, 0, u))
     BoxAlpList.append(255)
     BoxRotList.append(rot)
     rot += p['dRot_step']
@@ -71,6 +75,10 @@ for iT in range(p['nTrials']):
   QDS.Scene_RenderEx(p['dtFr_s'], BoxIndList, BoxPosList, BoxMagList,
                      BoxRotList, int((iT % p['nPrMark']) == 0))
 
+QDS.Scene_Clear(1.0, 0)
+QDS.SetBkgColor((50,0,100, 50,50,0))
+QDS.Scene_Clear(1.0, 0)
+QDS.SetBkgColor((0,0,0, 0,0,0))
 QDS.Scene_Clear(1.0, 0)
 
 # Finalize stimulus

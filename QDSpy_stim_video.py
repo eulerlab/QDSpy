@@ -163,7 +163,13 @@ class VideoCtrl:
     """ Set sprite batch
     """
     if self.Sprite != None:
-      self.Sprite.batch = _batch.currBatch        
+      if _batch.isScrOvl:
+        if self.iScr == 0:
+          self.Sprite.batch = _batch.BatchSpr        
+        else:  
+          self.Sprite.batch = _batch.Batch2Spr        
+      else:  
+        self.Sprite.batch = _batch.BatchSpr
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getNextFrIndex(self):
@@ -193,7 +199,6 @@ class VideoCtrl:
       self.Sprite.opacity  = self.trans
       
     else:  
-      print("IS DONE")
       self.iCurrFr = -1
       
     return self.iCurrFr

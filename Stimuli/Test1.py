@@ -21,7 +21,7 @@ else:
   print("WARNING: This script required a lightcrafter")
 print("---")
 
-QDS.LC_setLEDCurrents([0,50,0])
+QDS.LC_setLEDCurrents(0, [0,50,0])
 
 random.seed(1)
 p = {}

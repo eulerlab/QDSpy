@@ -22,8 +22,8 @@ __author__ 	= "code@eulerlab.de"
 import sys
 import ctypes
 import pyglet
-'''
 import numpy as np
+'''
 import scipy
 import PIL
 '''
@@ -41,6 +41,11 @@ if "cv2" in (name for loader, name, ispkg in iter_modules()):
 
 # ---------------------------------------------------------------------  
 timing_implementation_str  = "vsync-based (pyglet calls)"
+
+VERT_VERT                  = 0
+VERT_INDICES               = 1
+VERT_RGBA                  = 2
+VERT_COUNT                 = 3
 
 # =====================================================================
 #
@@ -321,23 +326,29 @@ class Window(pyglet.window.Window):
     self.bufferMan = None
     self.Renderer  = _Renderer
     self.isFullScr = _isScrOvl or ((_dx == 0) or (_dy == 0))
+    self.isScrOvl  = _isScrOvl
+    self.Scr2Vert  = ()
 
     if self.isFullScr and self.isPresent:
       if _isScrOvl:
+        # Screen overlay mode
+        #
         super().__init__(vsync=True, fullscreen=False,
                          width=_dx, height=_dy,
                          caption=_title,
                          style=pyglet.window.Window.WINDOW_STYLE_BORDERLESS)
         self.set_location(self.Renderer.Screens[_iScrGUI].width +_offset[0], 
                           _offset[1])     
-        '''
-        print("width            =", _dx)
-        print("height           =", _dy)
-        print("lateral offset   =", self.Renderer.Screens[_iScrGUI].width)
-        print("fine scr1 offset =", _offset)
-        '''
+        
+        # Define a rectangle that covers screen 2 to be able to set the 
+        # background colour independently
+        #
+        rect = [-_dx//4, -_dy//2, _dx//4, _dy//2]
+        self.Scr2Vert = vertFromRect(rect, (0,0), (0,0,0,255))         
         
       else:  
+        # Standard full-screen mode
+        #
         super().__init__(vsync=True, fullscreen=True,
                          screen=self.Renderer.Screens[_iScr],
                          width=self.Renderer.Screens[_iScr].width, 
@@ -345,6 +356,8 @@ class Window(pyglet.window.Window):
                          caption=_title)
         
     else:
+      # Window mode
+      #
       super().__init__(vsync=True,
                        width=_dx, height=_dy, 
                        caption=_title,
@@ -428,12 +441,57 @@ class Window(pyglet.window.Window):
   def clear(self, _RGB=[]):
     """ Clear window; change background color, if requested
     """
-    self.switch_to()
-    if len(_RGB) == 3:
-      GL.glClearColor(_RGB[0]/255.0, _RGB[1]/255.0, _RGB[2]/255.0, 0.0)
-    else:
+    self.switch_to()    
+    
+    isColor = (len(_RGB) > 0)
+    if isColor:
+      RGB = [c/255.0 for c in _RGB]
+      GL.glClearColor(RGB[0], RGB[1], RGB[2], 0.0)
+      GL.glClear(GL.GL_COLOR_BUFFER_BIT)
+    else:  
       GL.glClear(GL.GL_COLOR_BUFFER_BIT)
       
+    if self.isPresent and self.isScrOvl:
+      if isColor:
+        RGBA2 = (_RGB[3], _RGB[4], _RGB[5], 255)
+        self.Scr2Vert[VERT_RGBA] = RGBA2 *self.Scr2Vert[VERT_COUNT]
+
+    '''
+    if self.isPresent and self.isScrOvl:
+      # Is presentation window in screen overlay mode, therefore set colour
+      # of each half seperately
+      #
+      GL.glEnable(GL.GL_SCISSOR_TEST)
+      
+      GL.glScissor(0, 0, self.width//2, self.height)
+      if isColor:
+        GL.glClearColor(RGB[0], RGB[1], RGB[2], 0.0)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
+      else:  
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
+
+      #GL.glDisable(GL.GL_SCISSOR_TEST)
+      #GL.glEnable(GL.GL_SCISSOR_TEST)
+     
+      GL.glScissor(self.width//2, 0, self.width//2, self.height)
+      """
+      if isColor:
+        GL.glClearColor(RGB[3], RGB[4], RGB[5], 0.0)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
+      else:  
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
+      """  
+      GL.glDisable(GL.GL_SCISSOR_TEST)
+
+    else:
+      # Window or standard full-screen mode, set colour normally
+      #
+      if isColor:
+        GL.glClearColor(RGB[0], RGB[1], RGB[2], 0.0)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
+      else:  
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
+    '''  
      
 # =====================================================================
 #
@@ -442,17 +500,27 @@ class Batch:
   """
   Encapsulates a batch of OpenGL drawing commands
   """
-  def __init__(self):
+  def __init__(self, _isScrOvl):
     """ Generate new batch
     """  
-    self.currBatch     = pyglet.graphics.Batch()
-    self.currIV        = None # indexed VBO, not shader-enabled objects only
-    self.currIVShObj   = []   # list of current indexed VBOs for shader-
+    self.isScrOvl      = _isScrOvl
+    self.Batch         = pyglet.graphics.Batch()
+    self.BatchSpr      = pyglet.graphics.Batch()
+    if _isScrOvl:
+      self.Batch2      = pyglet.graphics.Batch()
+      self.Batch2Spr   = pyglet.graphics.Batch()
+
+    self.IV            = None # indexed VBO, not shader-enabled objects only
+    self.IV2           = None
+    self.IVShObj       = []   # list of current indexed VBOs for shader-
                               # enabled objects, one VBO entry per object
-    self.currIVGr      = None # pyglet Group object for 'currIV' VBO
-    self.currIVShObjGr = {}   # pyglet Group obhect for 'currIVShObj' VBOs
-    self.shaderManager = None
+    self.IVShObj2      = [] 
+    self.IVGr          = None # pyglet Group object for 'currIV' VBO
+    self.IVGr2         = None 
+    self.IVShObjGr     = {}   # pyglet Group object for 'currIVShObj' VBOs
+    self.IVShObjGr2    = {}  
     
+    self.shaderManager = None
     self.sprite        = None
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                     
@@ -460,107 +528,191 @@ class Batch:
     self.shaderManager = _shMan
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                     
-  def replace_object_data(self, _indices, _tri, _RGBA):
+  def replace_object_data(self, _indices, _tri, _RGBA, _RGBA2):
     """ Replace the current vertex triangle data in current batch
     """
     self.delete_object_data()
-    self.currIV = self.currBatch.add_indexed(len(_tri)//2, GL.GL_TRIANGLES, 
-                                             self.currIVGr, _indices, 
-                                             ("v2i/stream", _tri), 
-                                             ("c4B/stream", _RGBA))
+    self.IV = self.Batch.add_indexed(len(_tri)//2, GL.GL_TRIANGLES, 
+                                     self.IVGr, _indices, 
+                                     ("v2i/stream", _tri), 
+                                     ("c4B/stream", _RGBA))
+    if self.isScrOvl:
+      self.IV2 = self.Batch2.add_indexed(len(_tri)//2, GL.GL_TRIANGLES, 
+                                         self.IVGr2, _indices, 
+                                         ("v2i/stream", _tri), 
+                                         ("c4B/stream", _RGBA2))
 
   def delete_object_data(self):
-    if self.currIV != None:
-      self.currIV.delete()
+    if self.IV != None:
+      self.IV.delete()
+      self.IV = None
+    if self.isScrOvl:
+      if self.IV2 != None:
+        self.IV2.delete()
+        self.IV2 = None
+
 
   def replace_object_data_indices(self, _iVertTr):
-    self.currIV.indices  = _iVertTr
-    
-  def replace_object_data_vertices(self, _vertTr):
-    self.currIV.vertices = _vertTr
+    self.IV.indices    = _iVertTr
+    if self.isScrOvl:
+      self.IV2.indices = _iVertTr
 
-  def replace_object_data_colors(self, _vRGBATr):
-    self.currIV.colors   = _vRGBATr
+      
+  def replace_object_data_vertices(self, _vertTr):
+    self.IV.vertices    = _vertTr
+    if self.isScrOvl:
+      self.IV2.vertices = _vertTr
+
+
+  def replace_object_data_colors(self, _vRGBATr, _vRGBATr2):
+    self.IV.colors    = _vRGBATr
+    if self.isScrOvl:
+      self.IV2.colors = _vRGBATr2
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                     
-  def add_shader_object_data(self, _objID, _indices, _tri, _RGBA):
+  def add_shader_object_data(self, _objID, _indices, _tri, _RGBA, _RGBA2):
     """ Add vertex triangle data for shader objects to current batch
     """
-    self.currIVShObj.append(
-      self.currBatch.add_indexed(len(_tri)//2, GL.GL_TRIANGLES, 
-                                 self.currIVShObjGr[_objID], _indices,
-                                 ("v2i/stream", _tri), ("c4B/stream", _RGBA)))
+    self.IVShObj.append(
+      self.Batch.add_indexed(len(_tri)//2, GL.GL_TRIANGLES, 
+                             self.IVShObjGr[_objID], _indices,
+                             ("v2i/stream", _tri), ("c4B/stream", _RGBA)))
+    if self.isScrOvl:
+      self.IVShObj2.append(
+        self.Batch2.add_indexed(len(_tri)//2, GL.GL_TRIANGLES, 
+                                self.IVShObjGr2[_objID], _indices,
+                                ("v2i/stream", _tri), ("c4B/stream", _RGBA2)))
+    
   
   def delete_shader_object_data(self):
-    for i in range(len(self.currIVShObj)):
-      self.currIVShObj.pop().delete()
+    for i in range(len(self.IVShObj)):
+      self.IVShObj.pop().delete()
+    if self.isScrOvl:
+      for i in range(len(self.IVShObj2)):
+        self.IVShObj2.pop().delete()  
+      
       
   def delete_shader_handles(self):
-    self.currIVShObjGr = {}
-      
+    self.IVShObjGr    = {}
+    if self.isScrOvl:
+      self.IVShObjGr2 = {}
+
+
   def add_shader_handle(self, _objID, _shader=None, _shType=""):    
     if _shader == None:   
       shOGr = NoneGroup()
     else:
       shOGr = ShaderBindGroup(_shader, _shType, _objID, self.shaderManager)
-    self.currIVShObjGr[_objID] = shOGr
+    self.IVShObjGr[_objID]   = shOGr
+    if self.isScrOvl:    
+      self.IVShObjGr2[_objID] = shOGr
+
       
   def set_shader_time(self, _objID, _t_s):
-    if _objID in self.currIVShObjGr:
-       self.currIVShObjGr[_objID].set_time(_t_s)
+    if _objID in self.IVShObjGr:
+       self.IVShObjGr[_objID].set_time(_t_s)
+       if self.isScrOvl:    
+         self.IVShObjGr2[_objID].set_time(_t_s)
+
 
   def set_shader_time_all(self, _t_s):
-    for key in self.currIVShObjGr:
-      shOGr = self.currIVShObjGr[key]
+    for key in self.IVShObjGr:
+      shOGr    = self.IVShObjGr[key]
+      if self.isScrOvl:  
+        shOGr2 = self.IVShObjGr2[key]
       if shOGr.__class__ is ShaderBindGroup:
         shOGr.set_time(_t_s)
+        if self.isScrOvl:   
+          shOGr2.set_time(_t_s)
+
 
   def set_shader_parameters(self, _objID, _pos, _a_rad, _param):
-    if _objID in self.currIVShObjGr:
-      self.currIVShObjGr[_objID].set_params(_pos, _a_rad, _param)
+    if _objID in self.IVShObjGr:
+      self.IVShObjGr[_objID].set_params(_pos, _a_rad, _param)
+      if self.isScrOvl:  
+        self.IVShObjGr2[_objID].set_params(_pos, _a_rad, _param)
       
       
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                     
-  def draw(self, _Stage, _View):      
+  def draw(self, _Stage, _View, _isClear=False):      
     """ Draw current batch of triangle vertices, acknowledging the scaling
         and rotation of the current display (stage settings)
     """
     for iWin, win in enumerate(pyglet.app.windows):     
       win.switch_to()
-    
-      GL.glMatrixMode(GL.GL_PROJECTION)
-      GL.glLoadIdentity()
-      GL.glOrtho(-win.width//2, win.width//2, 
-                 -win.height//2, win.height//2, -1, 1)
-      GL.glMatrixMode(GL.GL_MODELVIEW)
-      GL.glLoadIdentity()
 
-      GL.glPushMatrix()
-      x = _Stage.centOffX_pix
-      y = _Stage.centOffY_pix
-      '''
+      xScale  = _Stage.scalX_umPerPix *_Stage.winXCorrFact *win.scale
+      yScale  = _Stage.scalY_umPerPix *_Stage.winXCorrFact *win.scale
+      yWin_5  = win.height//2
+      xWin_5 = win.width//2  
+      xWin_25 = win.width//4
+      
       if _Stage.useScrOvl:      
-        x -= _Stage.dxScr12//4
-        if _View.iWideScreen == 1:
-          	x += _Stage.dxScr12//2
-      '''      
-      GL.glTranslatef(x, y, 0)
-      GL.glScalef(_Stage.scalX_umPerPix *_Stage.winXCorrFact *win.scale, 
-                  _Stage.scalY_umPerPix *_Stage.winXCorrFact *win.scale, 0.0)
-      GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
-      
-      self.currBatch.draw()    
-      GL.glPopMatrix()
-          
+        # Draw on first (left) screen
+        #
+        GL.glViewport(0, 0, win.width//2, win.height)
+        GL.glMatrixMode(GL.GL_PROJECTION)
+        GL.glLoadIdentity()
+        GL.glOrtho(-xWin_25, xWin_25, -yWin_5, yWin_5, -1, 1)
+        GL.glMatrixMode(GL.GL_MODELVIEW)
+        GL.glLoadIdentity()
+        GL.glPushMatrix()
+        x = _Stage.centOffX_pix 
+        y = _Stage.centOffY_pix
+        GL.glTranslatef(x, y, 0)
+        GL.glScalef(xScale, yScale, 0.0)
+        GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
+        if not(_isClear):
+          self.Batch.draw()    
+        self.BatchSpr.draw() 
+        GL.glPopMatrix()
+
+        # Draw on second (right) screen
+        #
+        GL.glViewport(win.width//2, 0, win.width//2, win.height)
+        GL.glMatrixMode(GL.GL_PROJECTION)
+        GL.glLoadIdentity()
+        GL.glOrtho(-xWin_25, xWin_25, -yWin_5, yWin_5, -1, 1)
+        GL.glMatrixMode(GL.GL_MODELVIEW)
+        GL.glLoadIdentity()
+        GL.glPushMatrix()
+        
+        self.add_rect_data(win.Scr2Vert)
+        
+        x = _Stage.centOffX_pix +_Stage.offXScr2_pix
+        y = _Stage.centOffY_pix +_Stage.offYScr2_pix 
+        GL.glTranslatef(x, y, 0)
+        GL.glScalef(xScale, yScale, 0.0)
+        GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
+        if not(_isClear):
+          self.Batch2.draw()   
+        self.Batch2Spr.draw()     
+        GL.glPopMatrix()
+        
+      else:  
+        GL.glMatrixMode(GL.GL_PROJECTION)
+        GL.glLoadIdentity()
+        GL.glOrtho(-xWin_5, xWin_5, -yWin_5, yWin_5, -1, 1)
+        GL.glMatrixMode(GL.GL_MODELVIEW)
+        GL.glLoadIdentity()
+        GL.glPushMatrix()
+        GL.glTranslatef(_Stage.centOffX_pix, _Stage.centOffY_pix, 0)
+        GL.glScalef(xScale, yScale, 0.0)
+        GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
+        if not(_isClear):
+          self.Batch.draw()    
+        self.BatchSpr.draw() 
+        GL.glPopMatrix()
+
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                     
-  def add_marker_data(self, _indices, _tri, _RGBA):   
-    """ Add marker data to lined up rendering commands
+  def add_rect_data(self, _Vert):   
+    """ Add rectangle described by _Vert to lined up rendering commands
     """
-    pyglet.graphics.draw_indexed(len(_tri)//2, GL.GL_TRIANGLES,
-                                 _indices,
-                                 ("v2i/stream", _tri),
-                                 ("c4B/stream", _RGBA))
-      
+    pyglet.graphics.draw_indexed(_Vert[VERT_COUNT], GL.GL_TRIANGLES,
+                                 _Vert[VERT_INDICES],
+                                 ("v2i/stream", _Vert[VERT_VERT]),
+                                 ("c4B/stream", _Vert[VERT_RGBA]))
 
 # =====================================================================
 #
@@ -662,5 +814,35 @@ class NoneGroup(pyglet.graphics.OrderedGroup):
       return 0
     else:
       return 1
+
+# ---------------------------------------------------------------------
+# Support functions
+# ---------------------------------------------------------------------
+def vertFromRect(_rect, _pos, _RGBA, _angle=0):
+  """ Generates vertex data for a rectangle
+  """  
+  newVert = [_rect[0], _rect[1], _rect[2], _rect[1],
+             _rect[2], _rect[3], _rect[0], _rect[3]]
+  newVert = rotateTranslate(newVert, _angle, _pos)
+  newVert = [int(v) for v in newVert]        
+  newiVTr = (0, 1, 2, 0, 2, 3)
+  nVert   = len(newVert)//2
+  newRGBA = _RGBA *nVert
+  return [newVert, newiVTr, newRGBA, nVert]
+
+# ---------------------------------------------------------------------
+def rotateTranslate(_c, _rot_deg, _pxy):
+  """ Rotate the coordinates in the list ([x1,y1,x2,y2, ...]) by the
+      given angle and then translates the coordinates to the given 
+      position
+  """
+  nc    = []
+  a_rad = np.radians(_rot_deg)
+  for i in range(0, len(_c), 2):
+    x   =  _c[i] *np.cos(a_rad) +_c[i+1] *np.sin(a_rad) +_pxy[0]
+    y   = -_c[i] *np.sin(a_rad) +_c[i+1] *np.cos(a_rad) +_pxy[1]
+    nc += [x, y]
+  return nc
+
 
 # ---------------------------------------------------------------------

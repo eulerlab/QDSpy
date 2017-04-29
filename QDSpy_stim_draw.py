@@ -15,6 +15,7 @@ import numpy as np
 import QDSpy_stim as stm
 import QDSpy_stim_support as spp
 import QDSpy_global as glo
+import Graphics.renderer_opengl as rdr
 
 # ---------------------------------------------------------------------
 def box2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
@@ -239,16 +240,13 @@ def sct2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
 def marker2vert (_Stage, _Conf):
   # Generate vertices for the trigger marker
   #
-  dx2       = _Stage.dxScr /glo.QDSpy_markerScrWidthFract /2
-  pxy       = (_Stage.dxScr//2, -_Stage.dyScr//2)
-  rect      = [-dx2, -dx2, dx2, dx2]
-  newVert   = [rect[0], rect[1], rect[2], rect[1],
-               rect[2], rect[3], rect[0], rect[3]]
-  newVert   = spp.rotateTranslate(newVert, 0, pxy)
-  newVert   = spp.toInt(newVert)
-  newiVTr   = (0, 1, 2, 0, 2, 3)
-  newRGBA   = len(newVert) //2 *_Conf.markRGBA
+  if _Stage.useScrOvl:
+    dx2       = _Stage.dxScr12 /glo.QDSpy_markerScrWidthFract /4
+    pxy       = (_Stage.dxScr12//4, -_Stage.dyScr12//2)
+  else:  
+    dx2       = _Stage.dxScr /glo.QDSpy_markerScrWidthFract /2
+    pxy       = (_Stage.dxScr//2, -_Stage.dyScr//2)
   
-  return (newVert, newiVTr, newRGBA)
+  return rdr.vertFromRect([-dx2, -dx2, dx2, dx2], pxy, _Conf.markRGBA)
 
 # ---------------------------------------------------------------------

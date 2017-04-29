@@ -74,8 +74,11 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   try:
     tLastUpt_pick = datetime.fromtimestamp(os.path.getmtime(fNameDir_pk))
     if (tLastUpt_pick > tLastUpt_py) and not(args.compile):
+      pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[1]
+      if len(pythonPath) > 0:
+        pythonPath += "\\" 
       ssp.Log.write("INFO", "Script has not changed, running stimulus now ...")
-      os.system("python .\QDSpy_core.py -t={0} {1} {2}"
+      os.system("python "+ pythonPath +"QDSpy_core.py -t={0} {1} {2}"
                 .format(args.timing, "-v" if args.verbose else "", fName))
       exit()
   except WindowsError:
@@ -559,10 +562,14 @@ def SetObjColorEx(_iobjs, _ocols, _alphas=[]):
                   | [o1, o2, ...],
                   | with oX being valid object indices
   _ocols          | list of object colors in RGB values,
-                  | [(r1,g1,b1),(r2,g2,b2), ...],
-                  | with 0 <= r,g,b <= 255
+                  | [(r1,g1,b1{,u1,v1,w1}),(r2,g2,b2{,u2,v2,w2}), ...],
+                  | with 0 <= r,g,b,u,v,w <= 255 and
+                  | a tuple length between 3 and 6
   *_oalphas*      | *list of object alpha values, 0..255*
   =============== ==================================================
+
+  In the parameter ``_ocols``, the values beyond ``r,g,b`` are optional;
+  they are only relevant in "screen overlay mode" and otherwise ignored.
 
   *new or changed parameters*
   """
@@ -697,8 +704,12 @@ def SetBkgColor(_col):
   =============== ==================================================
   Parameters:
   =============== ==================================================
-  _col            | color in RGB values as tupple (r,g,b)
+  _col            | color in RGB values as tupple (r,g,b{,u,v,w})
   =============== ==================================================
+  
+  In the parameter ``_col``, the values beyond ``r,g,b`` are optional;
+  they are only relevant in "screen overlay mode" and otherwise ignored.
+  
   """
   try:
     _Stim.setBkgColor(_col)

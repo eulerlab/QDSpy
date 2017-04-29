@@ -44,8 +44,8 @@ class Stage:
     self.scalX_umPerPix      = _d["scalX_umPerPix"]
     self.scalY_umPerPix      = _d["scalY_umPerPix"]
     self.rot_angle           = _d["rot_angle"]
-    self.centOffX_pix        = _d["centX_pix"]
-    self.centOffY_pix        = _d["centY_pix"]
+    self.centOffX_pix        = _d["centOffX_pix"]
+    self.centOffY_pix        = _d["centOffY_pix"]
     self.centX0_pix          = self.dxScr//2
     self.centY0_pix          = self.dyScr//2
     self.centX_pix           = self.centOffX_pix
@@ -269,7 +269,7 @@ class Stage:
     ver = []
     
     if glo.QDSpy_use_Lightcrafter: 
-      LCr = lcr.Lightcrafter(_logLevel=0)
+      LCr = lcr.Lightcrafter(_logLevel=-1)
       result = LCr.connect(_devIndex)
       errC   = result[0]
       if errC == lcr.ERROR.OK:

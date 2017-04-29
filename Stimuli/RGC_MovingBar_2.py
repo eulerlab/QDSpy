@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------
 import QDS
 import math
-
+ 
 # --------------------------------------------------------------------------
 def MoveBarSeq():
   # A function that presents the moving bar in the given number of 
@@ -20,7 +20,7 @@ def MoveBarSeq():
     # by the refresh frequency)
     #
     QDS.Scene_Clear(durMarker_s, 1)
-    for iStep in range(int(nFrToMove)):
+    for iStep in range(round(nFrToMove)):
       QDS.Scene_RenderEx(p["durFr_s"], [1], [(x,y)], [(1.0,1.0)], [rot_deg], 
                          iStep < p["nFrPerMarker"])
       x    -= math.cos(rot_rad) *umPerFr
@@ -33,7 +33,7 @@ QDS.Initialize("RGC_MovingBar", "'moving bar' in fingerprinting stimulus set")
 
 # Define global stimulus parameters
 #
-p = {"nTrials"         : 2, 
+p = {"nTrials"         : 3, 
      "DirList"         : [0,180, 45,225, 90,270, 135,315],   
 
      "vel_umSec"       : 1000.0, # speed of moving bar in um/sec
@@ -41,7 +41,7 @@ p = {"nTrials"         : 2,
                                  # the bar travels, not its speed)
      "barDx_um"        : 300.0,  # bar dimensions in um
      "barDy_um"        : 1000.0,
-     "bkgColor"        : (0,0,0),       # background color
+     "bkgColor"        : (10,20,30, 30,20,10),       # background color
      "barColor"        : (255,255,255), # bar color
      "durFr_s"         : 1/60.0, # Frame duration
      "nFrPerMarker"    : 3
@@ -56,6 +56,7 @@ umPerFr        = float(p["vel_umSec"]) /freq_Hz
 moveDist_um    = p["vel_umSec"] *p["tMoveDur_s"]
 nFrToMove      = float(moveDist_um) /umPerFr
 
+print(nFrToMove, int(nFrToMove), int(nFrToMove)*p["durFr_s"], durMarker_s)
 # Define stimulus objects
 #
 QDS.DefObj_Box(1, p["barDx_um"], p["barDy_um"])

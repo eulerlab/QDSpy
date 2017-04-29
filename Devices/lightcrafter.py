@@ -59,6 +59,7 @@ class ERROR:
   COULD_NOT_CONNECT  = -5
   INVALID_PARAMS     = -6
   DEVICE_NOT_FOUND   = -7
+  NO_DEVICES         = -8
 
 ErrorStr             = dict([
   (ERROR.OK,                "ok"),
@@ -68,7 +69,8 @@ ErrorStr             = dict([
   (ERROR.NAK_ERROR,         "Command not acknowledged"),
   (ERROR.COULD_NOT_CONNECT, "Could not connect to device"),
   (ERROR.INVALID_PARAMS,    "One or more parameters are invalid"),
-  (ERROR.DEVICE_NOT_FOUND,  "Device with this index not found")
+  (ERROR.DEVICE_NOT_FOUND,  "Device with this index not found"),
+  (ERROR.NO_DEVICES,        "No device found")
   ])
 
 # ---------------------------------------------------------------------
@@ -249,9 +251,12 @@ class Lightcrafter:
           
           else:
             self.LC = None
-            errC    = ERROR.DEVICE_NOT_FOUND
-            self.log("ERROR", ErrorStr[errC], 0)      
-            return [errC]
+            if len(LCrDeviceList) > 0:
+              errC = ERROR.DEVICE_NOT_FOUND
+            else:
+              errC = ERROR.NO_DEVICES
+            self.log("ERROR", ErrorStr[errC], 0)                    
+            return [errC]  
 
       except IOError as ex:
         self.LC = None

@@ -186,8 +186,8 @@ class View:
     self.Renderer.dispatch_events()  
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def createBatch(self):
-    return rdr.Batch()
+  def createBatch(self, _isScrOvl=False):
+    return rdr.Batch(_isScrOvl)
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setOnKeyboardHandler(self, _onKeybProc):
