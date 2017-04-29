@@ -8,7 +8,7 @@ for visual neuroscience. It is based on QDS, currently uses OpenGL via
 pyglet for graphics. It primarly targets Windows, but may also run on 
 other operating systems
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2017 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -51,7 +51,7 @@ def setPerformanceNormal(_Conf):
   if _Conf.disGC:
     gc.enable()
     
-
+# ---------------------------------------------------------------------
 def loadStimulus(_fNameStim, _Stim): 
   if len(_fNameStim) == 0:
     ssp.Log.write("FATAL", "No stimulus file name provided")
@@ -64,31 +64,39 @@ def loadStimulus(_fNameStim, _Stim):
       ssp.Log.write("FATAL", "Aborted ({0})".format(_Stim.getLastErrStr()))
       return False
   
-      
-def connectLCr(_Conf=None, _Stim=None):
+# ---------------------------------------------------------------------
+def connectLCrs(_Conf=None, _Stim=None):
   if not(_Stim is None) and not(_Stim.isUseLCr):
-    return None
+    return []
   if _Conf is None:
     if not(glo.QDSpy_use_Lightcrafter): 
-      return None
+      return []
   else:
     if not(_Conf.useLCr):
-      return None
-  _LCr   = lcr.Lightcrafter(_isCheckOnly=False, _funcLog=ssp.Log.write,
-                            _logLevel=glo.QDSpy_LCr_LogLevel)
-  result = _LCr.connect()
-  if result[0] != lcr.ERROR.OK:
+      return []
+  LCrList = lcr.enumerateLightcrafters()
+  LCrs     = []
+  nLCrOk  = 0
+  for iLCr, LCr in enumerate(LCrList):
+    LCrs.append(lcr.Lightcrafter(_isCheckOnly=False, _funcLog=ssp.Log.write,
+                                 _logLevel=glo.QDSpy_LCr_LogLevel))
+    result = LCrs[iLCr].connect(iLCr)
+    if result[0] != lcr.ERROR.OK:
+      LCrs[iLCr] = None
+    else:
+      nLCrOk += 1 
+  if nLCrOk == 0:      
     ssp.Log.write("WARNING", "This script requires a lightcrafter")
-    _LCr = None
-  return _LCr  
+  return LCrs  
   
 
-def disconnectLCr(_LCr):
-  if _LCr != None:
-    _LCr.disconnect()
-  return None
+def disconnectLCrs(_LCrs):
+  for LCr in _LCrs:
+    if LCr != None:
+      LCr.disconnect()
+  return []
   
-
+# ---------------------------------------------------------------------
 def switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim):
   if _Conf.allowGammaLUT:
     if (_Stim != None):
@@ -140,10 +148,8 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
 
   # Update representation of lightcrafter hardware, if present  
   #
-  _LCr = connectLCr(_Conf)
   _Stage.createLEDs(_Conf)
-  _Stage.updateLEDs(_LCr, _Conf)
-  _LCr = disconnectLCr(_LCr)
+  _Stage.updateLEDs(_Conf)
 
   # Initialize digital IO hardware, if requested
   #
@@ -178,7 +184,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
       
     # Connect to lightcrafter, if required
     #
-    _Presenter.LCr = connectLCr(_Conf, _Stim)
+    _Presenter.LCr = connectLCrs(_Conf, _Stim)
       
     # Present stimulus, with increased process priority and 
     # disabled automatic garbage collector, if requested      
@@ -219,17 +225,21 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             _Stage.centOffX_pix   = data[1]["centOffX_pix"]
             _Stage.centOffY_pix   = data[1]["centOffY_pix"]
             _Stage.rot_angle      = data[1]["rot_angle"]
+            _Stage.dxScr12        = data[1]["dxScr12"]
+            _Stage.dyScr12        = data[1]["dyScr12"]
+            _Stage.offXScr1_pix   = data[1]["offXScr1_pix"]
+            _Stage.offYScr1_pix   = data[1]["offYScr1_pix"]
+            _Stage.offXScr2_pix   = data[1]["offXScr2_pix"]
+            _Stage.offYScr2_pix   = data[1]["offYScr2_pix"]
             data = [mpr.PipeValType.toSrv_None]
 
           if data[0] == mpr.PipeValType.toSrv_changedLEDs:
             # LED currents and/or enabled state have changes, update
             # immediately
             #
-            _LCr = connectLCr(_Conf)
             _Stage.LEDs           = data[1][0]
             _Stage.isLEDSeqEnabled= data[1][1]
-            _Stage.sendLEDChangesToLCr(_LCr, _Conf)
-            _LCr = disconnectLCr(_LCr)
+            _Stage.sendLEDChangesToLCr(_Conf)
             data = [mpr.PipeValType.toSrv_None]
 
        
@@ -239,8 +249,12 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
           if data[0] == mpr.PipeValType.toSrv_fileName:
             # Retrieve stimulus file name from pipe and load stimulus
             #
+<<<<<<< HEAD
             _fPathStim = data[2]
             _fNameStim = _fPathStim +"/" +os.path.basename(data[1])
+=======
+            _fNameStim = os.path.normpath(data[1])
+>>>>>>> refs/remotes/origin/experimental
             data       = [mpr.PipeValType.toSrv_None]
             loadStimulus(_fNameStim, _Stim)
             _Sync.setStateSafe(mpr.PRESENTING)
@@ -249,13 +263,13 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             #
             try:
               switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim)    
-              _Presenter.LCr = connectLCr(_Conf, _Stim)
+              _Presenter.LCr = connectLCrs(_Conf, _Stim)
               _Presenter.prepare(_Stim, _Sync)
               setPerformanceHigh(_Conf)
               _Presenter.run()
 
             finally:
-              _Presenter.LCr = disconnectLCr(_Presenter.LCr)
+              _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
               _Presenter.finish()
               setPerformanceNormal(_Conf)
               '''
@@ -271,8 +285,12 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
           if data[0] == mpr.PipeValType.toSrv_fileName:
             # Retrieve stimulus file name from pipe and compile stimulus
             #
+<<<<<<< HEAD
             _fPathStim = data[2]
             _fNameStim = _fPathStim +"/" +os.path.basename(data[1]) +".py"
+=======
+            _fNameStim = os.path.abspath(data[1]) +".py"
+>>>>>>> refs/remotes/origin/experimental
             data       = [mpr.PipeValType.toSrv_None]
             _Sync.setStateSafe(mpr.COMPILING)
             try:
@@ -318,7 +336,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
   # Clean up
   #
   _View.killWindows()
-  _Presenter.LCr = disconnectLCr(_Presenter.LCr)
+  _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
     
   ssp.Log.write("ok", "... done")
 

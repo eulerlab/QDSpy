@@ -3,7 +3,7 @@
 """
 QDSpy module - support routines for the GUI version of QDSpy
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2017 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -31,7 +31,7 @@ def getStimFileLists(_path):
   for fName in f:
     if (os.path.splitext(fName)[1]).lower() == glo.QDSpy_stimFileExt:
       fName  = (os.path.splitext(os.path.basename(fName)))[0]
-      stimFNames.append(_path +"\\" +fName)
+      stimFNames.append(os.path.join(_path, fName))
   return stimFNames
 
 # ---------------------------------------------------------------------
@@ -63,27 +63,31 @@ def getShortText(_win, _txt, _widget):
   return metrics.elidedText(_txt, QtCore.Qt.ElideRight, _widget.width())
   
 # ---------------------------------------------------------------------
-def getLEDGUIObjects(_this, _index):
+def getLEDGUIObjects(_this, _LED):
   #
   #
-  if   _index == 0:
+  if   (_LED["LEDIndex"] == 0) and (_LED["devIndex"] == 0):
     return [_this.spinBoxLED1, _this.label_LED1, _this.pushButtonLED1]
-  elif _index == 1:
+  elif (_LED["LEDIndex"] == 1) and (_LED["devIndex"] == 0):
     return [_this.spinBoxLED2, _this.label_LED2, _this.pushButtonLED2]
-  elif _index == 2:
+  elif (_LED["LEDIndex"] == 2) and (_LED["devIndex"] == 0):
     return [_this.spinBoxLED3, _this.label_LED3, _this.pushButtonLED3]
-  elif _index == 3:
+  elif (_LED["LEDIndex"] == 0) and (_LED["devIndex"] == 1):
     return [_this.spinBoxLED4, _this.label_LED4, _this.pushButtonLED4]
+  elif (_LED["LEDIndex"] == 1) and (_LED["devIndex"] == 1):
+    return [_this.spinBoxLED5, _this.label_LED5, _this.pushButtonLED5]
+  elif (_LED["LEDIndex"] == 2) and (_LED["devIndex"] == 1):
+    return [_this.spinBoxLED6, _this.label_LED6, _this.pushButtonLED6]
   else:
     return [None]*3
-    
- # ---------------------------------------------------------------------
+  
+# ---------------------------------------------------------------------
 def updateToggleButton(_btn):
   s = _btn.text().split("\n")
   if len(s) == 1:
-    _btn.setText("{0}".format("enabled" if _btn.isChecked() else "disabled"))
+    _btn.setText("{0}".format("on" if _btn.isChecked() else "off"))
   else:  
     _btn.setText("{0}\n{1}"
-                 .format(s[0], "enabled" if _btn.isChecked() else "disabled"))
+                 .format(s[0], "on" if _btn.isChecked() else "off"))
 
 # --------------------------------------------------------------------- 

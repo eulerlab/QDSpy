@@ -45,7 +45,7 @@ if QDSpy_verbose:
 class Presenter:
   """ Presenter class
   """
-  def __init__(self, _Stage, _IO, _Conf, _View, _View2=None, _LCr=None):
+  def __init__(self, _Stage, _IO, _Conf, _View, _View2=None, _LCr=[]):
     # Initializing
     #
     self.Stage        = _Stage
@@ -117,6 +117,7 @@ class Presenter:
     self.vertTr       = np.array([], dtype=np.int)   # temporary vertex arrays
     self.iVertTr      = np.array([], dtype=np.int)   # temporary index arrays
     self.vRGBTr       = np.array([], dtype=np.uint8) # temporary RGBA arrays
+    self.vRGBTr2      = np.array([], dtype=np.uint8) 
 
     self.currShObjIDs = []    # list, IDs of current shader-enabled objects
     self.prevShObjIDs = []    # list, IDs of previously shown shader-enabled
@@ -131,7 +132,6 @@ class Presenter:
     
     self.markerVert   = drw.marker2vert(self.Stage, self.Conf)
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def onKeyboard(self, _key, _x, _y):
     if not(self.isRunFromGUI) and _key in glo.QDSpy_KEY_KillPresent:
@@ -141,7 +141,7 @@ class Presenter:
   # --------------------------------------------------------------------
   # Scene rendering function
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def renderSce(self, _iSc):
+  def renderSce(self, _iSc, _nSc):
     # Renders the indexed scene
     #
     if self.Conf.isTrackTime:
@@ -164,7 +164,7 @@ class Presenter:
       if (not(self.isInLoop) or (self.nLoopRepeats < 0)):
         pass
       if self.nLoopRepeats > 0:
-        self.iSc           = self.iFirstLoopSc
+        self.iSc           = self.iFirstLoopSc -1
         self.nLoopRepeats -= 1
       else:
         self.isInLoop      = False
@@ -174,6 +174,8 @@ class Presenter:
       # Clear scene
       #
       self.View.clear()
+      if self.Stage.useScrOvl:
+        drawn = False
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     elif   sc[stm.SC_field_type] == stm.StimSceType.changeBkgCol:
@@ -185,10 +187,10 @@ class Presenter:
     elif   sc[stm.SC_field_type] == stm.StimSceType.sendCommandToLCr:
       # Change LED currents
       #
-      if self.LCr != None:
-        _params = sc[stm.SC_field_LCrParams]
-        if _params[0] == stm.StimLCrCmd.setLEDCurrents:
-          self.LCr.setLEDCurrents(_params[1])
+      _params = sc[stm.SC_field_LCrParams]
+      if ((_params[0] == stm.StimLCrCmd.setLEDCurrents) and
+          (_params[1] >= 0) and (_params[1] < len(self.LCr))):
+        self.LCr[_params[1]].setLEDCurrents(_params[2])
           
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     elif   sc[stm.SC_field_type] == stm.StimSceType.logUserParams:
@@ -266,23 +268,25 @@ class Presenter:
       # Create a new movie control object; this internally creates a
       # pyglet sprite, with the requested presentation properties
       #
-      mCtOb  = mov.MovieCtrl(sc[stm.SC_field_MovSeq], _Movie=movOb)
+      mCtOb  = mov.MovieCtrl(sc[stm.SC_field_MovSeq], _MovID, _Movie=movOb)
+      mCtOb.iScr = sc[stm.SC_field_MovScreen]
       mCtOb.setSpriteProperties(sc[stm.SC_field_posXY], 
                                 sc[stm.SC_field_magXY],
                                 sc[stm.SC_field_rot], 
                                 sc[stm.SC_field_MovTrans])
 
-      # Add the sprite to the general (current) pyglet drawing batch)
-      # and the move control object to the list of active movies
+      # Add the move control object to the list of active movies; remove
+      # previous one, if still present
       #
-      """
-      mCtOb.Sprite.batch = self.currBatch
-      """
-      self.MovieCtrlList.append([mCtOb, _iSc, self.nFrTotal])
-      """
-      ssp.Log.write("DEBUG", "StimSceType.startMovie _iSc={0} iFr={1}"
-                    .format(_iSc, self.nFrTotal))
-      """
+      iMC = 0
+      while iMC < len(self.MovieCtrlList):
+        if self.MovieCtrlList[iMC][3] == _MovID:
+          temp = self.MovieCtrlList.pop(iMC)
+          temp[0].kill()
+        else:
+          iMC += 1
+
+      self.MovieCtrlList.append([mCtOb, _iSc, self.nFrTotal, _MovID])
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     elif   sc[stm.SC_field_type] == stm.StimSceType.startVideo:
@@ -298,23 +302,24 @@ class Presenter:
       # pyglet sprite, with the requested presentation properties
       #
       vCtOb  = vid.VideoCtrl(_Video=vidOb)
+      vCtOb.iScr = sc[stm.SC_field_VidScreen]
       vCtOb.setSpriteProperties(sc[stm.SC_field_posXY], 
                                 sc[stm.SC_field_magXY],
                                 sc[stm.SC_field_rot], 
                                 sc[stm.SC_field_VidTrans])
 
-      # Add the sprite to the general (current) pyglet drawing batch)
-      # and the video control object to the list of active videos
+      # Add the video control object to the list of active videos; remove
+      # previous one, if still present
       #
-      """
-      mCtOb.Sprite.batch = self.currBatch
-      """
-      self.VideoCtrlList.append([vCtOb, _iSc, self.nFrTotal])
-      """
-      ssp.Log.write("DEBUG", "StimSceType.startMovie _iSc={0} iFr={1}"
-                    .format(_iSc, self.nFrTotal))
-      """
-
+      iVC = 0
+      while iVC < len(self.VideoCtrlList):
+        if self.VideoCtrlList[iVC][3] == _VidID:
+          temp = self.VideoCtrlList.pop(iVC)
+          temp[0].kill()
+        else:
+          iVC += 1
+      
+      self.VideoCtrlList.append([vCtOb, _iSc, self.nFrTotal, _VidID])
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     elif sc[stm.SC_field_type] == stm.StimSceType.renderSce:
@@ -330,7 +335,7 @@ class Presenter:
           # nothing has changed)
           #
           iODr, ObjNewMask, ObjIDs, ObjPosXY, ObjRot = self.Stim.cScOList[_iSc]
-          nObjs      = len(self.Stim.cODr_tr_iVert[iODr])
+          nObjs = len(self.Stim.cODr_tr_iVert[iODr])
           ObjNewMask = np.array(ObjNewMask)
 
           # Generate pyglet Groups to bind shaders to objects, if required
@@ -372,30 +377,33 @@ class Presenter:
           self.Batch.delete_shader_object_data()
 
           for iObj in range(nObjs):
-            self.iVertTr = self.Stim.cODr_tr_iVert[iODr][iObj][2]
-            self.vertTr  = self.Stim.cODr_tr_vertCoord[iODr][iObj][2]
-            self.vRGBATr = self.Stim.cODr_tr_vertRGBA[iODr][iObj][2]
+            self.iVertTr  = self.Stim.cODr_tr_iVert[iODr][iObj][2]
+            self.vertTr   = self.Stim.cODr_tr_vertCoord[iODr][iObj][2]
+            self.vRGBATr  = self.Stim.cODr_tr_vertRGBA[iODr][iObj][2]
+            self.vRGBATr2 = self.Stim.cODr_tr_vertRGBA2[iODr][iObj][2]
 
             if iObj == 0:
               # Not shader-enabled objects ...
               #
               if ObjNewMask[iObj] == stm.SC_ObjNewAll:
                 self.Batch.replace_object_data(self.iVertTr, self.vertTr, 
-                                               self.vRGBATr)
+                                               self.vRGBATr, self.vRGBATr2)
               else:
                 if (ObjNewMask[iObj] & stm.SC_ObjNewiVer) > 0:
                   self.Batch.replace_object_data_indices(self.iVertTr)
                 if (ObjNewMask[iObj] & stm.SC_ObjNewVer) > 0:
                   self.Batch.replace_object_data_vertices(self.vertTr)
                 if (ObjNewMask[iObj] & stm.SC_ObjNewRGBA) > 0:
-                  self.Batch.replace_object_data_colors(self.vRGBATr)
+                  self.Batch.replace_object_data_colors(self.vRGBATr, 
+                                                        self.vRGBATr2)
 
             else:
               # For each shader-enabled object ...
               #
               self.currShObjIDs.append(ObjIDs[iObj])
               self.Batch.add_shader_object_data(ObjIDs[iObj], self.iVertTr, 
-                                                self.vertTr, self.vRGBATr)
+                                                self.vertTr, self.vRGBATr,
+                                                self.vRGBATr2)
 
           self.prevShObjIDs = self.currShObjIDs
           self.prevObjIDs   = ObjIDs
@@ -406,54 +414,47 @@ class Presenter:
           #
           self.Batch.set_shader_time_all(self.tFrRel_s)
 
-        # Draw current triangle vertices, acknowledging the scaling and
-        # rotation of the current display (stage settings)
+        # Indicate that the batch needs to be drawn
         #
-        """
-        glPushMatrix()
-        glScalef(self.Stage.scalX_umPerPix *self.Stage.winXCorrFact, 
-                 self.Stage.scalY_umPerPix *self.Stage.winXCorrFact, 0.0)
-        glRotatef(self.Stage.rot_angle, 0, 0, 1)
-        glTranslatef(self.Stage.centOffX_pix, self.Stage.centOffY_pix, 0)
-        self.currBatch.draw()
-        glPopMatrix()
-        """
         drawn = False
 
-    if not(drawn) or (self.MovieCtrlList != []) or (self.VideoCtrlList != []):
+
+    if (_nSc > 0) and (not(drawn)\
+       or (len(self.MovieCtrlList) > 0) or (len(self.VideoCtrlList) > 0)):
       # Keep movie control objects updated: Advance or kill, if finished
       #
       iMC = 0
       while iMC < len(self.MovieCtrlList):
-        mCtOb, iScWhenStarted, iFrWhenStarted = self.MovieCtrlList[iMC]
-        if iScWhenStarted == _iSc:
+        mCtOb, iScWhenStarted, iFrWhenStarted, ID = self.MovieCtrlList[iMC]
+        if (iScWhenStarted == _iSc):
           # Don't start playing the movie if we are still in the no-duration
           # scene that started the movie
           #
-          """
-          ssp.Log.write("DEBUG", "Movie #{0} draw first, _iSc={1} iFr={2}"
-                        .format(iMC, _iSc, self.nFrTotal))
-          """  
+          '''
+          ssp.Log.write("DEBUG", "Movie #{0} ID{1} ready, _iSc={2} iFr={3}"
+                      .format(iMC, mCtOb.ID, _iSc, self.nFrTotal))
+          '''
           iMC += 1
           continue
 
         res = mCtOb.getNextFrIndex()
         if res < 0:
-          mCtOb, iScWhenStarted, iFrWhenStarted = self.MovieCtrlList.pop(iMC)
+          '''
+          ssp.Log.write("DEBUG", "Movie #{0} ID{1} last,  _iSc={1} nFr={2}"
+                        .format(iMC, mCtOb.ID, _iSc, self.nFrTotal -iFrWhenStarted))
+          '''
+          mCtOb, iScWhenStarted, iFrWhenStarted, ID = self.MovieCtrlList.pop(iMC)
           mCtOb.kill()
-          """
-          ssp.Log.write("DEBUG", "Movie #{0} draw last,  _iSc={1} nFr={2}"
-                        .format(iMC, _iSc, self.nFrTotal -iFrWhenStarted))
-          """
+
         else:
           mCtOb.setSpriteBatch(self.Batch)
           iMC += 1
-
+          
       # Keep video control objects updated: Advance or kill, if finished
       #
       iVC = 0
       while iVC < len(self.VideoCtrlList):
-        vCtOb, iScWhenStarted, iFrWhenStarted = self.VideoCtrlList[iVC]
+        vCtOb, iScWhenStarted, iFrWhenStarted, ID = self.VideoCtrlList[iVC]
         if iScWhenStarted == _iSc:
           # Don't start playing the video if we are still in the no-duration
           # scene that started the video
@@ -463,7 +464,7 @@ class Presenter:
 
         res = vCtOb.getNextFrIndex()
         if res < 0:
-          vCtOb, iScWhenStarted, iFrWhenStarted = self.VideoCtrlList.pop(iVC)
+          vCtOb, iScWhenStarted, iFrWhenStarted, ID = self.VideoCtrlList.pop(iVC)
           vCtOb.kill()
 
         else:
@@ -473,14 +474,14 @@ class Presenter:
       # Draw current triangle vertices, acknowledging the scaling and
       # rotation of the current display (stage settings)
       #
-      self.Batch.draw(self.Stage, self.View)
+      self.Batch.draw(self.Stage, self.View, 
+                      sc[stm.SC_field_type] == stm.StimSceType.clearSce)
       
     # Show marker, if requested and present in the current scene
     #
     if self.Conf.markShowOnScr:
       if sc[stm.SC_field_marker]:  
-        self.Batch.add_marker_data(self.markerVert[1], self.markerVert[0],
-                                   self.markerVert[2])   
+        self.Batch.add_rect_data(self.markerVert)
       
     # Track rendering timing, if requested
     #
@@ -525,11 +526,18 @@ class Presenter:
            self.Stage.centOffX_pix   = data[1]["centOffX_pix"]
            self.Stage.centOffY_pix   = data[1]["centOffY_pix"]
            self.Stage.rot_angle      = data[1]["rot_angle"]
+           self.Stage.dxScr12        = data[1]["dxScr12"]
+           self.Stage.dyScr12        = data[1]["dyScr12"]
+           self.Stage.offXScr1_pix   = data[1]["offXScr1_pix"]
+           self.Stage.offYScr1_pix   = data[1]["offYScr1_pix"]
+           self.Stage.offXScr2_pix   = data[1]["offXScr2_pix"]
+           self.Stage.offYScr2_pix   = data[1]["offYScr2_pix"]
+           
 
          if data[0] == mpr.PipeValType.toSrv_changedLEDs:
-           self.Stage.LEDs           = data[1][0] 
-           self.Stage.isLEDSeqEnabled= data[1][1]
-           self.Stage.sendLEDChangesToLCr(self.LCr, self.Conf)
+           self.Stage.LEDs            = data[1][0] 
+           self.Stage.isLEDSeqEnabled = data[1][1]
+           self.Stage.sendLEDChangesToLCr(self.Conf)
 
 
     # Render scene
@@ -553,10 +561,10 @@ class Presenter:
 
       self.nFr          = self.Stim.cScDurList[self.iSc]
       self.is1FrOfSce   = True
-      if self.nFr < 0:
+      if self.nFr <= 0:
         # Scene w/o duration, handle immediately
         #
-        self.renderSce(self.iSc)
+        self.renderSce(self.iSc, self.nFr)
         self.isNextSce  = True
 
       else:
@@ -581,7 +589,7 @@ class Presenter:
     if self.nFr > 0:
       # Scene has a duration, handle it ...
       #
-      self.renderSce(self.iSc)
+      self.renderSce(self.iSc, self.nFr)
       self.nFr         -= 1
       self.is1FrOfSce   = False
       self.isNextSce    = (self.nFr == 0)
@@ -859,7 +867,7 @@ class Presenter:
  
       # Create batch object for rendering objects
       #
-      self.Batch = self.View.createBatch()
+      self.Batch = self.View.createBatch(_isScrOvl=self.Stage.useScrOvl)
       self.Batch.set_shader_manager(self.ShManager)
  
       if self.isReady:

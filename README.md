@@ -1,5 +1,9 @@
 
+<<<<<<< HEAD
 ## QDSpy v.75 beta
+=======
+## QDSpy v.74 beta (branch "experimental")
+>>>>>>> refs/remotes/origin/experimental
 
 This is a software for generating and presenting stimuli for visual neuroscience. It is written in Python and based on  (http://wvad.mpimf-heidelberg.mpg.de/abteilungen/biomedizinischeOptik/software/qds/), uses OpenGL and primarly targets Windows 7 (and above).
 
@@ -80,7 +84,12 @@ v0.73beta (January - February 2017)
   ``QDSpy_global.py``).
 * Bug fix: Stimulus duration now calculated correctly.
 * Bug fix: `GetStimulusPath()` now returns also to correct path for stimulus
+<<<<<<< HEAD
   files in a subfolder of the default stimulus folder.
+=======
+  files in a subfolder of the default stimulus folder.   
+
+>>>>>>> refs/remotes/origin/experimental
            
 
 v0.72 beta (August 2016) 

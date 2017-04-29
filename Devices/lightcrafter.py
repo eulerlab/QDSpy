@@ -5,7 +5,7 @@ Lightcrafter API
 
 Note that this library requires firmware 3.0 and higher
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2017 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -23,6 +23,7 @@ LC_height            = 1140
 LC_VID               = 0x0451
 LC_PID               = 0x6401
 LC_IDStr             = "LCr"
+LC_Usage             = 65280
 
 LC_MaxDataLen        = 64
 LC_Timeout_ms        = 2000
@@ -57,6 +58,8 @@ class ERROR:
   NAK_ERROR          = -4
   COULD_NOT_CONNECT  = -5
   INVALID_PARAMS     = -6
+  DEVICE_NOT_FOUND   = -7
+  NO_DEVICES         = -8
 
 ErrorStr             = dict([
   (ERROR.OK,                "ok"),
@@ -65,7 +68,9 @@ ErrorStr             = dict([
   (ERROR.NO_RESPONSE,       "No reponse from device"),
   (ERROR.NAK_ERROR,         "Command not acknowledged"),
   (ERROR.COULD_NOT_CONNECT, "Could not connect to device"),
-  (ERROR.INVALID_PARAMS,    "One or more parameters are invalid")
+  (ERROR.INVALID_PARAMS,    "One or more parameters are invalid"),
+  (ERROR.DEVICE_NOT_FOUND,  "Device with this index not found"),
+  (ERROR.NO_DEVICES,        "No device found")
   ])
 
 # ---------------------------------------------------------------------
@@ -112,8 +117,8 @@ class CMD_FORMAT_LIST:
   """
   xxx                = [ 0x1A, 0x16, 0x09, 0]   # MEM_CONTROL,
   xxx                = [ 0, 0, 0],              # I2C_CONTROL,
-  xxx                = [ 0x1A, 0x1A, 0x01, 0]   # LUT_VALID,
   """
+  LUT_VALID          = [ 0x1A, 0x1A, 0x01, 0]   # LUT_VALID,
   DISP_MODE          = [ 0x1A, 0x1B, 0x01, 0]   # DISP_MODE,
   """
   xxx                = [ 0x1A, 0x1D, 0x03, 0]   # TRIG_OUT1_CTL,
@@ -129,12 +134,14 @@ class CMD_FORMAT_LIST:
   xxx                = [ 0, 0, 0],              # BUFFER_SWAP,
   xxx                = [ 0, 0, 0],              # BUFFER_WR_DISABLE,
   xxx                = [ 0, 0, 0],              # CURRENT_RD_BUFFER,
-  xxx                = [ 0x1A, 0x29, 0x08, 0]   # PAT_EXPO_PRD,
-  xxx                = [ 0x1A, 0x30, 0x01, 0]   # INVERT_DATA,
-  xxx                = [ 0x1A, 0x31, 0x04, 0]   # PAT_CONFIG,
-  xxx                = [ 0x1A, 0x32, 0x01, 0]   # MBOX_ADDRESS,
-  xxx                = [ 0x1A, 0x33, 0x01, 0]   # MBOX_CONTROL,
-  xxx                = [ 0x1A, 0x34, 0x00, 0]   # MBOX_DATA,
+  """
+  PAT_EXPO_PRD       = [ 0x1A, 0x29, 0x08, 0]   # PAT_EXPO_PRD,
+  #xxx               = [ 0x1A, 0x30, 0x01, 0]   # INVERT_DATA,
+  PAT_CONFIG         = [ 0x1A, 0x31, 0x04, 0]   # PAT_CONFIG,
+  MBOX_ADDRESS       = [ 0x1A, 0x32, 0x01, 0]   # MBOX_ADDRESS,
+  MBOX_CONTROL       = [ 0x1A, 0x33, 0x01, 0]   # MBOX_CONTROL,
+  MBOX_DATA          = [ 0x1A, 0x34, 0x00, 0]   # MBOX_DATA,
+  """
   xxx                = [ 0x1A, 0x35, 0x04, 0]   # TRIG_IN1_DELAY,
   xxx                = [ 0, 0, 0],              # TRIG_IN2_CONTROL,
   xxx                = [ 0x1A, 0x39, 0x01, 0]   # SPLASH_LOAD,
@@ -160,6 +167,24 @@ class CMD_FORMAT_LIST:
   """
 
 # ---------------------------------------------------------------------
+def enumerateLightcrafters(_funcLog=None):
+  """
+  Enumerate ligtcrafter devices
+  """
+  nLCrFound = 0
+  LCrList   = []
+  hidList   = hid.enumerate()
+  for iDev, dev in enumerate(hidList):
+    if ((dev["product_id"] == LC_PID) and (dev["vendor_id"] == LC_VID) and
+        (dev["usage"] == LC_Usage)):
+      if _funcLog:
+        _funcLog("ok", "Found lightcrafter device #{0}".format(iDev), 2)     
+        _funcLog(" ",  "Device path=`{0}`".format(dev["path"]), 2)     
+      LCrList.append((iDev, dev["path"]))
+      nLCrFound += 1
+  return LCrList    
+
+# ---------------------------------------------------------------------
 # Class representing a lightcrafter device
 # ---------------------------------------------------------------------
 class Lightcrafter:
@@ -174,25 +199,64 @@ class Lightcrafter:
   =============== ==================================================
   """
   def __init__(self, _isCheckOnly=False, _funcLog=None, _logLevel=2):
+    
+    global LCrDeviceList
+    
     self.LC          = None
     self.nSeq        = 0
     self.isCheckOnly = _isCheckOnly
     self.lastMsgStr  = ""
     self.funcLog     = _funcLog
     self.logLevel    = _logLevel
+    self.devNum      = -1
+    if _isCheckOnly:
+      return
     
+    if not("LCrDeviceList" in globals()) or (len(LCrDeviceList) == 0): 
+      #print("CALLED enumerateLightcrafters")
+      LCrDeviceList  = enumerateLightcrafters(_funcLog)
+     
+
   # -------------------------------------------------------------------
   # Connect and disconnect the device
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def connect(self, _devNum=0):
+  def connect(self, _devNum=-1):
     """
-    Connect to lightcrafter.
+    Connect to lightcrafter. A device number (0,1,...) can be given if
+    multiple lightcrafters are connected.
     """
+    global LCrDeviceList
+    
     if not(self.isCheckOnly):
       try:
-        self.log(" ", "Trying to connect ...", 2)            
-        self.LC = hid.device()
-        self.LC.open(LC_VID, LC_PID)
+        if _devNum < 0:
+          # Using the first device that is available
+          #
+          self.log(" ", "Trying to connect ...", 2)     
+          
+          self.LC = hid.device()
+          self.LC.open(LC_VID, LC_PID)
+          self.devNum = 0
+          
+        else:
+          if _devNum < len(LCrDeviceList):
+            # Look for a specific device (in case there are multiple LCrs
+            # connected)
+            # 
+            self.log(" ", "Trying to connect to LCr #{0}...".format(_devNum), 2)     
+
+            self.LC = hid.device()
+            self.LC.open_path(LCrDeviceList[_devNum][1])
+            self.devNum = _devNum
+          
+          else:
+            self.LC = None
+            if len(LCrDeviceList) > 0:
+              errC = ERROR.DEVICE_NOT_FOUND
+            else:
+              errC = ERROR.NO_DEVICES
+            self.log("ERROR", ErrorStr[errC], 0)                    
+            return [errC]  
 
       except IOError as ex:
         self.LC = None
@@ -206,7 +270,10 @@ class Lightcrafter:
       self.sSN           = self.LC.get_serial_number_string()
   
       self.log("ok", "Connected to {0} by {1}".format(self.sProduct, 
-                                                      self.sManufacturer), 2)      
+                                                      self.sManufacturer), 2)     
+      if _devNum >= 0:
+        self.log(" ", "as device #{0}".format(self.devNum), 2)    
+      
     return [ERROR.OK]
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -416,15 +483,11 @@ class Lightcrafter:
       27:26 15:0 First Line (beginning of active line in the Frame)
       """
 
-      self.log(" ", 
-               "Video signal    : {0}\n"
-               "Resolution      : {1} x {2}\n"
-               "Polarity        : HSync={3}, VSync={4}\n"
-               "Pixel clock     : {5} kHz\n"
-               "Frequency  [kHz]: HFreq={6}, VFreq={7}"
-               .format("detected" if SigDetect else "-", HRes, VRes, 
-                       HSyncPol, VSyncPol, PixClk_kHz, HFreq_kHz, VFreq_Hz), 1) 
-
+      self.log(" ", "Video signal    : {0}".format("detected" if SigDetect else "-"), 1)
+      self.log(" ", "Resolution      : {0} x {1}".format(HRes, VRes), 1)
+      self.log(" ", "Polarity        : HSync={0}, VSync={1}".format(HSyncPol, VSyncPol), 1)
+      self.log(" ", "Pixel clock     : {0} kHz".format(PixClk_kHz), 1)
+      self.log(" ", "Frequency  [kHz]: HFreq={0}, VFreq={1}".format(HFreq_kHz, VFreq_Hz), 1)
       info       = {"SigDetect":SigDetect, "HRes":HRes, "VRes":VRes,
                     "HSyncPol":HSyncPol, "VSyncPol":VSyncPol,
                     "PixClk_kHz":PixClk_kHz, "HFreq_kHz":HFreq_kHz,
@@ -514,17 +577,305 @@ class Lightcrafter:
       raise LCException(res[0])
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def validateDataCommandResponse(self):
+    """
+    The Validate Data command checks the programmed pattern display modes 
+    and indicates any invalid settings.
+     
+    =============== ==================================================
+    Result:
+    =============== ==================================================
+    data            | the original data byte returned by the device
+    info            | a dictionary with following entry:
+                    | PeriodSettingInvalid, LUTPatternNumberInvalid,
+                    | TrigOut1Invalid, PostVectSettingsInvalid,
+                    | FrPerExpDiffInvalid, isBusyValidating
+    =============== ==================================================
+    """
+    if self.isCheckOnly:
+      return [ERROR.OK]      
+    '''
+    res    = self.writeData(CMD_FORMAT_LIST.LUT_VALID, [0])
+    if res[0] != ERROR.OK:
+      raise LCException(res[0])
+    '''  
+    res    = self.readData(CMD_FORMAT_LIST.LUT_VALID)
+    if res[0] == ERROR.OK:
+      data = res[1][LC_firstDataByte]
+      PeriodSettingInvalid    = int((data & 0x01) > 0)
+      LUTPatternNumberInvalid = int((data & 0x02) > 0)
+      TrigOut1Invalid         = int((data & 0x04) > 0)
+      PostVectSettingsInvalid = int((data & 0x08) > 0)
+      FrPerExpDiffInvalid     = int((data & 0x10) > 0)
+      isBusyValidating        = int((data & 0x80) > 0)
+
+      if isBusyValidating:
+        self.log(" ", 
+                 "DLPC350 is busy validating, once it is cleared, then, you"
+                 " can interpret the rest of the bits", 1)
+        info = {}
+        
+      else:
+        self.log(" ", 
+                 "Selected exposure or frame period settings are invalid                   : {0}\n"
+                 "Selected pattern numbers in LUT are invalid                              : {1}\n"
+                 "Warning, continuous Trigger Out1 request or overlapping black sectors    : {2}\n"
+                 "Warning, post vector was not inserted prior to external triggered vector : {3}\n"
+                 "Warning, frame period or exposure difference is less than 230usec        : {4}\n"
+                 .format(PeriodSettingInvalid, LUTPatternNumberInvalid, 
+                         TrigOut1Invalid, PostVectSettingsInvalid, 
+                         FrPerExpDiffInvalid), 1) 
+        info = {"PeriodSettingInvalid":PeriodSettingInvalid, 
+                "LUTPatternNumberInvalid":LUTPatternNumberInvalid, 
+                "TrigOut1Invalid":TrigOut1Invalid,
+                "PostVectSettingsInvalid":PostVectSettingsInvalid, 
+                "FrPerExpDiffInvalid":FrPerExpDiffInvalid}
+    
+      return [ERROR.OK, info]
+    
+    else:
+      raise LCException(res[0])
+      
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def setPatternTriggerMode(self, _mode):
+    """
+    Sets the Pattern Trigger Mode.
+    
+    Important: before executing this command, stop current pattern sequence
+    and after execution of this command, validate before starting sequence.
+    
+    =============== ==================================================
+    Parameters:
+    =============== ==================================================
+    _mode           | 0=VSYNC serves to trigger the pattern 
+                    | display sequence
+                    | 1=internally or externally generated triggers
+                    | (TRIG_IN_1 and TRIG_IN_2)
+                    | 2=TRIG_IN_1 alternates between two patterns, 
+                    | while TRIG_IN_2 advances to next pair of
+                    | patterns
+                    | 3=internally or externally generated triggers
+                    | for variable exposure sequence
+                    | 4=VSYNC triggered for variable exposure 
+                    | display sequence
+    =============== ==================================================
+    """
+    if not(_mode in range(0,4)):
+      return [ERROR.INVALID_PARAMS]
+    
+    if self.isCheckOnly:
+      return [ERROR.OK]      
+    
+    res    = self.writeData(CMD_FORMAT_LIST.PAT_TRIG_MODE, [_mode])
+    if res[0] == ERROR.OK:
+      return [ERROR.OK]
+    else:
+      raise LCException(res[0])
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def setPatternDisplayDataInputSource(self, _src):
+    """
+    Sets the Pattern Data Input Source.
+    
+    Important: before executing this command, stop current pattern sequence
+    and after execution of this command, validate before starting sequence.
+    
+    =============== ==================================================
+    Parameters:
+    =============== ==================================================
+    _mode           | 0=Data is streamed through the 24bit RGB
+                    | /FPD-link interface
+                    | 3=Data is fetched from flash memory
+    =============== ==================================================
+    """
+    if not(_src in [0x00, 0x11]):
+      return [ERROR.INVALID_PARAMS]
+    
+    if self.isCheckOnly:
+      return [ERROR.OK]      
+    
+    res    = self.writeData(CMD_FORMAT_LIST.PAT_DISP_MODE, [_src])
+    if res[0] == ERROR.OK:
+      return [ERROR.OK]
+    else:
+      raise LCException(res[0])
+  
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def startPatternSequence(self):
+    """
+    Starts the programmed pattern sequence.
+    
+    Important: after executing this command, poll the system status..
+    """
+    if self.isCheckOnly:
+      return [ERROR.OK]      
+    
+    res    = self.writeData(CMD_FORMAT_LIST.PAT_START_STOP, [0x10])
+    if res[0] == ERROR.OK:
+      return [ERROR.OK]
+    else:
+      raise LCException(res[0])
+  
+  def pausePatternSequence(self):
+    """
+    Pauses the programmed pattern sequence.
+    
+    Important: after executing this command, poll the system status..
+    """
+    if self.isCheckOnly:
+      return [ERROR.OK]      
+    
+    res    = self.writeData(CMD_FORMAT_LIST.PAT_START_STOP, [0x01])
+    if res[0] == ERROR.OK:
+      return [ERROR.OK]
+    else:
+      raise LCException(res[0])
+
+  def stopPatternSequence(self):
+    """
+    Stop the programmed pattern sequence.
+    
+    Important: after executing this command, poll the system status..
+    """
+    if self.isCheckOnly:
+      return [ERROR.OK]      
+    
+    res    = self.writeData(CMD_FORMAT_LIST.PAT_START_STOP, [0x00])
+    if res[0] == ERROR.OK:
+      return [ERROR.OK]
+    else:
+      raise LCException(res[0])
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def setPatternExpTimeFrPer(self, _pet_us, _frp_us):
+    """ 
+    Set Pattern Exposure Time and Frame Period.
+    
+    The Pattern Exposure Time and Frame Period dictates the length of time
+    a pattern is exposed and the frame period. Either the pattern exposure 
+    time must be equivalent to the frame period, or the pattern exposure
+    time must be less than the frame period by 230 μs.
+    
+    Important: before executing this command, stop current pattern sequence
+    and after execution of this command, validate before starting sequence.
+
+    =============== ==================================================
+    Parameters:
+    =============== ==================================================
+    _pet_us         | pattern exposure time in [us]
+    _frp_us         | frame period in [us]
+    =============== ==================================================
+    """
+    if self.isCheckOnly:
+      return [ERROR.OK]      
+
+    if (_pet_us <= 0) or (_frp_us <= 0):
+      return [ERROR.INVALID_PARAMS]
+    
+    data = [] 
+    data.append(_pet_us & 0x000000FF)
+    data.append(_pet_us & 0x000000FF)
+    data.append(_pet_us & 0x000000FF)
+    data.append(_pet_us & 0x000000FF)
+    
+    #HRes       = (data[i+2] << 8) +data[i+1]
 
 
-
-
-
-
-
-
-
-
-
+    res    = self.writeData(CMD_FORMAT_LIST.PAT_EXPO_PRD, data)
+    if res[0] == ERROR.OK:
+      return [ERROR.OK]
+    else:
+      raise LCException(res[0])
+      
+  """
+  NESCESSARY:
+      
+      PAT_EXPO_PRD
+    
+  2.4.3.4.3 Pattern Exposure Time and Frame Period
+  (I2C: 0x66)
+  (USB: CMD2: 0x1A, CMD3: 0x29)
+  The Pattern Exposure Time and Frame Period dictates the length of time a pattern is exposed and the
+  frame period. Either the pattern exposure time must be equivalent to the frame period, or the pattern
+  exposure time must be less than the frame period by 230 μs. Before executing this command, stop the
+  current pattern sequence. After executing this command, send the Validation command (I2C: 0x7D or
+  USB: 0x1A1A) once before starting the pattern sequence.
+  
+  
+  2.4.3.4.5 Pattern Display LUT Control
+  (I2C: 0x75)
+  (USB: CMD2: 0x1A, CMD3: 0x31)
+  The Pattern Display LUT Control Command controls the execution of patterns stored in the lookup table.
+  Before executing this command, stop the current pattern sequence. After executing this command, send
+  the Validation command (I2C: 0x7D or USB: 0x1A1A) once before starting the pattern sequence.
+  
+  2.4.3.4.6 Pattern Display Look-Up Table
+  The DLPC350 supports a Pattern Display Look-Up Table (LUT) that defines the pattern sequence and the
+  configuration parameters for each pattern in the sequence. To create this LUT, the programmer must first
+  setup the display mode, trigger mode, exposure, frame rate, and so forth, before writing data to the LUT.
+  After properly configured, the Pattern Display LUT Access Control command writes the LUT.
+  
+  2.4.3.4.7 Pattern Display LUT Offset Pointer
+  (I2C: 0x76)
+  (USB: CMD2: 0x1A, CMD3: 0x32)
+  The Pattern Display LUT Offset Pointer defines the location of the LUT entries in the DLPC350 memory
+                                                                                       
+  2.4.3.4.8 Pattern Display LUT Access Control
+  (I2C: 0x77)
+  (USB: CMD2: 0x1A, CMD3: 0x33)
+  The LUT on the DLPC350 has a mailbox to send data to different registers, and this command selects
+  which register will receive the data. To select the flash image indexes or define the patterns used in the
+  pattern sequence for the pattern display mode, first open the mailbox for the appropriate function by
+  writing the appropriate bit. Second, write the desired data to the mailbox using the Pattern Display LUT
+  Data command (I2C: 0x78 or USB 0x1A34), then use this command to close the mailbox. Before executing
+  this command, stop the current pattern sequence. After executing this command, send the Validation
+  command (I2C: 0x7D or USB: 0x1A1A) once before starting the pattern sequence.
+  
+  2.4.3.4.9 Pattern Display LUT Data
+  (I2C: 0x78)
+  (USB: CMD2: 0x1A, CMD3: 0x34)
+  The following parameters: display mode, trigger mode, exposure, and frame rate must be set-up
+  before sending any mailbox data. If the Pattern Display Data Input Source is set to streaming, the
+  image indexes do not need to be set. Regardless of the input source, the pattern definition must be set.
+  If the mailbox was opened to define the flash image indexes, list the index numbers in the mailbox. For
+  example, if image indexes 0 through 3 are desired, write 0x0 0x1 0x2 0x3 to the mailbox. Similarly, if the
+  desired image index sequence is 0, 1, 2, 1, then write 0x0 0x1 0x2 0x1 to the mailbox.
+  
+  
+  NEEDED?
+  2.4.3.4.10 Pattern Display Variable Exposure LUT Offset Pointer
+  (I2C: 0x5C)
+  (USB: CMD2: 0x1A, CMD3: 0x3F)
+  The Pattern Display Variable Exposure LUT Offset Pointer defines the location of the Variable Exposure
+  LUT entries in the DLPC350 memory
+  
+  2.4.3.4.11 Pattern Display Variable Exposure LUT Control
+  (I2C: 0x5B)
+  (USB: CMD2: 0x1A, CMD3: 0x40)
+  The Pattern Display Variable Exposure LUT Control Command controls the execution of patterns stored in
+  the lookup table. Before executing this command, stop the current pattern sequence. After executing this
+  command, send the Validation command (I2C: 0x7D or USB: 0x1A1A) once before starting the pattern
+  sequence.
+  
+  2.4.3.4.12 Pattern Display Variable Exposure LUT Data
+  (I2C: 0x5D)
+  (USB: CMD2: 0x1A, CMD3: 0x3E)
+  The following parameters: Display Pattern mode, Display Data Input Source, Variable Exposure
+  Trigger mode, Variable Exposure Access Control, Variable Exposure LUT Control, and Variable
+  Exposure Offset Pointer Control must be set-up before sending any mailbox data. For each LUT
+  entry that is sent, the Variable Exposure Offset Pointer must be incremented. See Figure 2-12 for
+  an example of sending a Variable Exposure Pattern Sequence. If the Pattern Display Data Input
+  Source is set to streaming, the image indexes do not need to be set. Regardless of the input source,
+  the pattern definition must be set.
+  If the mailbox was opened to define the flash image indexes, list the index numbers in the mailbox. For
+  example, if image indexes 0 through 3 are desired, write 0x0 0x1 0x2 0x3 to the mailbox. Similarly, if the
+  desired image index sequence is 0, 1, 2, 1, then write 0x0 0x1 0x2 0x1 to the mailbox.
+  
+  
+  
+  
+  """
       
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setVideoGamma(self, _mode, _enabled):
@@ -750,9 +1101,13 @@ class Lightcrafter:
     self.lastMsgStr = _sMsg
     if _logLevel <= self.logLevel:
       if self.funcLog is None:
-        print("{0!s:>8} {1}".format(_sHeader, _sMsg))
+        print("{0!s:>8} #{1}:{2}".format(_sHeader, self.devNum, _sMsg))
       else:
-        self.funcLog(_sHeader, LC_IDStr + "|" +_sMsg)
+        if self.devNum >= 0:
+          devStr = " #{0}".format(self.devNum)
+        else:
+          devStr = " unknown"
+        self.funcLog(_sHeader, LC_IDStr +devStr +"|" +_sMsg)
 
 # ---------------------------------------------------------------------
 

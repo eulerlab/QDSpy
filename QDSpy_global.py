@@ -3,16 +3,16 @@
 """
 QDSpy module - global definitions
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2017 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.73 beta"
+QDSpy_versionStr            = "QDSpy v0.75 beta"
 QDSpy_copyrightStr          = "(c) 2013-17 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v073beta.thomas_euler.eulerlab.de"
+QDSpy_appID                 = u"QDSpy3.v074beta.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 
 QDSpy_isDebug               = True
@@ -51,11 +51,11 @@ QDSpy_refresh_Hz            = 60.0
 
 QDSpy_cPickleProtocol       = 3
 QDSpy_cPickleFileExt        = ".pickle"
-QDSpy_fileVersionID         = 7
+QDSpy_fileVersionID         = 8
 QDSpy_stimFileExt           = ".py"
 QDSpy_pathStimuli           = ".\\Stimuli\\"
 QDSpy_autorunStimFileName   = "__autorun"
-QDSpy_autorunDefFileName    = "__autorun_default"
+QDSpy_autorunDefFileName    = "__autorun_default_DO_NOT_DELETE"
 
 QDSpy_movDescFileExt        = ".txt"
 QDSpy_movDescSect           = "QDSMovie2Description"
@@ -93,11 +93,26 @@ QDSpy_markerRGBA            = "255,127,127,255"
 QDSpy_markerScrWidthFract   = 16
 QDSpy_markerShowOnScr       = True
 
+QDSpy_useScrOverlayMode     = False
+QDSpy_screenIndexGUI        = 0
+QDSpy_winWidth1_2           = 1280
+QDSpy_winHeight1_2          = 480
+
+QDSpy_xOffsetScr1_pix       = 0
+QDSpy_yOffsetScr1_pix       = 0
+QDSpy_xOffsetScr2Center_pix = 0
+QDSpy_yOffsetScr2Center_pix = 0
+
+QDSpy_MaxLightcrafterDev    = 2
 QDSpy_use_Lightcrafter      = True
 QDSpy_LEDNames_default      = "red, green, blue"
 QDSpy_LEDPeakWLs_default    = "650, 510, 450"
+QDSpy_LEDDevIndex_default   = "0, 0, 0"
+QDSpy_LEDIndex_default      = "0, 1, 2"
+QDSpy_LEDCurrents_default   = "10, 10, 10"
+QDSpy_LEDCurrents_max       = "100, 100, 100"
 QDSpy_LEDQtColors_default   = "darkRed, darkGreen, darkBlue"
-QDSpy_LCr_LogLevel          = 1 #0=only errors, 1=important 2=all
+QDSpy_LCr_LogLevel          = 0 #0=only errors, 1=important 2=all
 
 QDSpy_allowGammaLUT_default = False
 QDSpy_LUTFileExt            = ".txt"

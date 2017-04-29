@@ -2,39 +2,36 @@
 # -*- coding: utf-8 -*-
 #
 # ---------------------------------------------------------------------
-import  random 
+import  random
 import  QDS
-import  Devices.lightcrafter as LCr
 
-QDS.Initialize("Test1", "Test for Lightcrafter")
+QDS.Initialize("noise_Colored1", "Example for random-colored boxes flickering")
 
-print("---")
-dev     = LCr.Lightcrafter()
-result  = dev.connect()
-if result[0] == LCr.ERROR.OK:
-  dev.getHardwareStatus()
-  dev.getSystemStatus()
-  dev.getMainStatus()
-  dev.getVideoSignalDetectStatus()
-  dev.disconnect()
-else:
-  print("WARNING: This script required a lightcrafter")
-print("---")
-
-QDS.LC_setLEDCurrents(0, [0,50,0])
-
+# Set random generator seed 
+#
 random.seed(1)
-p = {}
-p['nTrials'] = 20
-p['nRows']     = 2
-p['nCols']     = 2
-p['boxDx']     = 50
-p['boxDy']     = 50
 
+# Define global stimulus parameters
+#
+p = {}
+p['dtFr_s']    = 3/60.0  # presentation time per pattern
+p['nTrials']   = 50      # # of repeats
+p['nPrMark']   = 20      # present marker every p['nPrMark']*p['dtFr_s']
+p['nRows']     = 30      # dimensions of pattern grid
+p['nCols']     = 30
+p['boxDx']     = 15      # box size in um
+p['boxDy']     = 15
+p['dRot_step'] = 0       # angle by which boxes are rotated
+
+# Define objects
+# Generate one box object per grid position
+#
 nB        = p['nRows']*p['nCols']
 for iB in range(1, nB+1):
   QDS.DefObj_Box(iB, p['boxDx'], p['boxDy'])
 
+# Fill list with parameters for every box object
+#
 BoxIndList = []
 BoxPosList = []
 BoxMagList = []
@@ -50,44 +47,34 @@ for iX in range(p['nCols']):
     BoxMagList.append((1.0, 1.0))
     BoxRotList.append(0)
 
-
+# Start of stimulus run
+#
 QDS.StartScript()
-QDS.SetBkgColor((32,16,64))
-QDS.Scene_Clear(0.1, 0)
+QDS.Scene_Clear(1.0, 0)
 
+# Present grid
+#
 rot	= 0.0
-phase = 0
 for iT in range(p['nTrials']):
   BoxColList = []
   BoxAlpList = []
   BoxRotList = []
   for iB in range(1, nB+1):
-    r = 0
-    g = 0
-    b = 0
-    if   phase == 0:
-      if iB == 1 or iB == 3:
-        b = 255
-    elif phase == 1:
-      if iB == 1 or iB == 4:
-        g = 255
-    if iB == 2:
-      r = 128
-      g = 128
-      b = 128
-
+    r = random.randint(5, 250)
+    g = random.randint(5, 250)
+    b = random.randint(5, 250)
     BoxColList.append((r, g, b))
     BoxAlpList.append(255)
     BoxRotList.append(rot)
-    rot += 0.005
+    rot += p['dRot_step']
   QDS.SetObjColorEx(BoxIndList, BoxColList, BoxAlpList)
-  QDS.Scene_RenderEx(0.050, BoxIndList, BoxPosList, BoxMagList,
-                     BoxRotList, int((iT % 20) == 0))
-  phase += 1
-  if phase > 1:
-    phase = 0
+  QDS.Scene_RenderEx(p['dtFr_s'], BoxIndList, BoxPosList, BoxMagList,
+                     BoxRotList, int((iT % p['nPrMark']) == 0))
 
-QDS.Scene_Clear(0.1, 0)
+QDS.Scene_Clear(1.0, 0)
+
+# Finalize stimulus
+#
 QDS.EndScript()
 
 # ---------------------------------------------------------------------

@@ -11,24 +11,23 @@ QDS.Initialize("Test2", "Test for Lightcrafter")
 #QDS.setColorMode((8,8,8), (0,0,0), 0)
 #QDS.setColorMode((0,0,0), (0,0,0), 2)
 
-p = {}
-p['nTrials']   = 120
-p['dt_s']      = 1.0/60.0
-p['dxScr']     = 580
-p['dyScr']     = 580
-p['useStripes']= 1
+nTrials   = 120
+dt_s      = 1.0/60.0
+dxScr     = 580
+dyScr     = 580
+useStripes= 1
 
 random.seed(1)
 
 # gradient
 #
-if p['useStripes']:
+if useStripes:
   # Use stripes to generate gradient
   #
   nRows       = 48
   nCols       = 3
-  Grad_boxDx  = p['dxScr']/float(nCols)
-  Grad_boxDy  = p['dyScr']/float(nRows)
+  Grad_boxDx  = dxScr/float(nCols)
+  Grad_boxDy  = dyScr/float(nRows)
   Grad_Colors = [(0,255,0),(0,0,255),(0,255,255)]
 
   nB          = nRows*nCols
@@ -64,8 +63,8 @@ else:
   #
   nRows       = 1
   nCols       = 3
-  Grad_boxDx  = p['dxScr']/float(nCols)
-  Grad_boxDy  = p['dyScr']/float(nRows)
+  Grad_boxDx  = dxScr/float(nCols)
+  Grad_boxDy  = dyScr/float(nRows)
   Grad_RGBA   = [(0,255,0, 255),(0,0,255, 255),(0,255,255, 255)]
 
   nB          = nRows*nCols
@@ -105,7 +104,7 @@ Spot_ID_sect  = Spot_ID_sinB +5
 Spot_r        = 150
 Spot_SinPer_s = 2.0
 
-isShad        = 0 
+isShad        = 0
 QDS.DefObj_EllipseEx(Spot_ID_sinB, Spot_r, Spot_r, isShad)
 QDS.DefObj_EllipseEx(Spot_ID_sinG, Spot_r, Spot_r, isShad)
 QDS.DefObj_EllipseEx(Spot_ID_sinW, Spot_r, Spot_r, isShad)
@@ -124,18 +123,15 @@ Spots_rotL = [0,0,0,0,0,0]
 Spots_alpL = [255,255,255,255,255,128]
 
 
-QDS.DefObj_Movie(1, "rabbit.png")  
 
 # ---------------------------------------------------------------------
 def myLoop():
-  QDS.Start_Movie(1, (-200,-200), [0,39,3,1], (1.0,1.0), 128, 0)
-
-  for iT in range(p['nTrials']):
+  for iT in range(nTrials):
     isMark   =  int((iT % 20) == 0)
 
     # Update colors of sinusoidal+flickering spots
     #
-    per        = math.pi*2 *iT*p['dt_s']/Spot_SinPer_s
+    per        = math.pi*2 *iT*dt_s/Spot_SinPer_s
     iSin       = (math.sin(per) +1)/2
     iCos       = (math.cos(per) +1)/2
     Spots_colL = []
@@ -170,23 +166,17 @@ def myLoop():
     posL       = Spots_posL
     rotL       = Spots_rotL
     """
-    
     QDS.SetObjColorEx(Spots_indL, Spots_colL, Spots_alpL)
     #QDS.SetObjColorAlphaByVertex([Spot_ID_sinW], [[(255,0,0,200),(0,55,0,128)]])
-    if not(p['useStripes']):
+    if not(useStripes):
       QDS.SetObjColorAlphaByVertex(Grad_indL, Grad_colL)
-    QDS.Scene_RenderEx(p['dt_s'], indL, posL, magL, rotL, isMark)
-    
-    #QDS.Scene_Clear(p['dt_s'], isMark)
+    QDS.Scene_RenderEx(dt_s, indL, posL, magL, rotL, isMark)
 
 # ---------------------------------------------------------------------
 QDS.StartScript()
-QDS.Start_Movie(1, (0,0), [0,0,1,1], (1.0,1.0), 0, 0)
-
+QDS.SetBkgColor((0,0,0))
 QDS.Scene_Clear(1.0, 0)
-
 QDS.Loop(5, myLoop)
-
 QDS.Scene_Clear(1.0, 0)
 QDS.EndScript()
 

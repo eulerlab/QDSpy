@@ -9,7 +9,7 @@ QDSpy module - creates and manages the presentation window
   to follow stimulus presentation in full-screen multi-monitor mode.
   This class is a graphics API independent.
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2017 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -88,13 +88,31 @@ class View:
 
       (width, height) = self.Renderer.get_screen_size(self.iScr)
       self.winTitle   = glo.QDSpy_fullScrWinName
-      self.winPre     = self.Renderer.create_window(self.iScr, self.winTitle)
-      self.winPre.set_mouse_visible(False)
       
-      ssp.Log.write("INFO", self.Renderer.get_info_screen_str())
-      ssp.Log.write("ok", "Fullscreen mode, {0}x{1} pixels, on screen #{2}"
-                    .format(width, height, self.iScr))
+      if self.Stage.useScrOvl: # and (nScr > 2):
+        # Wide full-screen window for two overlain displays
+        #
+        xy            = (self.Stage.offXScr1_pix, self.Stage.offYScr1_pix)
+        self.winPre   = self.Renderer.create_window(self.iScr, self.winTitle,
+                                                    _dx=self.Stage.dxScr12,
+                                                    _dy=self.Stage.dyScr12,
+                                                    _isScrOvl=True, 
+                                                    _iScrGUI=self.Stage.scrIndexGUI,
+                                                    _offset=xy)
+        ssp.Log.write("INFO", self.Renderer.get_info_screen_str())
+        ssp.Log.write("ok", "Wide fullscreen mode, {0}x{1} pixels, starting on"
+                            " screen #{2}".format(width, height, self.iScr))
+      
+      else:      
+        # Normal full-screen window for a single display
+        #
+        self.winPre   = self.Renderer.create_window(self.iScr, self.winTitle)
+        ssp.Log.write("INFO", self.Renderer.get_info_screen_str())
+        ssp.Log.write("ok", "Fullscreen mode, {0}x{1} pixels, on screen #{2}"
+                      .format(width, height, self.iScr))
                 
+      self.winPre.set_mouse_visible(False)
+        
       if self.Conf.useCtrlWin:                    
         div = int(1/self.Conf.ctrlWinScale)
         self.winPreview = self.Renderer.create_window(1, "", width//div, 
@@ -168,8 +186,8 @@ class View:
     self.Renderer.dispatch_events()  
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def createBatch(self):
-    return rdr.Batch()
+  def createBatch(self, _isScrOvl=False):
+    return rdr.Batch(_isScrOvl)
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setOnKeyboardHandler(self, _onKeybProc):

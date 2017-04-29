@@ -10,7 +10,7 @@ QDSpy module - to manage the configuration file
 'getParsedArg()'
   to parse arguments for the command line version of QDSpy
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2017 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -60,6 +60,10 @@ class Config:
     self.useLCr       = glo.QDSpy_use_Lightcrafter
     self.LEDNames     = glo.QDSpy_LEDNames_default
     self.LEDPeakWLs   = glo.QDSpy_LEDPeakWLs_default
+    self.LEDDevIndices= glo.QDSpy_LEDDevIndex_default
+    self.LEDIndices   = glo.QDSpy_LEDIndex_default
+    self.LEDDefCurr   = glo.QDSpy_LEDCurrents_default
+    self.LEDMaxCurr   = glo.QDSpy_LEDCurrents_max
     self.LEDQtColors  = glo.QDSpy_LEDQtColors_default
     self.allowGammaLUT= glo.QDSpy_allowGammaLUT_default
     self.userLUTFName = glo.QDSpy_userGammaLUTFileName
@@ -72,7 +76,7 @@ class Config:
     self.ctrlWinScale = glo.QDSpy_ctrlWinScale
     self.camWinGeom   = glo.QDSpy_camWinGeometry
     self.allowCam     = glo.QDSpy_allowCam
-
+    
     try:
       self.conf.readfp(open(glo.QDSpy_iniFileName))
   
@@ -138,10 +142,25 @@ class Config:
                                         glo.QDSpy_LEDPeakWLs_default)
       self.LEDPeakWLs   = [int(i) for i in temp.split(sep=",")]
       temp              = self.getParam("Display",  
+                                        "str_LED_device_indices",
+                                        glo.QDSpy_LEDDevIndex_default)
+      self.LEDDevIndices= [int(i) for i in temp.split(sep=",")]
+      temp              = self.getParam("Display",  
+                                        "str_LED_indices",
+                                        glo.QDSpy_LEDIndex_default)
+      self.LEDIndices   = [int(i) for i in temp.split(sep=",")]
+      temp              = self.getParam("Display",  
+                                        "str_led_default_currents",
+                                        glo.QDSpy_LEDCurrents_default)
+      self.LEDDefCurr   = [int(i) for i in temp.split(sep=",")]
+      temp              = self.getParam("Display",  
+                                        "str_led_max_currents",
+                                        glo.QDSpy_LEDCurrents_max)
+      self.LEDMaxCurr   = [int(i) for i in temp.split(sep=",")]
+      temp              = self.getParam("Display",  
                                         "str_LED_QtColor",
                                         glo.QDSpy_LEDQtColors_default)
       self.LEDQtColors  = temp.split(sep=",")
-
       self.allowGammaLUT= self.getParam("Display",  
                                         "bool_allowGammaLUT",
                                         glo.QDSpy_allowGammaLUT_default)
@@ -155,14 +174,13 @@ class Config:
                                         "str_markerRGBA",
                                         glo.QDSpy_markerRGBA)
       self.markRGBA     = [int(i) for i in temp.split(sep=",")]
-                           
       self.useCtrlWin   = self.getParam("Display",  
                                         "bool_use_control_window",
                                         glo.QDSpy_useCtrlWin)
       self.ctrlWinScale = self.getParam("Display",  
                                         "float_control_window_scale",
                                         glo.QDSpy_ctrlWinScale)
-      
+
       self.use3DTextures= self.getParam("Tweaking",  
                                         "bool_use3DTextures",
                                         glo.QDSpy_use3DTextures)
@@ -176,7 +194,6 @@ class Config:
       self.allowCam     = self.getParam("Tweaking",  
                                         "bool_allow_camera",
                                         glo.QDSpy_allowCam)
-
                                         
     except IOError:
       # Initialization file does not exist, recreate
@@ -202,6 +219,24 @@ class Config:
                     glo.QDSpy_disableFullScrCmd)
       self.conf.set("Stage", "int_window_left_pix",       0)
       self.conf.set("Stage", "int_window_top_pix",        0)
+      
+      self.conf.add_section("Overlay")
+      self.conf.set("Overlay","bool_use_screen_overlay",   
+                    glo.QDSpy_useScrOverlayMode)
+      self.conf.set("Overlay","int_screen_index_GUI",   
+                    glo.QDSpy_screenIndexGUI)
+      self.conf.set("Overlay","int_screen1_2_width_pix",   
+                    glo.QDSpy_winWidth1_2)
+      self.conf.set("Overlay","int_screen1_2_height_pix",   
+                    glo.QDSpy_winHeight1_2)
+      self.conf.set("Overlay","int_x_offset_screen1_pix",   
+                    glo.QDSpy_xOffsetScr1_pix)
+      self.conf.set("Overlay","int_y_offset_screen1_pix",   
+                    glo.QDSpy_yOffsetScr1_pix)
+      self.conf.set("Overlay","int_x_offset_screen2_center_pix",   
+                    glo.QDSpy_xOffsetScr2Center_pix)
+      self.conf.set("Overlay","int_y_offset_screen2_center_pix",   
+                    glo.QDSpy_yOffsetScr2Center_pix)
 
       self.conf.add_section("Timing")
       self.conf.set("Timing","bool_incr_process_prior",   
@@ -246,6 +281,14 @@ class Config:
                     glo.QDSpy_LEDNames_default)
       self.conf.set("Display","str_LED_filter_peak_wavelengths", 
                     glo.QDSpy_LEDPeakWLs_default)
+      self.conf.set("Display","str_LED_device_indices", 
+                    glo.QDSpy_LEDDevIndex_default)
+      self.conf.set("Display","str_LED_indices", 
+                    glo.QDSpy_LEDIndex_default)
+      self.conf.set("Display","str_led_default_currents", 
+                    glo.QDSpy_LEDCurrents_default)
+      self.conf.set("Display","str_led_max_currents", 
+                    glo.QDSpy_LEDCurrents_max)
       self.conf.set("Display","str_LED_QtColor",          
                     glo.QDSpy_LEDQtColors_default)
       self.conf.set("Display","bool_allowGammaLUT",       
@@ -260,7 +303,7 @@ class Config:
                     glo.QDSpy_useCtrlWin)
       self.conf.set("Display","float_control_window_scale",           
                     glo.QDSpy_ctrlWinScale)
-
+      
       self.conf.add_section("Tweaking")      
       self.conf.set("Tweaking","bool_use3DTextures",      
                     glo.QDSpy_use3DTextures)
@@ -289,21 +332,28 @@ class Config:
     # parameters
     #
     if self.isLoaded:
-      rFreq   = self.conf.getfloat("Stage",  "float_refresh_frequency_Hz")
-      winW    = self.conf.getint("Stage",    "int_screen_width_pix")
-      winH    = self.conf.getint("Stage",    "int_screen_height_pix")
-      offX    = self.conf.getint("Stage",    "int_center_offs_x_pix")
-      offY    = self.conf.getint("Stage",    "int_center_offs_y_pix")
-      scalX   = self.conf.getfloat("Stage",  "float_scale_x_um_per_pix")
-      scalY   = self.conf.getfloat("Stage",  "float_scale_y_um_per_pix")
-      rot     = self.conf.getfloat("Stage",  "float_center_rotation_deg")
-      scrInd  = self.conf.getint("Stage",    "int_screen_index")
-      disFScr = self.conf.getboolean("Stage","bool_disableFullScrCmd")
-      winL    = self.conf.getint("Stage",    "int_window_left_pix")
-      winT    = self.conf.getint("Stage",    "int_window_top_pix")
-
-      Stage   = stg.Stage(winW, winH, winL, winT, scalX, scalY, offX, offY, 
-                          rot, rFreq, scrInd, disFScr)
+      d = {}
+      d["scrReqFreq_Hz"]  = self.conf.getfloat("Stage", "float_refresh_frequency_Hz")
+      d["dxScr"]          = self.conf.getint("Stage", "int_screen_width_pix")
+      d["dyScr"]          = self.conf.getint("Stage", "int_screen_height_pix")
+      d["centOffX_pix"]   = self.conf.getint("Stage", "int_center_offs_x_pix")
+      d["centOffY_pix"]   = self.conf.getint("Stage", "int_center_offs_y_pix")
+      d["scalX_umPerPix"] = self.conf.getfloat("Stage", "float_scale_x_um_per_pix")
+      d["scalY_umPerPix"] = self.conf.getfloat("Stage", "float_scale_y_um_per_pix")
+      d["rot_angle"]      = self.conf.getfloat("Stage", "float_center_rotation_deg")
+      d["scrIndex"]       = self.conf.getint("Stage", "int_screen_index")
+      d["disFScr"]        = self.conf.getboolean("Stage","bool_disableFullScrCmd")
+      d["xWinLeft"]       = self.conf.getint("Stage", "int_window_left_pix")
+      d["yWinTop"]        = self.conf.getint("Stage", "int_window_top_pix")
+      d["useScrOvl"]      = self.conf.getboolean("Overlay", "bool_use_screen_overlay")
+      d["scrIndGUI"]      = self.conf.getint("Overlay", "int_screen_index_GUI")
+      d["dxScr12"]        = self.conf.getint("Overlay", "int_screen1_2_width_pix")
+      d["dyScr12"]        = self.conf.getint("Overlay", "int_screen1_2_height_pix")
+      d["offXScr1_pix"]   = self.conf.getint("Overlay", "int_x_offset_screen1_pix")
+      d["offYScr1_pix"]   = self.conf.getint("Overlay", "int_y_offset_screen1_pix")
+      d["offXScr2_pix"]   = self.conf.getint("Overlay", "int_x_offset_screen2_center_pix")
+      d["offYScr2_pix"]   = self.conf.getint("Overlay", "int_y_offset_screen2_center_pix")
+      Stage = stg.Stage(d, _isNew=True)
                           
       # Read user-define gamma LUT, if one is defined
       #                          
@@ -329,6 +379,18 @@ class Config:
                     _Stage.scalX_umPerPix)
       self.conf.set("Stage", "float_scale_y_um_per_pix",  
                     _Stage.scalY_umPerPix)
+      self.conf.set("Overlay", "int_screen1_2_width_pix",     
+                    _Stage.dxScr12)
+      self.conf.set("Overlay", "int_screen1_2_height_pix",     
+                    _Stage.dyScr12)
+      self.conf.set("Overlay", "int_x_offset_screen1_pix",     
+                    _Stage.offXScr1_pix)
+      self.conf.set("Overlay", "int_y_offset_screen1_pix",     
+                    _Stage.offYScr1_pix)
+      self.conf.set("Overlay", "int_x_offset_screen2_center_pix",     
+                    _Stage.offXScr2_pix)
+      self.conf.set("Overlay", "int_y_offset_screen2_center_pix",     
+                    _Stage.offYScr2_pix)
       self.save()
       
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
