@@ -249,12 +249,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
           if data[0] == mpr.PipeValType.toSrv_fileName:
             # Retrieve stimulus file name from pipe and load stimulus
             #
-<<<<<<< HEAD
-            _fPathStim = data[2]
-            _fNameStim = _fPathStim +"/" +os.path.basename(data[1])
-=======
             _fNameStim = os.path.normpath(data[1])
->>>>>>> refs/remotes/origin/experimental
             data       = [mpr.PipeValType.toSrv_None]
             loadStimulus(_fNameStim, _Stim)
             _Sync.setStateSafe(mpr.PRESENTING)
@@ -285,12 +280,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
           if data[0] == mpr.PipeValType.toSrv_fileName:
             # Retrieve stimulus file name from pipe and compile stimulus
             #
-<<<<<<< HEAD
-            _fPathStim = data[2]
-            _fNameStim = _fPathStim +"/" +os.path.basename(data[1]) +".py"
-=======
             _fNameStim = os.path.abspath(data[1]) +".py"
->>>>>>> refs/remotes/origin/experimental
             data       = [mpr.PipeValType.toSrv_None]
             _Sync.setStateSafe(mpr.COMPILING)
             try:
