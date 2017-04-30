@@ -100,16 +100,9 @@ def GetStimulusPath():
   (e.g. a random number series for a noise stimulus):
   ::
     path = QDS.getStimulusPath()
-<<<<<<< HEAD
-    file = open(path +"\\parameters.txt", "r")
-  """
-  #return _Stim.Conf.pathStim
-  return os.path.split(_Stim.fNameDir)[0]
-=======
     file = open(path +"/parameters.txt", "r")
   """
   return os.path.split(os.path.abspath(_Stim.fNameDir))[0]
->>>>>>> refs/remotes/origin/experimental
 
 # ---------------------------------------------------------------------
 def LogUserParameters(_dict):
