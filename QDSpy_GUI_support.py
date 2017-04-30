@@ -45,15 +45,21 @@ def getStimCompileState(_fName):
   # Check if pickle-file is current
   #
   fName  = os.path.splitext(_fName)[0]
-  tStamp = os.path.getmtime(fName +glo.QDSpy_stimFileExt)
-  tPy    = datetime.fromtimestamp(tStamp)
   try:
+    tStamp = os.path.getmtime(fName +glo.QDSpy_stimFileExt)
+    tPy    = datetime.fromtimestamp(tStamp)
     tStamp = os.path.getmtime(fName +glo.QDSpy_cPickleFileExt)
     tPck   = datetime.fromtimestamp(tStamp)
     return (tPck > tPy)
   except WindowsError:  
     pass
   return False
+
+# ---------------------------------------------------------------------
+def getStimExists(_fName):  
+  # Check if stimulus file (.py) exists
+  #
+  return os.path.isfile(_fName +glo.QDSpy_stimFileExt)
   
 # ---------------------------------------------------------------------
 def getShortText(_win, _txt, _widget):

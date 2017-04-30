@@ -244,17 +244,30 @@ class MainWinClass(QMainWindow, form_class):
     # Check if autorun stimulus file present and if so run it
     #
     try:
+      self.isStimCurr    = False
       self.currStimFName = os.path.join(self.currStimPath, 
                                         glo.QDSpy_autorunStimFileName)
-      self.isStimCurr    = gsu.getStimCompileState(self.currStimFName)
-      if not(self.isStimCurr):
+      isAutoRunExists    = gsu.getStimExists(self.currStimFName)
+      print(isAutoRunExists, self.currStimFName)
+      if isAutoRunExists:  
+        # Check if a current compiled version of the autorun file
+        # exists
+        #
+        self.isStimCurr  = gsu.getStimCompileState(self.currStimFName)
+        
+      if not(isAutoRunExists) or not(self.isStimCurr):  
+        # No current compiled autorun file present, so use default file
+        #
         self.currStimFName = os.path.join(self.currQDSPath, 
                                           glo.QDSpy_autorunDefFileName)
-        self.logWrite("ERROR", "No compiled `{0}` in current stimulus folder,"
-                               " using `{1}` in `{2}`."
+        self.logWrite("ERROR", "No compiled `{0}` in current stimulus "
+                               "folder, using `{1}` in `{2}`."
                                .format(glo.QDSpy_autorunStimFileName, 
                                        glo.QDSpy_autorunDefFileName, 
                                        self.currQDSPath))
+        
+      # Run either autorun file ...
+      #
       self.logWrite("DEBUG", "Running {0} ...".format(self.currStimFName))
       self.Stim.load(self.currStimFName, _onlyInfo=True)
       self.setState(State.ready)
