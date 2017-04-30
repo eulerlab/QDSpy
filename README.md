@@ -20,12 +20,24 @@ v0.75beta (April 2017)
   object colour), which led to changes in the movie/video frame rate. This
   should now be fixed as well.
 * Bug fix: The first command in a loop was ignored; this is fixed now.
+* Bug fix: ``__autofile.py`` handling was restructured: When no ``__autorun.py`` 
+  file exists in the ``.\Stimuli`` folder, QDSpy warns and runs a default instead.
+  An ``__autorun.py`` does no longer have to be present in ``.\Stimuli``.
 * **New feature**: Using the "screen overlay mode", stimuli with up to 6 different
   wavelengths (hexachromatic) can be shown by extending the presentation area to 
   two neighbouring display devices (i.e. two lightcrafters with different sets of 
   LEDs). See :doc:`inifile` for details on the new configuration parameters in 
   section ``[Overlay]`` and :ref:`Screen overlay mode <screen-overlay-mode-label>` 
   for instructions.
+* **IMPORTANT**: The ``QDSpy.ini`` file contains a couple of new parameters, 
+  including a new section called ``[Overlay]``. Thus, the new parameters need to 
+  be added to the existing ``QDSpy.ini`` file, otherwise QDSpy will crash. 
+  The easiest way to do so, is to rename the file to, for example, 
+  ``QDSpy.ini_COPY``. Then start QDSpy and let it generate a fresh configuration 
+  file. Open both the new file and your copy in parallel and change the parameters
+  in the new file according to your previous settings. See see :doc:`inifile` 
+  for further details on the new parameters.
+  
 * **Known issues**:
 
   * The GUI controls for the "screen overlay mode" are already present but not
@@ -33,6 +45,9 @@ v0.75beta (April 2017)
   * Objects that use shaders are not yet correctly displayed in "screen overlay 
     mode".
   * ``SetColorLUTEntry()`` does not yet handle a LUT with more than 3 colours.
+  * When starting QDSpy the stimulus screen may sometimes go white; as soon as
+    the first stimulus is presented, the screen behaves normal.
+
 
 v0.74beta (March 2017)
 
