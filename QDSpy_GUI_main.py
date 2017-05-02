@@ -53,6 +53,7 @@ class State:
   compiling  = 4
   playing    = 5
   canceling  = 6
+  probing_center = 7
   # ...
 
 GUI_timeout  = 5.0
@@ -123,6 +124,8 @@ class MainWinClass(QMainWindow, form_class):
     self.btnToggleLEDEnable.setStyleSheet(toggle_btn_style_str)      
     self.btnToggleSeqControl.clicked.connect(self.OnClick_btnToggleSeqControl)
     self.btnToggleSeqControl.setStyleSheet(toggle_btn_style_str)
+    
+    self.btnProbeStart.clicked.connect(self.OnClick_btnProbeStart)
 
     self.winCam  = None
     self.camList = []
@@ -306,7 +309,7 @@ class MainWinClass(QMainWindow, form_class):
     # Allow pressing ESC to abort stimulus presentation ...
     #
     if e.key() in glo.QDSpy_KEY_KillPresent: 
-      if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING]:
+      if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING, mpr.PROBE_CENTER]:
         self.OnClick_btnStimAbort()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -335,7 +338,7 @@ class MainWinClass(QMainWindow, form_class):
         
     # Closing is immanent, stop stimulus, if running ...
     #
-    if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING]:
+    if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING, mpr.PROBE_CENTER]:
       self.OnClick_btnStimAbort()
     
     # Save log 
@@ -380,6 +383,8 @@ class MainWinClass(QMainWindow, form_class):
       self.state  = State.playing
     elif stateWorker == mpr.COMPILING:  
       self.state  = State.compiling
+    elif stateWorker == mpr.PROBE_CENTER:
+      self.state = State.probing_center
     elif stateWorker in [mpr.CANCELING, mpr.TERMINATING]: 
       self.state  = State.canceling
     elif stateWorker == mpr.IDLE: 
@@ -417,6 +422,11 @@ class MainWinClass(QMainWindow, form_class):
 
     elif self.state == State.playing:
       self.btnStimPlay.setText("Playing\n...")
+      self.btnStimPlay.setEnabled(False)
+      self.btnStimCompile.setEnabled(False)
+      
+    elif self.state == State.probing_center:
+      self.btnStimPlay.setText("Probing center\n...")
       self.btnStimPlay.setEnabled(False)
       self.btnStimCompile.setEnabled(False)
       
@@ -754,6 +764,9 @@ class MainWinClass(QMainWindow, form_class):
       self.setState(State.ready, True)
     else:
       self.logWrite("DEBUG", "OnClick_btnStimAbort, timeout waiting for IDLE")
+      
+  def OnClick_btnProbeStart(self):
+    self.probeCenter()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnDblClick_listStim(self, _selItem):
@@ -824,6 +837,36 @@ class MainWinClass(QMainWindow, form_class):
       
     else:
       self.logWrite("DEBUG", "runStim, timeout waiting for PRESENTING")
+      
+  # -------------------------------------------------------------------
+  # Probe center 
+  # -------------------------------------------------------------------
+  def probeCenter(self):
+    # Send parameters of the probe center via pipe and signal worker thread to 
+    # start presenting the stimulus
+    #
+    width = int(self.probe_width.value())
+    height = int(self.probe_height.text())
+    intensity = int(self.probe_intensity.text())
+    interval = float(self.probe_interval.text())
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_probeParam,
+                            width,height,intensity,interval])
+    self.Sync.setRequestSafe(mpr.PROBE_CENTER)
+    self.logWrite(" ", "Probing center ...")
+    
+    # Wait for the worker to start ...
+    #
+    if self.Sync.waitForState(mpr.PROBE_CENTER, GUI_timeout, self.updateAll):
+      self.setState(State.playing, True)
+      
+      # Wait for the worker to finish the presentation, while keeping the
+      # GUI alive
+      #
+      self.Sync.waitForState(mpr.IDLE, 0.0, self.updateAll)
+      self.updateAll()
+      
+    else:
+      self.logWrite("DEBUG", "runStim, timeout waiting for PROBE_CENTER")
 
 
   # -------------------------------------------------------------------

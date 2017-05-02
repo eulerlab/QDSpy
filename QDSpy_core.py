@@ -30,6 +30,7 @@ import QDSpy_core_view as cvw
 import QDSpy_core_support as csp
 import QDSpy_multiprocessing as mpr
 import QDSpy_gamma as gma
+import QDSpy_probeCenter as pce
 import Devices.digital_io as dio
 
 if glo.QDSpy_use_Lightcrafter:
@@ -294,6 +295,26 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             ssp.Log.write("DEBUG", "mpr.COMPILING, unexpected client data")
                 
           _Sync.setStateSafe(mpr.IDLE)
+          
+        elif _Sync.Request.value == mpr.PROBE_CENTER:
+            
+            if data[0] == mpr.PipeValType.toSrv_probeParam:
+                _Sync.setStateSafe(mpr.PROBE_CENTER)
+                try:
+                    switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim)    
+                    _Presenter.LCr = connectLCrs(_Conf, _Stim)
+                    setPerformanceHigh(_Conf)
+                    pce.probe_main(data,_Sync)
+                finally:
+                    data = [mpr.PipeValType.toSrv_None]
+                    _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
+                    _Presenter.finish()
+                    setPerformanceNormal(_Conf)
+
+            else:
+                ssp.Log.write("DEBUG", "mpr.PROBE_CENTER, unexpected client data")
+                
+            _Sync.setStateSafe(mpr.IDLE)
 
           
         elif not(_Sync.Request.value in [mpr.CANCELING, mpr.UNDEFINED]):
