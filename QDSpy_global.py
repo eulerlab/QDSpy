@@ -120,6 +120,8 @@ QDSpy_userGammaLUTFileName  = "defaultGammaLUT"
 
 QDSpy_allowCam              = False
 QDSpy_camWinGeometry        = "20,30,300,200"
+
+QDSpy_probing_center        = 1
 # ---------------------------------------------------------------------
 
 

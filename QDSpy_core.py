@@ -30,6 +30,7 @@ import QDSpy_core_view as cvw
 import QDSpy_core_support as csp
 import QDSpy_multiprocessing as mpr
 import QDSpy_gamma as gma
+import QDSpy_probeCenter as pce
 import Devices.digital_io as dio
 
 if glo.QDSpy_use_Lightcrafter:
@@ -292,6 +293,32 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
 
           else:
             ssp.Log.write("DEBUG", "mpr.COMPILING, unexpected client data")
+                
+          _Sync.setStateSafe(mpr.IDLE)
+
+
+        elif _Sync.Request.value == mpr.PROBING:
+          if data[0] == mpr.PipeValType.toSrv_probeParams:
+            # Change into interactive probing mode ...
+            #
+            _Sync.setStateSafe(mpr.PROBING)
+            try:
+              switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim)    
+              _Presenter.LCr = connectLCrs(_Conf, _Stim)
+              setPerformanceHigh(_Conf)
+              if data[1] == glo.QDSpy_probing_center:
+                # Currently only interactive center-probing is implemented
+                #
+                pce.probe_main(data[2],_Sync, _View, _Stage)
+                
+            finally:
+              data = [mpr.PipeValType.toSrv_None]
+              _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
+              _Presenter.finish()
+              setPerformanceNormal(_Conf)
+ 
+          else:
+            ssp.Log.write("DEBUG", "mpr.PROBE_CENTER, unexpected client data")
                 
           _Sync.setStateSafe(mpr.IDLE)
 
