@@ -11,7 +11,7 @@ For documentation, see http://qdspy.eulerlab.de.
 
 ### Release notes
 
-v0.75beta - experimental branch
+#### v0.75beta - experimental branch
 
 * New feature contributed by Tom Boissonnet (see <https://github.com/Tom-TBT>, 
   Asari lab, EMBL Monterotondo):     
@@ -25,7 +25,7 @@ v0.75beta - experimental branch
   or by pressing "Abort" in the GUI.
   
 
-v0.75beta (April 2017)
+#### v0.75beta (April 2017)
 
 * Bug fix: Problems with "ghost images" when playing more than one movie or 
   video were fixed. Now movie/video objects that are restarted before the 
