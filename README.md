@@ -44,8 +44,8 @@ v0.75beta (April 2017)
   section ``[Overlay]`` and :ref:`Screen overlay mode <screen-overlay-mode-label>` 
   for instructions.
   
-  This feature was inspired by the paper `"A tetrachromatic display for the 
-  spatiotemporal control of rod and cone stimulation"` by Florian S. Bayer and
+  This feature was inspired by the paper _"A tetrachromatic display for the 
+  spatiotemporal control of rod and cone stimulation"_ by Florian S. Bayer and
   colleagues (Bayer et al., 2015, J Vis doi:10.1167/15.11.15).
   
   
