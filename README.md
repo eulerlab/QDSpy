@@ -11,6 +11,20 @@ For documentation, see http://qdspy.eulerlab.de.
 
 ### Release notes
 
+v0.75beta - experimental branch
+
+* New feature contributed by `Tom Boissonnet <https://github.com/Tom-TBT>`_ 
+  (Asari lab, EMBL Monterotondo):     
+  It is found on the GUI tab "Tools". When pressing "Start probing center", 
+  a spot appears on the stimulus screen. 
+  The spot can be moved (dragged) with the left mouse button pressed.
+  Changing the spot parameters in the GUI changes the spot immediately. 
+  The tool can, for example, be used to roughly explore the receptive field of 
+  a retinal ganglion cell. The probing mode can be left 
+  by either pressing the right mouse button (saving the position to the log), 
+  or by pressing "Abort" in the GUI.
+  
+
 v0.75beta (April 2017)
 
 * Bug fix: Problems with "ghost images" when playing more than one movie or 
@@ -29,6 +43,12 @@ v0.75beta (April 2017)
   LEDs). See :doc:`inifile` for details on the new configuration parameters in 
   section ``[Overlay]`` and :ref:`Screen overlay mode <screen-overlay-mode-label>` 
   for instructions.
+  
+  This feature was inspired by the paper `"A tetrachromatic display for the 
+  spatiotemporal control of rod and cone stimulation"` by Florian S. Bayer and
+  colleagues (`Bayer et al., 2015, J Vis doi:10.1167/15.11.15 <http://jov.arvojournals.org/article.aspx?articleid=2430812>`_).
+  
+  
 * **IMPORTANT**: The ``QDSpy.ini`` file contains a couple of new parameters, 
   including a new section called ``[Overlay]``. Thus, the new parameters need to 
   be added to the existing ``QDSpy.ini`` file, otherwise QDSpy will crash. 
