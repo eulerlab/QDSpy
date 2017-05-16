@@ -40,9 +40,9 @@ For documentation, see [here](http://qdspy.eulerlab.de).
 * **New feature**: Using the "screen overlay mode", stimuli with up to 6 different
   wavelengths (hexachromatic) can be shown by extending the presentation area to 
   two neighbouring display devices (i.e. two lightcrafters with different sets of 
-  LEDs). See :doc:`inifile` for details on the new configuration parameters in 
-  section ``[Overlay]`` and :ref:`Screen overlay mode <screen-overlay-mode-label>` 
-  for instructions.
+  LEDs). See [`inifile`](http://qdspy.eulerlab.de/inifile.html) for details on the new configuration parameters in 
+  section ``[Overlay]`` and 
+  [Screen overlay mode](http://qdspy.eulerlab.de/how_QDSpy_works.html#screen-overlay-mode) for instructions.
   
   This feature was inspired by the paper _"A tetrachromatic display for the 
   spatiotemporal control of rod and cone stimulation"_ by Florian S. Bayer and
