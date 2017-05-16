@@ -69,7 +69,7 @@ For documentation, see [here](http://qdspy.eulerlab.de).
     the first stimulus is presented, the screen behaves normal.
 
 
-v0.74beta (March 2017)
+#### v0.74beta (March 2017)
 
 * Added `hid.cp36-win_amd64.pyd` to ``.\Devices`` to enable ``hid`` under Python
   3.6 (comes with Anaconda version 4.3.x). This means that now QDSpy should 
@@ -97,7 +97,7 @@ v0.74beta (March 2017)
 * Documentation was updated and extended (including, for example, a detailed
   explanation of the parameters in ``QDSpy.ini``).
 
-v0.73beta (January - February 2017)
+#### v0.73beta (January - February 2017)
 
 * Installation instructions extended (2016-12-20 and 2017-01-18).
 * Dependencies changed from Qt4 to Qt5. The background is that many packages, 
@@ -118,14 +118,14 @@ v0.73beta (January - February 2017)
   files in a subfolder of the default stimulus folder.
           
 
-v0.72 beta (August 2016) 
+#### v0.72 beta (August 2016) 
 
 * Bug fix: GUI for adjusting LED currents now remains active after sending a 
   change to the lighcrafter. "Refresh display info" button now works and LED
   status is updated after the automatic execution of ``__autorun.pickle``.
 
 
-v0.71 beta (July 2016) 
+#### v0.71 beta (July 2016) 
 
 * **Videos (AVI containers) now work** except for the rotation parameter, which uses
   a corner instead of the centre. The commands are `DefObj_Video()`, `Start_Video()` 
@@ -144,7 +144,7 @@ v0.71 beta (July 2016)
   * Minor fixes.
 
 
-v0.70 beta (July 2016) 
+#### v0.70 beta (July 2016) 
 
 * Now reports GLSL version
 * Fixed error when QDSpy GUI does not find a compiled `__autorun`.
@@ -201,7 +201,7 @@ v0.70 beta (July 2016)
   The default for the configuration file is now `bool_use_digitalio = False`.
 
 
-v0.6 beta (April 2016) 
+#### v0.6 beta (April 2016) 
 
 * Bug fixes
 * Added `DefObj_Video()`, `Start_Video()` and `GetVideoParamters()` commands. 
@@ -218,7 +218,7 @@ v0.6 beta (April 2016)
   frame of the sequence.
 
 
-v0.5 beta (December 2015) 
+#### v0.5 beta (December 2015) 
 
 * Bug fixes
 * Documentation updated
@@ -231,7 +231,7 @@ v0.5 beta (December 2015)
   tags for the data analysis.
 
 
-v0.4 alpha (November 2015) 
+#### v0.4 alpha (November 2015) 
 
 * Migrated to Python 3.4.3
 * Added GUI
@@ -242,11 +242,11 @@ v0.4 alpha (November 2015)
   ("SINE_WAVE_GRATING_MIX").
 
 
-v0.3 alpha (March 2015) 
+#### v0.3 alpha (March 2015) 
 
 * Minor bug fixes
 * Fixed transparency of objects (works now)
 
-v0.2 alpha (before 2015)
+#### v0.2 alpha (before 2015)
 
 * Basic functionality, proof of concept
