@@ -13,8 +13,7 @@ For documentation, see http://qdspy.eulerlab.de.
 
 #### v0.75beta - experimental branch
 
-* New feature contributed by Tom Boissonnet (see <https://github.com/Tom-TBT>, 
-  Asari lab, EMBL Monterotondo):     
+* New feature contributed by [Tom Boissonnet](https://github.com/Tom-TBT) (Asari lab, EMBL Monterotondo):     
   It is found on the GUI tab "Tools". When pressing "Start probing center", 
   a spot appears on the stimulus screen. 
   The spot can be moved (dragged) with the left mouse button pressed.
