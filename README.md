@@ -7,7 +7,7 @@ This is a software for generating and presenting stimuli for visual neuroscience
 
 ### Documentation
 
-For documentation, see http://qdspy.eulerlab.de.
+For documentation, see [here](http://qdspy.eulerlab.de).
 
 ### Release notes
 
@@ -45,7 +45,7 @@ For documentation, see http://qdspy.eulerlab.de.
   
   This feature was inspired by the paper _"A tetrachromatic display for the 
   spatiotemporal control of rod and cone stimulation"_ by Florian S. Bayer and
-  colleagues (Bayer et al., 2015, J Vis doi:10.1167/15.11.15).
+  colleagues (Bayer et al., 2015, J Vis [doi:10.1167/15.11.15](https://www.ncbi.nlm.nih.gov/pubmed/26305863)).
   
   
 * **IMPORTANT**: The ``QDSpy.ini`` file contains a couple of new parameters, 
