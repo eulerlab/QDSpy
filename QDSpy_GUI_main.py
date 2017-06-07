@@ -314,7 +314,7 @@ class MainWinClass(QMainWindow, form_class):
     #
     if e.key() in glo.QDSpy_KEY_KillPresent: 
       if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING, 
-                                   mpr.PROBING_CENTER]:
+                                   mpr.PROBING]:
         self.OnClick_btnStimAbort()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
