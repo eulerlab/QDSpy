@@ -19,9 +19,9 @@ from   multiprocessing import Manager, Pipe
 # ---------------------------------------------------------------------
 # Multiprocessing support
 # ---------------------------------------------------------------------     
-UNDEFINED, PRESENTING, COMPILING, CANCELING, TERMINATING, IDLE = (     
-  "Undefined", "Presenting", "Compiling", "Canceling",  
-  "Terminating", "Idle")
+UNDEFINED, PRESENTING, COMPILING, CANCELING, TERMINATING, IDLE, PROBING \
+= ("Undefined", "Presenting", "Compiling", "Canceling",  "Terminating", 
+   "Idle", "Probing")
   
 class PipeValType:
   toCli_log          = 0
@@ -32,6 +32,7 @@ class PipeValType:
   toSrv_fileName     = 10
   toSrv_changedStage = 11 
   toSrv_changedLEDs  = 12 
+  toSrv_probeParams  = 13 
 
 # ---------------------------------------------------------------------
 # Sync class
