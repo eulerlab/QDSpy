@@ -1,17 +1,31 @@
 
 ## QDSpy v.75 beta
 
-This is a software for generating and presenting stimuli for visual neuroscience. It is written in Python and based on  (http://wvad.mpimf-heidelberg.mpg.de/abteilungen/biomedizinischeOptik/software/qds/), uses OpenGL and primarly targets Windows 7 (and above).
+This is a software for generating and presenting stimuli for visual neuroscience. It is based on QDS, developped in the former Dept. of Biomedical Optics at the MPI for Medical Research in Heidelberg. QDSpy is written in Python, uses OpenGL and primarly targets Windows 7 and above.
 
-*Note, this is an early beta version.*
+*Note, this is still a beta version.*
+*For disclaimer, see [here](http://qdspy.eulerlab.de/disclaimer.html#disclaimer-of-warranty).*
 
 ### Documentation
 
-For documentation, see http://qdspy.eulerlab.de.
+For documentation, see [here](http://qdspy.eulerlab.de).
 
 ### Release notes
 
-v0.75beta (April 2017)
+#### v0.75beta - experimental branch
+
+* New feature contributed by [Tom Boissonnet](https://github.com/Tom-TBT) (Asari lab, EMBL Monterotondo):     
+  It is found on the GUI tab "Tools". When pressing "Start probing center", 
+  a spot appears on the stimulus screen. 
+  The spot can be moved (dragged) with the left mouse button pressed.
+  Changing the spot parameters in the GUI changes the spot immediately. 
+  The tool can, for example, be used to roughly explore the receptive field of 
+  a retinal ganglion cell. The probing mode can be left 
+  by either pressing the right mouse button (saving the position to the log), 
+  or by pressing "Abort" in the GUI.
+  
+
+#### v0.75beta (April 2017)
 
 * Bug fix: Problems with "ghost images" when playing more than one movie or 
   video were fixed. Now movie/video objects that are restarted before the 
@@ -26,9 +40,15 @@ v0.75beta (April 2017)
 * **New feature**: Using the "screen overlay mode", stimuli with up to 6 different
   wavelengths (hexachromatic) can be shown by extending the presentation area to 
   two neighbouring display devices (i.e. two lightcrafters with different sets of 
-  LEDs). See :doc:`inifile` for details on the new configuration parameters in 
-  section ``[Overlay]`` and :ref:`Screen overlay mode <screen-overlay-mode-label>` 
-  for instructions.
+  LEDs). See [`inifile`](http://qdspy.eulerlab.de/inifile.html) for details on the new configuration parameters in 
+  section ``[Overlay]`` and 
+  [Screen overlay mode](http://qdspy.eulerlab.de/how_QDSpy_works.html#screen-overlay-mode) for instructions.
+  
+  This feature was inspired by the paper _"A tetrachromatic display for the 
+  spatiotemporal control of rod and cone stimulation"_ by Florian S. Bayer and
+  colleagues (Bayer et al., 2015, J Vis [doi:10.1167/15.11.15](https://www.ncbi.nlm.nih.gov/pubmed/26305863)).
+  
+  
 * **IMPORTANT**: The ``QDSpy.ini`` file contains a couple of new parameters, 
   including a new section called ``[Overlay]``. Thus, the new parameters need to 
   be added to the existing ``QDSpy.ini`` file, otherwise QDSpy will crash. 
@@ -49,7 +69,7 @@ v0.75beta (April 2017)
     the first stimulus is presented, the screen behaves normal.
 
 
-v0.74beta (March 2017)
+#### v0.74beta (March 2017)
 
 * Added `hid.cp36-win_amd64.pyd` to ``.\Devices`` to enable ``hid`` under Python
   3.6 (comes with Anaconda version 4.3.x). This means that now QDSpy should 
@@ -77,7 +97,7 @@ v0.74beta (March 2017)
 * Documentation was updated and extended (including, for example, a detailed
   explanation of the parameters in ``QDSpy.ini``).
 
-v0.73beta (January - February 2017)
+#### v0.73beta (January - February 2017)
 
 * Installation instructions extended (2016-12-20 and 2017-01-18).
 * Dependencies changed from Qt4 to Qt5. The background is that many packages, 
@@ -98,14 +118,14 @@ v0.73beta (January - February 2017)
   files in a subfolder of the default stimulus folder.
           
 
-v0.72 beta (August 2016) 
+#### v0.72 beta (August 2016) 
 
 * Bug fix: GUI for adjusting LED currents now remains active after sending a 
   change to the lighcrafter. "Refresh display info" button now works and LED
   status is updated after the automatic execution of ``__autorun.pickle``.
 
 
-v0.71 beta (July 2016) 
+#### v0.71 beta (July 2016) 
 
 * **Videos (AVI containers) now work** except for the rotation parameter, which uses
   a corner instead of the centre. The commands are `DefObj_Video()`, `Start_Video()` 
@@ -124,7 +144,7 @@ v0.71 beta (July 2016)
   * Minor fixes.
 
 
-v0.70 beta (July 2016) 
+#### v0.70 beta (July 2016) 
 
 * Now reports GLSL version
 * Fixed error when QDSpy GUI does not find a compiled `__autorun`.
@@ -181,7 +201,7 @@ v0.70 beta (July 2016)
   The default for the configuration file is now `bool_use_digitalio = False`.
 
 
-v0.6 beta (April 2016) 
+#### v0.6 beta (April 2016) 
 
 * Bug fixes
 * Added `DefObj_Video()`, `Start_Video()` and `GetVideoParamters()` commands. 
@@ -198,7 +218,7 @@ v0.6 beta (April 2016)
   frame of the sequence.
 
 
-v0.5 beta (December 2015) 
+#### v0.5 beta (December 2015) 
 
 * Bug fixes
 * Documentation updated
@@ -211,7 +231,7 @@ v0.5 beta (December 2015)
   tags for the data analysis.
 
 
-v0.4 alpha (November 2015) 
+#### v0.4 alpha (November 2015) 
 
 * Migrated to Python 3.4.3
 * Added GUI
@@ -222,11 +242,11 @@ v0.4 alpha (November 2015)
   ("SINE_WAVE_GRATING_MIX").
 
 
-v0.3 alpha (March 2015) 
+#### v0.3 alpha (March 2015) 
 
 * Minor bug fixes
 * Fixed transparency of objects (works now)
 
-v0.2 alpha (before 2015)
+#### v0.2 alpha (before 2015)
 
 * Basic functionality, proof of concept
