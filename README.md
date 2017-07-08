@@ -12,6 +12,14 @@ For documentation, see http://qdspy.eulerlab.de.
 
 ### Release notes
 
+v0.76beta (July 2017)
+
+* Experimental support for an Arduino as low-cost digital I/O device (timing not yet thoroughly tested!).
+* **IMPORTANT**: The ``QDSpy.ini`` file contains (a) new parameter(s), which need to be added to the existing ``QDSpy.ini`` file, 
+  otherwise QDSpy will crash. The easiest way to do so, is to rename the file to, for example, ``QDSpy.ini_COPY``. Then start 
+  QDSpy and let it generate a fresh configuration file. Open both the new file and your copy in parallel and change the parameters
+    in the new file according to your previous settings. See see :doc:`inifile` for further details on the new parameters.
+
 v0.75beta (April 2017)
 
 * Bug fix: Problems with "ghost images" when playing more than one movie or 
