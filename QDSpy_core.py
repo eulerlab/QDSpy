@@ -155,18 +155,31 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
   # Initialize digital IO hardware, if requested
   #
   if _Conf.useDIO:
-    _IO  = dio.devIO_UL(dio.devTypeUL.PCIDIO24, _Conf.DIObrd, _Conf.DIOdev)
+    if _Conf.DIObrdType.upper() in ["ARDUINO"]:
+      _IO  = dio.devIO_Arduino(_Conf.DIObrd, glo.QDSpy_Arduino_baud, 
+                               _funcLog=ssp.Log.write)
+      
+    elif _Conf.DIObrdType.upper() in ["PCIDIO24"]:  
+      _IO  = dio.devIO_UL(dio.devTypeUL.PCIDIO24, _Conf.DIObrd, _Conf.DIOdev,
+                          _funcLog=ssp.Log.write)
+    else:
+      ssp.Log.write("ERROR", "I/O hardware device name not recognized.")
+      sys.exit(0)
+      
+      
     if not(_IO.isReady):
-      ssp.Log.write("ERROR", "Universal Library not installed or no digital "+
-                    "I/O card present. Set `bool_use_digitalio` in `QDSpy.in"+
-                    "i` to False.")
+      ssp.Log.write("ERROR", "I/O hardware could not be initialized. Set "+
+                    "`bool_use_digitalio` in `QDSpy.ini` to False.")
       sys.exit(0)
 
+    # Configure I/O hardware
+    #
     port = _IO.getPortFromStr(_Conf.DIOportOut)
     _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
     _IO.writeDPort(port, 0)    
     port = _IO.getPortFromStr(_Conf.DIOportIn)    
     _IO.configDPort(port, dio.devConst.DIGITAL_IN)
+    
   else:
     _IO = None  
     
