@@ -12,8 +12,9 @@ For documentation, see [here](http://qdspy.eulerlab.de).
 
 ### Release notes
 
-#### v0.75beta - experimental branch
+#### v0.76beta - experimental branch
 
+* Experimental support for an Arduino as low-cost digital I/O device (timing not yet thoroughly tested!).
 * New feature contributed by [Tom Boissonnet](https://github.com/Tom-TBT) (Asari lab, EMBL Monterotondo):     
   It is found on the GUI tab "Tools". When pressing "Start probing center", 
   a spot appears on the stimulus screen. 
@@ -22,8 +23,11 @@ For documentation, see [here](http://qdspy.eulerlab.de).
   The tool can, for example, be used to roughly explore the receptive field of 
   a retinal ganglion cell. The probing mode can be left 
   by either pressing the right mouse button (saving the position to the log), 
-  or by pressing "Abort" in the GUI.
-  
+  or by pressing "Abort" in the GUI.    
+* **IMPORTANT**: The ``QDSpy.ini`` file contains (a) new parameter(s), which need to be added to the existing ``QDSpy.ini`` file, 
+  otherwise QDSpy will crash. The easiest way to do so, is to rename the file to, for example, ``QDSpy.ini_COPY``. Then start 
+  QDSpy and let it generate a fresh configuration file. Open both the new file and your copy in parallel and change the parameters
+    in the new file according to your previous settings. See see :doc:`inifile` for further details on the new parameters.
 
 #### v0.75beta (April 2017)
 
