@@ -44,6 +44,7 @@ class Config:
     self.incPP        = glo.QDSpy_incProcessPrior
     self.fSync        = glo.QDSpy_tryForcingFSync
     self.useDIO       = glo.QDSpy_useUL_DIO
+    self.DIObrdType   = glo.QDSpy_UL_boardType
     self.DIObrd       = glo.QDSpy_UL_boardNum
     self.DIOdev       = glo.QDSpy_UL_deviceNum
     self.DIOportOut   = glo.QDSpy_UL_portOut
@@ -90,6 +91,9 @@ class Config:
       self.useDIO       = self.getParam("Timing",  
                                         "bool_use_digitalIO",
                                         glo.QDSpy_useUL_DIO)
+      self.DIObrdType   = self.getParam("Timing",  
+                                        "str_digitalio_board_type",
+                                        glo.QDSpy_UL_boardType)
       self.DIObrd       = self.getParam("Timing",  
                                         "int_digitalIO_board_num",
                                         glo.QDSpy_UL_boardNum)
@@ -257,6 +261,8 @@ class Config:
                     glo.QDSpy_FrDurThreshold_ms)
       self.conf.set("Timing","bool_use_digitalIO",        
                     glo.QDSpy_useUL_DIO)
+      self.conf.set("Timing","str_digitalio_board_type",        
+                    glo.QDSpy_UL_boardType)
       self.conf.set("Timing","int_digitalIO_board_num",   
                     glo.QDSpy_UL_boardNum)
       self.conf.set("Timing","int_digitalIO_device_num",  
