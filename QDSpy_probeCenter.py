@@ -132,8 +132,8 @@ def probe_main(data, _Sync, _View, _Stage):
             firstClick = False
         """
         if button & pyglet.window.mouse.RIGHT:
-            posX = int(probe.dxLast/xScale +_Stage.centOffX_pix)
-            posY = int(probe.dyLast/yScale +_Stage.centOffY_pix)
+            posX = int(probe.dxLast*xScale +_Stage.centOffX_pix)
+            posY = int(probe.dyLast*yScale +_Stage.centOffY_pix)
             ssp.Log.write("DATA", "{'probeX': "+str(posX)+
                                     ", 'probeY': "+str(posY)+"}")
             cleanExit()
@@ -148,8 +148,8 @@ def probe_main(data, _Sync, _View, _Stage):
     @Win.event    
     def on_mouse_drag(_x, _y, dx, dy, buttons, modifiers):
         if buttons & pyglet.window.mouse.LEFT:
-          x = int((_x - _Stage.centOffX_pix -Win.width/2) * xScale)
-          y = int((_y - _Stage.centOffY_pix -Win.height/2)* yScale)
+          x = int((_x - _Stage.centOffX_pix -Win.width/2) / xScale)
+          y = int((_y - _Stage.centOffY_pix -Win.height/2)/ yScale)
           probe.setShiftedVertices(x, y)
         
     @Win.event
