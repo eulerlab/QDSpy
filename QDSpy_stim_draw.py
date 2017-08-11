@@ -240,12 +240,14 @@ def sct2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
 def marker2vert (_Stage, _Conf):
   # Generate vertices for the trigger marker
   #
+  """
   if _Stage.useScrOvl:
-    dx2       = _Stage.dxScr12 /glo.QDSpy_markerScrWidthFract /4
+    dx2       = _Stage.dxScr12 /_Conf.markScrWidthFract/4
     pxy       = (_Stage.dxScr12//4, -_Stage.dyScr12//2)
-  else:  
-    dx2       = _Stage.dxScr /glo.QDSpy_markerScrWidthFract /2
-    pxy       = (_Stage.dxScr//2, -_Stage.dyScr//2)
+  else:
+  """
+  dx2       = _Stage.dxScr /_Conf.markScrWidthFract /2
+  pxy       = (_Stage.dxScr//2-dx2, -_Stage.dyScr//2+dx2)
   
   return rdr.vertFromRect([-dx2, -dx2, dx2, dx2], pxy, _Conf.markRGBA)
 

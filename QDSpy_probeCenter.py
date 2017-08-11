@@ -8,6 +8,7 @@ All rights reserved.
 """
 # ---------------------------------------------------------------------
 import QDSpy_stim_support as ssp
+import QDSpy_stage as stg
 import QDSpy_multiprocessing as mpr
 import pyglet
 import Graphics.renderer_opengl as rdr
@@ -16,9 +17,10 @@ from math import sin, cos, pi
 # ---------------------------------------------------------------------
 class ProbeCenter(object):
     
-    def __init__(self, _View, width=50, height=50, intensity=127, interval=1.0, 
+    def __init__(self, _View, _Stage, width=50, height=50, intensity=127, interval=1.0, 
                  nVertice = 100):
         self.View = _View
+        self.Stage = _Stage
         self.winWidth = self.View.winPre.width
         self.winHeight = self.View.winPre.height
         self.height = height
@@ -49,9 +51,9 @@ class ProbeCenter(object):
         newVertices = ()
         for i in range(len(self.vertices)):
             if i%2 == 0:
-                newVertices += (self.vertices[i]+dx,)
+                newVertices += (self.vertices[i]+self.dxLast,) 
             else:
-                newVertices += (self.vertices[i]+dy,)
+                newVertices += (self.vertices[i]+self.dyLast,) 
         self.shiftedVertices = newVertices
     
     def getEllipseVertices(self):
@@ -73,11 +75,14 @@ def probe_main(data, _Sync, _View, _Stage):
   
     Win   = _View.winPre
     Batch = _View.createBatch(_isScrOvl=False)
-    probe = ProbeCenter(_View,width=data[0],height=data[1],intensity=data[2])
+    probe = ProbeCenter(_View,_Stage,width=data[0],height=data[1],intensity=data[2])
     """
     firstClick = True # First click is to focus the window, without ending the probe
     """
     event_loop = pyglet.app.EventLoop()
+    
+    xScale  = _Stage.scalX_umPerPix *_Stage.winXCorrFact * Win.scale
+    yScale  = _Stage.scalY_umPerPix *_Stage.winXCorrFact * Win.scale
        
     
     def cleanExit():        
@@ -127,7 +132,10 @@ def probe_main(data, _Sync, _View, _Stage):
             firstClick = False
         """
         if button & pyglet.window.mouse.RIGHT:
-            ssp.Log.write("DATA", "{receptiveFieldCenter: x:"+str(x)+" y:"+str(y)+"}")
+            posX = int(probe.dxLast*xScale +_Stage.centOffX_pix)
+            posY = int(probe.dyLast*yScale +_Stage.centOffY_pix)
+            ssp.Log.write("DATA", "{'probeX': "+str(posX)+
+                                    ", 'probeY': "+str(posY)+"}")
             cleanExit()
             
     ''' 
@@ -140,7 +148,8 @@ def probe_main(data, _Sync, _View, _Stage):
     @Win.event    
     def on_mouse_drag(_x, _y, dx, dy, buttons, modifiers):
         if buttons & pyglet.window.mouse.LEFT:
-          (x, y) = Batch.winCoordToStageCoord(Win, _Stage, (_x, _y))
+          x = int((_x - _Stage.centOffX_pix -Win.width/2) / xScale)
+          y = int((_y - _Stage.centOffY_pix -Win.height/2)/ yScale)
           probe.setShiftedVertices(x, y)
         
     @Win.event
