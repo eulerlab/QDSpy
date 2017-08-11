@@ -14,6 +14,7 @@ For documentation, see [here](http://qdspy.eulerlab.de).
 
 #### v0.76beta - experimental branch
 
+* Bug fix: with respect to the probing center feature ([Tom Boissonnet](https://github.com/Tom-TBT))
 * Experimental support for an Arduino as low-cost digital I/O device (timing not yet thoroughly tested!).
 * New feature contributed by [Tom Boissonnet](https://github.com/Tom-TBT) (Asari lab, EMBL Monterotondo):     
   It is found on the GUI tab "Tools". When pressing "Start probing center", 
