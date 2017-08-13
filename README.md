@@ -14,7 +14,9 @@ For documentation, see [here](http://qdspy.eulerlab.de).
 
 #### v0.76beta - experimental branch
 
-* Bug fix: Probing center feature ([Tom Boissonnet](https://github.com/Tom-TBT))
+* 2017-08-13: Accelerated program start (i.e. on PCs with many cores) by simplifying communication between stimulation process
+  and GUI, avoiding time-consuming sync manager and by communicating with integers instead of strings.
+* 2017-08-11: Bug fix: Probing center feature ([Tom Boissonnet](https://github.com/Tom-TBT))
 * Experimental support for an Arduino as low-cost digital I/O device (timing not yet thoroughly tested!).
 * New feature contributed by [Tom Boissonnet](https://github.com/Tom-TBT) (Asari lab, EMBL Monterotondo):     
   It is found on the GUI tab "Tools". When pressing "Start probing center", 
