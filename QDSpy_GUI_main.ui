@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -323,10 +323,10 @@ folder</string>
         <string> µm/pix</string>
        </property>
        <property name="decimals">
-        <number>1</number>
+        <number>2</number>
        </property>
        <property name="minimum">
-        <double>0.100000000000000</double>
+        <double>0.010000000000000</double>
        </property>
        <property name="maximum">
         <double>50.000000000000000</double>
@@ -357,10 +357,10 @@ folder</string>
         <string> µm/pix</string>
        </property>
        <property name="decimals">
-        <number>1</number>
+        <number>2</number>
        </property>
        <property name="minimum">
-        <double>0.100000000000000</double>
+        <double>0.010000000000000</double>
        </property>
        <property name="maximum">
         <double>50.000000000000000</double>
