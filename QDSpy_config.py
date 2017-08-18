@@ -31,53 +31,53 @@ class Config:
   def __init__(self):
     # Initialization
     #
-    self.isLoaded     = False
-    self.conf         = configparser.RawConfigParser()
+    self.isLoaded  = False
+    self.conf      = configparser.RawConfigParser()
 
     # Get some information on the platform
     #
-    self.isWindows    = (sys.platform =='win32')
-    self.pyVersion    = sys.version_info[0] +sys.version_info[1]/10
+    self.isWindows = (sys.platform =='win32')
+    self.pyVersion = sys.version_info[0] +sys.version_info[1]/10
 
     # Set configuration default values
     #
-    self.incPP        = glo.QDSpy_incProcessPrior
-    self.fSync        = glo.QDSpy_tryForcingFSync
-    self.useDIO       = glo.QDSpy_useUL_DIO
-    self.DIObrdType   = glo.QDSpy_UL_boardType
-    self.DIObrd       = glo.QDSpy_UL_boardNum
-    self.DIOdev       = glo.QDSpy_UL_deviceNum
-    self.DIOportOut   = glo.QDSpy_UL_portOut
-    self.DIOportIn    = glo.QDSpy_UL_portIn
-    self.DIOpinMarker = glo.QDSpy_UL_pinMarkerOut
-    self.disFScr      = glo.QDSpy_disableFullScrCmd
-    self.pathShader   = glo.QDSpy_pathShader
-    self.pathStim     = glo.QDSpy_pathStimuli
-    self.pathApp      = glo.QDSpy_pathApplication
-    self.isTrackTime  = glo.QDSpy_trackTiming
-    self.isWarnFrDrop = glo.QDSpy_warnDroppedFrames    
-    self.maxDtTr_ms   = glo.QDSpy_FrDurThreshold_ms
-    self.disGC        = glo.QDSpy_disableGarbageCollect
-    self.useLCr       = glo.QDSpy_use_Lightcrafter
-    self.LEDNames     = glo.QDSpy_LEDNames_default
-    self.LEDPeakWLs   = glo.QDSpy_LEDPeakWLs_default
-    self.LEDDevIndices= glo.QDSpy_LEDDevIndex_default
-    self.LEDIndices   = glo.QDSpy_LEDIndex_default
-    self.LEDDefCurr   = glo.QDSpy_LEDCurrents_default
-    self.LEDMaxCurr   = glo.QDSpy_LEDCurrents_max
-    self.LEDQtColors  = glo.QDSpy_LEDQtColors_default
-    self.allowGammaLUT= glo.QDSpy_allowGammaLUT_default
-    self.userLUTFName = glo.QDSpy_userGammaLUTFileName
-    self.pathLogs     = glo.QDSpy_pathLogFiles
-    self.use3DTextures= glo.QDSpy_use3DTextures
-    self.recordStim   = glo.QDSpy_recordStim
-    self.markShowOnScr= glo.QDSpy_markerShowOnScr
-    self.markRGBA     = glo.QDSpy_markerRGBA
+    self.incPP             = glo.QDSpy_incProcessPrior
+    self.fSync             = glo.QDSpy_tryForcingFSync
+    self.useDIO            = glo.QDSpy_useUL_DIO
+    self.DIObrdType        = glo.QDSpy_UL_boardType
+    self.DIObrd            = glo.QDSpy_UL_boardNum
+    self.DIOdev            = glo.QDSpy_UL_deviceNum
+    self.DIOportOut        = glo.QDSpy_UL_portOut
+    self.DIOportIn         = glo.QDSpy_UL_portIn
+    self.DIOpinMarker      = glo.QDSpy_UL_pinMarkerOut
+    self.disFScr           = glo.QDSpy_disableFullScrCmd
+    self.pathShader        = glo.QDSpy_pathShader
+    self.pathStim          = glo.QDSpy_pathStimuli
+    self.pathApp           = glo.QDSpy_pathApplication
+    self.isTrackTime       = glo.QDSpy_trackTiming
+    self.isWarnFrDrop      = glo.QDSpy_warnDroppedFrames    
+    self.maxDtTr_ms        = glo.QDSpy_FrDurThreshold_ms
+    self.disGC             = glo.QDSpy_disableGarbageCollect
+    self.useLCr            = glo.QDSpy_use_Lightcrafter
+    self.LEDNames          = glo.QDSpy_LEDNames_default
+    self.LEDPeakWLs        = glo.QDSpy_LEDPeakWLs_default
+    self.LEDDevIndices     = glo.QDSpy_LEDDevIndex_default
+    self.LEDIndices        = glo.QDSpy_LEDIndex_default
+    self.LEDDefCurr        = glo.QDSpy_LEDCurrents_default
+    self.LEDMaxCurr        = glo.QDSpy_LEDCurrents_max
+    self.LEDQtColors       = glo.QDSpy_LEDQtColors_default
+    self.allowGammaLUT     = glo.QDSpy_allowGammaLUT_default
+    self.userLUTFName      = glo.QDSpy_userGammaLUTFileName
+    self.pathLogs          = glo.QDSpy_pathLogFiles
+    self.use3DTextures     = glo.QDSpy_use3DTextures
+    self.recordStim        = glo.QDSpy_recordStim
+    self.markShowOnScr     = glo.QDSpy_markerShowOnScr
+    self.markRGBA          = glo.QDSpy_markerRGBA
     self.markScrWidthFract = glo.QDSpy_markerScrWidthFract
-    self.useCtrlWin   = glo.QDSpy_useCtrlWin
-    self.ctrlWinScale = glo.QDSpy_ctrlWinScale
-    self.camWinGeom   = glo.QDSpy_camWinGeometry
-    self.allowCam     = glo.QDSpy_allowCam
+    self.useCtrlWin        = glo.QDSpy_useCtrlWin
+    self.ctrlWinScale      = glo.QDSpy_ctrlWinScale
+    self.camWinGeom        = glo.QDSpy_camWinGeometry
+    self.allowCam          = glo.QDSpy_allowCam
     
     try:
       self.conf.readfp(open(glo.QDSpy_iniFileName))
@@ -180,7 +180,9 @@ class Config:
                                         glo.QDSpy_markerRGBA)
       self.markRGBA     = [int(i) for i in temp.split(sep=",")]
       
-      self.markScrWidthFract = self.getParam("Display","float_markerScrWidthFract",glo.QDSpy_markerScrWidthFract)
+      self.markScrWidthFract = self.getParam("Display",
+                                             "float_markerScrWidthFract",
+                                             glo.QDSpy_markerScrWidthFract)
       
       self.useCtrlWin   = self.getParam("Display",  
                                         "bool_use_control_window",

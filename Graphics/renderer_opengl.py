@@ -643,8 +643,8 @@ class Batch:
     for iWin, win in enumerate(pyglet.app.windows):     
       win.switch_to()
 
-      xScale  = (1/_Stage.scalX_umPerPix) *_Stage.winXCorrFact *win.scale
-      yScale  = (1/_Stage.scalY_umPerPix) *_Stage.winXCorrFact *win.scale
+      xScale  = _Stage.scalX_umPerPix *_Stage.winXCorrFact *win.scale
+      yScale  = _Stage.scalY_umPerPix *_Stage.winXCorrFact *win.scale
       yWin_5  = win.height//2
       xWin_5 = win.width//2  
       xWin_25 = win.width//4

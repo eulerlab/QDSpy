@@ -68,6 +68,7 @@ class MainWinClass(QMainWindow, form_class):
   def __init__(self, parent=None):
     # Initialize
     #
+    self.HDMagFactor    = 1.0
     self.Conf          = cfg.Config()
     self.Stim          = stm.Stim()
     self.currStimPath  = self.Conf.pathStim
@@ -81,10 +82,10 @@ class MainWinClass(QMainWindow, form_class):
     self.Stage         = None
     self.noMsgToStdOut = cfg.getParsedArgv().gui
 
+    self.logWrite("DEBUG", "Initializing GUI")
     QMainWindow.__init__(self, parent)
     self.setupUi(self)
     self.setWindowTitle(glo.QDSpy_versionStr)
-
     
     # Bind GUI ...
     #
@@ -130,7 +131,7 @@ class MainWinClass(QMainWindow, form_class):
     self.spinBox_probe_height.valueChanged.connect(self.OnClick_probeParam_valueChanged)
     self.spinBox_probe_intensity.valueChanged.connect(self.OnClick_probeParam_valueChanged)
     self.spinBox_probe_interval.valueChanged.connect(self.OnClick_probeParam_valueChanged)
-
+    
     self.winCam  = None
     self.camList = []
     if self.Conf.allowCam and csp.module_exists("cv2"):
@@ -170,17 +171,24 @@ class MainWinClass(QMainWindow, form_class):
     # Create status objects and a pipe for communicating with the
     # presentation process (see below)    
     #
+    self.logWrite("DEBUG", "Creating sync object ...")
     self.state = State.undefined
     self.Sync  = mpr.Sync()
     ssp.Log.setGUISync(self.Sync)
+    self.logWrite("DEBUG", "... done")        
     
     # Create process that opens a view (an OpenGL window) and waits for
     # instructions to play stimululi
     #
+    self.logWrite("DEBUG", "Creating worker thread ...")
     self.worker = Process(target=QDSpy_core.main,
                           args=(self.currStimFName, True, self.Sync))
+    self.logWrite("DEBUG", "... done")    
     self.worker.daemon = True     
+    self.logWrite("DEBUG", "Starting worker thread ...")
     self.worker.start()    
+    self.logWrite("DEBUG", "... done")    
+    
     self.isViewReady = True
     self.setState(State.idle, True)
     
@@ -244,9 +252,11 @@ class MainWinClass(QMainWindow, form_class):
     
     # Check if worker process is still alive
     #
+    self.logWrite("DEBUG", "Check worker thread ...")
     time.sleep(1.0)
     if not(self.worker.is_alive()):
       sys.exit(0)
+    self.logWrite("DEBUG", "... done")        
 
     # Check if autorun stimulus file present and if so run it
     #
@@ -255,7 +265,6 @@ class MainWinClass(QMainWindow, form_class):
       self.currStimFName = os.path.join(self.currStimPath, 
                                         glo.QDSpy_autorunStimFileName)
       isAutoRunExists    = gsu.getStimExists(self.currStimFName)
-      print(isAutoRunExists, self.currStimFName)
       if isAutoRunExists:  
         # Check if a current compiled version of the autorun file
         # exists
@@ -343,8 +352,7 @@ class MainWinClass(QMainWindow, form_class):
         
     # Closing is immanent, stop stimulus, if running ...
     #
-    if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING,
-                                 ]:
+    if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING]:
       self.OnClick_btnStimAbort()
     
     # Save log 
@@ -364,9 +372,12 @@ class MainWinClass(QMainWindow, form_class):
     
     # ... and clean up
     #
+    self.logWrite("DEBUG", "Kill worker thread ...")        
     self.Sync.setRequestSafe(mpr.TERMINATING)    
+    self.worker.join()
     while self.worker.is_alive():
       time.sleep(0.2)
+    self.logWrite("DEBUG", "... done")              
     event.accept()  
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -471,7 +482,7 @@ class MainWinClass(QMainWindow, form_class):
         gsu.updateToggleButton(btnLED)
 
     self.processPipe()
-    self.updateStatusBar(stateWorker)
+    self.updateStatusBar(mpr.StateStr[stateWorker])
     QApplication.processEvents()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
