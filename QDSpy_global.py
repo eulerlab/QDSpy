@@ -92,6 +92,7 @@ QDSpy_UL_pinMarkerOut       = 2
 QDSpy_Arduino_baud          = 115200
 
 QDSpy_markerRGBA            = "255,127,127,255"
+QDSpy_antiMarkerRGBA            = "0,0,0,255"
 QDSpy_markerScrWidthFract   = 16
 QDSpy_markerShowOnScr       = True
 

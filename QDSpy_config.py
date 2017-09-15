@@ -73,6 +73,7 @@ class Config:
     self.recordStim        = glo.QDSpy_recordStim
     self.markShowOnScr     = glo.QDSpy_markerShowOnScr
     self.markRGBA          = glo.QDSpy_markerRGBA
+    self.antiMarkRGBA      = glo.QDSpy_antiMarkerRGBA
     self.markScrWidthFract = glo.QDSpy_markerScrWidthFract
     self.useCtrlWin        = glo.QDSpy_useCtrlWin
     self.ctrlWinScale      = glo.QDSpy_ctrlWinScale
@@ -179,6 +180,10 @@ class Config:
                                         "str_markerRGBA",
                                         glo.QDSpy_markerRGBA)
       self.markRGBA     = [int(i) for i in temp.split(sep=",")]
+      temp              = self.getParam("Display",  
+                                        "str_antiMarkerRGBA",
+                                        glo.QDSpy_antiMarkerRGBA)
+      self.antiMarkRGBA = [int(i) for i in temp.split(sep=",")]
       
       self.markScrWidthFract = self.getParam("Display",
                                              "float_markerScrWidthFract",
@@ -311,6 +316,8 @@ class Config:
                     glo.QDSpy_markerShowOnScr)
       self.conf.set("Display","str_markerRGBA",           
                     glo.QDSpy_markerRGBA)
+      self.conf.set("Display","str_antiMarkerRGBA",           
+                    glo.QDSpy_antiMarkerRGBA)
       self.conf.set("Display","float_markerScrWidthFract",
                     glo.QDSpy_markerScrWidthFract)
       self.conf.set("Display","bool_use_control_window",  
