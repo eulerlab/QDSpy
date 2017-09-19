@@ -50,6 +50,7 @@ class Config:
     self.DIOportOut        = glo.QDSpy_UL_portOut
     self.DIOportIn         = glo.QDSpy_UL_portIn
     self.DIOpinMarker      = glo.QDSpy_UL_pinMarkerOut
+    self.guiTimeOut        = glo.QDSpy_guiTimeOut
     self.disFScr           = glo.QDSpy_disableFullScrCmd
     self.pathShader        = glo.QDSpy_pathShader
     self.pathStim          = glo.QDSpy_pathStimuli
@@ -122,6 +123,9 @@ class Config:
       self.disGC        = self.getParam("Timing",  
                                         "bool_disable_garbage_collector",
                                         glo.QDSpy_disableGarbageCollect)
+      self.guiTimeOut        = self.getParam("Timing",  
+                                        "float_gui_time_out",
+                                        glo.QDSpy_guiTimeOut)
 
       self.pathShader   = self.getParam("Paths",  
                                         "str_shader",
@@ -280,6 +284,8 @@ class Config:
                     glo.QDSpy_UL_portIn)
       self.conf.set("Timing","int_digitalio_pin_markerOut", 
                     glo.QDSpy_UL_pinMarkerOut)
+      self.conf.set("Timing","float_gui_time_out", 
+                    glo.QDSpy_guiTimeOut)
 
       self.conf.add_section("Paths")
       self.conf.set("Paths", "str_shader",                

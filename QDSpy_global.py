@@ -48,6 +48,7 @@ QDSpy_disableGarbageCollect = False
 QDSpy_maxFrameDurDiff_s     = 0.0001 # used when compiling
 QDSpy_FrDurThreshold_ms     = 5.0    # to detect dropped frames
 QDSpy_refresh_Hz            = 60.0
+QDSpy_guiTimeOut            = 5.0
 
 QDSpy_cPickleProtocol       = 3
 QDSpy_cPickleFileExt        = ".pickle"
