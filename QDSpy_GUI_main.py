@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 QDSpy module - main program of the GUI version of QDSpy
@@ -55,8 +55,7 @@ class State:
   canceling  = 6
   probing    = 7
   # ...
-  
-GUI_timeout  = 5.0
+
 # ---------------------------------------------------------------------
 class Canceled(Exception) :pass
 
