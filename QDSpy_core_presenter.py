@@ -130,7 +130,10 @@ class Presenter:
     self.VideoList    = []    # list, video class objects
     self.VideoCtrlList= []    # list, video control class objects
     
+    '''
     self.markerVert   = drw.marker2vert(self.Stage, self.Conf)
+    '''
+    self.markerVert, self.antiMarkerVert = drw.marker2vert(self.Stage, self.Conf)
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def onKeyboard(self, _key, _x, _y):

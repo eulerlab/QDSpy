@@ -160,7 +160,7 @@ class Stage:
       d["peak_nm"]     = _Conf.LEDPeakWLs[iLED]
       d["devIndex"]    = _Conf.LEDDevIndices[iLED]
       d["LEDIndex"]    = _Conf.LEDIndices[iLED]
-      d["Qt_color"]    = _Conf.LEDNames[iLED]
+      d["Qt_color"]    = _Conf.LEDQtColors[iLED]
       self.LEDs.append(d)
       
     self.sendLEDChangesToLCr(_Conf)  

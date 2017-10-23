@@ -72,12 +72,14 @@ class Config:
     self.use3DTextures     = glo.QDSpy_use3DTextures
     self.recordStim        = glo.QDSpy_recordStim
     self.markShowOnScr     = glo.QDSpy_markerShowOnScr
+    self.antiMarkRGBA      = glo.QDSpy_antiMarkerRGBA
     self.markRGBA          = glo.QDSpy_markerRGBA
     self.markScrWidthFract = glo.QDSpy_markerScrWidthFract
     self.useCtrlWin        = glo.QDSpy_useCtrlWin
     self.ctrlWinScale      = glo.QDSpy_ctrlWinScale
     self.camWinGeom        = glo.QDSpy_camWinGeometry
     self.allowCam          = glo.QDSpy_allowCam
+    self.guiTimeOut        = glo.QDSpy_guiTimeOut
     
     try:
       self.conf.readfp(open(glo.QDSpy_iniFileName))
@@ -121,6 +123,9 @@ class Config:
       self.disGC        = self.getParam("Timing",  
                                         "bool_disable_garbage_collector",
                                         glo.QDSpy_disableGarbageCollect)
+      self.guiTimeOut    = self.getParam("Timing",  
+                                         "float_gui_time_out",
+                                          glo.QDSpy_guiTimeOut)
 
       self.pathShader   = self.getParam("Paths",  
                                         "str_shader",
@@ -179,6 +184,10 @@ class Config:
                                         "str_markerRGBA",
                                         glo.QDSpy_markerRGBA)
       self.markRGBA     = [int(i) for i in temp.split(sep=",")]
+      temp              = self.getParam("Display",  
+                                        "str_antiMarkerRGBA",
+                                         glo.QDSpy_antiMarkerRGBA)
+      self.antiMarkRGBA = [int(i) for i in temp.split(sep=",")]
       
       self.markScrWidthFract = self.getParam("Display",
                                              "float_markerScrWidthFract",
@@ -255,6 +264,8 @@ class Config:
                     glo.QDSpy_tryForcingFSync)
       self.conf.set("Timing","bool_disable_garbage_collector", 
                     glo.QDSpy_disableGarbageCollect)      
+      self.conf.set("Timing","float_gui_time_out", 
+                    glo.QDSpy_guiTimeOut)
       self.conf.set("Timing","bool_track_timing",         
                     glo.QDSpy_trackTiming)
       self.conf.set("Timing","bool_warn_when_frames_dropped", 
@@ -311,6 +322,8 @@ class Config:
                     glo.QDSpy_markerShowOnScr)
       self.conf.set("Display","str_markerRGBA",           
                     glo.QDSpy_markerRGBA)
+      self.conf.set("Display","str_antiMarkerRGBA",           
+                    glo.QDSpy_antiMarkerRGBA)      
       self.conf.set("Display","float_markerScrWidthFract",
                     glo.QDSpy_markerScrWidthFract)
       self.conf.set("Display","bool_use_control_window",  

@@ -10,9 +10,9 @@ All rights reserved.
 __author__ 	= "code@eulerlab.de"
 
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.76 beta"
+QDSpy_versionStr            = "QDSpy v0.77 beta"
 QDSpy_copyrightStr          = "(c) 2013-17 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v076beta.thomas_euler.eulerlab.de"
+QDSpy_appID                 = u"QDSpy3.v077beta.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 
 QDSpy_isDebug               = True
@@ -48,6 +48,7 @@ QDSpy_disableGarbageCollect = False
 QDSpy_maxFrameDurDiff_s     = 0.0001 # used when compiling
 QDSpy_FrDurThreshold_ms     = 5.0    # to detect dropped frames
 QDSpy_refresh_Hz            = 60.0
+QDSpy_guiTimeOut            = 5.0
 
 QDSpy_cPickleProtocol       = 3
 QDSpy_cPickleFileExt        = ".pickle"
@@ -92,6 +93,7 @@ QDSpy_UL_pinMarkerOut       = 2
 QDSpy_Arduino_baud          = 115200
 
 QDSpy_markerRGBA            = "255,127,127,255"
+QDSpy_antiMarkerRGBA        = "0,0,0,255"
 QDSpy_markerScrWidthFract   = 16
 QDSpy_markerShowOnScr       = True
 

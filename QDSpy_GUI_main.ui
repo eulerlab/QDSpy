@@ -323,10 +323,10 @@ folder</string>
         <string> µm/pix</string>
        </property>
        <property name="decimals">
-        <number>1</number>
+        <number>2</number>
        </property>
        <property name="minimum">
-        <double>0.100000000000000</double>
+        <double>0.010000000000000</double>
        </property>
        <property name="maximum">
         <double>50.000000000000000</double>
@@ -357,10 +357,10 @@ folder</string>
         <string> µm/pix</string>
        </property>
        <property name="decimals">
-        <number>1</number>
+        <number>2</number>
        </property>
        <property name="minimum">
-        <double>0.100000000000000</double>
+        <double>0.010000000000000</double>
        </property>
        <property name="maximum">
         <double>50.000000000000000</double>
@@ -2152,7 +2152,7 @@ display info</string>
      <x>0</x>
      <y>0</y>
      <width>780</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
