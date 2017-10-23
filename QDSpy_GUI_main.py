@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 QDSpy module - main program of the GUI version of QDSpy
@@ -55,8 +55,6 @@ class State:
   canceling  = 6
   probing    = 7
   # ...
-
-GUI_timeout  = 5.0
 
 # ---------------------------------------------------------------------
 class Canceled(Exception) :pass
@@ -795,7 +793,7 @@ class MainWinClass(QMainWindow, form_class):
     
     # Wait for the worker to finish cancelling
     #
-    if self.Sync.waitForState(mpr.IDLE, GUI_timeout, self.updateAll):
+    if self.Sync.waitForState(mpr.IDLE, self.Conf.guiTimeOut, self.updateAll):
       self.setState(State.ready, True)
     else:
       self.logWrite("DEBUG", "OnClick_btnStimAbort, timeout waiting for IDLE")
@@ -836,7 +834,7 @@ class MainWinClass(QMainWindow, form_class):
     
     # Wait for the worker to start ...
     #
-    if self.Sync.waitForState(mpr.COMPILING, GUI_timeout, self.updateAll):
+    if self.Sync.waitForState(mpr.COMPILING, self.Conf.guiTimeOut, self.updateAll):
       self.setState(State.compiling, True)
       
       # Wait for the worker to finish the presentation, while keeping the
@@ -861,7 +859,7 @@ class MainWinClass(QMainWindow, form_class):
     
     # Wait for the worker to start ...
     #
-    if self.Sync.waitForState(mpr.PRESENTING, GUI_timeout, self.updateAll):
+    if self.Sync.waitForState(mpr.PRESENTING, self.Conf.guiTimeOut, self.updateAll):
       self.setState(State.playing, True)
       
       # Wait for the worker to finish the presentation, while keeping the
@@ -884,7 +882,7 @@ class MainWinClass(QMainWindow, form_class):
     
     # Wait for the worker to start ...
     #
-    if self.Sync.waitForState(mpr.PROBING, GUI_timeout, self.updateAll):
+    if self.Sync.waitForState(mpr.PROBING, self.Conf.guiTimeOut, self.updateAll):
       self.setState(State.playing, True)
       
       # Wait for the worker to finish the presentation, while keeping the

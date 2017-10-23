@@ -246,6 +246,7 @@ def marker2vert (_Stage, _Conf):
     dx2 = _Stage.dxScr /_Conf.markScrWidthFract/2
     pxy = (_Stage.dxScr//2-dx2, -_Stage.dyScr//2+dx2)
   
-  return rdr.vertFromRect([-dx2, -dx2, dx2, dx2], pxy, _Conf.markRGBA)
+  return rdr.vertFromRect([-dx2, -dx2, dx2, dx2], pxy, _Conf.markRGBA),\
+         rdr.vertFromRect([-dx2, -dx2, dx2, dx2], pxy, _Conf.antiMarkRGBA)
 
 # ---------------------------------------------------------------------
