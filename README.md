@@ -24,7 +24,7 @@ For documentation, see [here](http://qdspy.eulerlab.de).
 * **IMPORTANT**: The ``QDSpy.ini`` file contains new parameters, which need to be added to the existing ``QDSpy.ini`` file, 
   otherwise QDSpy will crash. The easiest way to do so, is to rename the file to, for example, ``QDSpy.ini_COPY``. Then start 
   QDSpy and let it generate a fresh configuration file. Open both the new file and your copy in parallel and change the parameters
-  in the new file according to your previous settings. See see :doc:`inifile` for further details on the new parameters.
+  in the new file according to your previous settings. See see :doc:`inifile` for further details on the new parameters.  
 * Small bug fix in the GUI.
 
 #### v0.76beta - experimental branch
@@ -54,10 +54,10 @@ For documentation, see [here](http://qdspy.eulerlab.de).
   previous run was finished are first automatically stopped and ended. Also,
   movies/videos were also forwarded for no-duration scenes (e.g. a change in
   object colour), which led to changes in the movie/video frame rate. This
-  should now be fixed as well.
-* Bug fix: The first command in a loop was ignored; this is fixed now.
+  should now be fixed as well.  
+* Bug fix: The first command in a loop was ignored; this is fixed now.  
 * Bug fix: ``__autofile.py`` handling was restructured: When no ``__autorun.py`` 
-  file exists in the ``.\Stimuli`` folder, QDSpy warns and runs a default instead.
+  file exists in the ``.\Stimuli`` folder, QDSpy warns and runs a default instead.  
   An ``__autorun.py`` does no longer have to be present in ``.\Stimuli``.
 * **New feature**: Using the "screen overlay mode", stimuli with up to 6 different
   wavelengths (hexachromatic) can be shown by extending the presentation area to 
