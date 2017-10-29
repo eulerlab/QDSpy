@@ -158,27 +158,31 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     if _Conf.DIObrdType.upper() in ["ARDUINO"]:
       _IO  = dio.devIO_Arduino(_Conf.DIObrd, glo.QDSpy_Arduino_baud, 
                                _funcLog=ssp.Log.write)
-      
-    elif _Conf.DIObrdType.upper() in ["PCIDIO24"]:  
-      _IO  = dio.devIO_UL(dio.devTypeUL.PCIDIO24, _Conf.DIObrd, _Conf.DIOdev,
-                          _funcLog=ssp.Log.write)
     else:
+      try:
+        ULID = dio.dictULDevices[_Conf.DIObrdType.upper()]  
+        _IO  = dio.devIO_UL(ULID, _Conf.DIObrd, _Conf.DIOdev,
+                            _funcLog=ssp.Log.write)
+      except KeyError:
+        _IO  = None
+
+    if not(_IO):
       ssp.Log.write("ERROR", "I/O hardware device name not recognized.")
-      sys.exit(0)
-      
-      
-    if not(_IO.isReady):
+
+    elif not(_IO.isReady):
       ssp.Log.write("ERROR", "I/O hardware could not be initialized. Set "+
                     "`bool_use_digitalio` in `QDSpy.ini` to False.")
-      sys.exit(0)
-
-    # Configure I/O hardware
-    #
-    port = _IO.getPortFromStr(_Conf.DIOportOut)
-    _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
-    _IO.writeDPort(port, 0)    
-    port = _IO.getPortFromStr(_Conf.DIOportIn)    
-    _IO.configDPort(port, dio.devConst.DIGITAL_IN)
+    else:
+      # Configure I/O hardware
+      #
+      port = _IO.getPortFromStr(_Conf.DIOportOut)
+      _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
+      _IO.writeDPort(port, 0)    
+      port = _IO.getPortFromStr(_Conf.DIOportOut_User)
+      _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
+      _IO.writeDPort(port, 0)    
+      port = _IO.getPortFromStr(_Conf.DIOportIn)    
+      _IO.configDPort(port, dio.devConst.DIGITAL_IN)
     
   else:
     _IO = None  
@@ -256,7 +260,23 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             _Stage.sendLEDChangesToLCr(_Conf)
             data = [mpr.PipeValType.toSrv_None]
 
-       
+          if data[0] == mpr.PipeValType.toSrv_checkIODev:
+            # Return readiness of IO device
+            #
+            _Sync.pipeSrv.send([mpr.PipeValType.toCli_IODevInfo, 
+                                [_IO and _IO.isReady, dio.devConst.NONE, 0]])
+            data = [mpr.PipeValType.toSrv_None]
+
+          if data[0] == mpr.PipeValType.toSrv_setIODevPins:
+            # Change IO device pins
+            #
+            csp.setIODevicePin(_IO, data[1][0], data[1][1], data[1][2])
+            print("mpr.PipeValType.toSrv_setIODevPins", data)
+            _Sync.pipeSrv.send([mpr.PipeValType.toCli_IODevInfo, 
+                                [_IO and _IO.isReady, data]])
+            data = [mpr.PipeValType.toSrv_None]
+
+            
         # Parse client's request
         #
         if _Sync.Request.value == mpr.PRESENTING:
@@ -281,9 +301,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
               _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
               _Presenter.finish()
               setPerformanceNormal(_Conf)
-              '''
-              _Sync.setStateSafe(mpr.IDLE)
-              '''
+
           else:
             ssp.Log.write("DEBUG", "mpr.PRESENTING, unexpected client data")
           
@@ -336,7 +354,8 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
           _Sync.setStateSafe(mpr.IDLE)
 
           
-        elif not(_Sync.Request.value in [mpr.CANCELING, mpr.UNDEFINED]):
+        elif not(_Sync.Request.value in [mpr.CANCELING, mpr.UNDEFINED,
+                                         mpr.IDLE]):
           # Unknown request
           #
           ssp.Log.write("DEBUG", "Request {0} unknown"

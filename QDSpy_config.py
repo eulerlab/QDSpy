@@ -49,7 +49,10 @@ class Config:
     self.DIOdev            = glo.QDSpy_UL_deviceNum
     self.DIOportOut        = glo.QDSpy_UL_portOut
     self.DIOportIn         = glo.QDSpy_UL_portIn
+    self.DIOportOut_User   = glo.QDSpy_UL_portOut_User
     self.DIOpinMarker      = glo.QDSpy_UL_pinMarkerOut
+    self.DIOpinUserOut1    = glo.QDSpy_UL_pinUserOut1
+    self.DIOpinUserOut2    = glo.QDSpy_UL_pinUserOut2
     self.disFScr           = glo.QDSpy_disableFullScrCmd
     self.pathShader        = glo.QDSpy_pathShader
     self.pathStim          = glo.QDSpy_pathStimuli
@@ -108,9 +111,23 @@ class Config:
       self.DIOportIn    = self.getParam("Timing",  
                                         "str_digitalio_port_in",
                                         glo.QDSpy_UL_portIn)
+      self.DIOportOut_User = self.getParam("Timing",  
+                                        "str_digitalio_port_user_out",
+                                        glo.QDSpy_UL_portOut_User)
       self.DIOpinMarker = self.getParam("Timing",  
                                         "int_digitalio_pin_markerOut",
                                         glo.QDSpy_UL_pinMarkerOut)
+      self.DIOpinTrigIn = self.getParam("Timing",  
+                                        "int_digitalio_pin_triggerin",
+                                        glo.QDSpy_UL_pinTriggerIn)
+      temp              = self.getParam("Timing",  
+                                        "str_digitalio_pin_userout1",
+                                        glo.QDSpy_UL_pinUserOut1)
+      self.DIOpinUserOut1 = temp.split(",")
+      temp              = self.getParam("Timing",  
+                                        "str_digitalio_pin_userout2",
+                                        glo.QDSpy_UL_pinUserOut2)
+      self.DIOpinUserOut2 = temp.split(",")
       self.isTrackTime  = self.getParam("Timing",  
                                         "bool_track_timing",
                                         glo.QDSpy_trackTiming)
@@ -284,9 +301,17 @@ class Config:
                     glo.QDSpy_UL_portOut)
       self.conf.set("Timing","str_digitalio_port_in",     
                     glo.QDSpy_UL_portIn)
+      self.conf.set("Timing","str_digitalio_port_user_out",     
+                    glo.QDSpy_UL_portOut_User)
       self.conf.set("Timing","int_digitalio_pin_markerOut", 
                     glo.QDSpy_UL_pinMarkerOut)
-
+      self.conf.set("Timing","int_digitalio_pin_triggerin", 
+                    glo.QDSpy_UL_pinTriggerIn)
+      self.conf.set("Timing","str_digitalio_pin_userout1", 
+                    glo.QDSpy_UL_pinUserOut1)
+      self.conf.set("Timing","str_digitalio_pin_userout2", 
+                    glo.QDSpy_UL_pinUserOut2)
+      
       self.conf.add_section("Paths")
       self.conf.set("Paths", "str_shader",                
                     glo.QDSpy_pathShader)

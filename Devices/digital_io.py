@@ -41,6 +41,10 @@ class devTypeUL:
   USB1024LS   = 118
   PCIDIO24    = 40
 
+dictULDevices = dict([
+  ("USB1024LS", 118), 
+  ("PCIDIO24",   40)]) 
+
 dictUL        = dict([
   (devConst.PORT_A,      ULConst.FIRSTPORTA),
   (devConst.PORT_B,      ULConst.FIRSTPORTB),

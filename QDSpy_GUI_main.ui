@@ -1693,9 +1693,9 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>475</x>
-      <y>120</y>
+      <y>92</y>
       <width>302</width>
-      <height>154</height>
+      <height>103</height>
      </rect>
     </property>
     <property name="title">
@@ -1704,9 +1704,9 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="lblDisplDevInfo">
      <property name="geometry">
       <rect>
-       <x>85</x>
-       <y>48</y>
-       <width>209</width>
+       <x>80</x>
+       <y>46</y>
+       <width>217</width>
        <height>33</height>
       </rect>
      </property>
@@ -1738,7 +1738,7 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_DDev1">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>5</x>
        <y>16</y>
        <width>69</width>
        <height>16</height>
@@ -1757,9 +1757,9 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="lblDisplDevRes">
      <property name="geometry">
       <rect>
-       <x>85</x>
-       <y>32</y>
-       <width>209</width>
+       <x>80</x>
+       <y>31</y>
+       <width>217</width>
        <height>16</height>
       </rect>
      </property>
@@ -1782,8 +1782,8 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_DDev2">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>32</y>
+       <x>5</x>
+       <y>31</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -1801,8 +1801,8 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_DDev3">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>48</y>
+       <x>5</x>
+       <y>46</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -1820,9 +1820,9 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="lblDisplDevName">
      <property name="geometry">
       <rect>
-       <x>85</x>
+       <x>80</x>
        <y>16</y>
-       <width>209</width>
+       <width>217</width>
        <height>16</height>
       </rect>
      </property>
@@ -1845,8 +1845,8 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_DDev4">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>76</y>
+       <x>5</x>
+       <y>73</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -1864,10 +1864,10 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="lblDisplDevLEDs">
      <property name="geometry">
       <rect>
-       <x>85</x>
-       <y>76</y>
-       <width>209</width>
-       <height>33</height>
+       <x>80</x>
+       <y>73</y>
+       <width>217</width>
+       <height>28</height>
       </rect>
      </property>
      <property name="autoFillBackground">
@@ -1896,7 +1896,7 @@ p, li { white-space: pre-wrap; }
       <x>475</x>
       <y>0</y>
       <width>302</width>
-      <height>113</height>
+      <height>92</height>
      </rect>
     </property>
     <property name="title">
@@ -1905,9 +1905,9 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="lblSelStimName">
      <property name="geometry">
       <rect>
-       <x>85</x>
+       <x>80</x>
        <y>16</y>
-       <width>209</width>
+       <width>217</width>
        <height>16</height>
       </rect>
      </property>
@@ -1930,10 +1930,10 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="lblSelStimInfo">
      <property name="geometry">
       <rect>
-       <x>85</x>
-       <y>64</y>
-       <width>209</width>
-       <height>41</height>
+       <x>80</x>
+       <y>61</y>
+       <width>217</width>
+       <height>28</height>
       </rect>
      </property>
      <property name="baseSize">
@@ -1961,7 +1961,7 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_StInfo1">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>5</x>
        <y>16</y>
        <width>69</width>
        <height>16</height>
@@ -1980,8 +1980,8 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_StInfo3">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>64</y>
+       <x>5</x>
+       <y>61</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -1999,8 +1999,8 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_StInfo2">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>32</y>
+       <x>5</x>
+       <y>31</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -2018,9 +2018,9 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="lblSelStimStatus">
      <property name="geometry">
       <rect>
-       <x>85</x>
-       <y>32</y>
-       <width>209</width>
+       <x>80</x>
+       <y>31</y>
+       <width>217</width>
        <height>16</height>
       </rect>
      </property>
@@ -2043,8 +2043,8 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="label_StInfo4">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>48</y>
+       <x>5</x>
+       <y>46</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -2062,9 +2062,9 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="lblSelStimDuration">
      <property name="geometry">
       <rect>
-       <x>85</x>
-       <y>48</y>
-       <width>209</width>
+       <x>80</x>
+       <y>46</y>
+       <width>217</width>
        <height>16</height>
       </rect>
      </property>
@@ -2145,6 +2145,239 @@ enabled</string>
 display info</string>
     </property>
    </widget>
+   <widget class="QGroupBox" name="groupBoxIODevInfo">
+    <property name="geometry">
+     <rect>
+      <x>475</x>
+      <y>195</y>
+      <width>201</width>
+      <height>79</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>IO device info</string>
+    </property>
+    <widget class="QLabel" name="label_IODev">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>16</y>
+       <width>69</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>Name:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblIODevName">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>16</y>
+       <width>113</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="text">
+      <string>n/a</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_IODev_2">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>31</y>
+       <width>69</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>marker-out:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblIODevMarkerOut">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>31</y>
+       <width>113</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="text">
+      <string>n/a</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_IODev_3">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>46</y>
+       <width>69</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>trigger-in:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblIODevTriggerIn">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>46</y>
+       <width>113</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="text">
+      <string>n/a</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_IODev_4">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>61</y>
+       <width>69</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>user-out:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblIODevUserOut">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>61</y>
+       <width>113</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="text">
+      <string>n/a</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="btnIOUser1">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>200</y>
+      <width>96</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>n/a</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnIOUser2">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>237</y>
+      <width>96</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>n/a</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -2152,7 +2385,7 @@ display info</string>
      <x>0</x>
      <y>0</y>
      <width>780</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

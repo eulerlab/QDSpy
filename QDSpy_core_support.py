@@ -72,6 +72,19 @@ class Clock:
     return self.t0_s
 
 defaultClock = Clock()
+
+# ---------------------------------------------------------------------
+# IO device-related helper
+# ---------------------------------------------------------------------  
+def setIODevicePin(_IO, _portStr, _pin, _state):
+  port = _IO.getPortFromStr(_portStr)
+  mask = 0x01 << _pin
+  data = _IO.readDPort(port)
+  if _state:
+    data = data | mask
+  else:
+    data = data & ~mask
+  _IO.writeDPort(port, data)
   
 # ---------------------------------------------------------------------
 # Increase/decrease process priority

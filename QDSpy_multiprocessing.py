@@ -40,13 +40,17 @@ StateStr	  = dict([
 class PipeValType:
   toCli_log          = 0
   toCli_displayInfo  = 1
-  toCli_TEMP         = 2
+  toCli_IODevInfo    = 2
+  toCli_TEMP         = 3
   # ...
   toSrv_None         = 9
   toSrv_fileName     = 10
   toSrv_changedStage = 11 
   toSrv_changedLEDs  = 12 
   toSrv_probeParams  = 13 
+  toSrv_checkIODev   = 14
+  toSrv_setIODevPins = 15
+  
 
 # ---------------------------------------------------------------------
 # Sync class

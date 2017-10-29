@@ -84,12 +84,16 @@ QDSpy_loadShadersOnce       = True
 QDSpy_KEY_KillPresent       = [ord(b'Q'), ord(b'q')]
 
 QDSpy_useUL_DIO             = False
-QDSpy_UL_boardType          = "PCIDIO24" # "Arduino"
+QDSpy_UL_boardType          = "PCIDIO24" # "Arduino", "USB1024LS"
 QDSpy_UL_boardNum           = 0
 QDSpy_UL_deviceNum          = 6
 QDSpy_UL_portOut            = "A"
-QDSpy_UL_portIn             = "B"
+QDSpy_UL_portIn             = "CLO"
+QDSpy_UL_portOut_User       = "B"
 QDSpy_UL_pinMarkerOut       = 2  
+QDSpy_UL_pinTriggerIn       = 0
+QDSpy_UL_pinUserOut1        = "3, USER1"
+QDSpy_UL_pinUserOut2        = "4, USER2"
 QDSpy_Arduino_baud          = 115200
 
 QDSpy_markerRGBA            = "255,127,127,255"

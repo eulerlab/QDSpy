@@ -38,6 +38,9 @@ if csp.module_exists("cv2"):
 form_class           = uic.loadUiType("QDSpy_GUI_main.ui")[0]
 toggle_btn_style_str = "QPushButton:checked{background-color: lightGreen;"\
                        "border: none; }"
+user_btn_style_str   = "QPushButton:checked{background-color: orange;"\
+                       "border: none; }"
+
 
 # ---------------------------------------------------------------------
 fStrPreRed   = '<html><head/><body><p><span style="color:#ff0000;">'
@@ -77,6 +80,9 @@ class MainWinClass(QMainWindow, form_class):
     self.isStimCurr    = False
     self.isViewReady   = False
     self.isLCrUsed     = False
+    self.isIODevReady  = None
+    self.lastIOInfo    = []
+    self.IOCmdCount    = 0
     self.Stage         = None
     self.noMsgToStdOut = cfg.getParsedArgv().gui
 
@@ -102,6 +108,11 @@ class MainWinClass(QMainWindow, form_class):
     self.pushButtonLED4.clicked.connect(self.OnClick_pushButtonLED)    
     self.pushButtonLED5.clicked.connect(self.OnClick_pushButtonLED)    
     self.pushButtonLED6.clicked.connect(self.OnClick_pushButtonLED)    
+    
+    self.btnIOUser1.clicked.connect(self.OnClick_IOUser1)  
+    self.btnIOUser1.setStyleSheet(user_btn_style_str)
+    self.btnIOUser2.clicked.connect(self.OnClick_IOUser2)  
+    self.btnIOUser2.setStyleSheet(user_btn_style_str)
     
     self.pushButtonLED1.setStyleSheet(toggle_btn_style_str)
     self.pushButtonLED2.setStyleSheet(toggle_btn_style_str)
@@ -256,6 +267,30 @@ class MainWinClass(QMainWindow, form_class):
       sys.exit(0)
     self.logWrite("DEBUG", "... done")        
 
+    # Wait until the worker thread send info about the stage via the pipe
+    #
+    self.logWrite("DEBUG", "Waiting for stage info from worker ...")
+    while not(self.Stage):
+      self.processPipe()
+      time.sleep(0.05)
+    self.logWrite("DEBUG", "... done")        
+
+    # Update display info    
+    #
+    self.Stage.updateLEDs(self.Conf)
+    self.currStimPath  = os.path.abspath(self.currStimPath)
+    self.updateDisplayInfo() 
+    
+    # Update IO device info
+    #
+    self.logWrite("DEBUG", "Waiting for IO device state from worker ...")
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_checkIODev, []])
+    while self.isIODevReady == None:
+      self.processPipe()
+      time.sleep(0.05)
+    self.updateIOInfo()
+    self.logWrite("DEBUG", "... done")        
+
     # Check if autorun stimulus file present and if so run it
     #
     try:
@@ -302,12 +337,10 @@ class MainWinClass(QMainWindow, form_class):
                                        self.currQDSPath))
         sys.exit(0)
 
-    # Update display info    
+    # Update GUI
     #
-    self.Stage.updateLEDs(self.Conf)
-    self.currStimPath  = os.path.abspath(self.currStimPath)
-    self.updateDisplayInfo()      
-
+    self.updateAll()
+    
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def __del__(self):
@@ -507,6 +540,32 @@ class MainWinClass(QMainWindow, form_class):
       self.stbarStimMsg.setText("")
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def updateIOInfo(self):
+    # Update IO device info and status
+    #
+    if self.Conf.useDIO:
+      self.lblIODevName.setText(
+        "{0}, board #{1}, device #{2} {3}".format(
+          self.Conf.DIObrdType, self.Conf.DIObrd, self.Conf.DIOdev,
+          "is ready" if self.isIODevReady else "NOT READY"))
+      self.lblIODevMarkerOut.setText(
+        "port {0}, pin {1}".format(
+          self.Conf.DIOportOut, self.Conf.DIOpinMarker))
+      self.lblIODevTriggerIn.setText(
+        "port {0}, pin {1}".format(
+          self.Conf.DIOportIn, self.Conf.DIOpinTrigIn))
+      self.lblIODevUserOut.setText(
+        "port {0}, pins {1},{2}".format(
+          self.Conf.DIOportOut, int(self.Conf.DIOpinUserOut1[0]), 
+          int(self.Conf.DIOpinUserOut2[0])))
+
+    self.groupBoxIODevInfo.setEnabled(self.isIODevReady)
+    self.btnIOUser1.setEnabled(self.isIODevReady)
+    self.btnIOUser1.setText("{0}\noff".format(self.Conf.DIOpinUserOut1[1]))
+    self.btnIOUser2.setEnabled(self.isIODevReady)
+    self.btnIOUser2.setText("{0}\noff".format(self.Conf.DIOpinUserOut2[1]))
+      
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def updateDisplayInfo(self):
     # Update display info and status
     #
@@ -695,6 +754,24 @@ class MainWinClass(QMainWindow, form_class):
     print("OnClick_btnToggleWaitForTrigger.TO BE IMPLEMENTED")       
     # *****************************
     # *****************************
+    
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_IOUser1(self):
+    self.handleIOUserButton(self.btnIOUser1, int(self.Conf.DIOpinUserOut1[0]))
+
+  def OnClick_IOUser2(self):
+    self.handleIOUserButton(self.btnIOUser2, int(self.Conf.DIOpinUserOut2[0]))
+
+  def handleIOUserButton(self, _btn, _pin):
+    gsu.updateToggleButton(_btn)
+    self.IOCmdCount += 1    
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_setIODevPins, 
+                            [self.Conf.DIOportOut_User, _pin, 
+                             _btn.isChecked(), self.IOCmdCount]])
+***as dictionary        
+***check reply
+    data = dict([("USB1024LS", 118), ("PCIDIO24", 40)])    
+    self.logWrite("DATA", data.__str__())    
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_btnSetLEDCurrents(self):
@@ -905,7 +982,7 @@ class MainWinClass(QMainWindow, form_class):
     # 
     while self.Sync.pipeCli.poll():
       data = self.Sync.pipeCli.recv()
-      if   data[0] == mpr.PipeValType.toCli_log:
+      if data[0] == mpr.PipeValType.toCli_log:
         # Handle log data -> write to history 
         #
         self.log(data)
@@ -919,6 +996,12 @@ class MainWinClass(QMainWindow, form_class):
         self.updateAll()
         self.updateDisplayInfo()
         
+      elif data[0] == mpr.PipeValType.toCli_IODevInfo:
+        self.isIODevReady = data[1][0]
+        self.lastIOInfo   = data[1]
+        print("processPipe, toCli_IODevInfo", data[1])
+        self.updateIOInfo()
+        
       else:
         # ***************************
         # ***************************
@@ -926,7 +1009,16 @@ class MainWinClass(QMainWindow, form_class):
         # ***************************
         # ***************************
         pass
-
+      
+  def waitForPipe(self, _func, _timeOut_s=1.0):
+    # Wait for the passed function to return True or for time-out
+    # 
+    n = _timeOut_s /0.05
+    while not(_func()) and (n > 0):
+      self.processPipe()
+      time.sleep(0.05)
+      n -= 1
+      
   # -------------------------------------------------------------------
   # Logging-related 
   # -------------------------------------------------------------------

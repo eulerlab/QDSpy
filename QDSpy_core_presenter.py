@@ -524,6 +524,9 @@ class Presenter:
       if self.Sync.pipeSrv.poll():
          data = self.Sync.pipeSrv.recv()
          if data[0] == mpr.PipeValType.toSrv_changedStage:
+           # Stage properties were adjusted by the user, reflect immediately
+           # in the stimulus presentation
+           #
            self.Stage.scalX_umPerPix = data[1]["scalX_umPerPix"]
            self.Stage.scalY_umPerPix = data[1]["scalY_umPerPix"]
            self.Stage.centOffX_pix   = data[1]["centOffX_pix"]
@@ -536,12 +539,18 @@ class Presenter:
            self.Stage.offXScr2_pix   = data[1]["offXScr2_pix"]
            self.Stage.offYScr2_pix   = data[1]["offYScr2_pix"]
            
-
          if data[0] == mpr.PipeValType.toSrv_changedLEDs:
+           # User changed LED currents and/or toggled LEDs, notify 
+           # lightcrafter immediately
+           #
            self.Stage.LEDs            = data[1][0] 
            self.Stage.isLEDSeqEnabled = data[1][1]
            self.Stage.sendLEDChangesToLCr(self.Conf)
 
+         if data[0] == mpr.PipeValType.toSrv_setIODevPins:
+           # User pressed a user button, change IO device pins accordingly
+           # 
+           csp.setIODevicePin(self.IO, data[1][0], data[1][1], data[1][2])
 
     # Render scene
     #
