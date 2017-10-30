@@ -271,7 +271,6 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             # Change IO device pins
             #
             csp.setIODevicePin(_IO, data[1][0], data[1][1], data[1][2])
-            print("mpr.PipeValType.toSrv_setIODevPins", data)
             _Sync.pipeSrv.send([mpr.PipeValType.toCli_IODevInfo, 
                                 [_IO and _IO.isReady, data]])
             data = [mpr.PipeValType.toSrv_None]

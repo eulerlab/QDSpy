@@ -765,13 +765,15 @@ class MainWinClass(QMainWindow, form_class):
   def handleIOUserButton(self, _btn, _pin):
     gsu.updateToggleButton(_btn)
     self.IOCmdCount += 1    
-    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_setIODevPins, 
-                            [self.Conf.DIOportOut_User, _pin, 
-                             _btn.isChecked(), self.IOCmdCount]])
-***as dictionary        
-***check reply
-    data = dict([("USB1024LS", 118), ("PCIDIO24", 40)])    
-    self.logWrite("DATA", data.__str__())    
+    data = dict([("port", self.Conf.DIOportOut_User), ("pin", _pin),
+                 ("state", _btn.isChecked()), ("cmdCount", self.IOCmdCount)])        
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_setIODevPins,
+                            [data["port"], data["pin"], data["state"], 
+                             data["cmdCount"]]])
+    currIOCmdCount = self.IOCmdCount        
+    self.processPipe()  
+    if currIOCmdCount == self.IOCmdCount:
+      self.logWrite("DATA", data.__str__())    
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_btnSetLEDCurrents(self):
@@ -999,7 +1001,6 @@ class MainWinClass(QMainWindow, form_class):
       elif data[0] == mpr.PipeValType.toCli_IODevInfo:
         self.isIODevReady = data[1][0]
         self.lastIOInfo   = data[1]
-        print("processPipe, toCli_IODevInfo", data[1])
         self.updateIOInfo()
         
       else:
