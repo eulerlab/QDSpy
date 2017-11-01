@@ -556,7 +556,7 @@ class MainWinClass(QMainWindow, form_class):
           self.Conf.DIOportIn, self.Conf.DIOpinTrigIn))
       self.lblIODevUserOut.setText(
         "port {0}, pins {1},{2}".format(
-          self.Conf.DIOportOut, int(self.Conf.DIOpinUserOut1[0]), 
+          self.Conf.DIOportOut_User, int(self.Conf.DIOpinUserOut1[0]), 
           int(self.Conf.DIOpinUserOut2[0])))
 
     self.groupBoxIODevInfo.setEnabled(self.isIODevReady)
@@ -757,19 +757,22 @@ class MainWinClass(QMainWindow, form_class):
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_IOUser1(self):
-    self.handleIOUserButton(self.btnIOUser1, int(self.Conf.DIOpinUserOut1[0]))
+    self.handleIOUserButton(self.btnIOUser1, int(self.Conf.DIOpinUserOut1[0]),
+                            int(self.Conf.DIOpinUserOut1[2]) != 0)
 
   def OnClick_IOUser2(self):
-    self.handleIOUserButton(self.btnIOUser2, int(self.Conf.DIOpinUserOut2[0]))
+    self.handleIOUserButton(self.btnIOUser2, int(self.Conf.DIOpinUserOut2[0]),
+                            int(self.Conf.DIOpinUserOut2[2]) != 0)
 
-  def handleIOUserButton(self, _btn, _pin):
+  def handleIOUserButton(self, _btn, _pin, _invert):
     gsu.updateToggleButton(_btn)
     self.IOCmdCount += 1    
     data = dict([("port", self.Conf.DIOportOut_User), ("pin", _pin),
-                 ("state", _btn.isChecked()), ("cmdCount", self.IOCmdCount)])        
+                 ("invert", _invert), ("state", _btn.isChecked()), 
+                 ("cmdCount", self.IOCmdCount)])        
     self.Sync.pipeCli.send([mpr.PipeValType.toSrv_setIODevPins,
-                            [data["port"], data["pin"], data["state"], 
-                             data["cmdCount"]]])
+                            [data["port"], data["pin"], data["invert"], 
+                             data["state"], data["cmdCount"]]])
     currIOCmdCount = self.IOCmdCount        
     self.processPipe()  
     if currIOCmdCount == self.IOCmdCount:
@@ -999,8 +1002,10 @@ class MainWinClass(QMainWindow, form_class):
         self.updateDisplayInfo()
         
       elif data[0] == mpr.PipeValType.toCli_IODevInfo:
-        self.isIODevReady = data[1][0]
-        self.lastIOInfo   = data[1]
+        self.isIODevReady   = data[1][0]
+        if self.isIODevReady == None:
+          self.isIODevReady = False
+        self.lastIOInfo     = data[1]
         self.updateIOInfo()
         
       else:

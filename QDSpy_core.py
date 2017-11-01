@@ -178,11 +178,20 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
       port = _IO.getPortFromStr(_Conf.DIOportOut)
       _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
       _IO.writeDPort(port, 0)    
+      port = _IO.getPortFromStr(_Conf.DIOportIn)    
+      _IO.configDPort(port, dio.devConst.DIGITAL_IN)
       port = _IO.getPortFromStr(_Conf.DIOportOut_User)
       _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
       _IO.writeDPort(port, 0)    
-      port = _IO.getPortFromStr(_Conf.DIOportIn)    
-      _IO.configDPort(port, dio.devConst.DIGITAL_IN)
+      
+      # Set user pins to the resting state
+      #
+      csp.setIODevicePin(_IO, _Conf.DIOportOut_User, 
+                         int(_Conf.DIOpinUserOut1[0]),
+                         int(_Conf.DIOpinUserOut1[2]) != 0, False)
+      csp.setIODevicePin(_IO, _Conf.DIOportOut_User, 
+                         int(_Conf.DIOpinUserOut2[0]),
+                         int(_Conf.DIOpinUserOut2[2]) != 0, False)
     
   else:
     _IO = None  
@@ -270,7 +279,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
           if data[0] == mpr.PipeValType.toSrv_setIODevPins:
             # Change IO device pins
             #
-            csp.setIODevicePin(_IO, data[1][0], data[1][1], data[1][2])
+            csp.setIODevicePin(_IO, *data[1][0:4])
             _Sync.pipeSrv.send([mpr.PipeValType.toCli_IODevInfo, 
                                 [_IO and _IO.isReady, data]])
             data = [mpr.PipeValType.toSrv_None]

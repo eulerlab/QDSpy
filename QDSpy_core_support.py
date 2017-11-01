@@ -21,6 +21,7 @@ import os
 import sys
 import QDSpy_global as glb
 from   pkgutil import iter_modules
+from   operator import xor
 
 if glb.QDSpy_incProcessPrior:
   import psutil
@@ -76,11 +77,11 @@ defaultClock = Clock()
 # ---------------------------------------------------------------------
 # IO device-related helper
 # ---------------------------------------------------------------------  
-def setIODevicePin(_IO, _portStr, _pin, _state):
+def setIODevicePin(_IO, _portStr, _pin, _invert, _state):
   port = _IO.getPortFromStr(_portStr)
   mask = 0x01 << _pin
   data = _IO.readDPort(port)
-  if _state:
+  if xor(_state, _invert):
     data = data | mask
   else:
     data = data & ~mask
