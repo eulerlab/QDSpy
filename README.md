@@ -18,7 +18,7 @@ For documentation, see [here](http://qdspy.eulerlab.de).
   These allow to control simple external TTL-compatible hardware from the GUI, which now contains two user buttons to switch the signals
   at the user pins. A simple example application is controlling a drug puffing system. Note that this feature is not yet implemented
   for the Arduino as I/O device.
-  See [`inifile`](http://qdspy.eulerlab.de/inifile.html) for details about the new parameters.
+  See [`inifile`](http://qdspy.eulerlab.de/inifile.html) for details on the new parameters.
   
 * Changes by [Tom Boissonnet](https://github.com/Tom-TBT):
   * Bug fix in probing center feature.
