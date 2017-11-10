@@ -14,7 +14,6 @@ __author__ 	= "code@eulerlab.de"
 import numpy as np
 import QDSpy_stim as stm
 import QDSpy_stim_support as spp
-import QDSpy_global as glo
 import Graphics.renderer_opengl as rdr
 
 # ---------------------------------------------------------------------
@@ -241,12 +240,16 @@ def marker2vert (_Stage, _Conf):
   # Generate vertices for the trigger marker
   #
   if _Stage.useScrOvl:
-    dx2       = _Stage.dxScr12 /glo.QDSpy_markerScrWidthFract /4
-    pxy       = (_Stage.dxScr12//4, -_Stage.dyScr12//2)
-  else:  
-    dx2       = _Stage.dxScr /glo.QDSpy_markerScrWidthFract /2
-    pxy       = (_Stage.dxScr//2, -_Stage.dyScr//2)
+    dx2 = _Stage.dxScr12 /_Conf.markScrWidthFract/4
+    pxy = (_Stage.dxScr12//4, -_Stage.dyScr12//2)
+  else:
+    dx2 = _Stage.dxScr /_Conf.markScrWidthFract/2
+    pxy = (_Stage.dxScr//2-dx2, -_Stage.dyScr//2+dx2)
   
+  '''
   return rdr.vertFromRect([-dx2, -dx2, dx2, dx2], pxy, _Conf.markRGBA)
+  '''
+  return rdr.vertFromRect([-dx2, -dx2, dx2, dx2], pxy, _Conf.markRGBA),\
+         rdr.vertFromRect([-dx2, -dx2, dx2, dx2], pxy, _Conf.antiMarkRGBA)
 
 # ---------------------------------------------------------------------

@@ -30,6 +30,7 @@ import QDSpy_core_view as cvw
 import QDSpy_core_support as csp
 import QDSpy_multiprocessing as mpr
 import QDSpy_gamma as gma
+import QDSpy_probeCenter as pce
 import Devices.digital_io as dio
 
 if glo.QDSpy_use_Lightcrafter:
@@ -154,18 +155,44 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
   # Initialize digital IO hardware, if requested
   #
   if _Conf.useDIO:
-    _IO  = dio.devIO_UL(dio.devTypeUL.PCIDIO24, _Conf.DIObrd, _Conf.DIOdev)
-    if not(_IO.isReady):
-      ssp.Log.write("ERROR", "Universal Library not installed or no digital "+
-                    "I/O card present. Set `bool_use_digitalio` in `QDSpy.in"+
-                    "i` to False.")
-      sys.exit(0)
+    if _Conf.DIObrdType.upper() in ["ARDUINO"]:
+      _IO  = dio.devIO_Arduino(_Conf.DIObrd, glo.QDSpy_Arduino_baud, 
+                               _funcLog=ssp.Log.write)
+    else:
+      try:
+        ULID = dio.dictULDevices[_Conf.DIObrdType.upper()]  
+        _IO  = dio.devIO_UL(ULID, _Conf.DIObrd, _Conf.DIOdev,
+                            _funcLog=ssp.Log.write)
+      except KeyError:
+        _IO  = None
 
-    port = _IO.getPortFromStr(_Conf.DIOportOut)
-    _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
-    _IO.writeDPort(port, 0)    
-    port = _IO.getPortFromStr(_Conf.DIOportIn)    
-    _IO.configDPort(port, dio.devConst.DIGITAL_IN)
+    if not(_IO):
+      ssp.Log.write("ERROR", "I/O hardware device name not recognized.")
+
+    elif not(_IO.isReady):
+      ssp.Log.write("ERROR", "I/O hardware could not be initialized. Set "+
+                    "`bool_use_digitalio` in `QDSpy.ini` to False.")
+    else:
+      # Configure I/O hardware
+      #
+      port = _IO.getPortFromStr(_Conf.DIOportOut)
+      _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
+      _IO.writeDPort(port, 0)    
+      port = _IO.getPortFromStr(_Conf.DIOportIn)    
+      _IO.configDPort(port, dio.devConst.DIGITAL_IN)
+      port = _IO.getPortFromStr(_Conf.DIOportOut_User)
+      _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
+      _IO.writeDPort(port, 0)    
+      
+      # Set user pins to the resting state
+      #
+      csp.setIODevicePin(_IO, _Conf.DIOportOut_User, 
+                         int(_Conf.DIOpinUserOut1[0]),
+                         int(_Conf.DIOpinUserOut1[2]) != 0, False)
+      csp.setIODevicePin(_IO, _Conf.DIOportOut_User, 
+                         int(_Conf.DIOpinUserOut2[0]),
+                         int(_Conf.DIOpinUserOut2[2]) != 0, False)
+    
   else:
     _IO = None  
     
@@ -242,7 +269,22 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             _Stage.sendLEDChangesToLCr(_Conf)
             data = [mpr.PipeValType.toSrv_None]
 
-       
+          if data[0] == mpr.PipeValType.toSrv_checkIODev:
+            # Return readiness of IO device
+            #
+            _Sync.pipeSrv.send([mpr.PipeValType.toCli_IODevInfo, 
+                                [_IO and _IO.isReady, dio.devConst.NONE, 0]])
+            data = [mpr.PipeValType.toSrv_None]
+
+          if data[0] == mpr.PipeValType.toSrv_setIODevPins:
+            # Change IO device pins
+            #
+            csp.setIODevicePin(_IO, *data[1][0:4])
+            _Sync.pipeSrv.send([mpr.PipeValType.toCli_IODevInfo, 
+                                [_IO and _IO.isReady, data]])
+            data = [mpr.PipeValType.toSrv_None]
+
+            
         # Parse client's request
         #
         if _Sync.Request.value == mpr.PRESENTING:
@@ -267,9 +309,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
               _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
               _Presenter.finish()
               setPerformanceNormal(_Conf)
-              '''
-              _Sync.setStateSafe(mpr.IDLE)
-              '''
+
           else:
             ssp.Log.write("DEBUG", "mpr.PRESENTING, unexpected client data")
           
@@ -295,8 +335,35 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
                 
           _Sync.setStateSafe(mpr.IDLE)
 
+
+        elif _Sync.Request.value == mpr.PROBING:
+          if data[0] == mpr.PipeValType.toSrv_probeParams:
+            # Change into interactive probing mode ...
+            #
+            _Sync.setStateSafe(mpr.PROBING)
+            try:
+              switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim)    
+              _Presenter.LCr = connectLCrs(_Conf, _Stim)
+              setPerformanceHigh(_Conf)
+              if data[1] == glo.QDSpy_probing_center:
+                # Currently only interactive center-probing is implemented
+                #
+                pce.probe_main(data[2],_Sync, _View, _Stage)
+                
+            finally:
+              data = [mpr.PipeValType.toSrv_None]
+              _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
+              _Presenter.finish()
+              setPerformanceNormal(_Conf)
+ 
+          else:
+            ssp.Log.write("DEBUG", "mpr.PROBE_CENTER, unexpected client data")
+                
+          _Sync.setStateSafe(mpr.IDLE)
+
           
-        elif not(_Sync.Request.value in [mpr.CANCELING, mpr.UNDEFINED]):
+        elif not(_Sync.Request.value in [mpr.CANCELING, mpr.UNDEFINED,
+                                         mpr.IDLE]):
           # Unknown request
           #
           ssp.Log.write("DEBUG", "Request {0} unknown"

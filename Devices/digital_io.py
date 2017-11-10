@@ -3,10 +3,13 @@
 """
 Digital I/O API
 
-Digital I/O using Measurement Computing's Universal Library
-http://www.mccdaq.com/daq-software/universal-library.aspx
+Digital I/O using different types of devices. 
+Supported are currently:
+  - digital I/O card USB1024LS and PCIDIO24 from Measurement Computing
+    (http://www.mccdaq.com/daq-software/universal-library.aspx)
+  - Arduino (experimental)  
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2017 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -16,14 +19,11 @@ __author__ 	= "code@eulerlab.de"
 import ctypes
 from   ctypes                     import byref
 from . import digital_io_UL_const as ULConst
-# ---------------------------------------------------------------------
-# Universal library(UL) devices (Measurement Computing)
-#
-class devTypeUL:
-  none        = 0
-  USB1024LS   = 118
-  PCIDIO24    = 40
+import serial
 
+# ---------------------------------------------------------------------
+# General definitions
+#
 class devConst:
   NONE        = -1
   PORT_A      = 0
@@ -32,6 +32,18 @@ class devConst:
   PORT_C_HI   = 3
   DIGITAL_IN  = 10
   DIGITAL_OUT = 11
+
+# ---------------------------------------------------------------------
+# Universal library(UL) devices (Measurement Computing)
+#
+class devTypeUL:
+  none        = 0
+  USB1024LS   = 118
+  PCIDIO24    = 40
+
+dictULDevices = dict([
+  ("USB1024LS", 118), 
+  ("PCIDIO24",   40)]) 
 
 dictUL        = dict([
   (devConst.PORT_A,      ULConst.FIRSTPORTA),
@@ -42,21 +54,26 @@ dictUL        = dict([
   (devConst.DIGITAL_OUT, ULConst.DIGITALOUT)])
 
 # ---------------------------------------------------------------------
+# Arduino
+#
+class devTypeArduino:
+  none        = 0
+  Uno         = 1
+
+
+# ---------------------------------------------------------------------
 # I/O base class
 # ---------------------------------------------------------------------
 class devIO(object):
-  def __init__(self, _funcLog):
+  def __init__(self, _funcLog=None, _logLevel=2):
     # Initializing and testing the device
     #
-    self.isReady = False
-    self.devName = "n/a"
-    self.devType = None
+    self.isReady   = False
+    self.devName   = "n/a"
+    self.devType   = None
+    self.funcLog   = _funcLog
+    self.logLevel  = _logLevel
     
-    if _funcLog == None:
-      self.log   = self.__log
-    else:
-      self.log   = _funcLog
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def _setIsReady(self):
     self.isReady   = True
@@ -80,11 +97,73 @@ class devIO(object):
     pass
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def __log(self, _sHeader, _sMsg):
-    # ...
+  def log(self, _sHeader, _sMsg, _logLevel=2):
+    # Write message to log
     #
-    print("{0!s:>8} {1}".format(_sHeader, _sMsg))
+    self.lastMsgStr = _sMsg
+    if _logLevel <= self.logLevel:
+      if self.funcLog is None:
+        print("{0!s:>8} #{1}:{2}".format(_sHeader, self.devName, _sMsg))
+      else:
+        self.funcLog(_sHeader, self.devName +"|" +_sMsg)
   
+  
+# =====================================================================
+# I/O class using an Arduino (experimental)
+# ---------------------------------------------------------------------
+class devIO_Arduino(devIO, object):
+  def __init__(self, _boardNum, _baud, _funcLog=None):
+    super(devIO_Arduino, self).__init__(_funcLog)
+
+    self.isReady = False
+    self.devName = "Arduino"
+    self.devType = devTypeArduino.Uno
+    self.COM     = "COM{0}".format(_boardNum)
+    self.baud    = _baud
+
+    try:
+      self.serClient = serial.Serial(self.COM, self.baud,
+                                     parity=serial.PARITY_NONE,
+                                     stopbits=serial.STOPBITS_ONE,
+                                     bytesize=serial.EIGHTBITS,
+                                     timeout=1.0,
+                                     writeTimeout=None) 
+      self.serClient.flushInput()
+      self.serClient.flushOutput()
+      if self.serClient.isOpen():
+        self._setIsReady()  
+        return
+    
+    except serial.SerialException as e:
+      pass
+    
+    self.log("ERROR", "Could not open {0}".format(self.COM))
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def configDPort(self, _port, _dir):
+    # ...
+    pass
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def readDPort(self, _port):
+    # ...
+    return 0
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def writeDPort(self, _port, _val):
+    if self.isReady:
+      if _val > 0:
+        self.serClient.write(b'1')
+      else:
+        self.serClient.write(b'0')
+    
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def getPortFromStr(self, _portStr):
+    if   _portStr.upper() == "A":
+      return devConst.PORT_A
+
+    return devConst.NONE   
+
 
 # =====================================================================
 # I/O class using the Universal Library/Measurement Computing

@@ -14,24 +14,43 @@ All rights reserved.
 __author__ 	= "code@eulerlab.de"
 
 import time            
-from   multiprocessing import Manager, Pipe 
+from   multiprocessing import Pipe, Value 
 
 # ---------------------------------------------------------------------
 # Multiprocessing support
 # ---------------------------------------------------------------------     
-UNDEFINED, PRESENTING, COMPILING, CANCELING, TERMINATING, IDLE = (     
-  "Undefined", "Presenting", "Compiling", "Canceling",  
-  "Terminating", "Idle")
+UNDEFINED   = 0
+PRESENTING  = 1
+COMPILING   = 2
+CANCELING   = 3
+TERMINATING = 4 
+IDLE        = 5
+PROBING     = 6
+
+StateStr	  = dict([
+  (UNDEFINED,   "Undefined"),
+  (PRESENTING,  "Presenting"),
+  (COMPILING,   "Compiling"),
+  (CANCELING,   "Canceling"),
+  (TERMINATING, "Terminating"),
+  (IDLE,        "Idle"),
+  (PROBING,     "Probing")])
+
   
 class PipeValType:
   toCli_log          = 0
   toCli_displayInfo  = 1
-  toCli_TEMP         = 2
+  toCli_IODevInfo    = 2
+  toCli_TEMP         = 3
   # ...
   toSrv_None         = 9
   toSrv_fileName     = 10
   toSrv_changedStage = 11 
   toSrv_changedLEDs  = 12 
+  toSrv_probeParams  = 13 
+  toSrv_checkIODev   = 14
+  toSrv_setIODevPins = 15
+  
 
 # ---------------------------------------------------------------------
 # Sync class
@@ -40,10 +59,10 @@ class Sync:
   def __init__(self):
     # Initializing
     #
-    self.Request       = Manager().Value("i", IDLE)
-    self.State         = Manager().Value("i", UNDEFINED)
+    self.Request = Value("i", IDLE)
+    self.State   = Value("i", UNDEFINED)
     self.pipeCli, self.pipeSrv = Pipe()
-    
+
     """
     dx = 64  #912 //6
     dy = 128 #1140 //6
