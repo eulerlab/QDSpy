@@ -485,6 +485,8 @@ class Presenter:
     if self.Conf.markShowOnScr:
       if sc[stm.SC_field_marker]:  
         self.Batch.add_rect_data(self.markerVert)
+      else:
+        self.Batch.add_rect_data(self.antiMarkerVert)
       
     # Track rendering timing, if requested
     #
