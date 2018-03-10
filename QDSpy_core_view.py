@@ -180,8 +180,8 @@ class View:
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def present(self):
     self.Renderer.present()
-  
-  
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def dispatch_events(self):
     self.Renderer.dispatch_events()  
     

@@ -38,6 +38,9 @@ if csp.module_exists("cv2"):
 form_class           = uic.loadUiType("QDSpy_GUI_main.ui")[0]
 toggle_btn_style_str = "QPushButton:checked{background-color: lightGreen;"\
                        "border: none; }"
+user_btn_style_str   = "QPushButton:checked{background-color: orange;"\
+                       "border: none; }"
+
 
 # ---------------------------------------------------------------------
 fStrPreRed   = '<html><head/><body><p><span style="color:#ff0000;">'
@@ -53,9 +56,8 @@ class State:
   compiling  = 4
   playing    = 5
   canceling  = 6
+  probing    = 7
   # ...
-
-GUI_timeout  = 5.0
 
 # ---------------------------------------------------------------------
 class Canceled(Exception) :pass
@@ -67,6 +69,7 @@ class MainWinClass(QMainWindow, form_class):
   def __init__(self, parent=None):
     # Initialize
     #
+    self.HDMagFactor    = 1.0
     self.Conf          = cfg.Config()
     self.Stim          = stm.Stim()
     self.currStimPath  = self.Conf.pathStim
@@ -77,13 +80,16 @@ class MainWinClass(QMainWindow, form_class):
     self.isStimCurr    = False
     self.isViewReady   = False
     self.isLCrUsed     = False
+    self.isIODevReady  = None
+    self.lastIOInfo    = []
+    self.IOCmdCount    = 0
     self.Stage         = None
     self.noMsgToStdOut = cfg.getParsedArgv().gui
 
+    self.logWrite("DEBUG", "Initializing GUI")
     QMainWindow.__init__(self, parent)
     self.setupUi(self)
     self.setWindowTitle(glo.QDSpy_versionStr)
-
     
     # Bind GUI ...
     #
@@ -102,6 +108,11 @@ class MainWinClass(QMainWindow, form_class):
     self.pushButtonLED4.clicked.connect(self.OnClick_pushButtonLED)    
     self.pushButtonLED5.clicked.connect(self.OnClick_pushButtonLED)    
     self.pushButtonLED6.clicked.connect(self.OnClick_pushButtonLED)    
+    
+    self.btnIOUser1.clicked.connect(self.OnClick_IOUser1)  
+    self.btnIOUser1.setStyleSheet(user_btn_style_str)
+    self.btnIOUser2.clicked.connect(self.OnClick_IOUser2)  
+    self.btnIOUser2.setStyleSheet(user_btn_style_str)
     
     self.pushButtonLED1.setStyleSheet(toggle_btn_style_str)
     self.pushButtonLED2.setStyleSheet(toggle_btn_style_str)
@@ -123,7 +134,13 @@ class MainWinClass(QMainWindow, form_class):
     self.btnToggleLEDEnable.setStyleSheet(toggle_btn_style_str)      
     self.btnToggleSeqControl.clicked.connect(self.OnClick_btnToggleSeqControl)
     self.btnToggleSeqControl.setStyleSheet(toggle_btn_style_str)
-
+    
+    self.btnProbeStart.clicked.connect(self.OnClick_btnProbeStart)
+    self.spinBox_probe_width.valueChanged.connect(self.OnClick_probeParam_valueChanged)
+    self.spinBox_probe_height.valueChanged.connect(self.OnClick_probeParam_valueChanged)
+    self.spinBox_probe_intensity.valueChanged.connect(self.OnClick_probeParam_valueChanged)
+    self.spinBox_probe_interval.valueChanged.connect(self.OnClick_probeParam_valueChanged)
+    
     self.winCam  = None
     self.camList = []
     if self.Conf.allowCam and csp.module_exists("cv2"):
@@ -163,17 +180,24 @@ class MainWinClass(QMainWindow, form_class):
     # Create status objects and a pipe for communicating with the
     # presentation process (see below)    
     #
+    self.logWrite("DEBUG", "Creating sync object ...")
     self.state = State.undefined
     self.Sync  = mpr.Sync()
     ssp.Log.setGUISync(self.Sync)
+    self.logWrite("DEBUG", "... done")        
     
     # Create process that opens a view (an OpenGL window) and waits for
     # instructions to play stimululi
     #
+    self.logWrite("DEBUG", "Creating worker thread ...")
     self.worker = Process(target=QDSpy_core.main,
                           args=(self.currStimFName, True, self.Sync))
+    self.logWrite("DEBUG", "... done")    
     self.worker.daemon = True     
+    self.logWrite("DEBUG", "Starting worker thread ...")
     self.worker.start()    
+    self.logWrite("DEBUG", "... done")    
+    
     self.isViewReady = True
     self.setState(State.idle, True)
     
@@ -237,9 +261,35 @@ class MainWinClass(QMainWindow, form_class):
     
     # Check if worker process is still alive
     #
+    self.logWrite("DEBUG", "Check worker thread ...")
     time.sleep(1.0)
     if not(self.worker.is_alive()):
       sys.exit(0)
+    self.logWrite("DEBUG", "... done")        
+
+    # Wait until the worker thread send info about the stage via the pipe
+    #
+    self.logWrite("DEBUG", "Waiting for stage info from worker ...")
+    while not(self.Stage):
+      self.processPipe()
+      time.sleep(0.05)
+    self.logWrite("DEBUG", "... done")        
+
+    # Update display info    
+    #
+    self.Stage.updateLEDs(self.Conf)
+    self.currStimPath  = os.path.abspath(self.currStimPath)
+    self.updateDisplayInfo() 
+    
+    # Update IO device info
+    #
+    self.logWrite("DEBUG", "Waiting for IO device state from worker ...")
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_checkIODev, []])
+    while self.isIODevReady == None:
+      self.processPipe()
+      time.sleep(0.05)
+    self.updateIOInfo()
+    self.logWrite("DEBUG", "... done")        
 
     # Check if autorun stimulus file present and if so run it
     #
@@ -248,7 +298,6 @@ class MainWinClass(QMainWindow, form_class):
       self.currStimFName = os.path.join(self.currStimPath, 
                                         glo.QDSpy_autorunStimFileName)
       isAutoRunExists    = gsu.getStimExists(self.currStimFName)
-      print(isAutoRunExists, self.currStimFName)
       if isAutoRunExists:  
         # Check if a current compiled version of the autorun file
         # exists
@@ -288,12 +337,10 @@ class MainWinClass(QMainWindow, form_class):
                                        self.currQDSPath))
         sys.exit(0)
 
-    # Update display info    
+    # Update GUI
     #
-    self.Stage.updateLEDs(self.Conf)
-    self.currStimPath  = os.path.abspath(self.currStimPath)
-    self.updateDisplayInfo()      
-
+    self.updateAll()
+    
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def __del__(self):
@@ -306,7 +353,8 @@ class MainWinClass(QMainWindow, form_class):
     # Allow pressing ESC to abort stimulus presentation ...
     #
     if e.key() in glo.QDSpy_KEY_KillPresent: 
-      if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING]:
+      if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING, 
+                                   mpr.PROBING]:
         self.OnClick_btnStimAbort()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -355,9 +403,12 @@ class MainWinClass(QMainWindow, form_class):
     
     # ... and clean up
     #
+    self.logWrite("DEBUG", "Kill worker thread ...")        
     self.Sync.setRequestSafe(mpr.TERMINATING)    
+    self.worker.join()
     while self.worker.is_alive():
       time.sleep(0.2)
+    self.logWrite("DEBUG", "... done")              
     event.accept()  
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -380,6 +431,8 @@ class MainWinClass(QMainWindow, form_class):
       self.state  = State.playing
     elif stateWorker == mpr.COMPILING:  
       self.state  = State.compiling
+    elif stateWorker == mpr.PROBING:
+      self.state = State.probing
     elif stateWorker in [mpr.CANCELING, mpr.TERMINATING]: 
       self.state  = State.canceling
     elif stateWorker == mpr.IDLE: 
@@ -396,7 +449,10 @@ class MainWinClass(QMainWindow, form_class):
     self.btnStimCompile.setText("Compile")
     self.btnStimCompile.setEnabled(not(self.isStimCurr))
     self.btnStimAbort.setText("Abort")
-    self.btnStimAbort.setEnabled(self.state == State.playing)
+    self.btnStimAbort.setEnabled((self.state == State.playing) or
+                                 (self.state == State.probing))
+    self.btnProbeStart.setText("Start probing\ncenter")
+    self.btnProbeStart.setEnabled(True)
     
     if   self.state == State.loading:
       self.btnStimPlay.setText("Loading\n...")
@@ -419,6 +475,12 @@ class MainWinClass(QMainWindow, form_class):
       self.btnStimPlay.setText("Playing\n...")
       self.btnStimPlay.setEnabled(False)
       self.btnStimCompile.setEnabled(False)
+      
+    elif self.state == State.probing:
+      self.btnProbeStart.setText("Probing\ncenter ...")
+      self.btnProbeStart.setEnabled(False)
+      self.btnStimPlay.setEnabled(False)
+      self.btnStimCompile.setEnabled(False)  
       
     if not(self.winCam is None):
       self.checkBoxCamEnable.setCheckState(self.winCam.isHidden())
@@ -451,7 +513,7 @@ class MainWinClass(QMainWindow, form_class):
         gsu.updateToggleButton(btnLED)
 
     self.processPipe()
-    self.updateStatusBar(stateWorker)
+    self.updateStatusBar(mpr.StateStr[stateWorker])
     QApplication.processEvents()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -477,6 +539,32 @@ class MainWinClass(QMainWindow, form_class):
     else:
       self.stbarStimMsg.setText("")
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def updateIOInfo(self):
+    # Update IO device info and status
+    #
+    if self.Conf.useDIO:
+      self.lblIODevName.setText(
+        "{0}, board #{1}, device #{2} {3}".format(
+          self.Conf.DIObrdType, self.Conf.DIObrd, self.Conf.DIOdev,
+          "is ready" if self.isIODevReady else "NOT READY"))
+      self.lblIODevMarkerOut.setText(
+        "port {0}, pin {1}".format(
+          self.Conf.DIOportOut, self.Conf.DIOpinMarker))
+      self.lblIODevTriggerIn.setText(
+        "port {0}, pin {1}".format(
+          self.Conf.DIOportIn, self.Conf.DIOpinTrigIn))
+      self.lblIODevUserOut.setText(
+        "port {0}, pins {1},{2}".format(
+          self.Conf.DIOportOut_User, int(self.Conf.DIOpinUserOut1[0]), 
+          int(self.Conf.DIOpinUserOut2[0])))
+
+    self.groupBoxIODevInfo.setEnabled(self.isIODevReady)
+    self.btnIOUser1.setEnabled(self.isIODevReady)
+    self.btnIOUser1.setText("{0}\noff".format(self.Conf.DIOpinUserOut1[1]))
+    self.btnIOUser2.setEnabled(self.isIODevReady)
+    self.btnIOUser2.setText("{0}\noff".format(self.Conf.DIOpinUserOut2[1]))
+      
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def updateDisplayInfo(self):
     # Update display info and status
@@ -668,6 +756,29 @@ class MainWinClass(QMainWindow, form_class):
     # *****************************
     
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_IOUser1(self):
+    self.handleIOUserButton(self.btnIOUser1, int(self.Conf.DIOpinUserOut1[0]),
+                            int(self.Conf.DIOpinUserOut1[2]) != 0)
+
+  def OnClick_IOUser2(self):
+    self.handleIOUserButton(self.btnIOUser2, int(self.Conf.DIOpinUserOut2[0]),
+                            int(self.Conf.DIOpinUserOut2[2]) != 0)
+
+  def handleIOUserButton(self, _btn, _pin, _invert):
+    gsu.updateToggleButton(_btn)
+    self.IOCmdCount += 1    
+    data = dict([("port", self.Conf.DIOportOut_User), ("pin", _pin),
+                 ("invert", _invert), ("state", _btn.isChecked()), 
+                 ("cmdCount", self.IOCmdCount)])        
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_setIODevPins,
+                            [data["port"], data["pin"], data["invert"], 
+                             data["state"], data["cmdCount"]]])
+    currIOCmdCount = self.IOCmdCount        
+    self.processPipe()  
+    if currIOCmdCount == self.IOCmdCount:
+      self.logWrite("DATA", data.__str__())    
+    
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_btnSetLEDCurrents(self):
     if len(self.Stage.LEDs) == 0:
       return
@@ -729,6 +840,20 @@ class MainWinClass(QMainWindow, form_class):
     self.updateDisplayInfo()
     self.Sync.pipeCli.send([mpr.PipeValType.toSrv_changedStage, 
                             self.Stage.getScaleOffsetAsDict()])
+      
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_probeParam_valueChanged(self, _val):
+    self.signalProbeParamChange()
+    
+  def signalProbeParamChange(self):    
+    spot_width     = int(self.spinBox_probe_width.value())
+    spot_height    = int(self.spinBox_probe_height.value())
+    spot_intensity = int(self.spinBox_probe_intensity.value())
+    spot_interval  = float(self.spinBox_probe_interval.value())
+    self.Sync.pipeCli.send([mpr.PipeValType.toSrv_probeParams,
+                            glo.QDSpy_probing_center,
+                            [spot_width, spot_height, spot_intensity,
+                             spot_interval]])
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_btnSaveStageCS(self):  
@@ -750,10 +875,13 @@ class MainWinClass(QMainWindow, form_class):
     
     # Wait for the worker to finish cancelling
     #
-    if self.Sync.waitForState(mpr.IDLE, GUI_timeout, self.updateAll):
+    if self.Sync.waitForState(mpr.IDLE, self.Conf.guiTimeOut, self.updateAll):
       self.setState(State.ready, True)
     else:
       self.logWrite("DEBUG", "OnClick_btnStimAbort, timeout waiting for IDLE")
+
+  def OnClick_btnProbeStart(self):
+    self.probeCenter()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnDblClick_listStim(self, _selItem):
@@ -788,7 +916,8 @@ class MainWinClass(QMainWindow, form_class):
     
     # Wait for the worker to start ...
     #
-    if self.Sync.waitForState(mpr.COMPILING, GUI_timeout, self.updateAll):
+    if self.Sync.waitForState(mpr.COMPILING, self.Conf.guiTimeOut, 
+                              self.updateAll):
       self.setState(State.compiling, True)
       
       # Wait for the worker to finish the presentation, while keeping the
@@ -813,7 +942,8 @@ class MainWinClass(QMainWindow, form_class):
     
     # Wait for the worker to start ...
     #
-    if self.Sync.waitForState(mpr.PRESENTING, GUI_timeout, self.updateAll):
+    if self.Sync.waitForState(mpr.PRESENTING, self.Conf.guiTimeOut, 
+                              self.updateAll):
       self.setState(State.playing, True)
       
       # Wait for the worker to finish the presentation, while keeping the
@@ -825,6 +955,29 @@ class MainWinClass(QMainWindow, form_class):
     else:
       self.logWrite("DEBUG", "runStim, timeout waiting for PRESENTING")
 
+  # -------------------------------------------------------------------
+  def probeCenter(self):
+    # Send parameters of the probe center via pipe and signal worker thread to 
+    # start presenting the stimulus
+    #
+    self.signalProbeParamChange()
+    self.Sync.setRequestSafe(mpr.PROBING)
+    self.logWrite(" ", "Probing center ...")
+    
+    # Wait for the worker to start ...
+    #
+    if self.Sync.waitForState(mpr.PROBING, self.Conf.guiTimeOut, 
+                              self.updateAll):
+      self.setState(State.playing, True)
+      
+      # Wait for the worker to finish the presentation, while keeping the
+      # GUI alive
+      #
+      self.Sync.waitForState(mpr.IDLE, 0.0, self.updateAll)
+      self.updateAll()
+      
+    else:
+      self.logWrite("DEBUG", "runStim, timeout waiting for PROBING")
 
   # -------------------------------------------------------------------
   # Communication with worker-thread
@@ -834,7 +987,7 @@ class MainWinClass(QMainWindow, form_class):
     # 
     while self.Sync.pipeCli.poll():
       data = self.Sync.pipeCli.recv()
-      if   data[0] == mpr.PipeValType.toCli_log:
+      if data[0] == mpr.PipeValType.toCli_log:
         # Handle log data -> write to history 
         #
         self.log(data)
@@ -848,6 +1001,13 @@ class MainWinClass(QMainWindow, form_class):
         self.updateAll()
         self.updateDisplayInfo()
         
+      elif data[0] == mpr.PipeValType.toCli_IODevInfo:
+        self.isIODevReady   = data[1][0]
+        if self.isIODevReady == None:
+          self.isIODevReady = False
+        self.lastIOInfo     = data[1]
+        self.updateIOInfo()
+        
       else:
         # ***************************
         # ***************************
@@ -855,7 +1015,16 @@ class MainWinClass(QMainWindow, form_class):
         # ***************************
         # ***************************
         pass
-
+      
+  def waitForPipe(self, _func, _timeOut_s=1.0):
+    # Wait for the passed function to return True or for time-out
+    # 
+    n = _timeOut_s /0.05
+    while not(_func()) and (n > 0):
+      self.processPipe()
+      time.sleep(0.05)
+      n -= 1
+      
   # -------------------------------------------------------------------
   # Logging-related 
   # -------------------------------------------------------------------

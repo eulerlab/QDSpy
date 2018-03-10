@@ -19,6 +19,9 @@ All rights reserved.
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
+# ***** DOME *****
+DOME         = False
+
 import sys
 import ctypes
 import pyglet
@@ -46,6 +49,10 @@ VERT_VERT                  = 0
 VERT_INDICES               = 1
 VERT_RGBA                  = 2
 VERT_COUNT                 = 3
+
+MODE_TRIANGLE              = GL.GL_TRIANGLES
+MODE_POLYGON               = GL.GL_POLYGON
+# ...
 
 # =====================================================================
 #
@@ -349,11 +356,17 @@ class Window(pyglet.window.Window):
       else:  
         # Standard full-screen mode
         #
+        dx = self.Renderer.Screens[_iScr].width
+        dy = self.Renderer.Screens[_iScr].height
         super().__init__(vsync=True, fullscreen=True,
                          screen=self.Renderer.Screens[_iScr],
-                         width=self.Renderer.Screens[_iScr].width, 
-                         height=self.Renderer.Screens[_iScr].height,
-                         caption=_title)
+                         width=dx, height=dy, caption=_title)
+        # ***** DOME *****
+        '''
+        if DOME:
+          rect = [-dx//2, -dy//2, dx//2, dy//2]
+          self.Scr1DomeVert = vertFromRect(rect, (0,0), (0,0,0,127))
+        '''
         
     else:
       # Window mode
@@ -455,44 +468,10 @@ class Window(pyglet.window.Window):
       if isColor:
         RGBA2 = (_RGB[3], _RGB[4], _RGB[5], 255)
         self.Scr2Vert[VERT_RGBA] = RGBA2 *self.Scr2Vert[VERT_COUNT]
+        
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                  
+        
 
-    '''
-    if self.isPresent and self.isScrOvl:
-      # Is presentation window in screen overlay mode, therefore set colour
-      # of each half seperately
-      #
-      GL.glEnable(GL.GL_SCISSOR_TEST)
-      
-      GL.glScissor(0, 0, self.width//2, self.height)
-      if isColor:
-        GL.glClearColor(RGB[0], RGB[1], RGB[2], 0.0)
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
-      else:  
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
-
-      #GL.glDisable(GL.GL_SCISSOR_TEST)
-      #GL.glEnable(GL.GL_SCISSOR_TEST)
-     
-      GL.glScissor(self.width//2, 0, self.width//2, self.height)
-      """
-      if isColor:
-        GL.glClearColor(RGB[3], RGB[4], RGB[5], 0.0)
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
-      else:  
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
-      """  
-      GL.glDisable(GL.GL_SCISSOR_TEST)
-
-    else:
-      # Window or standard full-screen mode, set colour normally
-      #
-      if isColor:
-        GL.glClearColor(RGB[0], RGB[1], RGB[2], 0.0)
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
-      else:  
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
-    '''  
-     
 # =====================================================================
 #
 # ---------------------------------------------------------------------
@@ -529,19 +508,36 @@ class Batch:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                     
   def replace_object_data(self, _indices, _tri, _RGBA, _RGBA2):
-    """ Replace the current vertex triangle data in current batch
+    """ Replace the current indexed triangle vertex data in current batch
     """
     self.delete_object_data()
-    self.IV = self.Batch.add_indexed(len(_tri)//2, GL.GL_TRIANGLES, 
-                                     self.IVGr, _indices, 
-                                     ("v2i/stream", _tri), 
-                                     ("c4B/stream", _RGBA))
-    if self.isScrOvl:
-      self.IV2 = self.Batch2.add_indexed(len(_tri)//2, GL.GL_TRIANGLES, 
-                                         self.IVGr2, _indices, 
-                                         ("v2i/stream", _tri), 
-                                         ("c4B/stream", _RGBA2))
+    nV       = len(_tri)//2
+    mode     = GL.GL_TRIANGLES
+    self.IV  = self.Batch.add_indexed(nV, mode, self.IVGr, _indices, 
+                                      ("v2i/stream", _tri), 
+                                      ("c4B/stream", _RGBA))
+    if not(self.isScrOvl):
+      return
+    self.IV2 = self.Batch2.add_indexed(nV, mode, self.IVGr2, _indices,
+                                       ("v2i/stream", _tri), 
+                                       ("c4B/stream", _RGBA2))
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                     
+  def replace_object_data_non_indexed(self, _indices, _tri, _RGBA, _RGBA2, 
+                                      _mode=GL.GL_TRIANGLES):
+    """ Replace the current vertex data in current batch
+    """
+    self.delete_object_data()
+    nV       = len(_tri)//2
+    self.IV  = self.Batch.add(nV, _mode, self.IVGr, 
+                             ("v2i/stream", _tri), ("c4B/stream", _RGBA))
+    if not(self.isScrOvl):
+      return
+    self.IV2 = self.Batch2.add(nV, _mode, self.IVGr2, 
+                               ("v2i/stream", _tri), ("c4B/stream", _RGBA2))
+
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                     
   def delete_object_data(self):
     if self.IV != None:
       self.IV.delete()
@@ -632,7 +628,13 @@ class Batch:
       if self.isScrOvl:  
         self.IVShObjGr2[_objID].set_params(_pos, _a_rad, _param)
       
-      
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                           
+  def winCoordToStageCoord(self, _Win, _Stage, _pos):
+    xScale  = _Stage.scalX_umPerPix *_Stage.winXCorrFact *_Win.scale
+    yScale  = _Stage.scalY_umPerPix *_Stage.winXCorrFact *_Win.scale
+    return (int((_pos[0] -_Win.width/2) /xScale), 
+            int((_pos[1] -_Win.height/2) /yScale))
+    
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                     
   def draw(self, _Stage, _View, _isClear=False):      
     """ Draw current batch of triangle vertices, acknowledging the scaling
@@ -702,6 +704,26 @@ class Batch:
         if not(_isClear):
           self.Batch.draw()    
         self.BatchSpr.draw() 
+        
+        # ***** DOME *****
+        """
+        if DOME: 
+          '''
+          GL.glEnable(GL.GL_TEXTURE_2D)
+          self.shader.bind()
+          '''
+          self.add_rect_data(win.Scr1DomeVert)
+          '''
+          GL.glDisable(GL.GL_TEXTURE_2D)
+          self.shader.unbind()
+          '''
+          '''
+          Example:
+            self.Batch.add_indexed(len(_tri)//2, GL.GL_TRIANGLES, 
+                                   self.IVShObjGr[_objID], _indices,
+                                   ("v2i/stream", _tri), ("c4B/stream", _RGBA)))
+          '''  
+        """
         GL.glPopMatrix()
 
 
