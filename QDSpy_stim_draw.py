@@ -68,7 +68,7 @@ def ell2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
   rx         = dx *mx /2.0
   ry         = dy *my /2.0
   rm         = (rx+ry) /2.0
-  nTri       = int(min(max(5, round(rm/1.5)), stm.Ellipse_maxTr))
+  nTri       = int(min(max(10, round(rm/1.5)), stm.Ellipse_maxTr))
   nPnts      = nTri +1
   dAng       = 2*np.pi/nTri
 
