@@ -1046,9 +1046,9 @@ class MainWinClass(QMainWindow, form_class):
       form.setFontPointSize(glo.QDSpy_fontPntSizeHistoryHD)
     else:
       form.setFontPointSize(glo.QDSpy_fontPntSizeHistory)
-      
+
+    cursor.movePosition(QTextCursor.End)  
     cursor.setCharFormat(form)
-    cursor.movePosition(QTextCursor.End)
     cursor.insertText(msg)
     self.textBrowserHistory.setTextCursor(cursor)
     self.textBrowserHistory.ensureCursorVisible()
