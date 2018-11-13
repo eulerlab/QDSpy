@@ -17,7 +17,7 @@ from   ctypes import windll
 from   PyQt5 import uic 
 from   PyQt5.QtWidgets import QMessageBox, QMainWindow, QLabel, QApplication
 from   PyQt5.QtWidgets import QFileDialog, QListWidgetItem, QWidget
-from   PyQt5.QtGui     import QPalette, QColor, QBrush, QTextCharFormat
+from   PyQt5.QtGui     import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor
 from   PyQt5.QtCore    import QRect, QSize
 from   multiprocessing import Process
 import QDSpy_stim as stm
@@ -1046,7 +1046,8 @@ class MainWinClass(QMainWindow, form_class):
       form.setFontPointSize(glo.QDSpy_fontPntSizeHistoryHD)
     else:
       form.setFontPointSize(glo.QDSpy_fontPntSizeHistory)
-      
+
+    cursor.movePosition(QTextCursor.End)  
     cursor.setCharFormat(form)
     cursor.insertText(msg)
     self.textBrowserHistory.setTextCursor(cursor)
