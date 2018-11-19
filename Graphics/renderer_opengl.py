@@ -271,7 +271,7 @@ class Renderer:
   def end_main_loop(self):
     """ End the main loop and destroy windows
     """
-    for win in pyglet.app.windows:     
+    for win in list(pyglet.app.windows):     
       win.switch_to()
       win.set_mouse_visible(True)
       win.close()
