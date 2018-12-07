@@ -496,11 +496,12 @@ class Batch:
     self.IVShObj2      = [] 
     self.IVGr          = None # pyglet Group object for 'currIV' VBO
     self.IVGr2         = None 
-    self.IVShObjGr     = {}   # pyglet Group object for 'currIVShObj' VBOs
-    self.IVShObjGr2    = {}  
-    
+    self.IVShObjGr     = []   # pyglet Group object for 'currIVShObj' VBOs
+    self.IVShObjGr2    = []  
+
     self.shaderManager = None
     self.sprite        = None
+
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                     
   def set_shader_manager(self, _shMan):
@@ -760,11 +761,14 @@ CommonShaderParent = CommonShaderParentGroup()
 # ---------------------------------------------------------------------
 # Shader bind/unbind class
 # ---------------------------------------------------------------------
-class ShaderBindGroup(pyglet.graphics.Group):
+# *** 2018-12-07 TE ***
+#class ShaderBindGroup(pyglet.graphics.Group):
+class ShaderBindGroup(pyglet.graphics.OrderedGroup):
   """ Pyglet group to bind/unbind shader objects
   """
   def __init__(self, _shader, _shType, _iObj, _ShMan):
-    super(ShaderBindGroup, self).__init__(parent=CommonShaderParent)
+    #super(ShaderBindGroup, self).__init__(parent=CommonShaderParent)
+    super(ShaderBindGroup, self).__init__(order=0, parent=CommonShaderParent)
     self.parent.order = _iObj    
     
     self.t_s     = 0.0
