@@ -15,9 +15,8 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 
 #### v0.78beta - experimental branch
 
-* Bug fix: With Python 3.7, terminating QDSpy caused a `RuntimeError: dictionary changed size during iteration`; fixed.  
-* Now also the Python and Conda versions are logged, as well as the versions of `pglet` and `moviepy`.   
-
+* Bug fix: With Python 3.7, terminating QDSpy caused a `RuntimeError: dictionary changed size during iteration`; fixed.
+* Now also the Python and Conda versions are logged, as well as the versions of `pglet` and `moviepy`.
     ```
     *** QDSpy v0.78 beta Presenter - (c) 2013-19 Thomas Euler
      ok Initializing ...
@@ -39,9 +38,9 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 #### v0.77beta - experimental branch
 
 * New digital I/O feature added: In addition to the marker pin, two user output pins can be now be defined in the ``QDSpy.ini`` file.
-  These allow to control simple external TTL-compatible hardware from the GUI, which now contains two user buttons to switch the signals
-  at the user pins. A simple example application is controlling a drug puffing system. Note that this feature is not yet implemented
-  for the Arduino as I/O device.
+  These allow to control simple external TTL-compatible hardware from the GUI, which now contains two user buttons to switch the
+  signals at the user pins. A simple example application is controlling a drug puffing system. Note that this feature is not yet
+  implemented for the Arduino as I/O device.
   See [`inifile`](http://qdspy.eulerlab.de/inifile.html) for details on the new parameters.
   
 * Changes by [Tom Boissonnet](https://github.com/Tom-TBT):
