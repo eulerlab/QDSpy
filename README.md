@@ -8,7 +8,7 @@ This is a software for generating and presenting stimuli for visual neuroscience
 
 ### Documentation
 
-For documentation, see [here](http://qdspy.eulerlab.de).
+For documentation, see [here](http://qdspy.eulerlab.de).  
 To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#installation).
 
 ### Release notes
