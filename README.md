@@ -15,6 +15,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 
 #### v0.78beta - experimental branch
 
+* Bug fix: With Python 3.7, terminating QDSpy caused a `RuntimeError: dictionary changed size during iteration`; fixed.
 * ...
 
 #### v0.77beta - experimental branch
