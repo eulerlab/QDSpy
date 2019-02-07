@@ -42,13 +42,11 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   signals at the user pins. A simple example application is controlling a drug puffing system. Note that this feature is not yet
   implemented for the Arduino as I/O device.
   See [`inifile`](http://qdspy.eulerlab.de/inifile.html) for details on the new parameters.
-  
 * Changes by [Tom Boissonnet](https://github.com/Tom-TBT):
   * Bug fix in probing center feature.
   * Parameters added to ``QDSpy.ini`` file: ``float_gui_time_out`` (in seconds), which deals with potential problems when loading very
     large stimuli; ``str_antimarkerrgba``, defining the colour of the "anti" marker, which "blanks" the marker area on the screen when
     the marker is not displayed. This prevents large stimuli from interacting with the marker display.
-  
 * **IMPORTANT**: The ``QDSpy.ini`` file contains new parameters, which need to be added to the existing ``QDSpy.ini`` file, 
   otherwise QDSpy will crash. The easiest way to do so, is to rename the file to, for example, ``QDSpy.ini_COPY``. Then start 
   QDSpy and let it generate a fresh configuration file. Open both the new file and your copy in parallel and change the parameters
