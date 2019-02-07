@@ -17,6 +17,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 
 * Bug fix: With Python 3.7, terminating QDSpy caused a `RuntimeError: dictionary changed size during iteration`; fixed.
 * Now also the Python and Conda versions are logged, as well as the versions of `pglet` and `moviepy`.
+    
     ```
     *** QDSpy v0.78 beta Presenter - (c) 2013-19 Thomas Euler
      ok Initializing ...
