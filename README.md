@@ -17,24 +17,23 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 
 * Bug fix: With Python 3.7, terminating QDSpy caused a `RuntimeError: dictionary changed size during iteration`; fixed.
 * Now also the Python and Conda versions are logged, as well as the versions of `pglet` and `moviepy`.
-    
-    ```
-    *** QDSpy v0.78 beta Presenter - (c) 2013-19 Thomas Euler
-     ok Initializing ...
-        ENABLED    : high process priority during presentation
-        enabled    : automatic garbage collection
-   INFO Python     : v3.7.1
-   INFO Conda      : v4.5.12
-   INFO pyglet     : v1.3.2
-   INFO moviepy    : v0.2.3.5
-   ...
-   INFO OpenGL     : v4.6.0 NVIDIA 391.01
-   INFO GLSL       : v4.60 NVIDIA
-   INFO Renderer   : GeForce GTX 1070/PCIe/SSE2 by NVIDIA Corporation
-   INFO Timing     : vsync-based (pyglet calls)
-   INFO Expected   : 60.0 Hz
-   ...
-   ```    
+  ```
+   *** QDSpy v0.78 beta Presenter - (c) 2013-19 Thomas Euler
+    ok Initializing ...
+       ENABLED    : high process priority during presentation
+       enabled    : automatic garbage collection
+  INFO Python     : v3.7.1
+  INFO Conda      : v4.5.12
+  INFO pyglet     : v1.3.2
+  INFO moviepy    : v0.2.3.5
+  ...
+  INFO OpenGL     : v4.6.0 NVIDIA 391.01
+  INFO GLSL       : v4.60 NVIDIA
+  INFO Renderer   : GeForce GTX 1070/PCIe/SSE2 by NVIDIA Corporation
+  INFO Timing     : vsync-based (pyglet calls)
+  INFO Expected   : 60.0 Hz
+  ...
+  ```    
    
 #### v0.77beta - experimental branch
 
