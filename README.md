@@ -18,21 +18,21 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 * Bug fix: With Python 3.7, terminating QDSpy caused a `RuntimeError: dictionary changed size during iteration`; fixed.
 * Now also the Python and Conda versions are logged, as well as the versions of `pglet` and `moviepy`. 
 
-    20190207_210535     *** QDSpy v0.78 beta Presenter - (c) 2013-19 Thomas Euler
-    20190207_210535      ok Initializing ...
-    20190207_210535         ENABLED    : high process priority during presentation
-    20190207_210535         enabled    : automatic garbage collection
-    20190207_210535    INFO Python     : v3.7.1
-    20190207_210535    INFO Conda      : v4.5.12
-    20190207_210535    INFO pyglet     : v1.3.2
-    20190207_210535    INFO moviepy    : v0.2.3.5
-    ...
-    20190207_210536    INFO OpenGL     : v4.6.0 NVIDIA 391.01
-    20190207_210536    INFO GLSL       : v4.60 NVIDIA
-    20190207_210536    INFO Renderer   : GeForce GTX 1070/PCIe/SSE2 by NVIDIA Corporation
-    20190207_210536    INFO Timing     : vsync-based (pyglet calls)
-    20190207_210536    INFO Expected   : 60.0 Hz
-    ...
+     20190207_210535     *** QDSpy v0.78 beta Presenter - (c) 2013-19 Thomas Euler
+     20190207_210535      ok Initializing ...
+     20190207_210535         ENABLED    : high process priority during presentation
+     20190207_210535         enabled    : automatic garbage collection
+     20190207_210535    INFO Python     : v3.7.1
+     20190207_210535    INFO Conda      : v4.5.12
+     20190207_210535    INFO pyglet     : v1.3.2
+     20190207_210535    INFO moviepy    : v0.2.3.5
+     ...
+     20190207_210536    INFO OpenGL     : v4.6.0 NVIDIA 391.01
+     20190207_210536    INFO GLSL       : v4.60 NVIDIA
+     20190207_210536    INFO Renderer   : GeForce GTX 1070/PCIe/SSE2 by NVIDIA Corporation
+     20190207_210536    INFO Timing     : vsync-based (pyglet calls)
+     20190207_210536    INFO Expected   : 60.0 Hz
+     ...
    
 #### v0.77beta - experimental branch
 
