@@ -1,5 +1,5 @@
 
-## QDSpy v.77 beta (experimental)
+## QDSpy v.78 beta (experimental)
 
 This is a software for generating and presenting stimuli for visual neuroscience. It is based on QDS, developped in the former Dept. of Biomedical Optics at the MPI for Medical Research in Heidelberg. QDSpy is written in Python, uses OpenGL and primarly targets Windows 7 and above.
 
@@ -9,8 +9,13 @@ This is a software for generating and presenting stimuli for visual neuroscience
 ### Documentation
 
 For documentation, see [here](http://qdspy.eulerlab.de).
+To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#installation).
 
 ### Release notes
+
+#### v0.78beta - experimental branch
+
+* ...
 
 #### v0.77beta - experimental branch
 
