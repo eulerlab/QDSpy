@@ -10,7 +10,7 @@ QDSpy module - to manage the configuration file
 'getParsedArg()'
   to parse arguments for the command line version of QDSpy
 
-Copyright (c) 2013-2017 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -409,7 +409,7 @@ class Config:
                           
       # Read user-define gamma LUT, if one is defined
       #                          
-      if (len(self.userLUTFName) > 0):
+      if len(self.userLUTFName) > 0:
         Stage.LUT_userDefined = gma.loadGammaLUT(self.pathApp +
                                                  self.userLUTFName)
                           
@@ -420,34 +420,34 @@ class Config:
     # Save the screen calibration parameters (center, offset, scaling, 
     # rotation) from the Stage object to the ini file
     #
-    if self.isLoaded and (_Stage != None):
-      self.conf.set("Stage", "int_center_offs_x_pix",     
+    if self.isLoaded and _Stage is not None:
+      self.conf.set("Stage", "int_center_offs_x_pix",
                     _Stage.centOffX_pix)
-      self.conf.set("Stage", "int_center_offs_y_pix",     
+      self.conf.set("Stage", "int_center_offs_y_pix",
                     _Stage.centOffY_pix)
-      self.conf.set("Stage", "float_center_rotation_deg", 
+      self.conf.set("Stage", "float_center_rotation_deg",
                     _Stage.rot_angle)
-      self.conf.set("Stage", "float_scale_x_um_per_pix",  
+      self.conf.set("Stage", "float_scale_x_um_per_pix",
                     _Stage.scalX_umPerPix)
-      self.conf.set("Stage", "float_scale_y_um_per_pix",  
+      self.conf.set("Stage", "float_scale_y_um_per_pix",
                     _Stage.scalY_umPerPix)
-      self.conf.set("Overlay", "int_screen1_2_width_pix",     
+      self.conf.set("Overlay", "int_screen1_2_width_pix",
                     _Stage.dxScr12)
-      self.conf.set("Overlay", "int_screen1_2_height_pix",     
+      self.conf.set("Overlay", "int_screen1_2_height_pix",
                     _Stage.dyScr12)
-      self.conf.set("Overlay", "int_x_offset_screen1_pix",     
+      self.conf.set("Overlay", "int_x_offset_screen1_pix",
                     _Stage.offXScr1_pix)
-      self.conf.set("Overlay", "int_y_offset_screen1_pix",     
+      self.conf.set("Overlay", "int_y_offset_screen1_pix",
                     _Stage.offYScr1_pix)
-      self.conf.set("Overlay", "int_x_offset_screen2_center_pix",     
+      self.conf.set("Overlay", "int_x_offset_screen2_center_pix",
                     _Stage.offXScr2_pix)
-      self.conf.set("Overlay", "int_y_offset_screen2_center_pix",     
+      self.conf.set("Overlay", "int_y_offset_screen2_center_pix",
                     _Stage.offYScr2_pix)
       self.save()
-      
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def saveWinPosToConfig(self):
-    # Save window postions to the ini file
+    # Save window positions to the ini file
     #
     if self.isLoaded:
       

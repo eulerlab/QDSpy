@@ -3,7 +3,7 @@
 """
 QDSpy module - global definitions
 
-Copyright (c) 2013-2017 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -92,8 +92,8 @@ QDSpy_UL_portIn             = "CLO"
 QDSpy_UL_portOut_User       = "B"
 QDSpy_UL_pinMarkerOut       = 2  
 QDSpy_UL_pinTriggerIn       = 0
-QDSpy_UL_pinUserOut1        = "3, USER1"
-QDSpy_UL_pinUserOut2        = "4, USER2"
+QDSpy_UL_pinUserOut1        = "3, USER1, 0"
+QDSpy_UL_pinUserOut2        = "4, USER2, 0"
 QDSpy_Arduino_baud          = 115200
 
 QDSpy_markerRGBA            = "255,127,127,255"
