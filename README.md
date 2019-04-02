@@ -1,5 +1,5 @@
 
-## QDSpy v.78 beta (experimental)
+## QDSpy
 
 This is a software for generating and presenting stimuli for visual neuroscience. It is based on QDS, developped in the former Dept. of Biomedical Optics at the MPI for Medical Research in Heidelberg. QDSpy is written in Python, uses OpenGL and primarly targets Windows 7 and above.
 
@@ -35,7 +35,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   ...
   ```    
    
-#### v0.77beta - experimental branch
+#### v0.77beta
 
 * New digital I/O feature added: In addition to the marker pin, two user output pins can be now be defined in the ``QDSpy.ini`` file.
   These allow to control simple external TTL-compatible hardware from the GUI, which now contains two user buttons to switch the
