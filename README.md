@@ -14,6 +14,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 ### Release notes
 
 #### v0.77beta
+
 * Bug fix: In Python 3.7, terminating QDSpy caused a `RuntimeError: dictionary changed size during iteration`; 
   fixed.
 * Bug fix: Default values for Arduino user-defined buttons fixed.
@@ -33,8 +34,10 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 
 * **IMPORTANT**: The ``QDSpy.ini`` file contains new parameters, which need to be added to the existing ``QDSpy.ini`` file,
   otherwise QDSpy will crash. The easiest way to do so, is to rename the file to, for example, ``QDSpy.ini_COPY``. Then start
-  QDSpy and let it generate a fresh configuration file. Open both the new file and your copy in parallel and change the parameters
-  in the new file according to your previous settings. See see :doc:`inifile` for further details on the new parameters.
+  QDSpy and let it generate a fresh configuration file. Open both the new file and your copy in parallel and change the
+  parameters in the new file according to your previous settings. See see :doc:`inifile` for further details on the new
+  parameters.
+   
 * Small bug fix in the GUI.
 
 #### v0.76beta - experimental branch
@@ -52,10 +55,11 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   a retinal ganglion cell. The probing mode can be left
   by either pressing the right mouse button (saving the position to the log),
   or by pressing "Abort" in the GUI.    
-* **IMPORTANT**: The ``QDSpy.ini`` file contains (a) new parameter(s), which need to be added to the existing ``QDSpy.ini`` file,
-  otherwise QDSpy will crash. The easiest way to do so, is to rename the file to, for example, ``QDSpy.ini_COPY``. Then start
-  QDSpy and let it generate a fresh configuration file. Open both the new file and your copy in parallel and change the parameters
-    in the new file according to your previous settings. See see :doc:`inifile` for further details on the new parameters.
+* **IMPORTANT**: The ``QDSpy.ini`` file contains (a) new parameter(s), which need to be added to the existing 
+  ``QDSpy.ini`` file, otherwise QDSpy will crash. The easiest way to do so, is to rename the file to, for example,
+  ``QDSpy.ini_COPY``. Then start QDSpy and let it generate a fresh configuration file. Open both the new file and 
+  your copy in parallel and change the parameters in the new file according to your previous settings. See see 
+  :doc:`inifile` for further details on the new parameters.
 
 #### v0.75beta (April 2017)
 
