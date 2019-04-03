@@ -14,7 +14,6 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 ### Release notes
 
 #### v0.77beta
-
 * Bug fix: In Python 3.7, terminating QDSpy caused a `RuntimeError: dictionary changed size during iteration`; fixed.
 * Bug fix: Default values for Arduino user-defined buttons fixed.
 * Bug fix: Issue with loading gamma LUTs via `windll.gdi32.SetDeviceGammaRamp` fixed.
