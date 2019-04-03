@@ -1,5 +1,5 @@
 
-## QDSpy
+## QDSpy v.77 beta 
 
 This is a software for generating and presenting stimuli for visual neuroscience. It is based on QDS, developped in the former Dept. of Biomedical Optics at the MPI for Medical Research in Heidelberg. QDSpy is written in Python, uses OpenGL and primarly targets Windows 7 and above.
 
@@ -13,40 +13,20 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 
 ### Release notes
 
-#### v0.78beta - experimental branch
-
-* Bug fix: With Python 3.7, terminating QDSpy caused a `RuntimeError: dictionary changed size during iteration`; fixed.
-* Now also the Python and Conda versions are logged, as well as the versions of `pglet` and `moviepy`.
-  ```
-   *** QDSpy v0.78 beta Presenter - (c) 2013-19 Thomas Euler
-    ok Initializing ...
-       ENABLED    : high process priority during presentation
-       enabled    : automatic garbage collection
-  INFO Python     : v3.7.1
-  INFO Conda      : v4.5.12
-  INFO pyglet     : v1.3.2
-  INFO moviepy    : v0.2.3.5
-  ...
-  INFO OpenGL     : v4.6.0 NVIDIA 391.01
-  INFO GLSL       : v4.60 NVIDIA
-  INFO Renderer   : GeForce GTX 1070/PCIe/SSE2 by NVIDIA Corporation
-  INFO Timing     : vsync-based (pyglet calls)
-  INFO Expected   : 60.0 Hz
-  ...
-  ```    
-   
 #### v0.77beta
 
 * New digital I/O feature added: In addition to the marker pin, two user output pins can be now be defined in the ``QDSpy.ini`` file.
-  These allow to control simple external TTL-compatible hardware from the GUI, which now contains two user buttons to switch the
-  signals at the user pins. A simple example application is controlling a drug puffing system. Note that this feature is not yet
-  implemented for the Arduino as I/O device.
+  These allow to control simple external TTL-compatible hardware from the GUI, which now contains two user buttons to switch the signals
+  at the user pins. A simple example application is controlling a drug puffing system. Note that this feature is not yet implemented
+  for the Arduino as I/O device.
   See [`inifile`](http://qdspy.eulerlab.de/inifile.html) for details on the new parameters.
+  
 * Changes by [Tom Boissonnet](https://github.com/Tom-TBT):
   * Bug fix in probing center feature.
   * Parameters added to ``QDSpy.ini`` file: ``float_gui_time_out`` (in seconds), which deals with potential problems when loading very
     large stimuli; ``str_antimarkerrgba``, defining the colour of the "anti" marker, which "blanks" the marker area on the screen when
     the marker is not displayed. This prevents large stimuli from interacting with the marker display.
+  
 * **IMPORTANT**: The ``QDSpy.ini`` file contains new parameters, which need to be added to the existing ``QDSpy.ini`` file, 
   otherwise QDSpy will crash. The easiest way to do so, is to rename the file to, for example, ``QDSpy.ini_COPY``. Then start 
   QDSpy and let it generate a fresh configuration file. Open both the new file and your copy in parallel and change the parameters
