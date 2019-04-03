@@ -15,9 +15,9 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 
 #### v0.77beta
 
-* Bug fix: In Python 3.7, terminating QDSpy caused a `RuntimeError: dictionary changed size during iteration`; fixed.
-* Bug fix: Default values for Arduino user-defined buttons fixed.
-* Bug fix: Issue with loading gamma LUTs via `windll.gdi32.SetDeviceGammaRamp` fixed.
+* Bug fix: In Python 3.7, terminating QDSpy caused a `RuntimeError: dictionary changed size during iteration`; fixed.  
+* Bug fix: Default values for Arduino user-defined buttons fixed.  
+* Bug fix: Issue with loading gamma LUTs via `windll.gdi32.SetDeviceGammaRamp` fixed.  
 * New digital I/O feature added: In addition to the marker pin, two user output pins can be now be defined in the ``QDSpy.ini`` file.
   These allow to control simple external TTL-compatible hardware from the GUI, which now contains two user buttons to switch the signals
   at the user pins. A simple example application is controlling a drug puffing system. Note that this feature is not yet implemented
