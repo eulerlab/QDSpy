@@ -699,6 +699,7 @@ class Presenter:
     # Start stimulus ...
     #
     self.isEnd  = False
+    self.Stage.logData()
     ssp.Log.write("ok", "Running...")
     ssp.Log.write("DATA", {"stimFileName": self.Stim.fileName, 
                            "stimState": "STARTED",
