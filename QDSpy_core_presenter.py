@@ -699,11 +699,11 @@ class Presenter:
     # Start stimulus ...
     #
     self.isEnd  = False
-    self.Stage.logData()
     ssp.Log.write("ok", "Running...")
     ssp.Log.write("DATA", {"stimFileName": self.Stim.fileName, 
                            "stimState": "STARTED",
                            "stimMD5": self.Stim.md5Str}.__str__()) 
+    self.Stage.logData()
     self.View.startRenderingLoop(self)                       
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
