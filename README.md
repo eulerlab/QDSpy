@@ -145,7 +145,6 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   change to the lighcrafter. "Refresh display info" button now works and LED
   status is updated after the automatic execution of ``__autorun.pickle``.
 
-
 #### v0.71 beta (July 2016)
 
 * **Videos (AVI containers) now work** except for the rotation parameter, which uses
@@ -154,7 +153,6 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   of a list.
 * Like `GetVideoParamters()`, `GetMovieParamters()` now also returns a dictionary.
 * The GUI has been reorganized:
-
   * A font is used that works on all Window versions (7 and higher).
   * *Lightcrafter only*: The `LEDs: enable` button allows switching off the LEDs
     and changes to manual LED control (for details, see section :doc:`lightcrafter`).
@@ -163,7 +161,6 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   * A "Wait for trigger: ..." button has been added; *this is not yet functional*.
   * Duration of stimulus is shown.
   * Minor fixes.
-
 
 #### v0.70 beta (July 2016)
 
