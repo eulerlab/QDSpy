@@ -15,7 +15,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 
 #### v0.77beta
 
-* Changes made by ([Tom Boissonnet](https://github.com/Tom-TBT)) added:
+* Changes by [Tom Boissonnet](https://github.com/Tom-TBT) added:
   * Now computes hash only when starting the stimulus; GUI becomes more responsive with large pickle files.
   * Stage offset, scale and rotation are now logged
   * .pickle files in the stimulus folder are now ignored by GitHub (added `Stimuli/*.pickle` to `.gitignore`)
