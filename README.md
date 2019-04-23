@@ -15,7 +15,12 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 
 #### v0.77beta
 
-* Bug fix: In Python 3.7, terminating QDSpy caused a `RuntimeError: dictionary changed size during iteration`; fixed.
+* Changes made by ([Tom Boissonnet](https://github.com/Tom-TBT)) added:
+  * Now computes hash only when starting the stimulus; GUI becomes more responsive with large pickle files.
+  * Stage offset, scale and rotation are now logged
+  * .pickle files in the stimulus folder are now ignored by GitHub (added `Stimuli/*.pickle` to `.gitignore`)
+  * Additional shader
+* Bug fix: In Python 3.7, terminating QDSpy -> `RuntimeError: dictionary changed size during iteration`; fixed.
 * Bug fix: Default values for Arduino user-defined buttons fixed.
 * Bug fix: Issue with loading gamma LUTs via `windll.gdi32.SetDeviceGammaRamp` fixed.
 * New digital I/O feature added: In addition to the marker pin, two user output pins can be now be defined in 
