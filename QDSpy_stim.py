@@ -1298,7 +1298,8 @@ class Stim:
       
     # Get hash for pickle file  
     #
-    self.md5Str = ssp.getHashStrForFile(sFileName + glo.QDSpy_cPickleFileExt)
+    if not(_onlyInfo):
+      self.md5Str = ssp.getHashStrForFile(sFileName + glo.QDSpy_cPickleFileExt)
 
     # Log some information
     # 

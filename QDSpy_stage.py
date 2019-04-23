@@ -115,10 +115,16 @@ class Stage:
     ssp.Log.write("ok", "Stage info : {0:d},{1:d} pixels, scale: {2:.2f},"
                   "{3:.2f} {4}m/pix, rotation: {5:.0f}{6}, refresh: "
                   "{7} Hz"
-                  .format(int(self.centX_pix), int(self.centY_pix),
+                  .format(int(self.centOffX_pix), int(self.centOffY_pix),
                           self.scalX_umPerPix, self.scalY_umPerPix,
                           u'µ', self.rot_angle, u'°', self.scrReqFreq_Hz))
-
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def logData(self):
+    ssp.Log.write("DATA", {"scaling_x": self.scalX_umPerPix, 
+                          "scaling_y": self.scalY_umPerPix,
+                          "offset_x": int(self.centOffX_pix),
+                          "offset_y": int(self.centOffY_pix),
+                          "rotation": self.rot_angle}.__str__()) 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def durToFrames(self, _dur_s):
     if _dur_s > 0.0:

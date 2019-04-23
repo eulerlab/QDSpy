@@ -703,6 +703,7 @@ class Presenter:
     ssp.Log.write("DATA", {"stimFileName": self.Stim.fileName, 
                            "stimState": "STARTED",
                            "stimMD5": self.Stim.md5Str}.__str__()) 
+    self.Stage.logData()
     self.View.startRenderingLoop(self)                       
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
