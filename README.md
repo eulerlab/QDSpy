@@ -59,12 +59,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 
 #### v0.75beta (April 2017)
 
-* Bug fix: Problems with "ghost images" when playing more than one movie or
-  video were fixed. Now movie/video objects that are restarted before the
-  previous run was finished are first automatically stopped and ended. Also,
-  movies/videos were also forwarded for no-duration scenes (e.g. a change in
-  object colour), which led to changes in the movie/video frame rate. This
-  should now be fixed as well
+* Bug fix: Problems with "ghost images" when playing more than one movie or video were fixed. Now movie/video objects that are restarted before the previous run was finished are first automatically stopped and ended. Also, movies/videos were also forwarded for no-duration scenes (e.g. a change in object colour), which led to changes in the movie/video frame rate. This should now be fixed as well.
 * Bug fix: The first command in a loop was ignored; this is fixed now.
 * Bug fix: ``__autofile.py`` handling was restructured: When no ``__autorun.py``
   file exists in the ``.\Stimuli`` folder, QDSpy warns and runs a default instead. An ``__autorun.py`` does no
@@ -75,12 +70,9 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   LEDs). See [`inifile`](http://qdspy.eulerlab.de/inifile.html) for details on the new configuration parameters in
   section ``[Overlay]`` and
   [Screen overlay mode](http://qdspy.eulerlab.de/how_QDSpy_works.html#screen-overlay-mode) for instructions.
-
   This feature was inspired by the paper _"A tetrachromatic display for the
   spatiotemporal control of rod and cone stimulation"_ by Florian S. Bayer and
   colleagues (Bayer et al., 2015, J Vis [doi:10.1167/15.11.15](https://www.ncbi.nlm.nih.gov/pubmed/26305863)).
-
-
 * **IMPORTANT**: The ``QDSpy.ini`` file contains a couple of new parameters,
   including a new section called ``[Overlay]``. Thus, the new parameters need to
   be added to the existing ``QDSpy.ini`` file, otherwise QDSpy will crash.
@@ -89,9 +81,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   file. Open both the new file and your copy in parallel and change the parameters
   in the new file according to your previous settings. See see :doc:`inifile`
   for further details on the new parameters.
-
 * **Known issues**:
-
   * The GUI controls for the "screen overlay mode" are already present but not
     yet working. A work-around is changing the settings directly in ``QDSpy.ini``.
   * Objects that use shaders are not yet correctly displayed in "screen overlay
@@ -99,7 +89,6 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   * ``SetColorLUTEntry()`` does not yet handle a LUT with more than 3 colours.
   * When starting QDSpy the stimulus screen may sometimes go white; as soon as
     the first stimulus is presented, the screen behaves normal.
-
 
 #### v0.74beta (March 2017)
 
