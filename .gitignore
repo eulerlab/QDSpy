@@ -1,4 +1,4 @@
 *.pyc
 Logs
 QDSpy.ini
-*.pickle
+Stimuli/*.pickle
