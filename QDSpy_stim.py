@@ -7,7 +7,7 @@ QDSpy module - stimulus routines and classes as well as stimulus compiler
   Class representing a visual stimulus        
   This class is a graphics API independent.       
                
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -895,7 +895,7 @@ class Stim:
       raise StimException
 
     try:
-      dummy = self.VidDict[_ID]
+      _ = self.VidDict[_ID]
     except KeyError:
       self.LastErrC = StimErrC.noMatchingID
       raise StimException
@@ -1170,15 +1170,32 @@ class Stim:
 
             # Check also color data ...
             #
+            # *** TE 2019-05-07 Bug fix ***
+            """
             iLastODr   = self.ncODr-1
             while self.cODr_tr_vertRGBA[iLastODr][iObj][0] == SC_vertDataSame:
               iLastODr  -= 1
-
+            
             if (np_RGBATr == self.cODr_tr_vertRGBA[iLastODr][iObj][2]).all():
               _RGBATr[iObj]    = [SC_vertDataSame, -1, []]
               _RGBATr2[iObj]   = [SC_vertDataSame, -1, []]
               ObjNewMask[iObj] = ObjNewMask[iObj] & ~SC_ObjNewRGBA
+            """
+            iLastODr   = self.ncODr-1
+            while ((self.cODr_tr_vertRGBA[iLastODr][iObj][0] == SC_vertDataSame)
+                   and
+                   (self.cODr_tr_vertRGBA2[iLastODr][iObj][0] == SC_vertDataSame)):    
+              iLastODr  -= 1
+            
+            if ((np_RGBATr == self.cODr_tr_vertRGBA[iLastODr][iObj][2]).all()
+                 and
+                (np_RGBATr2 == self.cODr_tr_vertRGBA2[iLastODr][iObj][2]).all()):
+              _RGBATr[iObj]    = [SC_vertDataSame, -1, []]
+              _RGBATr2[iObj]   = [SC_vertDataSame, -1, []]
+              ObjNewMask[iObj] = ObjNewMask[iObj] & ~SC_ObjNewRGBA
+            # ****  
 
+            
         self.cODr_tr_vertCoord.append(_vertTr)
         self.cODr_tr_iVert.append(_iVertTr)
         self.cODr_tr_vertRGBA.append(_RGBATr)
