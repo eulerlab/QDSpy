@@ -273,6 +273,14 @@ class Config:
                     glo.QDSpy_xOffsetScr2Center_pix)
       self.conf.set("Overlay","int_y_offset_screen2_center_pix",   
                     glo.QDSpy_yOffsetScr2Center_pix)
+      self.conf.set("Overlay","bool_v_flip_screen1",   
+                    glo.QDSpy_vFlipScr1)
+      self.conf.set("Overlay","bool_h_flip_screen1",   
+                    glo.QDSpy_hFlipScr1)
+      self.conf.set("Overlay","bool_v_flip_screen2",   
+                    glo.QDSpy_vFlipScr2)
+      self.conf.set("Overlay","bool_h_flip_screen2",   
+                    glo.QDSpy_hFlipScr2)
 
       self.conf.add_section("Timing")
       self.conf.set("Timing","bool_incr_process_prior",   
@@ -405,6 +413,11 @@ class Config:
       d["offYScr1_pix"]   = self.conf.getint("Overlay", "int_y_offset_screen1_pix")
       d["offXScr2_pix"]   = self.conf.getint("Overlay", "int_x_offset_screen2_center_pix")
       d["offYScr2_pix"]   = self.conf.getint("Overlay", "int_y_offset_screen2_center_pix")
+      d["vFlipScr1"]      = self.conf.getboolean("Overlay", "bool_v_flip_screen1")
+      d["hFlipScr1"]      = self.conf.getboolean("Overlay", "bool_h_flip_screen1")
+      d["vFlipScr2"]      = self.conf.getboolean("Overlay", "bool_v_flip_screen2")
+      d["hFlipScr2"]      = self.conf.getboolean("Overlay", "bool_h_flip_screen2")
+     
       Stage = stg.Stage(d, _isNew=True)
                           
       # Read user-define gamma LUT, if one is defined

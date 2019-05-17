@@ -61,6 +61,10 @@ class Stage:
     self.offYScr1_pix        = _d["offYScr1_pix"]
     self.offXScr2_pix        = _d["offXScr2_pix"]
     self.offYScr2_pix        = _d["offYScr2_pix"]
+    self.vFlipScr1           = -1 if _d["vFlipScr1"] else 1
+    self.hFlipScr1           = -1 if _d["hFlipScr1"] else 1
+    self.vFlipScr2           = -1 if _d["vFlipScr2"] else 1
+    self.hFlipScr2           = -1 if _d["hFlipScr2"] else 1
     self.LEDs                = []
     
     if _isNew:               

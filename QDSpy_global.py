@@ -111,6 +111,11 @@ QDSpy_yOffsetScr1_pix       = 0
 QDSpy_xOffsetScr2Center_pix = 0
 QDSpy_yOffsetScr2Center_pix = 0
 
+QDSpy_vFlipScr1             = False
+QDSpy_hFlipScr1             = False
+QDSpy_vFlipScr2             = False
+QDSpy_hFlipScr2             = False
+
 QDSpy_MaxLightcrafterDev    = 2
 QDSpy_use_Lightcrafter      = True
 QDSpy_LEDNames_default      = "red, green, blue"

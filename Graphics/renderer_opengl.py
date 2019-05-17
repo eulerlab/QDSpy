@@ -13,7 +13,7 @@ Graphics-API dependent classes for rendering visual stimuli in QDSpy
 'Window' 
   A class that encapsulates the actual graphics API windows.
 
-Copyright (c) 2013-2017 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -646,7 +646,7 @@ class Batch:
       xScale  = _Stage.scalX_umPerPix *_Stage.winXCorrFact *win.scale
       yScale  = _Stage.scalY_umPerPix *_Stage.winXCorrFact *win.scale
       yWin_5  = win.height//2
-      xWin_5 = win.width//2  
+      xWin_5  = win.width//2  
       xWin_25 = win.width//4
       
       if _Stage.useScrOvl:      
@@ -655,7 +655,9 @@ class Batch:
         GL.glViewport(0, 0, win.width//2, win.height)
         GL.glMatrixMode(GL.GL_PROJECTION)
         GL.glLoadIdentity()
-        GL.glOrtho(-xWin_25, xWin_25, -yWin_5, yWin_5, -1, 1)
+        #GL.glOrtho(-xWin_25, xWin_25, -yWin_5, yWin_5, -1, 1)
+        GL.glOrtho(-xWin_25 *_Stage.hFlipScr1, xWin_25 *_Stage.hFlipScr1, 
+                   -yWin_5 *_Stage.vFlipScr1, yWin_5 *_Stage.vFlipScr1, -1, 1)
         GL.glMatrixMode(GL.GL_MODELVIEW)
         GL.glLoadIdentity()
         GL.glPushMatrix()
@@ -674,7 +676,9 @@ class Batch:
         GL.glViewport(win.width//2, 0, win.width//2, win.height)
         GL.glMatrixMode(GL.GL_PROJECTION)
         GL.glLoadIdentity()
-        GL.glOrtho(-xWin_25, xWin_25, -yWin_5, yWin_5, -1, 1)
+        #GL.glOrtho(-xWin_25, xWin_25, -yWin_5, yWin_5, -1, 1)
+        GL.glOrtho(-xWin_25 *_Stage.hFlipScr2, xWin_25 *_Stage.hFlipScr2, 
+                   -yWin_5 *_Stage.vFlipScr2, yWin_5 *_Stage.vFlipScr2, -1, 1)
         GL.glMatrixMode(GL.GL_MODELVIEW)
         GL.glLoadIdentity()
         GL.glPushMatrix()
