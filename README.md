@@ -14,7 +14,9 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 ### Release notes
 
 #### v0.77beta
-
+* Possibility adde to mirror the two screens separately in screen overlay mode, using additional ``QDSpy.ini`` 
+  parameters `bool_v_flip_screen1`, `bool_h_flip_screen1`, `bool_v_flip_screen2`, and `bool_h_flip_screen2`. When
+  updating QDSpy, please follow the instructions about new ``QDSpy.ini`` parameters below.
 * Changes by [Tom Boissonnet](https://github.com/Tom-TBT) added:
   * Now computes hash only when starting the stimulus; GUI becomes more responsive with large pickle files.
   * Stage offset, scale and rotation are now logged
