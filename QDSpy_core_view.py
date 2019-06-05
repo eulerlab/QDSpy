@@ -70,67 +70,58 @@ class View:
     ssp.Log.write("INFO", "Expected   : {0:.1f} Hz"
                           .format(self.Stage.scrReqFreq_Hz))
 
-    # Check if window or fullscreen mode is requested
+    # Check if window, overlay or fullscreen mode is requested
     #
     nScr           = self.Renderer.get_screen_count()
     winXCorrFact   = 1.0
-    self.isFullScr = ((self.Stage.dxScr <= 0) or (self.Stage.dyScr <= 0))
-    
-    if self.isFullScr:
-      # Fullscreen mode, determine number of screens; if a dual screen
-      # configuration is detected, the second screen is used, otherwise
-      # the primary screeen
-      #
-      if self.Stage.scrIndex < nScr:
-        self.iScr = self.Stage.scrIndex
-      else:
-        self.iScr = nScr -1
+    self.isFullScr = (self.Stage.dxScr <= 0) or (self.Stage.dyScr <= 0)
+    self.winTitle  = glo.QDSpy_fullScrWinName
 
-      (width, height) = self.Renderer.get_screen_size(self.iScr)
-      self.winTitle   = glo.QDSpy_fullScrWinName
-      
-      if self.Stage.useScrOvl: # and (nScr > 2):
-        # Wide full-screen window for two overlain displays
-        #
-        xy            = (self.Stage.offXScr1_pix, self.Stage.offYScr1_pix)
-        self.winPre   = self.Renderer.create_window(self.iScr, self.winTitle,
-                                                    _dx=self.Stage.dxScr12,
-                                                    _dy=self.Stage.dyScr12,
-                                                    _isScrOvl=True, 
-                                                    _iScrGUI=self.Stage.scrIndexGUI,
-                                                    _offset=xy)
-        ssp.Log.write("INFO", self.Renderer.get_info_screen_str())
-        ssp.Log.write("ok", "Wide fullscreen mode, {0}x{1} pixels, starting on"
-                            " screen #{2}".format(width, height, self.iScr))
-      
-      else:      
-        # Normal full-screen window for a single display
-        #
-        self.winPre   = self.Renderer.create_window(self.iScr, self.winTitle)
-        ssp.Log.write("INFO", self.Renderer.get_info_screen_str())
-        ssp.Log.write("ok", "Fullscreen mode, {0}x{1} pixels, on screen #{2}"
-                      .format(width, height, self.iScr))
-                
+    self.iScr      = self.Stage.scrIndex
+    assert (self.iScr < nScr), "Screen index issue in `createStimulusWindow`"
+
+    if self.Stage.useScrOvl: # and (nScr > 2):
+      # Overlay mode - Wide window for two overlain displays
+      #
+      xy            = (self.Stage.offXScr1_pix, self.Stage.offYScr1_pix)
+      dxy           = (self.Stage.dxScr12, self.Stage.dyScr12)
+      self.winPre   = self.Renderer.create_window(self.iScr, self.winTitle,
+                                                  _dx=dxy[0], _dy=dxy[1],
+                                                  _isScrOvl=True,
+                                                  _iScrGUI=self.Stage.scrIndexGUI,
+                                                  _offset=xy)
+      ssp.Log.write("INFO", self.Renderer.get_info_screen_str())
+      ssp.Log.write("ok", "Overlay mode, 2x {0}x{1} pixels, starting on "
+                          "screen #{2}".format(dxy[0]//2, dxy[1], self.iScr))
+
+    elif self.isFullScr:
+      # Fullscreen mode - Normal full-screen window for a single display
+      #
+      dxy           = self.Renderer.get_screen_size(self.iScr)
+      self.winPre   = self.Renderer.create_window(self.iScr, self.winTitle)
+      ssp.Log.write("INFO", self.Renderer.get_info_screen_str())
+      ssp.Log.write("ok", "Fullscreen mode, {0}x{1} pixels, on screen #{2}"
+                          .format(dxy[0], dxy[1], self.iScr))
+
       self.winPre.set_mouse_visible(False)
-        
-      if self.Conf.useCtrlWin:                    
+
+      if self.Conf.useCtrlWin:
         div = int(1/self.Conf.ctrlWinScale)
-        self.winPreview = self.Renderer.create_window(1, "", width//div, 
-                                                      height//div, 50,50, 
-                                                      self.Conf.ctrlWinScale)                     
+        self.winPreview = self.Renderer.create_window(1, "", dxy[0]//div,
+                                                      dxy[0]//div, 50,50,
+                                                      self.Conf.ctrlWinScale)
     else:
       # Window mode
       #
-      width         = self.Stage.dxScr
-      height        = self.Stage.dyScr
-      left          = self.Stage.xWinLeft
-      top           = self.Stage.yWinTop
+      xy            = (self.Stage.xWinLeft, self.Stage.yWinTop)
+      dxy           = (self.Stage.dxScr, self.Stage.dyScr)
       self.winTitle = glo.QDSpy_versionStr
-      self.iScr     = 0
-
+      #self.iScr    = 0
+      print(self.iScr)
       self.winPre   = self.Renderer.create_window(self.iScr, self.winTitle,
-                                                  width, height, left, top)
-      
+                                                  dxy[0], dxy[1], xy[0], xy[1])
+      ssp.Log.write("ok", "Window mode, {0}x{1} pixels".format(dxy[0], dxy[1]))
+
       # Adjust scaling factor such that presentation in window is
       # to scale; assuming that 1 pix = 1um is true for the current
       # screen's maximal resolution
@@ -138,24 +129,21 @@ class View:
       '''
       self.screens  = grx.getScreens()
       winXCorrFact  = float(self.winWidth) /self.screens[0].width
-      '''
-      ssp.Log.write("ok", "Window mode, {0}x{1} pixels".format(width, height))
-    
-      '''
-      if self.Conf.useCtrlWin:                    
+
+      if self.Conf.useCtrlWin:
         div = int(1/self.Conf.ctrlWinScale)
-        self.winPreview = self.Renderer.create_window(1, "", width//div, 
-                                                      height//div, 50,50, 
-                                                      self.Conf.ctrlWinScale)                     
-      '''                                                
-      
+        self.winPreview = self.Renderer.create_window(1, "", width//div,
+                                                      height//div, 50,50,
+                                                      self.Conf.ctrlWinScale)
+      '''    
+    
     # Update self and stage object
     #
-    self.winPreWidth        = width
-    self.winPreHeight       = height
-    self.Stage.dxScr        = width
-    self.Stage.dyScr        = height
-    self.Stage.isFullScr    = self.isFullScr   
+    self.winPreWidth        = dxy[0]
+    self.winPreHeight       = dxy[1]
+    self.Stage.dxScr        = dxy[0]
+    self.Stage.dyScr        = dxy[1]
+    self.Stage.isFullScr    = self.isFullScr
     self.Stage.winXCorrFact = winXCorrFact
 
     # Try to force vsync, if requested
