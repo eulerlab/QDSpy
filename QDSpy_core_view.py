@@ -9,7 +9,7 @@ QDSpy module - creates and manages the presentation window
   to follow stimulus presentation in full-screen multi-monitor mode.
   This class is a graphics API independent.
 
-Copyright (c) 2013-2017 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -45,7 +45,7 @@ class View:
     #
     self.Stage    = _Stage
     self.Conf     = _Conf
-    self.Renderer = rdr.Renderer(self, glo.QDSpy_KEY_KillPresent) 
+    self.Renderer = rdr.Renderer(self, glo.QDSpy_KEY_KillPresent)
     self.__reset()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -80,7 +80,7 @@ class View:
     self.iScr      = self.Stage.scrIndex
     assert (self.iScr < nScr), "Screen index issue in `createStimulusWindow`"
 
-    if self.Stage.useScrOvl: # and (nScr > 2):
+    if self.Stage.useScrOvl:
       # Overlay mode - Wide window for two overlain displays
       #
       xy            = (self.Stage.offXScr1_pix, self.Stage.offYScr1_pix)
@@ -135,8 +135,8 @@ class View:
         self.winPreview = self.Renderer.create_window(1, "", width//div,
                                                       height//div, 50,50,
                                                       self.Conf.ctrlWinScale)
-      '''    
-    
+      '''
+
     # Update self and stage object
     #
     self.winPreWidth        = dxy[0]
@@ -164,15 +164,15 @@ class View:
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def clear(self, _RGB=[]):
     self.Renderer.clear_windows(_RGB)
-  
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def present(self):
     self.Renderer.present()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def dispatch_events(self):
-    self.Renderer.dispatch_events()  
-    
+    self.Renderer.dispatch_events()
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def createBatch(self, _isScrOvl=False):
     return rdr.Batch(_isScrOvl)
@@ -207,7 +207,7 @@ class View:
     if self.isWinAvailable:
       # Exit main loop, which kills the window(s)
       #
-      self.Renderer.end_main_loop()      
+      self.Renderer.end_main_loop()
       self.__reset()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
