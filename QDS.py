@@ -105,6 +105,26 @@ def GetStimulusPath():
   return os.path.split(os.path.abspath(_Stim.fNameDir))[0]
 
 # ---------------------------------------------------------------------
+def GetRandom(_seed):
+  """
+  Returns a random number in the interval [0, 1) at runtime using the
+  random.random() function. 
+  
+  =============== ==================================================
+  Parameters:
+  =============== ==================================================
+  _seed           | 'None' or an integer value (see random.seed()
+                  | for more information)
+  =============== ==================================================
+  """
+  try:
+    _Stim.getRandom(_seed)
+
+  except stm.StimException as e:
+    ssp.Log.write("ERROR", "GetRandom: {0}, {1}".format(e.value, e))
+  return _Stim.LastErrC
+
+# ---------------------------------------------------------------------
 def LogUserParameters(_dict):
   """
   Writes a user-defined set of parameters to the history and log file.

@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 QDSpy module - stimulus routines and classes as well as stimulus compiler
-               
+
 'Stim'
-  Class representing a visual stimulus        
-  This class is a graphics API independent.       
-               
+  Class representing a visual stimulus
+  This class is a graphics API independent.
+
 Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 """
@@ -25,7 +25,7 @@ import QDSpy_core_shader as csh
 if glo.QDSpy_use_Lightcrafter:
   import Devices.lightcrafter as lcr
   _LCr   = lcr.Lightcrafter(_isCheckOnly=True, _funcLog=ssp.Log.write)
-else:  
+else:
   _LCr   = None
 
 # ---------------------------------------------------------------------
@@ -109,6 +109,8 @@ class StimSceType:
   #
   logUserParams       = 400
   # ...
+  getRandom           = 500
+
 
 SC_field_type         = 0
 SC_field_duration_s   = 1
@@ -178,22 +180,22 @@ class StimLCrCmd:
   setLEDCurrents      = 12
   setLEDenabled       = 13
   getLEDEnabled       = 14
-  # ...  
-   
+  # ...
+
 # ---------------------------------------------------------------------
 class StimErrC:
   ok                  = 0
   notYetImplemented   = -1
-  
+
   invalidDimensions   = -10
   invalidDuration     = -11
   invalidParamType    = -12
   inconsistentParams  = -13
   invalidAngles       = -14
-  
+
   existingID          = -20
   noMatchingID        = -21
-  
+
   nothingToCompile    = -50
   noStimOrNotCompiled = -51
   wrongStimFileFormat = -52
@@ -202,7 +204,7 @@ class StimErrC:
   noShadersInRunSect  = -55
   invalidShaderType   = -56
   notShaderObject     = -57
-  noCompiledStim      = -58 
+  noCompiledStim      = -58
 
   movieFileNotFound   = -60
   notMovieObject      = -61
@@ -212,7 +214,7 @@ class StimErrC:
   invalidMovieFormat  = -65
 
   videoFileNotFound   = -70
-  invalidVideoFormat  = -71   
+  invalidVideoFormat  = -71
 
   DeviceError_LCr     = -99
 
@@ -256,7 +258,7 @@ class StimException(Exception):
     if subvalue == 0:
       self.str  = StimErrStr[value]
     else:
-      self.str  = StimErrStr[value].format(subvalue)    
+      self.str  = StimErrStr[value].format(subvalue)
   def __str__(self):
     return self.str
 
@@ -380,7 +382,7 @@ class Stim:
 
     if (_astep != None) and ((_astep < 1) or (_astep > 90)):
       _astep = None
-    
+
     try:
       self.ObjDict[_ID]
     except KeyError:
@@ -463,8 +465,8 @@ class Stim:
     except KeyError:
       self.LastErrC = StimErrC.noMatchingID
       raise StimException
-      
-    d = {}  
+
+    d = {}
     d["dxFr"] = MvOb[SM_field_dxFr]
     d["dyFr"] = MvOb[SM_field_dyFr]
     d["nFr"]  = MvOb[SM_field_nFr]
@@ -495,7 +497,7 @@ class Stim:
     self.VidDict[_ID] = len(self.VidList)
     self.VidList.append(newVideo)
     self.LastErrC = StimErrC.ok
-    
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getVideoParams(self, _ID):
     # Get video object parameters
@@ -507,14 +509,14 @@ class Stim:
     except KeyError:
       self.LastErrC = StimErrC.noMatchingID
       raise StimException
-      
-    d = {}  
+
+    d = {}
     d["dxFr"] = VdOb[SV_field_dxFr]
     d["dyFr"] = VdOb[SV_field_dyFr]
     d["nFr"]  = VdOb[SV_field_nFr]
     d["fps"]  = VdOb[SV_field_fps]
     return(d)
-    
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setObjColor(self, _IDs, _newRGBs, _newAlphas):
     # Changes the color and the alpha values of one or more objects
@@ -540,8 +542,8 @@ class Stim:
       except KeyError:
         self.LastErrC = StimErrC.noMatchingID
         raise StimException
-        
-    RGBEx  = ssp.completeRGBList(_newRGBs)     
+
+    RGBEx  = ssp.completeRGBList(_newRGBs)
     newSce = [StimSceType.changeObjCol, -1, self.nSce, False,
               _IDs,
               RGBEx, _newAlphas, len(_IDs)*[SC_disableRGBAByVert]]
@@ -570,7 +572,7 @@ class Stim:
         self.LastErrC = StimErrC.noMatchingID
         raise StimException
 
-    RGBAEx = ssp.completeRGBAList(_newRGBAs)    
+    RGBAEx = ssp.completeRGBAList(_newRGBAs)
     newSce = [StimSceType.changeObjCol, -1, self.nSce, False,
               _IDs,
               RGBAEx, len(_IDs)*[0], len(_IDs)*[SC_enableRGBAByVert]]
@@ -580,10 +582,10 @@ class Stim:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setColorLUTEntry(self, _index, _rgb):
-    # Change a color LUT entry 
+    # Change a color LUT entry
     # (For parameters, see QDS.py)
     #
-    if ((_index < 0) or (_index > 255) 
+    if ((_index < 0) or (_index > 255)
         or not(isinstance(_rgb, tuple))
         or not(len(_rgb) in [3, 6])):
       self.LastErrC = StimErrC.invalidParamType
@@ -691,6 +693,15 @@ class Stim:
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def getRandom(self, _seed):
+    # ...
+    #
+    newSce = [StimSceType.getRandom, -1, self.nSce, False,
+              _seed]
+    self.SceList.append(newSce)
+    self.nSce    += 1
+    self.LastErrC = StimErrC.ok
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def logUserParameters(self, _dict):
@@ -700,13 +711,13 @@ class Stim:
     if not(isinstance(_dict, dict)):
       self.LastErrC = StimErrC.invalidParamType
       raise StimException
-      
+
     # **************************************
     # **************************************
-    # TODO: Check dict for large lists or data structures and if 
+    # TODO: Check dict for large lists or data structures and if
     #       present, save right here as external stimulus files to
     #       keep the amount of text written into the log file and
-    #       the history during the stimulus presentation at a 
+    #       the history during the stimulus presentation at a
     #       minimum
     # **************************************
     # **************************************
@@ -775,7 +786,7 @@ class Stim:
     if not(self.Conf.useLCr):
       self.LastErrC = StimErrC.ok
       return
-      
+
     # Check if parameters are valid for the respective lightcrafter commands
     # using a "dummy" LCr object
     # (Note that params[0] is always the lightcrafter device index; nescessary
@@ -794,11 +805,11 @@ class Stim:
       res = _LCr.setLEDCurrents(_params[1])
     elif _cmd == StimLCrCmd.setLEDEnabled:
       res = _LCr.setLEDEnabled(_params[1], _params[2])
-    
+
     if res[0] != lcr.ERROR.OK:
       self.LastErrC = StimErrC.DeviceError_LCr
       raise StimException
-     
+
     newSce = [StimSceType.sendCommandToLCr, -1, self.nSce, False,
               [_cmd] +_params]
     self.SceList.append(newSce)
@@ -888,7 +899,7 @@ class Stim:
     # (For parameters, see QDS.py)
     #
     if (not(isinstance(_posXY, tuple))
-        or not(isinstance(_magXY, tuple)) 
+        or not(isinstance(_magXY, tuple))
         or (_trans < 0) or (_trans > 255)
         or not(_screen in [0, 1])):
       self.LastErrC = StimErrC.invalidParamType
@@ -978,22 +989,22 @@ class Stim:
       if not(isIntNumFrames):
         ssp.Log.write("WARNING", "Scene #{0} duration unequals integer number"
                       " of frames".format(sc[SC_field_index]))
-                      
+
       # Track the duration
-      #                
+      #
       if sc[SC_field_type] == StimSceType.beginLoop:
         lenInLoop_s = 0
         nTrialsLoop = sc[SC_field_nLoopTrials]
         isInLoop    = True
-        
+
       if sc[SC_field_type] == StimSceType.endLoop:
         isInLoop    = False
         self.lenStim_s += lenInLoop_s *nTrialsLoop
-      
+
       if dur > 0:
         if isInLoop:
           lenInLoop_s += sc[SC_field_duration_s]
-        else:  
+        else:
           self.lenStim_s += sc[SC_field_duration_s]
 
       # If scene request marker to be shown, set flag
@@ -1085,7 +1096,7 @@ class Stim:
           newRGBA2     = tmp[3]
           if len(newRGBA) != len(newRGBA2):
             print("LENGTH MISMATCH")
- 
+
           hStr         = tmp[4]
           posxy        = tmp[5]
           rot          = tmp[6]
@@ -1175,7 +1186,7 @@ class Stim:
             iLastODr   = self.ncODr-1
             while self.cODr_tr_vertRGBA[iLastODr][iObj][0] == SC_vertDataSame:
               iLastODr  -= 1
-            
+
             if (np_RGBATr == self.cODr_tr_vertRGBA[iLastODr][iObj][2]).all():
               _RGBATr[iObj]    = [SC_vertDataSame, -1, []]
               _RGBATr2[iObj]   = [SC_vertDataSame, -1, []]
@@ -1184,18 +1195,18 @@ class Stim:
             iLastODr   = self.ncODr-1
             while ((self.cODr_tr_vertRGBA[iLastODr][iObj][0] == SC_vertDataSame)
                    and
-                   (self.cODr_tr_vertRGBA2[iLastODr][iObj][0] == SC_vertDataSame)):    
+                   (self.cODr_tr_vertRGBA2[iLastODr][iObj][0] == SC_vertDataSame)):
               iLastODr  -= 1
-            
+
             if ((np_RGBATr == self.cODr_tr_vertRGBA[iLastODr][iObj][2]).all()
                  and
                 (np_RGBATr2 == self.cODr_tr_vertRGBA2[iLastODr][iObj][2]).all()):
               _RGBATr[iObj]    = [SC_vertDataSame, -1, []]
               _RGBATr2[iObj]   = [SC_vertDataSame, -1, []]
               ObjNewMask[iObj] = ObjNewMask[iObj] & ~SC_ObjNewRGBA
-            # ****  
+            # ****
 
-            
+
         self.cODr_tr_vertCoord.append(_vertTr)
         self.cODr_tr_iVert.append(_iVertTr)
         self.cODr_tr_vertRGBA.append(_RGBATr)
@@ -1273,7 +1284,7 @@ class Stim:
     try:
       with open(sFileName + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
 
-        self.fileName = sFileName.replace("\\\\", "\\") 
+        self.fileName = sFileName.replace("\\\\", "\\")
         stimPick      = pickle.Unpickler(stimFile)
         ID            = stimPick.load()
 
@@ -1281,7 +1292,7 @@ class Stim:
           self.LastErrC = StimErrC.wrongStimFileFormat
           ssp.Log.write("ERROR", self.getLastErrStr())
           raise StimException(self.LastErrC)
-          
+
         self.nameStr             = stimPick.load()
         self.descrStr            = stimPick.load()
         self.cFreq_Hz            = stimPick.load()
@@ -1312,21 +1323,21 @@ class Stim:
       self.LastErrC = StimErrC.noCompiledStim
       ssp.Log.write("ERROR", self.getLastErrStr())
       raise StimException(self.LastErrC)
-      
-    # Get hash for pickle file  
+
+    # Get hash for pickle file
     #
     if not(_onlyInfo):
       self.md5Str = ssp.getHashStrForFile(sFileName + glo.QDSpy_cPickleFileExt)
 
     # Log some information
-    # 
+    #
     if not(_onlyInfo):
       ssp.Log.write("ok", "Stimulus '{0}' loaded"
                     .format(sFileName + glo.QDSpy_cPickleFileExt))
       ssp.Log.write(" ", "Name       : {0}".format(self.nameStr))
       ssp.Log.write(" ", "Description: {0}".format(self.descrStr))
       ssp.Log.write(" ", "Frequency  : {0} Hz".format(self.cFreq_Hz))
-    
+
     self.isComp   = True
     self.LastErrC = StimErrC.ok
 
