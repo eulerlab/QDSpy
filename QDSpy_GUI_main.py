@@ -4,6 +4,7 @@
 QDSpy module - main program of the GUI version of QDSpy
 
 Copyright (c) 2013-2017 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------

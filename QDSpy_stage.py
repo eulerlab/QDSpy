@@ -3,13 +3,13 @@
 """
 QDSpy module - to manage all projection device-related parameters
 
-'Stage' 
+'Stage'
   This class manages all parameters concerning the projection device
-  (e.g. screen, beamer), including scale, center of stimulation, global 
+  (e.g. screen, beamer), including scale, center of stimulation, global
   rotation angle, refresh rate, LED current etc.
   This class is a graphics API independent.
 
-Copyright (c) 2013-2017 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -66,40 +66,46 @@ class Stage:
     self.vFlipScr2           = -1 if _d["vFlipScr2"] else 1
     self.hFlipScr2           = -1 if _d["hFlipScr2"] else 1
     self.LEDs                = []
-    
-    if _isNew:               
+
+    if _isNew:
       self.xWinLeft          = _d["xWinLeft"]
       self.yWinTop           = _d["yWinTop"]
       self.winXCorrFact      = 1.0
       self.disFScrCmd        = _d["disFScr"]
-      
+
       # Determine the display device type
       #
-      R = rdr.Renderer()
-      if self.scrIndex >= R.get_screen_count():
-        self.scrIndex        = 0
-      ver                    = self.getLCrFirmwareVer(0)  
+      R    = rdr.Renderer()
+      nScr = R.get_screen_count()
+      if self.scrIndex >= nScr:
+        self.scrIndex        = nScr -1
+        ssp.Log.write("WARNING", "`int_screen_index_gui`=={0} but only {1} "
+                      "screens were detected -> for fullscreen mode, screen "
+                      "#{2} is used."
+                      .format(self.scrIndex +1, nScr, self.scrIndex))
+
+      ver                    = self.getLCrFirmwareVer(0)
       if len(ver) > 0:
         self.scrDevType      = ScrDevType.DLPLCR4500EVM
         self.LCrDevices      = lcr.enumerateLightcrafters()
         self.isLEDSeqEnabled = [True] *len(lcr.LCrDeviceList)
       else:
         self.scrDevType      = ScrDevType.generic
-        ver                  = [0,0,0]   
+        ver                  = [0,0,0]
         self.isLEDSeqEnabled = [True]
-        
+
       self.scrDevName        = ScrDevStr[self.scrDevType]
       self.scrDevVersion     = ver
       self.depth             = R.get_screen_depth(self.scrIndex)
       self.scrDevFreq_Hz     = R.get_screen_refresh(self.scrIndex)
       self.isFullScr         = (self.dxScr == 0) or (self.dyScr == 0)
-      
-    else:  
+
+    else:
       self.xWinLeft          = 0
       self.yWinTop           = 0
       self.winXCorrFact      = _d["winXCorrFact"]
       self.disFScrCmd        = False
-      
+
       self.scrDevName        = _d["scrDevName"]
       self.scrDevType        = _d["scrDevType"]
       self.scrDevVersion     = _d["scrDevVersion"]
@@ -107,10 +113,10 @@ class Stage:
       self.scrDevFreq_Hz     = _d["scrDevFreq_Hz"]
       self.isFullScr         = _d["isFullScr"]
       self.isLEDSeqEnabled   = _d["isLEDSeqEnabled"]
-      
+
     # Generate gamma LUTs
     #
-    self.LUT_linDefault   = gma.generateLinearLUT()      
+    self.LUT_linDefault   = gma.generateLinearLUT()
     self.LUT_userDefined  = gma.generateInverseLUT()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -124,16 +130,16 @@ class Stage:
                           u'µ', self.rot_angle, u'°', self.scrReqFreq_Hz))
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def logData(self):
-    ssp.Log.write("DATA", {"scaling_x": self.scalX_umPerPix, 
-                          "scaling_y": self.scalY_umPerPix,
-                          "offset_x": int(self.centOffX_pix),
-                          "offset_y": int(self.centOffY_pix),
-                          "rotation": self.rot_angle}.__str__()) 
+    ssp.Log.write("DATA", {"scaling_x": self.scalX_umPerPix,
+                           "scaling_y": self.scalY_umPerPix,
+                           "offset_x": int(self.centOffX_pix),
+                           "offset_y": int(self.centOffY_pix),
+                           "rotation": self.rot_angle}.__str__()) 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def durToFrames(self, _dur_s):
     if _dur_s > 0.0:
       dur = _dur_s *self.scrReqFreq_Hz
-      return (round(dur), 
+      return (round(dur),
               abs(dur -round(dur)) < glo.QDSpy_maxFrameDurDiff_s)
     else:
       return (-1, True)
@@ -151,10 +157,10 @@ class Stage:
             "offYScr1_pix":   self.offYScr1_pix,
             "offXScr2_pix":   self.offXScr2_pix,
             "offYScr2_pix":   self.offYScr2_pix}
-      
+
   # -------------------------------------------------------------------
-  # LED-related functions      
-  # -------------------------------------------------------------------    
+  # LED-related functions
+  # -------------------------------------------------------------------
   def createLEDs(self, _Conf):
     """ Create the LED dictionary from the configuration, if available
     """
@@ -172,32 +178,32 @@ class Stage:
       d["LEDIndex"]    = _Conf.LEDIndices[iLED]
       d["Qt_color"]    = _Conf.LEDQtColors[iLED]
       self.LEDs.append(d)
-      
-    self.sendLEDChangesToLCr(_Conf)  
-    
-      
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -      
+
+    self.sendLEDChangesToLCr(_Conf)
+
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def updateLEDs(self, _Conf):
-    """ Connect to lightcrafter to get LED currents and enabled state, 
+    """ Connect to lightcrafter to get LED currents and enabled state,
         und update LED dictionary
-    """    
-    # Check configuration file and, if not available, also globals if 
+    """
+    # Check configuration file and, if not available, also globals if
     # the lightcrafter should be used
     #
-    if (_Conf is None) or not(_Conf.useLCr) or not(glo.QDSpy_use_Lightcrafter): 
+    if (_Conf is None) or not(_Conf.useLCr) or not(glo.QDSpy_use_Lightcrafter):
       return
-     
+
     # Generate a new lightcrafter object
     #
     LCr = lcr.Lightcrafter(_logLevel=glo.QDSpy_LCr_LogLevel,
                            _funcLog=ssp.Log.write)
-      
+
     for iDev, Dev in enumerate(lcr.LCrDeviceList):
       try:
         result = LCr.connect(iDev)
         if result[0] == lcr.ERROR.OK:
-          # Get LED settings on the device(s) 
-          #      
+          # Get LED settings on the device(s)
+          #
           current = [0]*3
           enabled = [False]*3
           result  = LCr.getLEDCurrents()
@@ -207,22 +213,22 @@ class Stage:
           if result[0] == lcr.ERROR.OK:
             enabled = list(result[1])
             seqEnabled = result[2]
-          
+
           self.isLEDSeqEnabled[iDev] = seqEnabled
-        
+
           for iCurr, Curr in enumerate(current):
             for iLED, LED in enumerate(self.LEDs):
               if (iDev == LED["devIndex"]) and (iCurr == LED["LEDIndex"]):
                 self.LEDs[iLED]["current"] = Curr
                 self.LEDs[iLED]["enabled"] = enabled[iCurr]
-      finally:    
-        LCr.disconnect()   
-    
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+      finally:
+        LCr.disconnect()
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setLEDName(self, _index, _nameStr):
     if _index < len(self.LEDs):
       self.LEDs[_index]["name"]    = _nameStr
-   
+
   def setLEDEnabled(self, _index, _state):
     if _index < len(self.LEDs):
       self.LEDs[_index]["enabled"] = _state
@@ -235,50 +241,50 @@ class Stage:
   def sendLEDChangesToLCr(self, _Conf):
     """ Connect to lightcrafter and update LED currents and enabled state
     """
-    # Check configuration file and, if not available, also globals if 
+    # Check configuration file and, if not available, also globals if
     # the lightcrafter should be used
     #
     if _Conf is None:
-      if not(glo.QDSpy_use_Lightcrafter): 
+      if not(glo.QDSpy_use_Lightcrafter):
         return
     else:
       if not(_Conf.useLCr):
         return
-     
+
     # Generate a new lightcrafter object
     #
     LCr = lcr.Lightcrafter(_logLevel=glo.QDSpy_LCr_LogLevel,
                            _funcLog=ssp.Log.write)
-    
+
     for iDev, Dev in enumerate(lcr.LCrDeviceList):
       try:
         result = LCr.connect(iDev)
         if result[0] == lcr.ERROR.OK:
-          # Set LEDs on the device(s) 
-          #      
+          # Set LEDs on the device(s)
+          #
           currents = [0] *3
           enabled  = [False] *3
           for iLED, LED in enumerate(self.LEDs):
-            if LED["devIndex"] == iDev: 
+            if LED["devIndex"] == iDev:
               currents[LED["LEDIndex"]] = LED["current"]
               enabled[LED["LEDIndex"]]  = LED["enabled"]
-              
+
           LCr.setLEDCurrents(currents[0:3])
           LCr.setLEDEnabled(enabled[0:3], self.isLEDSeqEnabled[iDev])
-      finally:    
-        LCr.disconnect()   
+      finally:
+        LCr.disconnect()
 
   # -------------------------------------------------------------------
-  # Lightcrafter-related functions      
-  # -------------------------------------------------------------------      
+  # Lightcrafter-related functions
+  # -------------------------------------------------------------------
   def getLCrFirmwareVer(self, _devIndex):
     """ Return firmware version of connected lightcrafter as list
-        (e.g. [3,0,0]) or an empty list, if lightcrafter use is not 
+        (e.g. [3,0,0]) or an empty list, if lightcrafter use is not
         enabled or device could not be connected
-    """    
+    """
     ver = []
-    
-    if glo.QDSpy_use_Lightcrafter: 
+
+    if glo.QDSpy_use_Lightcrafter:
       LCr = lcr.Lightcrafter(_logLevel=-1)
       result = LCr.connect(_devIndex)
       errC   = result[0]
@@ -288,10 +294,9 @@ class Stage:
           errC   = result[0]
           if errC == lcr.ERROR.OK:
             ver  = result[2]["applicationSoftwareRev"]
-        finally:    
-          LCr.disconnect()   
+        finally:
+          LCr.disconnect()
 
     return ver
 
 # ---------------------------------------------------------------------
-
