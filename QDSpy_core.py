@@ -37,7 +37,7 @@ if glo.QDSpy_use_Lightcrafter:
   import Devices.lightcrafter as lcr
 
 # ---------------------------------------------------------------------
-# Convinience functions
+# Convenience functions
 # ---------------------------------------------------------------------
 def logGraphModuleInfo():
   try:
@@ -71,19 +71,19 @@ def loadStimulus(_fNameStim, _Stim):
     _Stim.load(_fNameStim)
     return True
   except:
-    if(_Stim.getLastErrC() != stm.StimErrC.ok):
+    if _Stim.getLastErrC() != stm.StimErrC.ok:
       ssp.Log.write("FATAL", "Aborted ({0})".format(_Stim.getLastErrStr()))
       return False
 
 # ---------------------------------------------------------------------
 def connectLCrs(_Conf=None, _Stim=None):
-  if not(_Stim is None) and not(_Stim.isUseLCr):
+  if not(_Stim is None) and not _Stim.isUseLCr:
     return []
   if _Conf is None:
-    if not(glo.QDSpy_use_Lightcrafter):
+    if not glo.QDSpy_use_Lightcrafter:
       return []
   else:
-    if not(_Conf.useLCr):
+    if not _Conf.useLCr:
       return []
   LCrList = lcr.enumerateLightcrafters()
   LCrs     = []
@@ -103,15 +103,15 @@ def connectLCrs(_Conf=None, _Stim=None):
 
 def disconnectLCrs(_LCrs):
   for LCr in _LCrs:
-    if LCr != None:
+    if LCr is not None:
       LCr.disconnect()
   return []
 
 # ---------------------------------------------------------------------
 def switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim):
   if _Conf.allowGammaLUT:
-    if (_Stim != None):
-      if (_Stim.colorMode in [stm.ColorMode._0_1, stm.ColorMode._0_255]):
+    if _Stim is not None:
+      if _Stim.colorMode in [stm.ColorMode._0_1, stm.ColorMode._0_255]:
         ssp.Log.write(" ", "Trying to set user-defined gamma LUT ...")
         gma.setGammaLUT(_View.winPre._dc, _Stage.LUT_userDefined)
       else:
@@ -154,7 +154,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
   txt = "{0}.{1}.{2}".format(v[0], v[1], v[2])
   ssp.Log.write("INFO", "{0:11}: v{1}".format("Python", txt))
   txt = subprocess.Popen("conda -V", shell=True, stdout=subprocess.PIPE).stdout.read()
-  ssp.Log.write("INFO", "{0:11}: v{1}".format("Conda", txt.decode()[6:-2]))
+  ssp.Log.write("INFO", "{0:11}: v{1}".format("Conda", txt.decode()[6:12]))
   logGraphModuleInfo()
 
   # Generate stage and stimulus instances, as well as a view instance
@@ -188,7 +188,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     if not(_IO):
       ssp.Log.write("ERROR", "I/O hardware device name not recognized.")
 
-    elif not(_IO.isReady):
+    elif not _IO.isReady:
       ssp.Log.write("ERROR", "I/O hardware could not be initialized. Set "+
                     "`bool_use_digitalio` in `QDSpy.ini` to False.")
     else:
@@ -220,12 +220,12 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
   _Presenter = cpr.Presenter(_Stage, _IO, _Conf, _View)
 
 
-  if not(_isParentGUI):
+  if not _isParentGUI:
     # Called from the command line - - - - - - - - - - - - - - - - - - - - -
     #
     # Load stimulus
     #
-    if not(loadStimulus(_fNameStim, _Stim)):
+    if not loadStimulus(_fNameStim, _Stim):
       sys.exit(0)
 
     # Connect to lightcrafter, if required
@@ -255,7 +255,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
 
     # Start loop to process GUI (=client) requests
     #
-    while(_Sync.Request.value != mpr.TERMINATING):
+    while _Sync.Request.value is not mpr.TERMINATING:
       try:
         # Check if new data is in the pipe
         #
@@ -405,7 +405,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
       '''
       time.sleep(0.02) # 0.05
 
-  # Restore gamma LUT, if nescessary
+  # Restore gamma LUT, if necessary
   #
   restoreGammaLUT(_Conf, _View)
 

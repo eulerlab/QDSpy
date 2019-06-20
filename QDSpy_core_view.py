@@ -108,16 +108,15 @@ class View:
       if self.Conf.useCtrlWin:
         div = int(1/self.Conf.ctrlWinScale)
         self.winPreview = self.Renderer.create_window(1, "", dxy[0]//div,
-                                                      dxy[0]//div, 50,50,
+                                                      dxy[1]//div, 50,50,
                                                       self.Conf.ctrlWinScale)
+
     else:
       # Window mode
       #
       xy            = (self.Stage.xWinLeft, self.Stage.yWinTop)
       dxy           = (self.Stage.dxScr, self.Stage.dyScr)
       self.winTitle = glo.QDSpy_versionStr
-      #self.iScr    = 0
-      print(self.iScr)
       self.winPre   = self.Renderer.create_window(self.iScr, self.winTitle,
                                                   dxy[0], dxy[1], xy[0], xy[1])
       ssp.Log.write("ok", "Window mode, {0}x{1} pixels".format(dxy[0], dxy[1]))
@@ -126,16 +125,10 @@ class View:
       # to scale; assuming that 1 pix = 1um is true for the current
       # screen's maximal resolution
       #
-      '''
+      """
       self.screens  = grx.getScreens()
       winXCorrFact  = float(self.winWidth) /self.screens[0].width
-
-      if self.Conf.useCtrlWin:
-        div = int(1/self.Conf.ctrlWinScale)
-        self.winPreview = self.Renderer.create_window(1, "", width//div,
-                                                      height//div, 50,50,
-                                                      self.Conf.ctrlWinScale)
-      '''
+      """
 
     # Update self and stage object
     #
@@ -188,11 +181,11 @@ class View:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def onKeyboard(self, _key, _x, _y):
-    if not(self.onKeyboardProc == None):
+    if not self.onKeyboardProc is None:
       self.onKeyboardProc(_key, _x, _y)
 
   def onDraw(self):
-    if not(self.onDrawProc == None):
+    if not self.onDrawProc is None:
       self.onDrawProc()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

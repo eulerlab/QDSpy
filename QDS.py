@@ -8,14 +8,16 @@ for visual neuroscience. It is based on QDS, currently uses OpenGL via
 pyglet for graphics. It primarly targets Windows, but may also run on 
 other operating systems
 
-Copyright (c) 2013-2017 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-import time
 import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+
+import time
 import sys
 from   datetime import datetime
 import QDSpy_global as glo
