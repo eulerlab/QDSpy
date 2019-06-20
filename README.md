@@ -13,6 +13,11 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 
 ### Release notes
 
+#### 0.78beta - experimental branch
+
+* Module ``Devices.lightcrafter`` now contains the essential API commands required to setup the pattern mode.
+  For details and example scripts, see [`documentation`](http://qdspy.eulerlab.de/lightcrafter.html).
+
 #### v0.77beta
 * Possibility added to mirror the two screens separately in screen overlay mode, using additional ``QDSpy.ini`` 
   parameters `bool_v_flip_screen1`, `bool_h_flip_screen1`, `bool_v_flip_screen2`, and `bool_h_flip_screen2`. When
