@@ -143,6 +143,9 @@ class MainWinClass(QMainWindow, form_class):
     self.spinBox_probe_intensity.valueChanged.connect(self.OnClick_probeParam_valueChanged)
     self.spinBox_probe_interval.valueChanged.connect(self.OnClick_probeParam_valueChanged)
 
+    self.btnLCrInfo0.clicked.connect(self.OnClick_btnLCrInfo0)
+    self.btnLCrInfo1.clicked.connect(self.OnClick_btnLCrInfo1)
+
     self.winCam  = None
     self.camList = []
     if self.Conf.allowCam and csp.module_exists("cv2"):
@@ -189,7 +192,7 @@ class MainWinClass(QMainWindow, form_class):
     self.logWrite("DEBUG", "... done")
 
     # Create process that opens a view (an OpenGL window) and waits for
-    # instructions to play stimululi
+    # instructions to play stimuli
     #
     self.logWrite("DEBUG", "Creating worker thread ...")
     self.worker = Process(target=QDSpy_core.main,
@@ -272,7 +275,7 @@ class MainWinClass(QMainWindow, form_class):
     # Wait until the worker thread send info about the stage via the pipe
     #
     self.logWrite("DEBUG", "Waiting for stage info from worker ...")
-    while not(self.Stage):
+    while not self.Stage:
       self.processPipe()
       time.sleep(0.05)
     self.logWrite("DEBUG", "... done")
@@ -287,7 +290,7 @@ class MainWinClass(QMainWindow, form_class):
     #
     self.logWrite("DEBUG", "Waiting for IO device state from worker ...")
     self.Sync.pipeCli.send([mpr.PipeValType.toSrv_checkIODev, []])
-    while self.isIODevReady == None:
+    while self.isIODevReady is None:
       self.processPipe()
       time.sleep(0.05)
     self.updateIOInfo()
@@ -306,8 +309,8 @@ class MainWinClass(QMainWindow, form_class):
         #
         self.isStimCurr  = gsu.getStimCompileState(self.currStimFName)
 
-      if not(isAutoRunExists) or not(self.isStimCurr):
-        # No current compiled autorun file present, so use default file
+      if not isAutoRunExists or not self.isStimCurr:
+        # No current compiled auto-run file present, so use default file
         #
         self.currStimFName = os.path.join(self.currQDSPath,
                                           glo.QDSpy_autorunDefFileName)
@@ -328,7 +331,7 @@ class MainWinClass(QMainWindow, form_class):
     except:
       # Failed ...
       #
-      if(self.Stim.getLastErrC() != stm.StimErrC.ok):
+      if self.Stim.getLastErrC() != stm.StimErrC.ok:
         self.updateStatusBar(self.Stim.getLastErrStr(), True)
         ssp.Log.isRunFromGUI = False
         ssp.Log.write("ERROR", "No compiled `{0}` in current stimulus folder,"
@@ -605,7 +608,7 @@ class MainWinClass(QMainWindow, form_class):
           spinBoxLED.setEnabled(LEDsEnabled)
           labelLED.setPalette(pal)
           labelLED.setText(LED["name"])
-          btnLED.setEnabled(not(LEDsEnabled))
+          btnLED.setEnabled(not LEDsEnabled)
           btnLED.setText("")
           gsu.updateToggleButton(btnLED)
         self.lblDisplDevLEDs.setText(sTemp)
@@ -796,6 +799,16 @@ class MainWinClass(QMainWindow, form_class):
                            [self.Stage.LEDs, self.Stage.isLEDSeqEnabled]])
     self.btnSetLEDCurrents.setEnabled(False)
     self.updateDisplayInfo()
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_btnLCrInfo0(self):
+    self.handleLCrInfoButton(0)
+
+  def OnClick_btnLCrInfo1(self):
+    self.handleLCrInfoButton(1)
+
+  def handleLCrInfoButton(self, _iLcr):
+    self.Stage.inquireLCrInfo(_iLcr, self.Conf)
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_checkStageCSEnable(self, _checked):

@@ -816,7 +816,7 @@ screen</string>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
-      <string>LEDs</string>
+      <string>LightCrafter(s)</string>
      </attribute>
      <widget class="QGroupBox" name="groupBoxStimInfo_3">
       <property name="geometry">
@@ -1323,6 +1323,32 @@ enabled</string>
       </property>
       <property name="text">
        <string>Set LED currents</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnLCrInfo0">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>212</y>
+        <width>96</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Print info for #0</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnLCrInfo1">
+      <property name="geometry">
+       <rect>
+        <x>105</x>
+        <y>212</y>
+        <width>96</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Print info for #1</string>
       </property>
      </widget>
     </widget>

@@ -100,7 +100,9 @@ def GetStimulusPath():
   Returns the current path of the stimulus folder. Use this function
   to make sure that the script can locate user-provided accessory files
   (e.g. a random number series for a noise stimulus):
-  ::
+
+  .. code-block:: python
+
     path = QDS.getStimulusPath()
     file = open(path +"/parameters.txt", "r")
   """
@@ -140,7 +142,9 @@ def LogUserParameters(_dict):
   
   Example for such a user parameter entry as it appears in the history
   and log file:
-  :: 
+
+  .. code-block:: python
+
     20151220_135948    DATA {'nTrials': 1, 'dxStim_um': 1000}
   """
   try:
@@ -197,8 +201,10 @@ def SetColorMode(_depth_bit, _shift_bit=(0,0,0),
   color values are scaled by the given bit depth and then bitwise left-
   shifted by the given offset. For example, when color mode is 0..255
   (see below), "red" is scaled:
-  ::
-    r\' = (r/255 x(2^BitDepth_r -1)) << BitShift_r
+
+  .. code-block:: python
+
+    r_new = (r/255 x(2^BitDepth_r -1)) << BitShift_r
 
   =============== ==================================================
   Parameters:
@@ -220,10 +226,10 @@ def SetColorMode(_depth_bit, _shift_bit=(0,0,0),
   * ...
 
   """
-  if (isinstance(_depth_bit, tuple) and (len(_depth_bit) == 3)):
+  if isinstance(_depth_bit, tuple) and len(_depth_bit) == 3:
     _Stim.bitDepth  = _depth_bit
 
-  if (isinstance(_shift_bit, tuple) and (len(_shift_bit) == 3)):
+  if isinstance(_shift_bit, tuple) and len(_shift_bit) == 3:
     _Stim.bitShift  = _shift_bit
 
   if _mode in [stm.ColorMode._0_255, stm.ColorMode._0_1, 

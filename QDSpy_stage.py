@@ -66,6 +66,7 @@ class Stage:
     self.vFlipScr2           = -1 if _d["vFlipScr2"] else 1
     self.hFlipScr2           = -1 if _d["hFlipScr2"] else 1
     self.LEDs                = []
+    self.LCrStatus           = [[], []]
 
     if _isNew:
       self.xWinLeft          = _d["xWinLeft"]
@@ -88,6 +89,7 @@ class Stage:
       if len(ver) > 0:
         self.scrDevType      = ScrDevType.DLPLCR4500EVM
         self.LCrDevices      = lcr.enumerateLightcrafters()
+        self.LCrStatus[0]    = self.getLCrStatus(0)
         self.isLEDSeqEnabled = [True] *len(lcr.LCrDeviceList)
       else:
         self.scrDevType      = ScrDevType.generic
@@ -181,20 +183,17 @@ class Stage:
 
     self.sendLEDChangesToLCr(_Conf)
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def updateLEDs(self, _Conf):
     """ Connect to lightcrafter to get LED currents and enabled state,
         und update LED dictionary
     """
-    # Check configuration file and, if not available, also globals if
-    # the lightcrafter should be used
-    #
-    if (_Conf is None) or not(_Conf.useLCr) or not(glo.QDSpy_use_Lightcrafter):
+    if not self.isLCrUsed(_Conf):
       return
 
     # Generate a new lightcrafter object
     #
+    seqEnabled = False
     LCr = lcr.Lightcrafter(_logLevel=glo.QDSpy_LCr_LogLevel,
                            _funcLog=ssp.Log.write)
 
@@ -241,15 +240,8 @@ class Stage:
   def sendLEDChangesToLCr(self, _Conf):
     """ Connect to lightcrafter and update LED currents and enabled state
     """
-    # Check configuration file and, if not available, also globals if
-    # the lightcrafter should be used
-    #
-    if _Conf is None:
-      if not(glo.QDSpy_use_Lightcrafter):
-        return
-    else:
-      if not(_Conf.useLCr):
-        return
+    if not self.isLCrUsed(_Conf):
+      return
 
     # Generate a new lightcrafter object
     #
@@ -274,10 +266,30 @@ class Stage:
       finally:
         LCr.disconnect()
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def inquireLCrInfo(self, _iLCr, _Conf):
+    """ Connect to lightcrafter and ...
+    """
+    if not self.isLCrUsed and _iLCr not in [0, 1]:
+      return
+
+    self.LCrStatus[_iLCr] = self.getLCrStatus(_iLCr, ssp.Log.write, 2)
+
   # -------------------------------------------------------------------
   # Lightcrafter-related functions
   # -------------------------------------------------------------------
-  def getLCrFirmwareVer(self, _devIndex):
+  @staticmethod
+  def isLCrUsed(_Conf):
+    """ Check configuration file and, if not available, also globals
+        if the lightcrafter should be used
+    """
+    if _Conf is None:
+      return glo.QDSpy_use_Lightcrafter
+    else:
+      return _Conf.useLCr
+
+  @staticmethod
+  def getLCrFirmwareVer(_devIndex):
     """ Return firmware version of connected lightcrafter as list
         (e.g. [3,0,0]) or an empty list, if lightcrafter use is not
         enabled or device could not be connected
@@ -298,5 +310,28 @@ class Stage:
           LCr.disconnect()
 
     return ver
+
+  @staticmethod
+  def getLCrStatus(_devIndex, _funcLog=None, _logLev=-1):
+    """ Return complete status of the lightcrafter as list of
+       dictionaries
+    """
+    status = []
+
+    if glo.QDSpy_use_Lightcrafter:
+      LCr = lcr.Lightcrafter(_logLevel=_logLev, _funcLog=_funcLog)
+      result = LCr.connect(_devIndex)
+      errC   = result[0]
+      if errC == lcr.ERROR.OK:
+        try:
+          hw_res   = LCr.getHardwareStatus()
+          sys_res  = LCr.getSystemStatus()
+          main_res = LCr.getMainStatus()
+          vid_res  = LCr.getVideoSignalDetectStatus()
+          status   = [hw_res, sys_res, main_res, vid_res]
+        finally:
+          LCr.disconnect()
+
+    return status
 
 # ---------------------------------------------------------------------
