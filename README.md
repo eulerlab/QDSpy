@@ -17,8 +17,19 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 
 * Module ``Devices.lightcrafter`` now contains the essential API commands required to setup the pattern mode.
   For details and example scripts, see [`documentation`](http://qdspy.eulerlab.de/lightcrafter.html).
+* "LEDs" tab renamed to "LightCrafter(s)", buttons to inquire the status of up to two
+  lightcrafters added (both must be connected via USB). The info is currently printed
+  into the shell that runs QDSpy.
+* Two example "stimulus" scripts added: ``__toGB_8bit_patternMode.py`` switches lightcrafter
+  #0 to pattern mode, whereas ``__toVideoMode.py`` switches lightcrafter #0 back to video
+  mode. For details on scrips, see :doc:`lightcrafter`. Note when running these scripts
+  from the QDSpy GUI, it will complain that it cannot compile the scripts. This is because
+  these scripts do not contain any stimulus instructions; the python code that configures
+  the lightcrafter is just directly executed. Executing these scripts from QDSpy GUI is
+  the same as running them from a shell.
 
-#### v0.77beta
+#### v0.77beta (May 2019)
+
 * Possibility added to mirror the two screens separately in screen overlay mode, using additional ``QDSpy.ini`` 
   parameters `bool_v_flip_screen1`, `bool_h_flip_screen1`, `bool_v_flip_screen2`, and `bool_h_flip_screen2`. When
   updating QDSpy, please follow the instructions about new ``QDSpy.ini`` parameters below.
@@ -48,7 +59,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   parameters.
 * Small bug fix in the GUI.
 
-#### v0.76beta - experimental branch
+#### v0.76beta
 
 * 2017-08-13: Accelerated program start (i.e. on PCs with many cores) by simplifying communication between stimulation process
   and GUI, avoiding time-consuming sync manager and by communicating with integers instead of strings.
