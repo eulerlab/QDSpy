@@ -22,7 +22,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   into the shell that runs QDSpy.
 * Two example "stimulus" scripts added: ``__toGB_8bit_patternMode.py`` switches lightcrafter
   #0 to pattern mode, whereas ``__toVideoMode.py`` switches lightcrafter #0 back to video
-  mode. For details on scrips, see :[`documentation`](http://qdspy.eulerlab.de/lightcrafter.html). 
+  mode. For details on scripts, see [`documentation`](http://qdspy.eulerlab.de/lightcrafter.html). 
   Note when running these scripts from the QDSpy GUI, it will complain that it cannot compile 
   the scripts. This is because these scripts do not contain any stimulus instructions; the python 
   code that configures the lightcrafter is just directly executed. Executing these scripts from QDSpy GUI is
