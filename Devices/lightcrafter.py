@@ -19,6 +19,7 @@ import time
 import numpy as np
 import Devices.hid as hid
 from enum import Enum
+from typing import List, Any
 
 # ---------------------------------------------------------------------
 LC_width         = 912
@@ -364,6 +365,8 @@ class CMD_FORMAT_LIST:
   xxx                = [ 0x00, 0x26, 0x00, 0]   # BL_CALC_CHKSUM,
   xxx                = [ 0x00, 0x30, 0x01, 0]   # BL_PROG_MODE,
   """
+# ---------------------------------------------------------------------
+LCrDeviceList: List[Any] = []
 
 # ---------------------------------------------------------------------
 def enumerateLightcrafters(_funcLog=None):
@@ -636,7 +639,7 @@ class Lightcrafter:
       raise LCException(res[0])
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def getMainStatus(self):
+  def getMainStatus(self, _logLev=1):
     """
     Requests the device's main status and returns a list with up
     to three elements:
@@ -668,7 +671,7 @@ class Lightcrafter:
                             "DMD_parked" if DMDParked else "DMD_active",
                             "seq_running" if SeqRunning else "-", 
                             "frame_buffer_frozen" if FBufFrozen else "-", 
-                            "gamma_on" if GammaEnab else "-"), 1)
+                            "gamma_on" if GammaEnab else "-"), _logLev)
       return [ERROR.OK, data, info]
     else:
       raise LCException(res[0])
@@ -1264,7 +1267,7 @@ class Lightcrafter:
         byte2  = 0x01 if _invert else 0
         byte2 |= 0x02 if _blackFill else 0
         byte2 |= 0x04 if _bufSwap else 0
-        byte2 |= 0x08 if _trigOut1StaysHi else 0
+        byte2 |= 0x08 if _trigOut1High else 0
         data   = [byte0, byte1, byte2]
         cmd    = CMD_FORMAT_LIST.MBOX_DATA
         cmd[2] = 3
@@ -1281,7 +1284,7 @@ class Lightcrafter:
                             "blackfill" if _blackFill else "-",
                             "buffer-swap" if _bufSwap else "-",
                             "shared-exposure"
-                            if _trigOut1StaysHi else "-"), 2)
+                            if _trigOut1High else "-"), 2)
       return [errC]
     else:
       self.log("ERROR", LC_logStrMaskErr.format(s0, ErrorStr[errC]), 2)

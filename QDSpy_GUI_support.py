@@ -88,12 +88,13 @@ def getLEDGUIObjects(_this, _LED):
     return [None]*3
   
 # ---------------------------------------------------------------------
-def updateToggleButton(_btn):
+def updateToggleButton(_btn, _txtList=["on", "off"]):
   s = _btn.text().split("\n")
+  f = _btn.isChecked()
   if len(s) == 1:
-    _btn.setText("{0}".format("on" if _btn.isChecked() else "off"))
-  else:  
-    _btn.setText("{0}\n{1}"
-                 .format(s[0], "on" if _btn.isChecked() else "off"))
+    s = "{0}".format(_txtList[0] if f else _txtList[1])
+  else:
+    s ="{0}\n{1}".format(s[0], _txtList[0] if f else _txtList[1])
+  _btn.setText(s)
 
 # --------------------------------------------------------------------- 

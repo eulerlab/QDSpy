@@ -134,8 +134,6 @@ class MainWinClass(QMainWindow, form_class):
 
     self.btnToggleLEDEnable.clicked.connect(self.OnClick_btnToggleLEDEnable)
     self.btnToggleLEDEnable.setStyleSheet(toggle_btn_style_str)
-    self.btnToggleSeqControl.clicked.connect(self.OnClick_btnToggleSeqControl)
-    self.btnToggleSeqControl.setStyleSheet(toggle_btn_style_str)
 
     self.btnProbeStart.clicked.connect(self.OnClick_btnProbeStart)
     self.spinBox_probe_width.valueChanged.connect(self.OnClick_probeParam_valueChanged)
@@ -145,6 +143,16 @@ class MainWinClass(QMainWindow, form_class):
 
     self.btnLCrInfo0.clicked.connect(self.OnClick_btnLCrInfo0)
     self.btnLCrInfo1.clicked.connect(self.OnClick_btnLCrInfo1)
+
+    self.btnToggleSeqControl0.clicked.connect(self.OnClick_btnToggleSeqControl0)
+    self.btnToggleSeqControl0.setStyleSheet(toggle_btn_style_str)
+    self.btnToggleSeqControl1.clicked.connect(self.OnClick_btnToggleSeqControl1)
+    self.btnToggleSeqControl1.setStyleSheet(toggle_btn_style_str)
+
+    self.btnLCrStartStop0.clicked.connect(self.OnClick_btnLCrStartStop0)
+    self.btnLCrStartStop0.setStyleSheet(toggle_btn_style_str)
+    self.btnLCrStartStop1.clicked.connect(self.OnClick_btnLCrStartStop1)
+    self.btnLCrStartStop1.setStyleSheet(toggle_btn_style_str)
 
     self.winCam  = None
     self.camList = []
@@ -496,13 +504,16 @@ class MainWinClass(QMainWindow, form_class):
       enabledSeq = True
     self.btnSetLEDCurrents.setEnabled(self.isLCrUsed)
     self.btnToggleLEDEnable.setEnabled(self.isLCrUsed)
-    self.btnToggleSeqControl.setEnabled(False)
+    self.btnToggleSeqControl0.setEnabled(False)
+    self.btnToggleSeqControl1.setEnabled(False)
     '''
     enabledLEDs = self.btnToggleLEDEnable.isChecked()
     self.btnToggleSeqControl.setEnabled(self.isLCrUsed and not(enabledLEDs))
     '''
-    self.btnToggleSeqControl.setChecked(enabledSeq)
-    gsu.updateToggleButton(self.btnToggleSeqControl)
+    self.btnToggleSeqControl0.setChecked(enabledSeq)
+    gsu.updateToggleButton(self.btnToggleSeqControl0)
+    self.btnToggleSeqControl1.setChecked(enabledSeq)
+    gsu.updateToggleButton(self.btnToggleSeqControl1)
 
     self.btnRefreshDisplayInfo.setEnabled(self.isLCrUsed)
     if self.Stage:
@@ -682,7 +693,7 @@ class MainWinClass(QMainWindow, form_class):
         # Failed ...
         #
         txtCompState     = fStrPreRed +"not compiled (no .pickle)" +fStrPost
-        if(self.Stim.getLastErrC() != stm.StimErrC.ok):
+        if self.Stim.getLastErrC() != stm.StimErrC.ok:
           self.updateStatusBar(self.Stim.getLastErrStr(), True)
 
       # Show info ...
@@ -747,11 +758,29 @@ class MainWinClass(QMainWindow, form_class):
     self.updateAll()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def OnClick_btnToggleSeqControl(self):
-    gsu.updateToggleButton(self.btnToggleSeqControl)
-    print("OnClick_btnToggleSeqControl.TO BE IMPLEMENTED")
+  def OnClick_btnToggleSeqControl0(self):
+    gsu.updateToggleButton(self.btnToggleSeqControl0)
+    print("OnClick_btnToggleSeqControl0 - TO BE IMPLEMENTED")
     # *****************************
     # *****************************
+
+  def OnClick_btnToggleSeqControl1(self):
+    gsu.updateToggleButton(self.btnToggleSeqControl1)
+    print("OnClick_btnToggleSeqControl1 - TO BE IMPLEMENTED")
+    # *****************************
+    # *****************************
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def OnClick_btnLCrStartStop0(self):
+    self.handleLCrStartStopButton(self.btnLCrStartStop0, 0)
+
+  def OnClick_btnLCrStartStop1(self):
+    self.handleLCrStartStopButton(self.btnLCrStartStop1, 1)
+
+  def handleLCrStartStopButton(self, _btn, _iLcr):
+    gsu.updateToggleButton(_btn, ["running", "stopped"])
+    checked = _btn.isChecked()
+    self.Stage.togglePatternSeq(_iLcr, self.Conf, checked)
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def OnClick_btnToggleWaitForTrigger(self):

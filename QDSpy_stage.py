@@ -15,6 +15,7 @@ All rights reserved.
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
+import time
 import QDSpy_global as glo
 import QDSpy_stim_support as ssp
 import QDSpy_gamma as gma
@@ -170,7 +171,7 @@ class Stage:
     self.isLEDSeqEnabled = [True] *glo.QDSpy_MaxLightcrafterDev
 
     for iLED, LEDName in enumerate(_Conf.LEDNames):
-      d = {}
+      d = dict()
       d["name"]        = LEDName
       d["current"]     = _Conf.LEDDefCurr[iLED]
       d["max_current"] = _Conf.LEDMaxCurr[iLED]
@@ -263,6 +264,37 @@ class Stage:
 
           LCr.setLEDCurrents(currents[0:3])
           LCr.setLEDEnabled(enabled[0:3], self.isLEDSeqEnabled[iDev])
+      finally:
+        LCr.disconnect()
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def togglePatternSeq(self, _iLCr, _Conf, _doStart):
+    """ Connect to lightcrafter and start/stop the current pattern
+        sequence
+    """
+    if not self.isLCrUsed(_Conf) and _iLCr not in [0, 1]:
+      return
+
+    LCr = lcr.Lightcrafter(_logLevel=2, _funcLog=ssp.Log.write)
+    result = LCr.connect(_iLCr)
+    errC   = result[0]
+    if errC == lcr.ERROR.OK:
+      try:
+        if _doStart:
+          res = LCr.startPatternSequence()
+        else:
+          res = LCr.stopPatternSequence()
+        if res[0] is lcr.ERROR.OK:
+          done = False
+          n    = 10
+          while not done and n > 0:
+            time.sleep(0.2)
+            res  = LCr.getMainStatus(_logLev=3)
+            done = res[2]["SeqRunning"] is _doStart
+            n -= 1
+          if n == 0:
+            ssp.Log.write("WARNING", "Toggle pattern sequence timeout")
+
       finally:
         LCr.disconnect()
 
