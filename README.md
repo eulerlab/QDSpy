@@ -28,8 +28,12 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   code that configures the lightcrafter is just directly executed. Executing these scripts from QDSpy GUI is
   the same as running them from a shell.
 
-#### v0.77beta (May 2019)
+#### v0.77beta (August 2019)
 
+* `pyglet` 1.4 is out and there were some changes to the API. Now, QDSpy should be compatible to all `pyglet` 
+   versions (>= 1.3.x).
+* Bug fix: Maximal number of screens that can be selected for movie presentation was hard-coded; now it is defined 
+  in `QDSpy_global.py` (thanks [Maxime Zimmermann](https://badenlab.org/members/#jp-carousel-1245)).
 * Possibility added to mirror the two screens separately in screen overlay mode, using additional ``QDSpy.ini`` 
   parameters `bool_v_flip_screen1`, `bool_h_flip_screen1`, `bool_v_flip_screen2`, and `bool_h_flip_screen2`. When
   updating QDSpy, please follow the instructions about new ``QDSpy.ini`` parameters below.
