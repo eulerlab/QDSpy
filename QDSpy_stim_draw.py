@@ -5,7 +5,7 @@ QDSpy module - routines to generate graphical objects as vertex lists
 
 This module is a graphics API independent.
   
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -51,7 +51,6 @@ def box2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
   hStr      = spp.getHashStr(hList.__str__())
 
   return (newVert, newiVTr, newRGBA, newRGBA2, hStr, pxy, rot_deg)
-
 
 # ---------------------------------------------------------------------
 def ell2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
@@ -117,7 +116,6 @@ def ell2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):
   hStr       = spp.getHashStr(hList.__str__())
 
   return (newVert, newiVTr, newRGBA, newRGBA2, hStr, pxy, rot_deg)
-
 
 # ---------------------------------------------------------------------
 def sct2vert (_ob, _iob, _sc, _Stage, _stim, _nextiV):

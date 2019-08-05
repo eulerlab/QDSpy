@@ -19,9 +19,6 @@ All rights reserved.
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-# ***** DOME *****
-DOME         = False
-
 import sys
 import ctypes
 import pyglet
@@ -33,6 +30,7 @@ import PIL
 pyglet.options["debug_gl"] = True
 import pyglet.gl as GL
 from   pyglet.gl.gl_info import GLInfo
+PYGLET_VER = float(pyglet.version[0:3])
 
 if sys.platform == "win32":
   from win32api import SetCursorPos
@@ -65,8 +63,11 @@ class Renderer:
     #
     # Determine some system properties
     #
-    platform = pyglet.window.get_platform()
-    display  = platform.get_default_display()
+    if PYGLET_VER < 1.4:
+      platform = pyglet.window.get_platform()
+      display = platform.get_default_display()
+    else:
+      display = pyglet.canvas.get_display()
     self.Screens  = display.get_screens()
     self.winList  = []
     self.View     = _View
@@ -79,7 +80,7 @@ class Renderer:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def get_info_renderer_str(self):
-    if not(self.isReady):
+    if not self.isReady:
       sMsg = ""
     else:
       info = GLInfo()
@@ -117,7 +118,7 @@ class Renderer:
     if _iScr < 0  or _iScr >= len(self.Screens):
       return (0, 0)
     else:
-      return (self.Screens[_iScr].width, self.Screens[_iScr].height)
+      return self.Screens[_iScr].width, self.Screens[_iScr].height
 
   def get_screen_depth(self, _iScr):
     if _iScr < 0  or _iScr >= len(self.Screens):
@@ -142,7 +143,7 @@ class Renderer:
     result = -1
     if self.isReady:
       if sys.platform == 'win32':
-        if(GL.wgl_info.have_extension("WGL_EXT_swap_control")):
+        if GL.wgl_info.have_extension("WGL_EXT_swap_control"):
           result = 0
           if self.View and self.View.Conf.fSync:
             if GL.wglext_arb.wglSwapIntervalEXT(1):
@@ -265,7 +266,7 @@ class Renderer:
   def start_main_loop(self, _Pre):
     """ Starts the main application loop
     """
-    while not(_Pre.isEnd):
+    while not _Pre.isEnd:
       _Pre.onDraw()
 
   def end_main_loop(self):
@@ -368,12 +369,6 @@ class Window(pyglet.window.Window):
         super().__init__(vsync=True, fullscreen=True,
                          screen=self.Renderer.Screens[_iScr],
                          width=dx, height=dy, caption=_title)
-        # ***** DOME *****
-        '''
-        if DOME:
-          rect = [-dx//2, -dy//2, dx//2, dy//2]
-          self.Scr1DomeVert = vertFromRect(rect, (0,0), (0,0,0,127))
-        '''
 
     else:
       # Window mode
@@ -504,11 +499,10 @@ class Batch:
     self.IV  = self.Batch.add_indexed(nV, mode, self.IVGr, _indices,
                                       ("v2i/stream", _tri),
                                       ("c4B/stream", _RGBA))
-    if not(self.isScrOvl):
-      return
-    self.IV2 = self.Batch2.add_indexed(nV, mode, self.IVGr2, _indices,
-                                       ("v2i/stream", _tri),
-                                       ("c4B/stream", _RGBA2))
+    if self.isScrOvl:
+      self.IV2 = self.Batch2.add_indexed(nV, mode, self.IVGr2, _indices,
+                                         ("v2i/stream", _tri),
+                                         ("c4B/stream", _RGBA2))
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def replace_object_data_non_indexed(self, _indices, _tri, _RGBA, _RGBA2,
@@ -519,19 +513,18 @@ class Batch:
     nV       = len(_tri)//2
     self.IV  = self.Batch.add(nV, _mode, self.IVGr,
                              ("v2i/stream", _tri), ("c4B/stream", _RGBA))
-    if not(self.isScrOvl):
-      return
-    self.IV2 = self.Batch2.add(nV, _mode, self.IVGr2,
-                               ("v2i/stream", _tri), ("c4B/stream", _RGBA2))
+    if not self.isScrOvl:
+      self.IV2 = self.Batch2.add(nV, _mode, self.IVGr2,
+                                 ("v2i/stream", _tri), ("c4B/stream", _RGBA2))
 
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def delete_object_data(self):
-    if self.IV != None:
+    if self.IV is not None:
       self.IV.delete()
       self.IV = None
     if self.isScrOvl:
-      if self.IV2 != None:
+      if self.IV2 is not None:
         self.IV2.delete()
         self.IV2 = None
 
@@ -583,7 +576,7 @@ class Batch:
 
 
   def add_shader_handle(self, _objID, _shader=None, _shType=""):
-    if _shader == None:
+    if _shader is None:
       shOGr = NoneGroup()
     else:
       shOGr = ShaderBindGroup(_shader, _shType, _objID, self.shaderManager)
@@ -637,51 +630,7 @@ class Batch:
       xWin_5  = win.width//2
       xWin_25 = win.width//4
 
-      if _Stage.useScrOvl:
-        # Draw on first (left) screen
-        #
-        GL.glViewport(0, 0, win.width//2, win.height)
-        GL.glMatrixMode(GL.GL_PROJECTION)
-        GL.glLoadIdentity()
-        GL.glOrtho(-xWin_25 *_Stage.hFlipScr1, xWin_25 *_Stage.hFlipScr1,
-                   -yWin_5 *_Stage.vFlipScr1, yWin_5 *_Stage.vFlipScr1, -1, 1)
-        GL.glMatrixMode(GL.GL_MODELVIEW)
-        GL.glLoadIdentity()
-        GL.glPushMatrix()
-        x = _Stage.centOffX_pix
-        y = _Stage.centOffY_pix
-        GL.glTranslatef(x, y, 0)
-        GL.glScalef(xScale, yScale, 0.0)
-        GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
-        if not(_isClear):
-          self.Batch.draw()
-        self.BatchSpr.draw()
-        GL.glPopMatrix()
-
-        # Draw on second (right) screen
-        #
-        GL.glViewport(win.width//2, 0, win.width//2, win.height)
-        GL.glMatrixMode(GL.GL_PROJECTION)
-        GL.glLoadIdentity()
-        GL.glOrtho(-xWin_25 *_Stage.hFlipScr2, xWin_25 *_Stage.hFlipScr2,
-                   -yWin_5 *_Stage.vFlipScr2, yWin_5 *_Stage.vFlipScr2, -1, 1)
-        GL.glMatrixMode(GL.GL_MODELVIEW)
-        GL.glLoadIdentity()
-        GL.glPushMatrix()
-
-        self.add_rect_data(win.Scr2Vert)
-
-        x = _Stage.centOffX_pix +_Stage.offXScr2_pix
-        y = _Stage.centOffY_pix +_Stage.offYScr2_pix
-        GL.glTranslatef(x, y, 0)
-        GL.glScalef(xScale, yScale, 0.0)
-        GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
-        if not(_isClear):
-          self.Batch2.draw()
-        self.Batch2Spr.draw()
-        GL.glPopMatrix()
-
-      else:
+      if len(win.caption) == 0:
         GL.glMatrixMode(GL.GL_PROJECTION)
         GL.glLoadIdentity()
         GL.glOrtho(-xWin_5, xWin_5, -yWin_5, yWin_5, -1, 1)
@@ -691,31 +640,70 @@ class Batch:
         GL.glTranslatef(_Stage.centOffX_pix, _Stage.centOffY_pix, 0)
         GL.glScalef(xScale, yScale, 0.0)
         GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
-        if not(_isClear):
+        if not _isClear:
           self.Batch.draw()
         self.BatchSpr.draw()
-
-        # ***** DOME *****
-        """
-        if DOME:
-          '''
-          GL.glEnable(GL.GL_TEXTURE_2D)
-          self.shader.bind()
-          '''
-          self.add_rect_data(win.Scr1DomeVert)
-          '''
-          GL.glDisable(GL.GL_TEXTURE_2D)
-          self.shader.unbind()
-          '''
-          '''
-          Example:
-            self.Batch.add_indexed(len(_tri)//2, GL.GL_TRIANGLES,
-                                   self.IVShObjGr[_objID], _indices,
-                                   ("v2i/stream", _tri), ("c4B/stream", _RGBA)))
-          '''
-        """
         GL.glPopMatrix()
 
+      else:
+        if _Stage.useScrOvl:
+          # Draw on first (left) screen
+          #
+          GL.glViewport(0, 0, win.width//2, win.height)
+          GL.glMatrixMode(GL.GL_PROJECTION)
+          GL.glLoadIdentity()
+          GL.glOrtho(-xWin_25 *_Stage.hFlipScr1, xWin_25 *_Stage.hFlipScr1,
+                     -yWin_5 *_Stage.vFlipScr1, yWin_5 *_Stage.vFlipScr1, -1, 1)
+          GL.glMatrixMode(GL.GL_MODELVIEW)
+          GL.glLoadIdentity()
+          GL.glPushMatrix()
+          x = _Stage.centOffX_pix
+          y = _Stage.centOffY_pix
+          GL.glTranslatef(x, y, 0)
+          GL.glScalef(xScale, yScale, 0.0)
+          GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
+          if not _isClear:
+            self.Batch.draw()
+          self.BatchSpr.draw()
+          GL.glPopMatrix()
+
+          # Draw on second (right) screen
+          #
+          GL.glViewport(win.width//2, 0, win.width//2, win.height)
+          GL.glMatrixMode(GL.GL_PROJECTION)
+          GL.glLoadIdentity()
+          GL.glOrtho(-xWin_25 *_Stage.hFlipScr2, xWin_25 *_Stage.hFlipScr2,
+                     -yWin_5 *_Stage.vFlipScr2, yWin_5 *_Stage.vFlipScr2, -1, 1)
+          GL.glMatrixMode(GL.GL_MODELVIEW)
+          GL.glLoadIdentity()
+          GL.glPushMatrix()
+
+          self.add_rect_data(win.Scr2Vert)
+
+          x = _Stage.centOffX_pix +_Stage.offXScr2_pix
+          y = _Stage.centOffY_pix +_Stage.offYScr2_pix
+          GL.glTranslatef(x, y, 0)
+          GL.glScalef(xScale, yScale, 0.0)
+          GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
+          if not _isClear:
+            self.Batch2.draw()
+          self.Batch2Spr.draw()
+          GL.glPopMatrix()
+
+        else:
+          GL.glMatrixMode(GL.GL_PROJECTION)
+          GL.glLoadIdentity()
+          GL.glOrtho(-xWin_5, xWin_5, -yWin_5, yWin_5, -1, 1)
+          GL.glMatrixMode(GL.GL_MODELVIEW)
+          GL.glLoadIdentity()
+          GL.glPushMatrix()
+          GL.glTranslatef(_Stage.centOffX_pix, _Stage.centOffY_pix, 0)
+          GL.glScalef(xScale, yScale, 0.0)
+          GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
+          if not _isClear:
+            self.Batch.draw()
+          self.BatchSpr.draw()
+          GL.glPopMatrix()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def add_rect_data(self, _Vert):

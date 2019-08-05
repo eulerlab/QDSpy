@@ -28,6 +28,7 @@ QDSpy_winWidth              = 640
 QDSpy_winHeight             = 480
 QDSpy_screenIndex           = 1
 QDSpy_disableFullScrCmd     = True
+QDSpy_maxNumberOfScreens    = 3
 
 QDSpy_multiSamplingLevel    = 0
 QDSpy_graphicsAPI           = 0      # 0=default, 1=pygletOnly

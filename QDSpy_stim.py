@@ -30,8 +30,8 @@ else:
 
 # ---------------------------------------------------------------------
 class ColorMode:
-  _0_255              = 0
-  _0_1                = 1
+  range0_255          = 0
+  range0_1            = 1
   LC_first            = 2
   LC_G9B9             = 2
 
@@ -178,7 +178,7 @@ class StimLCrCmd:
   setTestPattern      = 10
   #getLEDCurrents     = 11
   setLEDCurrents      = 12
-  setLEDenabled       = 13
+  setLEDEnabled       = 13
   getLEDEnabled       = 14
   # ...
 
@@ -300,7 +300,7 @@ class Stim:
     self.inLoop    = False
     self.iLoopSce  = -1
 
-    self.colorMode = ColorMode._0_255
+    self.colorMode = ColorMode.range0_255
     self.bitDepth  = COL_bitDepthRGB_888
     self.bitShift  = COL_bitShiftRGB_000
 
@@ -380,7 +380,7 @@ class Stim:
       self.LastErrC = StimErrC.invalidAngles
       raise StimException(StimErrC.invalidAngles)
 
-    if (_astep != None) and ((_astep < 1) or (_astep > 90)):
+    if (_astep is not None) and ((_astep < 1) or (_astep > 90)):
       _astep = None
 
     try:
@@ -409,7 +409,7 @@ class Stim:
     # Create shader manager, if not already existent, and check if
     # shader type exists
     #
-    if self.ShManager == None:
+    if self.ShManager is None:
       self.ShManager    = csh.ShaderManager(self.Conf)
     if not(_shType in self.ShManager.getShaderTypes()):
       self.LastErrC = StimErrC.invalidShaderType
@@ -466,11 +466,11 @@ class Stim:
       self.LastErrC = StimErrC.noMatchingID
       raise StimException
 
-    d = {}
+    d = dict()
     d["dxFr"] = MvOb[SM_field_dxFr]
     d["dyFr"] = MvOb[SM_field_dyFr]
     d["nFr"]  = MvOb[SM_field_nFr]
-    return(d)
+    return d
 
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -510,12 +510,12 @@ class Stim:
       self.LastErrC = StimErrC.noMatchingID
       raise StimException
 
-    d = {}
+    d = dict()
     d["dxFr"] = VdOb[SV_field_dxFr]
     d["dyFr"] = VdOb[SV_field_dyFr]
     d["nFr"]  = VdOb[SV_field_nFr]
     d["fps"]  = VdOb[SV_field_fps]
-    return(d)
+    return d
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setObjColor(self, _IDs, _newRGBs, _newAlphas):
@@ -650,7 +650,7 @@ class Stim:
 
     for ID in _IDs:
       try:
-        self.ObjDict[ID]
+        #self.ObjDict[ID]
         if self.ObjList[self.ObjDict[ID]][SO_field_useShader] == 0:
           self.LastErrC = StimErrC.notShaderObject
           raise StimException
@@ -769,7 +769,7 @@ class Stim:
   def loopEnd(self):
     # ...
     #
-    if not(self.inLoop):
+    if not self.inLoop:
       return -1
 
     newSce = [StimSceType.endLoop, -1, self.nSce, False]
@@ -780,38 +780,41 @@ class Stim:
     self.LastErrC = StimErrC.ok
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def processLCrCommand(self, _cmd, _params=[]):
+  def processLCrCommand(self, _cmd, _p=None):
     # ...
     #
-    if not(self.Conf.useLCr):
+    if _p is None:
+      _p = [0]
+    if not self.Conf.useLCr:
       self.LastErrC = StimErrC.ok
       return
 
-    # Check if parameters are valid for the respective lightcrafter commands
-    # using a "dummy" LCr object
-    # (Note that params[0] is always the lightcrafter device index; nescessary
-    # for the case that there are more than one devices connected.)
+    # Check if parameters are valid for the respective lightcrafter
+    # commands using a "dummy" LCr object
+    # (Note that params[0] is always the lightcrafter device index;
+    # necessary for the case that there are more than one devices
+    # connected.)
     #
     res = [lcr.ERROR.OK]
     if   _cmd == StimLCrCmd.softwareReset:
       res = _LCr.softwareReset()
     elif _cmd == StimLCrCmd.setInputSource:
-      res = _LCr.setInputSource(_params[1], _params[2])
+      res = _LCr.setInputSource(_p[1], _p[2])
     elif _cmd == StimLCrCmd.setDisplayMode:
-      res = _LCr.setDisplayMode(_params[1])
+      res = _LCr.setDisplayMode(_p[1])
     elif _cmd == StimLCrCmd.setTestPattern:
-      res = _LCr.setTestPattern(_params[1])
+      res = _LCr.setTestPattern(_p[1])
     elif _cmd == StimLCrCmd.setLEDCurrents:
-      res = _LCr.setLEDCurrents(_params[1])
+      res = _LCr.setLEDCurrents(_p[1])
     elif _cmd == StimLCrCmd.setLEDEnabled:
-      res = _LCr.setLEDEnabled(_params[1], _params[2])
+      res = _LCr.setLEDEnabled(_p[1], _p[2])
 
     if res[0] != lcr.ERROR.OK:
       self.LastErrC = StimErrC.DeviceError_LCr
       raise StimException
 
     newSce = [StimSceType.sendCommandToLCr, -1, self.nSce, False,
-              [_cmd] +_params]
+              [_cmd] +_p]
     self.SceList.append(newSce)
     self.nSce    += 1
     self.isUseLCr = True
@@ -868,7 +871,7 @@ class Stim:
         or not(isinstance(_magXY, tuple))
         or not(isinstance(_seq, list)) or not(len(_seq) == 4)
         or (_trans < 0) or (_trans > 255)
-        or not(_screen in [0, 1])):
+        or (_screen < 0) or (_screen >= glo.QDSpy_maxNumberOfScreens)):
       self.LastErrC = StimErrC.invalidParamType
       raise StimException
 
