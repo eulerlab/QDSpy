@@ -857,7 +857,7 @@ class Stim:
         or not(isinstance(_magXY, tuple))
         or not(isinstance(_seq, list)) or not(len(_seq) == 4)
         or (_trans < 0) or (_trans > 255)
-        or not(_screen in [0, 1])):
+        or (_screen < 0) or (_screen >= glo.QDSpy_maxNumberOfScreens)):
       self.LastErrC = StimErrC.invalidParamType
       raise StimException
 

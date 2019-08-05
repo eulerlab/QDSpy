@@ -33,6 +33,7 @@ import PIL
 pyglet.options["debug_gl"] = True
 import pyglet.gl as GL
 from   pyglet.gl.gl_info import GLInfo
+PYGLET_VER = float(pyglet.version[0:3])
 
 if sys.platform == "win32":
   from win32api import SetCursorPos
@@ -64,9 +65,13 @@ class Renderer:
     # Initialize graphics API
     #
     # Determine some system properties
-    #    
-    platform = pyglet.window.get_platform()
-    display  = platform.get_default_display()
+    #
+    self.pygletVer = float(pyglet.version[0:3])
+    if PYGLET_VER < 1.4:
+      platform = pyglet.window.get_platform()
+      display  = platform.get_default_display()
+    else:
+      display = pyglet.canvas.get_display()
     self.Screens  = display.get_screens()
     self.winList  = []
     self.View     = _View

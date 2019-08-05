@@ -11,7 +11,7 @@ __author__ 	= "code@eulerlab.de"
 
 # ---------------------------------------------------------------------
 QDSpy_versionStr            = "QDSpy v0.77 beta"
-QDSpy_copyrightStr          = "(c) 2013-17 Thomas Euler"
+QDSpy_copyrightStr          = "(c) 2013-19 Thomas Euler"
 QDSpy_appID                 = u"QDSpy3.v077beta.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 
@@ -28,6 +28,7 @@ QDSpy_winWidth              = 640
 QDSpy_winHeight             = 480
 QDSpy_screenIndex           = 1
 QDSpy_disableFullScrCmd     = True
+QDSpy_maxNumberOfScreens    = 3
 
 QDSpy_multiSamplingLevel    = 0
 QDSpy_graphicsAPI           = 0      # 0=default, 1=pygletOnly

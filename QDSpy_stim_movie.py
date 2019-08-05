@@ -10,7 +10,7 @@ QDSpy module - defines movie-related classes
   The movie control class manages the presentation of a movie according to
   the presentation parameters
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 
 ***********************************************************************
@@ -27,6 +27,7 @@ import configparser
 import pyglet
 import QDSpy_stim as stm
 import QDSpy_global as glo
+import Graphics.renderer_opengl as rdr
 
 # ---------------------------------------------------------------------
 # Movie object class
@@ -36,17 +37,17 @@ class Movie:
     # Initializing
     #
     self.isReady  = False
-    self.dxFr     = 0
-    self.dyFr     = 0
-    self.nFr      = 0
-    self.comment  = "n/a"
-    self.is1FrBL  = True
-    self.nFrX     = 0
-    self.nFrY     = 0
-    self.img      = None
-    self.imgSeq   = None
-    self.movie    = None
-    self.movTex   = None
+    self.dxFr = 0
+    self.dyFr = 0
+    self.nFr = 0
+    self.comment = "n/a"
+    self.is1FrBL = True
+    self.nFrX = 0
+    self.nFrY = 0
+    self.img = None
+    self.imgSeq = None
+    self.movie = None
+    self.movTex = None
     self.use3DTex = _Config.use3DTextures
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -65,15 +66,15 @@ class Movie:
 
     # Read description file
     #
-    self.Desc      = configparser.RawConfigParser()
+    self.Desc = configparser.RawConfigParser()
     try:
       self.Desc.readfp(open(self.fNameDesc))
-      self.dxFr    = self.Desc.getint(glo.QDSpy_movDescSect, 
-                                      glo.QDSpy_movFrWidth)
-      self.dyFr    = self.Desc.getint(glo.QDSpy_movDescSect, 
-                                      glo.QDSpy_movFrHeight)
-      self.nFr     = self.Desc.getint(glo.QDSpy_movDescSect, 
-                                      glo.QDSpy_movFrCount)
+      self.dxFr = self.Desc.getint(glo.QDSpy_movDescSect,
+                                   glo.QDSpy_movFrWidth)
+      self.dyFr = self.Desc.getint(glo.QDSpy_movDescSect,
+                                   glo.QDSpy_movFrHeight)
+      self.nFr = self.Desc.getint(glo.QDSpy_movDescSect,
+                                  glo.QDSpy_movFrCount)
       self.comment = self.Desc.get(glo.QDSpy_movDescSect, 
                                    glo.QDSpy_movComment)
       self.is1FrBL = self.Desc.getboolean(glo.QDSpy_movDescSect,
@@ -86,10 +87,10 @@ class Movie:
 
     # Load and check image data
     #
-    self.img       = pyglet.image.load(self.fNameImg)
-    self.nFrX      = self.img.width//self.dxFr
-    self.nFrY      = self.img.height//self.dyFr
-    n              = self.nFrX * self.nFrY
+    self.img = pyglet.image.load(self.fNameImg)
+    self.nFrX = self.img.width//self.dxFr
+    self.nFrY = self.img.height//self.dyFr
+    n = self.nFrX * self.nFrY
     if (((self.img.width % self.dxFr) > 0) or
         ((self.img.height % self.dyFr) > 0) or
         (n != self.nFr)):
@@ -103,7 +104,7 @@ class Movie:
       #
       return stm.StimErrC.ok
 
-    if not(self.is1FrBL):
+    if not self.is1FrBL:
       # The first frame is not the bottom-left as expected by pyglet, but
       # the top-left, therefore, image data needs to be reshaped
       #
@@ -116,11 +117,11 @@ class Movie:
 
     # Create a 3D texture (basically an image sequence) from the montage
     #
-    tmpSeq         = pyglet.image.ImageGrid(self.img, self.nFrY, self.nFrX)
+    tmpSeq = pyglet.image.ImageGrid(self.img, self.nFrY, self.nFrX)
     if self.use3DTex:
-      self.imgSeq  = pyglet.image.Texture3D.create_for_image_grid(tmpSeq)
+      self.imgSeq = pyglet.image.Texture3D.create_for_image_grid(tmpSeq)
     else:  
-      self.imgSeq  = tmpSeq.get_texture_sequence()
+      self.imgSeq = tmpSeq.get_texture_sequence()
     # *****************
     # *****************
     # TODO: Texture3D is supposed to be faster but I could not get rid of
@@ -139,30 +140,28 @@ class Movie:
       self.imgSeq[iFr].anchor_x = self.dxFr/2
       self.imgSeq[iFr].anchor_y = self.dyFr/2
 
-    self.isReady   = True
+    self.isReady = True
     return stm.StimErrC.ok
     
-
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def load(self, _fName, _testOnly=False):
     # Reads an image file (a montage of frames) and the description
     # file (same name but .txt extension)
     # Returns an error of the QDSpy_stim.StimErrC class
     #
-    tempStr         = (os.path.splitext(os.path.basename(_fName)))[0]
-    tempDir         = os.path.dirname(_fName)
+    tempStr = (os.path.splitext(os.path.basename(_fName)))[0]
+    tempDir = os.path.dirname(_fName)
     if len(tempDir) > 0:
-      tempDir      += "\\"
-    self.fNameDesc  = tempDir +tempStr +glo.QDSpy_movDescFileExt
-    self.fNameImg   = _fName
-    self.fExtImg    = os.path.splitext(_fName)[1].lower()
+      tempDir += "\\"
+    self.fNameDesc = tempDir +tempStr +glo.QDSpy_movDescFileExt
+    self.fNameImg = _fName
+    self.fExtImg = os.path.splitext(_fName)[1].lower()
     self.isTestOnly = _testOnly
 
     if self.fExtImg in glo.QDSpy_movAllowedMovieExts:
       return self.__loadMontage()
     else:
       return stm.StimErrC.invalidMovieFormat      
-
 
 # ---------------------------------------------------------------------
 # Movie control class object
@@ -171,21 +170,21 @@ class MovieCtrl:
   def __init__(self, _seq, _ID, _Movie=None, _nFr=0, _order=2):
     # Initializing
     #
-    self.Movie     = _Movie
-    self.fr0       = _seq[0]       # first frame
-    self.fr1       = _seq[1]       # last frame
-    self.frreps    = _seq[2]       # number of frame repeats
-    self.sqreps    = _seq[3]       # number of sequence repeats
-    self.iScr      = 0
-    self.ID        = _ID
+    self.Movie = _Movie
+    self.fr0 = _seq[0]       # first frame
+    self.fr1 = _seq[1]       # last frame
+    self.frreps = _seq[2]    # number of frame repeats
+    self.sqreps = _seq[3]    # number of sequence repeats
+    self.iScr = 0
+    self.ID = _ID
     
     self.isReverse = (self.fr0 > self.fr1)
-    self.order     = _order
-    self.Sprite    = None
-    if self.Movie != None:
-      self.nFr     = self.Movie.nFr
+    self.order = _order
+    self.Sprite = None
+    if self.Movie is not None:
+      self.nFr = self.Movie.nFr
     else:
-      self.nFr     = _nFr
+      self.nFr = _nFr
     self.reset()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -193,31 +192,31 @@ class MovieCtrl:
     # Reset parameters, delete sprite and recreate it (this way it
     # looses its membership to a pyglet drawing batch)
     #
-    self.posXY      = (0,0)
-    self.magXY      = (1.0,1.0)
-    self.rot        = 0.0
-    self.trans      = 255
-    self.isDone     = False
-    self.isFirst    = True
+    self.posXY = (0,0)
+    self.magXY = (1.0,1.0)
+    self.rot = 0.0
+    self.trans = 255
+    self.isDone = False
+    self.isFirst = True
 
     self.kill()
-    if self.Movie != None:
-      self.Group    = pyglet.graphics.OrderedGroup(self.order)
-      self.Sprite   = pyglet.sprite.Sprite(self.Movie.imgSeq[0],
-                                           usage="dynamic", group=self.Group)
-                                          #usage="stream", group=self.Group)
-    self.isReady    = self.check()
+    if self.Movie is not None:
+      self.Group = pyglet.graphics.OrderedGroup(self.order)
+      self.Sprite = pyglet.sprite.Sprite(self.Movie.imgSeq[0],
+                                         usage="dynamic", group=self.Group)
+                                         #usage="stream", group=self.Group)
+    self.isReady = self.check()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def kill(self):
     # ...
     #
-    self.isReady   = False
-    if self.Sprite != None:
+    self.isReady = False
+    if self.Sprite is not None:
       self.Sprite.delete()
-      self.Sprite  = None
-      self.Group   = None
-      self.Player  = None
+      self.Sprite = None
+      self.Group = None
+      self.Player = None
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def check(self):
@@ -231,14 +230,17 @@ class MovieCtrl:
   def setSpriteProperties(self, _posXY, _magXY, _rot, _trans):
     # Set sprite properties
     #
-    self.posXY     = _posXY
-    self.magXY     = _magXY
-    self.rot       = _rot
-    self.trans     = _trans
+    self.posXY = _posXY
+    self.magXY = _magXY
+    self.rot = _rot
+    self.trans = _trans
 
-    if self.Sprite != None:
-      self.Sprite.set_position(self.posXY[0], y=self.posXY[1])
-      self.Sprite.scale    = self.magXY[0]
+    if self.Sprite is not None:
+      if rdr.PYGLET_VER < 1.4:
+        self.Sprite.set_position(self.posXY[0], y=self.posXY[1])
+      else:
+        self.Sprite.position = self.posXY
+      self.Sprite.scale = self.magXY[0]
       self.Sprite.rotation = self.rot
       self.Sprite.opacity  = self.trans
       
@@ -246,62 +248,59 @@ class MovieCtrl:
   def setSpriteBatch(self, _batch):
     # Set sprite batch
     #
-    if self.Sprite != None:
+    if self.Sprite is not None:
       if _batch.isScrOvl:
         if self.iScr == 0:
-          #self.Sprite.batch = _batch.Batch 
-          self.Sprite.batch = _batch.BatchSpr        
+          self.Sprite.batch = _batch.BatchSpr
         else:  
-          #self.Sprite.batch = _batch.Batch2        
-          self.Sprite.batch = _batch.Batch2Spr        
+          self.Sprite.batch = _batch.Batch2Spr
       else:  
-        #self.Sprite.batch = _batch.Batch
         self.Sprite.batch = _batch.BatchSpr
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getNextFrIndex(self):
     # ...
     #
-    if self.isDone or not(self.isReady):
+    if self.isDone or not self.isReady:
       return -1
 
     if self.isFirst:
-      self.isFirst        = False
-      self.iCurrFr        = self.fr0
-      self.nFrReps        = self.frreps -1
-      self.nSqReps        = self.sqreps -1
+      self.isFirst = False
+      self.iCurrFr = self.fr0
+      self.nFrReps = self.frreps -1
+      self.nSqReps = self.sqreps -1
 
     else:
       if self.nFrReps > 0:
-        self.nFrReps     -= 1
+        self.nFrReps -= 1
       else:
-        self.nFrReps      = self.frreps -1
+        self.nFrReps = self.frreps -1
 
         if self.isReverse:
-          self.iCurrFr   -= 1
+          self.iCurrFr -= 1
           if self.iCurrFr < self.fr1:
             if self.nSqReps > 0:
-              self.iCurrFr  = self.fr0
+              self.iCurrFr = self.fr0
               self.nSqReps -= 1
             else:
-              self.isDone   = True
+              self.isDone = True
               return -1
 
         else:
-          self.iCurrFr   += 1
+          self.iCurrFr += 1
           if self.iCurrFr > self.fr1:
             if self.nSqReps > 0:
-              self.iCurrFr  = self.fr0
+              self.iCurrFr = self.fr0
               self.nSqReps -= 1
             else:
-              self.isDone   = True
+              self.isDone = True
               return -1
 
-    if self.Sprite != None:
+    if self.Sprite is not None:
       if self.Movie.use3DTex:
-        self.Sprite.image   = self.Movie.imgSeq.get_image_data(self.iCurrFr)          
+        self.Sprite.image = self.Movie.imgSeq.get_image_data(self.iCurrFr)
       else:   
-        self.Sprite.image   = self.Movie.imgSeq[self.iCurrFr]
+        self.Sprite.image = self.Movie.imgSeq[self.iCurrFr]
       # *****************
       # *****************
       # TODO: see Movie.load()
