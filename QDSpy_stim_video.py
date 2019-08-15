@@ -9,7 +9,7 @@ QDSpy module - defines video-related classes (ALPHA)
 'VideoCtrl'
   The movie control class manages the streaming of the video
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 
 ***********************************************************************
@@ -27,6 +27,7 @@ import QDSpy_stim as stm
 import QDSpy_stim_support as ssp
 import QDSpy_global as glo
 import moviepy.editor as mpe
+import Graphics.renderer_opengl as rdr
 
 # ---------------------------------------------------------------------
 # Video object class
@@ -193,7 +194,11 @@ class VideoCtrl:
                                           pitch=self.Video.dxFr *3)
       self.Sprite = pyglet.sprite.Sprite(pyglet_img.get_texture(), 
                                          usage="stream", group=self.Group)
-      self.Sprite.set_position(self.posXY[0], y=self.posXY[1])
+
+      if rdr.PYGLET_VER < 1.4:
+        self.Sprite.set_position(self.posXY[0], y=self.posXY[1])
+      else:
+        self.Sprite.position = self.posXY
       self.Sprite.scale    = self.magXY[0]
       self.Sprite.rotation = self.rot
       self.Sprite.opacity  = self.trans

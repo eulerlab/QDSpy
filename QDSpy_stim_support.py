@@ -102,10 +102,10 @@ def scaleRGB(_Stim, _inRGBA):
   else:
     # One of the "normal" modes ...
     #
-    if _Stim.colorMode == stm.ColorMode._0_255:
+    if _Stim.colorMode == stm.ColorMode.range0_255:
       RGBA = np.clip(_inRGBA, 0, 255)
       dv   = 255.0
-    elif _Stim.colorMode == stm.ColorMode._0_1:
+    elif _Stim.colorMode == stm.ColorMode.range0_1:
       RGBA = np.clip(_inRGBA, 0, 1)
       dv   = 1.0
 
