@@ -12,14 +12,14 @@ QDSpy module - support functions for stimulus generation and compilation
 
 'getHashStr()'
 'getHashStrForFile()'
-  Get hashs for strings or files
+  Get hashes for strings or files
 
 'Log'
   Class that allows program-wide flexible logging. Only one instance that
   is defined in this module. Writes log messages to stdout and/or sends 
   messages via a pipe to the GUI process.
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -94,18 +94,18 @@ def scaleRGB(_Stim, _inRGBA):
       RGBA = np.clip(_inRGBA, 0, 255)
       g    = 2**int(RGBA[1]/255.0 *8) -1
       b    = 2**int(RGBA[2]/255.0 *8) -1
-      return (0,g,b, int(RGBA[3]))
+      return 0,g,b, int(RGBA[3])
 
     else:
-      return (255,255,255,255)
+      return 255,255,255,255
 
   else:
     # One of the "normal" modes ...
     #
-    if _Stim.colorMode == stm.ColorMode._0_255:
+    if _Stim.colorMode == stm.ColorMode.range0_255:
       RGBA = np.clip(_inRGBA, 0, 255)
       dv   = 255.0
-    elif _Stim.colorMode == stm.ColorMode._0_1:
+    elif _Stim.colorMode == stm.ColorMode.range0_1:
       RGBA = np.clip(_inRGBA, 0, 1)
       dv   = 1.0
 
@@ -143,7 +143,7 @@ def getHashStrForFile(_sFName):
   with open(_sFName, "rb") as f:
     while True:
       data = f.read(65536)
-      if not(data):
+      if not data:
         break
       m.update(data)
   return m.hexdigest()
@@ -160,13 +160,13 @@ class Log:
     self.Sync           = None  
     self.stdFCol        = con.get_text_attr()
     self.stdBCol        = self.stdFCol & 0x0070
-    self.noMsgToStdOut  = not(glo.QDSpy_workerMsgsToStdOut)
+    self.noMsgToStdOut  = not glo.QDSpy_workerMsgsToStdOut
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setGUISync(self, _Sync):
-    # Define a syncronisation object to relay messages to the GUI
+    # Define a synchronisation object to relay messages to the GUI
     #
-    if _Sync != None:
+    if _Sync is not None:
       self.isRunFromGUI  = True
       self.Sync          = _Sync 
       self.noMsgToStdOut = cfg.getParsedArgv().gui
@@ -175,7 +175,7 @@ class Log:
   def write(self, _headerStr, _msgStr, _isProgress=False, _getStr=False):
     # Log a message
     #
-    if (_headerStr.upper() == "DEBUG") and not(glo.QDSpy_isDebug):
+    if (_headerStr.upper() == "DEBUG") and not glo.QDSpy_isDebug:
       return
 
     if glo.QDSpy_doLogTimeStamps:
@@ -218,7 +218,7 @@ class Log:
   
     # Send message to log ...
     #
-    if not(self.noMsgToStdOut): 
+    if not self.noMsgToStdOut:
       # ... to stdout ...
       #
       con.set_text_attr(msgAttr)
@@ -242,7 +242,7 @@ class Log:
         txt = "{0}{1!s:>8} {2}".format(tStr, _headerStr, _msgStr)
         
       data  = [mpr.PipeValType.toCli_log, tStr, txt, msgCol, msgPrior] 
-      if not(_getStr):  
+      if not _getStr:
         self.Sync.pipeSrv.send(data)
       else:
         return data
