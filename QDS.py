@@ -75,7 +75,7 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   tLastUpt_py     = datetime.fromtimestamp(os.path.getmtime(fNameDir_py))
   try:
     tLastUpt_pick = datetime.fromtimestamp(os.path.getmtime(fNameDir_pk))
-    if (tLastUpt_pick > tLastUpt_py) and not(args.compile):
+    if tLastUpt_pick > tLastUpt_py and not args.compile:
       pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[1]
       if len(pythonPath) > 0:
         pythonPath += "\\" 
@@ -189,7 +189,7 @@ def SetColorLUTEntry (_index, _rgb):
 
 # ---------------------------------------------------------------------
 def SetColorMode(_depth_bit, _shift_bit=(0,0,0),
-                 _mode=stm.ColorMode._0_255):
+                 _mode=stm.ColorMode.range0_255):
   """
   Set color mode and bit depth as well as bit offset.
   
@@ -232,7 +232,7 @@ def SetColorMode(_depth_bit, _shift_bit=(0,0,0),
   if isinstance(_shift_bit, tuple) and len(_shift_bit) == 3:
     _Stim.bitShift  = _shift_bit
 
-  if _mode in [stm.ColorMode._0_255, stm.ColorMode._0_1, 
+  if _mode in [stm.ColorMode.range0_255, stm.ColorMode.range0_1,
                stm.ColorMode.LC_G9B9]:
     _Stim.colorMode = _mode
 
@@ -467,8 +467,8 @@ def DefObj_Movie(_iobj, _fName):
 # ---------------------------------------------------------------------
 def GetMovieParameters(_iobj):
   """
-  Returns a list with the parameters of a movie object. The movie 
-  object must have been loaded.
+  Returns a list with the parameters of a movie object or `None`, if
+  an error occurs. The movie object must have been loaded.
 
   =============== ==================================================
   Parameters:
@@ -484,6 +484,7 @@ def GetMovieParameters(_iobj):
                   | and nFr the number of frames
   =============== ==================================================
   """
+  params = None
   try:
     params = _Stim.getMovieParams(_iobj)
 
