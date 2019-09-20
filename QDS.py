@@ -8,14 +8,16 @@ for visual neuroscience. It is based on QDS, currently uses OpenGL via
 pyglet for graphics. It primarly targets Windows, but may also run on 
 other operating systems
 
-Copyright (c) 2013-2017 Thomas Euler
+Copyright (c) 2013-2019 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-import time
 import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+
+import time
 import sys
 from   datetime import datetime
 import QDSpy_global as glo
@@ -73,7 +75,7 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   tLastUpt_py     = datetime.fromtimestamp(os.path.getmtime(fNameDir_py))
   try:
     tLastUpt_pick = datetime.fromtimestamp(os.path.getmtime(fNameDir_pk))
-    if (tLastUpt_pick > tLastUpt_py) and not(args.compile):
+    if tLastUpt_pick > tLastUpt_py and not args.compile:
       pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[1]
       if len(pythonPath) > 0:
         pythonPath += "\\" 
@@ -98,11 +100,33 @@ def GetStimulusPath():
   Returns the current path of the stimulus folder. Use this function
   to make sure that the script can locate user-provided accessory files
   (e.g. a random number series for a noise stimulus):
-  ::
+
+  .. code-block:: python
+
     path = QDS.getStimulusPath()
     file = open(path +"/parameters.txt", "r")
   """
   return os.path.split(os.path.abspath(_Stim.fNameDir))[0]
+
+# ---------------------------------------------------------------------
+def GetRandom(_seed):
+  """
+  Returns a random number in the interval [0, 1) at runtime using the
+  random.random() function. 
+  
+  =============== ==================================================
+  Parameters:
+  =============== ==================================================
+  _seed           | 'None' or an integer value (see random.seed()
+                  | for more information)
+  =============== ==================================================
+  """
+  try:
+    _Stim.getRandom(_seed)
+
+  except stm.StimException as e:
+    ssp.Log.write("ERROR", "GetRandom: {0}, {1}".format(e.value, e))
+  return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def LogUserParameters(_dict):
@@ -118,7 +142,9 @@ def LogUserParameters(_dict):
   
   Example for such a user parameter entry as it appears in the history
   and log file:
-  :: 
+
+  .. code-block:: python
+
     20151220_135948    DATA {'nTrials': 1, 'dxStim_um': 1000}
   """
   try:
@@ -163,7 +189,7 @@ def SetColorLUTEntry (_index, _rgb):
 
 # ---------------------------------------------------------------------
 def SetColorMode(_depth_bit, _shift_bit=(0,0,0),
-                 _mode=stm.ColorMode._0_255):
+                 _mode=stm.ColorMode.range0_255):
   """
   Set color mode and bit depth as well as bit offset.
   
@@ -175,8 +201,10 @@ def SetColorMode(_depth_bit, _shift_bit=(0,0,0),
   color values are scaled by the given bit depth and then bitwise left-
   shifted by the given offset. For example, when color mode is 0..255
   (see below), "red" is scaled:
-  ::
-    r\' = (r/255 x(2^BitDepth_r -1)) << BitShift_r
+
+  .. code-block:: python
+
+    r_new = (r/255 x(2^BitDepth_r -1)) << BitShift_r
 
   =============== ==================================================
   Parameters:
@@ -198,13 +226,13 @@ def SetColorMode(_depth_bit, _shift_bit=(0,0,0),
   * ...
 
   """
-  if (isinstance(_depth_bit, tuple) and (len(_depth_bit) == 3)):
+  if isinstance(_depth_bit, tuple) and len(_depth_bit) == 3:
     _Stim.bitDepth  = _depth_bit
 
-  if (isinstance(_shift_bit, tuple) and (len(_shift_bit) == 3)):
+  if isinstance(_shift_bit, tuple) and len(_shift_bit) == 3:
     _Stim.bitShift  = _shift_bit
 
-  if _mode in [stm.ColorMode._0_255, stm.ColorMode._0_1, 
+  if _mode in [stm.ColorMode.range0_255, stm.ColorMode.range0_1,
                stm.ColorMode.LC_G9B9]:
     _Stim.colorMode = _mode
 
@@ -439,8 +467,8 @@ def DefObj_Movie(_iobj, _fName):
 # ---------------------------------------------------------------------
 def GetMovieParameters(_iobj):
   """
-  Returns a list with the parameters of a movie object. The movie 
-  object must have been loaded.
+  Returns a list with the parameters of a movie object or `None`, if
+  an error occurs. The movie object must have been loaded.
 
   =============== ==================================================
   Parameters:
@@ -456,6 +484,7 @@ def GetMovieParameters(_iobj):
                   | and nFr the number of frames
   =============== ==================================================
   """
+  params = None
   try:
     params = _Stim.getMovieParams(_iobj)
 
