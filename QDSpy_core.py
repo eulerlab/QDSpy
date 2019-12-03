@@ -111,7 +111,7 @@ def disconnectLCrs(_LCrs):
 def switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim):
   if _Conf.allowGammaLUT:
     if _Stim is not None:
-      if _Stim.colorMode in [stm.ColorMode._0_1, stm.ColorMode._0_255]:
+      if _Stim.colorMode in [stm.ColorMode.range0_1, stm.ColorMode.range0_255]:
         ssp.Log.write(" ", "Trying to set user-defined gamma LUT ...")
         gma.setGammaLUT(_View.winPre._dc, _Stage.LUT_userDefined)
       else:
