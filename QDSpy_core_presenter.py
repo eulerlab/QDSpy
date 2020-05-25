@@ -94,6 +94,7 @@ class Presenter:
 
     self.nFrTotal     = 0
     self.tFrRel_s     = 0.0
+    self.tFrRelOff_s  = 0.0
     self.avFrDur_s    = 0.0
     self.nRendTotal   = 0
     self.avPresDur_s  = 0.0
@@ -357,7 +358,8 @@ class Presenter:
               x       = ObjPosXY[iObj][0] +self.Stage.dxScr
               y       = ObjPosXY[iObj][1] +self.Stage.dyScr
               a_rad   = (ObjRot[iObj]+90.0)*np.pi/180.0
-              self.Batch.set_shader_time(ObjID, self.tFrRel_s)
+              self.tFrRelOff_s = self.tFrRel_s
+              self.Batch.set_shader_time(ObjID, 0.0)
               self.Batch.set_shader_parameters(ObjID, [x,y], a_rad, shPar)
               
             else:
@@ -412,7 +414,7 @@ class Presenter:
           # Not first frame of a new scene, just update the shader
           # parameters, if any, ...
           #
-          self.Batch.set_shader_time_all(self.tFrRel_s)
+          self.Batch.set_shader_time_all(self.tFrRel_s -self.tFrRelOff_s)
 
         # Indicate that the batch needs to be drawn
         #

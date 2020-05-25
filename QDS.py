@@ -5,7 +5,7 @@ QDSpy module - stimulus script API
 
 This is a simple Python software for scripting and presenting stimuli
 for visual neuroscience. It is based on QDS, currently uses OpenGL via
-pyglet for graphics. It primarly targets Windows, but may also run on 
+pyglet for graphics. It primarly targets Windows, but may also run on
 other operating systems
 
 Copyright (c) 2013-2019 Thomas Euler
@@ -33,13 +33,13 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   """
   Initializes the QDS library. Needs to be called **before** any other
   QDS command is used.
- 
+
   =============== ==================================================
   Parameters:
   =============== ==================================================
-  _sName          | stimulus name 
+  _sName          | stimulus name
   _sDescr         | description of stimulus (optional)
-  _runMode        | 0=just re-compile,  
+  _runMode        | 0=just re-compile,
                   | 1=run stimulus if script unchanged
   =============== ==================================================
   """
@@ -76,9 +76,10 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   try:
     tLastUpt_pick = datetime.fromtimestamp(os.path.getmtime(fNameDir_pk))
     if tLastUpt_pick > tLastUpt_py and not args.compile:
-      pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[1]
+      #pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[1]
+      pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[0]
       if len(pythonPath) > 0:
-        pythonPath += "\\" 
+        pythonPath += "\\"
       ssp.Log.write("INFO", "Script has not changed, running stimulus now ...")
       os.system("python "+ pythonPath +"QDSpy_core.py -t={0} {1} {2}"
                 .format(args.timing, "-v" if args.verbose else "", fName))
@@ -112,8 +113,8 @@ def GetStimulusPath():
 def GetRandom(_seed):
   """
   Returns a random number in the interval [0, 1) at runtime using the
-  random.random() function. 
-  
+  random.random() function.
+
   =============== ==================================================
   Parameters:
   =============== ==================================================
@@ -139,7 +140,7 @@ def LogUserParameters(_dict):
   _dict           | dictionary with parameters
                   | as key-value pairs
   =============== ==================================================
-  
+
   Example for such a user parameter entry as it appears in the history
   and log file:
 
@@ -158,20 +159,20 @@ def LogUserParameters(_dict):
 def SetColorLUTEntry (_index, _rgb):
   """
   Redefines an entry in the colour lookup table (LUT), allowing to linearize
-  the intensity range of a display. 
+  the intensity range of a display.
 
-  Note that it alters the gamma LUT at **run-time** 
-  (see section :doc:`how_QDSpy_works`) on the operation system-side, that is 
-  for *all* connected display devices, including the screen that shows the 
-  GUI. 
-  
-  When the program ends, a linear gamma LUT will be automatically restored. 
-  
-  While this adjustment is completely independent of the color mode setting 
+  Note that it alters the gamma LUT at **run-time**
+  (see section :doc:`how_QDSpy_works`) on the operation system-side, that is
+  for *all* connected display devices, including the screen that shows the
+  GUI.
+
+  When the program ends, a linear gamma LUT will be automatically restored.
+
+  While this adjustment is completely independent of the color mode setting
   (see :py:func:`QDS.setColorMode`), it is only meaningful for color modes
   0 and 1, and not for special lightcrafter modes. Therefore, LUT corrections
   will not be applied to stimuli using color modes >1.
- 
+
   =============== ==================================================
   Parameters:
   =============== ==================================================
@@ -192,8 +193,8 @@ def SetColorMode(_depth_bit, _shift_bit=(0,0,0),
                  _mode=stm.ColorMode.range0_255):
   """
   Set color mode and bit depth as well as bit offset.
-  
-  .. note:: Note that this conversion happens at **compile-time** 
+
+  .. note:: Note that this conversion happens at **compile-time**
             (see section :doc:`how_QDSpy_works`). Changing the mode requires
             recompilation of the script to affect presentation.
 
@@ -354,7 +355,7 @@ def DefObj_SectorEx(_iobj, _r, _offs, _angle, _awidth, _astep=None,
                   | (of the center of the arc)
   _awidth         | width of sector
                   | (angle, in degrees)
-  _astep          | "smoothness" of the arc 
+  _astep          | "smoothness" of the arc
                   | (1° <= _astep <= 90)
                   | if omitted, _astep is automatically optimized
   _enShader       | 0=disable shaders (default)
@@ -423,34 +424,34 @@ def DefObj_Ellipse(_iobj, _dx, _dy, _angle=0.0):
 def DefObj_Movie(_iobj, _fName):
   """
   Defines and loads a movie object.
-  
+
   A movie object consists of two files that have the same name but
   different extensions: a text file (.txt) that describes the dimensions
   of a frame and the number of frames, and an image file that contains
   a montage of all frames (.png, .jpg, ...).
-  
+
   .. note:: In contrast to QDS, QDSpy considers the **bottom-left frame of
             a montage the first frame** (in QDS it was to top-left frame).
             Therefore, movie montage files have to be adapted. This can
             be easily done in ImageJ:
-            
+
             1) load the montage into ImageJ
-            2) use `Image/Stacks/Tools/Montage To Stack...` to convert the 
+            2) use `Image/Stacks/Tools/Montage To Stack...` to convert the
                montage into a stack
-            3) use `Image/Transform/Flip Vertically` to mirror the stack 
+            3) use `Image/Transform/Flip Vertically` to mirror the stack
                along the x axis
             4) use `Image/Stacks/Make Montage...` to convert the stack back
                into a montage
             5) use `Image/Transform/Flip Vertically` again now to mirror the
                montage along the x axis. Now the frame sequence starts with
                the bottom-left frame.
-  
+
 
   =============== ==================================================
   Parameters:
   =============== ==================================================
   _iobj           | object index
-  _fName          | string with movie file name 
+  _fName          | string with movie file name
                   | (with image file extension)
   =============== ==================================================
   """
@@ -475,7 +476,7 @@ def GetMovieParameters(_iobj):
   =============== ==================================================
   _iobj           | object index
   =============== ==================================================
-  
+
   =============== ==================================================
   Returns:
   =============== ==================================================
@@ -497,15 +498,15 @@ def GetMovieParameters(_iobj):
 def DefObj_Video(_iobj, _fName):
   """
   Defines and loads a video object.
-  
+
   A video object consists of a single file; currently the following
   video format(s) is/are allowed: .avi
-  
+
   =============== ==================================================
   Parameters:
   =============== ==================================================
   _iobj           | object index
-  _fName          | string with video file name 
+  _fName          | string with video file name
   =============== ==================================================
   """
   if len(_Stim.ObjList) == 0:
@@ -517,11 +518,11 @@ def DefObj_Video(_iobj, _fName):
   except stm.StimException as e:
     ssp.Log.write("ERROR", "DefObj_Video: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
-  
+
 # ---------------------------------------------------------------------
 def GetVideoParameters(_iobj):
   """
-  Returns a list with the parameters of a video object. The video 
+  Returns a list with the parameters of a video object. The video
   object must have been loaded.
 
   =============== ==================================================
@@ -529,7 +530,7 @@ def GetVideoParameters(_iobj):
   =============== ==================================================
   _iobj           | object index
   =============== ==================================================
-  
+
   =============== ==================================================
   Returns:
   =============== ==================================================
@@ -546,7 +547,7 @@ def GetVideoParameters(_iobj):
     ssp.Log.write("ERROR", "getVideoParams: {0}, {1}".format(e.value, e))
   return params
 
-  
+
 # ---------------------------------------------------------------------
 def DefShader(_ishd, _shType):
   """
@@ -677,8 +678,8 @@ def SetShaderParams(_ishd, _shParams):
     - minRGB, minimum color +tranparency (alpha)
     - maxRGB, maximum color +tranparency (alpha)
 
-  * "SINE_WAVE_GRATING_MIX", like SINE_WAVE_GRATING, but in addition, the 
-    shader mixes the object color including transparency (RGBA) with the 
+  * "SINE_WAVE_GRATING_MIX", like SINE_WAVE_GRATING, but in addition, the
+    shader mixes the object color including transparency (RGBA) with the
     grating colours, enabling transparent shader objects.
 
   """
@@ -735,10 +736,10 @@ def SetBkgColor(_col):
   =============== ==================================================
   _col            | color in RGB values as tupple (r,g,b{,u,v,w})
   =============== ==================================================
-  
+
   In the parameter ``_col``, the values beyond ``r,g,b`` are optional;
   they are only relevant in "screen overlay mode" and otherwise ignored.
-  
+
   """
   try:
     _Stim.setBkgColor(_col)
@@ -773,7 +774,7 @@ def Scene_Clear(_dur, _marker=0):
 
 
 # ---------------------------------------------------------------------
-def Scene_RenderEx(_dur, _iobjs, _opos, _omag, _oang, _marker=0, 
+def Scene_RenderEx(_dur, _iobjs, _opos, _omag, _oang, _marker=0,
                    _screen=0):
   """
   Draw objects and wait.
@@ -818,15 +819,15 @@ def Scene_Render(_dur, _nobjs, _iobjs, _opos, _marker=0):
 def Start_Movie(_iobj, _opos, _seq, _omag, _trans, _oang, _screen=0):
   """
   Start playing a movie object.
- 
+
   =============== ==================================================
   Parameters:
   =============== ==================================================
   _iobj           | index of movie object
   _opos           | object positions, as (x1,y1)
-  _seq            | sequence parameters, as 
-                  | [fr0, fr1, frreps, sqreps], with ... 
-                  | fr0=first, f1=last frame, 
+  _seq            | sequence parameters, as
+                  | [fr0, fr1, frreps, sqreps], with ...
+                  | fr0=first, f1=last frame,
                   | frreps=number of frame repeats,
                   | sqreps=number of sequence repeats
   _omag           | object magification as (mx,my)
@@ -847,7 +848,7 @@ def Start_Movie(_iobj, _opos, _seq, _omag, _trans, _oang, _screen=0):
 def Start_Video(_iobj, _opos, _omag, _trans, _oang, _screen=0):
   """
   Start playing a movie object.
- 
+
   =============== ==================================================
   Parameters:
   =============== ==================================================
@@ -874,9 +875,9 @@ def Start_Video(_iobj, _opos, _omag, _trans, _oang, _screen=0):
 # ---------------------------------------------------------------------
 def LC_softwareReset(_devIndex):
   """
-  Signal the device (_devIndex) to do a software reset. This will take a 
-  couple of seconds. After the reset the device is disconnected. 
-  
+  Signal the device (_devIndex) to do a software reset. This will take a
+  couple of seconds. After the reset the device is disconnected.
+
   =============== ==================================================
   Parameters:
   =============== ==================================================
@@ -890,16 +891,16 @@ def LC_softwareReset(_devIndex):
     ssp.Log.write("ERROR", "LC_softwareReset: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
-# ---------------------------------------------------------------------  
+# ---------------------------------------------------------------------
 def LC_setInputSource(_devIndex, _source, _bitDepth):
   """
   Defines the input source of the device.
-   
+
   =============== ==================================================
   Parameters:
   =============== ==================================================
   _devIndex       | index of device (starting with 0)
-  _source         | 0=parallel interface (PP), 
+  _source         | 0=parallel interface (PP),
                   | 1=internal test pattern,
                   | 2=Flash
                   | 3=FPD-link
@@ -908,83 +909,83 @@ def LC_setInputSource(_devIndex, _source, _bitDepth):
   =============== ==================================================
   """
   try:
-    _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource, 
+    _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource,
                             [_devIndex, _source, _bitDepth])
   except stm.StimException as e:
     ssp.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
-# ---------------------------------------------------------------------  
+# ---------------------------------------------------------------------
 def LC_setDisplayMode(_devIndex, _mode):
   """
   Sets the display mode of the device.
-   
+
   =============== ==================================================
   Parameters:
   =============== ==================================================
   _devIndex       | index of device (starting with 0)
-  _mode           | 0=video display mode, 
+  _mode           | 0=video display mode,
                   | Assumes streaming video image from the
-                  | 30-bit RGB or FPD-link interface with a 
+                  | 30-bit RGB or FPD-link interface with a
                   | pixel resolution of up to 1280 × 800 up
-                  | to 120 Hz. 
+                  | to 120 Hz.
                   | 1=Pattern display mode
-                  | Assumes a 1-bit through 8-bit image with 
-                  | a pixel resolution of 912 × 1140 and 
+                  | Assumes a 1-bit through 8-bit image with
+                  | a pixel resolution of 912 × 1140 and
                   | bypasses all the image processing functions
                   | of the DLPC350.
   =============== ==================================================
   """
   try:
     """
-    _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource, 
-                            [_source, _bitDepth])
-    """                              
     _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource,
-                            [_devIndex]) 
-                             
+                            [_source, _bitDepth])
+    """
+    _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource,
+                            [_devIndex])
+
   except stm.StimException as e:
     ssp.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
-# ---------------------------------------------------------------------  
+# ---------------------------------------------------------------------
 def LC_setLEDCurrents(_devIndex, _rgb):
   """
   Sets the current of the LEDs.
-   
+
   =============== ==================================================
   Parameters:
   =============== ==================================================
   _devIndex       | index of device (starting with 0)
-  _rgb            | currents as a list [r,g,b] 
+  _rgb            | currents as a list [r,g,b]
                   | with 0 <= r,g,b <= 255
   =============== ==================================================
   """
   try:
-    _Stim.processLCrCommand(stm.StimLCrCmd.setLEDCurrents, 
+    _Stim.processLCrCommand(stm.StimLCrCmd.setLEDCurrents,
                             [_devIndex, _rgb])
   except stm.StimException as e:
     ssp.Log.write("ERROR", "LC_setLEDCurrents: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
-# ---------------------------------------------------------------------  
+# ---------------------------------------------------------------------
 def LC_setLEDEnabled(_devIndex, _rgb):
   """
   Enable or disable the LEDs.
-   
+
   =============== ==================================================
   Parameters:
   =============== ==================================================
   _devIndex       | index of device (starting with 0)
-  _rgb            | state of LEDas a list [r,g,b] 
+  _rgb            | state of LEDas a list [r,g,b]
                   | with True or False
   =============== ==================================================
   """
   try:
-    _Stim.processLCrCommand(stm.StimLCrCmd.setLEDEnabled, 
+    _Stim.processLCrCommand(stm.StimLCrCmd.setLEDEnabled,
                             [_devIndex, _rgb])
   except stm.StimException as e:
     ssp.Log.write("ERROR", "LC_setLEDEnabled: {0}, {1}"

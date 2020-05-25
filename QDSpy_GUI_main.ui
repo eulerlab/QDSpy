@@ -189,7 +189,7 @@ folder</string>
       <property name="geometry">
        <rect>
         <x>2</x>
-        <y>8</y>
+        <y>4</y>
         <width>361</width>
         <height>89</height>
        </rect>
@@ -462,7 +462,7 @@ folder</string>
       <property name="geometry">
        <rect>
         <x>2</x>
-        <y>104</y>
+        <y>100</y>
         <width>361</width>
         <height>105</height>
        </rect>
@@ -897,7 +897,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>264</x>
-        <y>216</y>
+        <y>218</y>
         <width>96</width>
         <height>24</height>
        </rect>
@@ -995,28 +995,6 @@ n/a</string>
       </property>
       <property name="checked">
        <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_LCr1">
-      <property name="geometry">
-       <rect>
-        <x>11</x>
-        <y>112</y>
-        <width>249</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>lightcrafter #1</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButtonLED5">
@@ -1202,28 +1180,6 @@ n/a</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignHCenter|Qt::AlignTop</set>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_LCr0">
-      <property name="geometry">
-       <rect>
-        <x>11</x>
-        <y>4</y>
-        <width>249</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>lightcrafter #0</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
       </property>
      </widget>
      <widget class="QSpinBox" name="spinBoxLED1">
@@ -1413,6 +1369,32 @@ n/a</string>
        <bool>true</bool>
       </property>
      </widget>
+     <widget class="QGroupBox" name="groupBoxStimInfo_8">
+      <property name="geometry">
+       <rect>
+        <x>2</x>
+        <y>4</y>
+        <width>361</width>
+        <height>105</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>LightCrafter #0</string>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBoxStimInfo_9">
+      <property name="geometry">
+       <rect>
+        <x>2</x>
+        <y>112</y>
+        <width>361</width>
+        <height>105</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>LightCrafter #1</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -1422,7 +1404,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>2</x>
-        <y>8</y>
+        <y>4</y>
         <width>361</width>
         <height>65</height>
        </rect>
@@ -1458,7 +1440,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>2</x>
-        <y>76</y>
+        <y>72</y>
         <width>361</width>
         <height>73</height>
        </rect>
