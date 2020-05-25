@@ -1,0 +1,7 @@
+pyqt5
+numpy
+pywin32
+pyglet
+moviepy
+psutil
+pyserial
