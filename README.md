@@ -18,10 +18,10 @@ This assumes that you are using a fairly recent Anaconda distribution. The advan
    ```
    git clone -b experimental https://github.com/eulerlab/QDSpy.git
    ```
-2. Change into that folder and create a new conda environment:
+2. Change into that folder and create a new conda environment, defining the Python version that you have installed:
    ```
    cd qdspy
-   conda create -n qdspy python=3.7
+   conda create -n qdspy python=3.8
    ```
    To check if successful, run:
    ```
