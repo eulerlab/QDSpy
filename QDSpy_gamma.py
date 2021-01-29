@@ -13,6 +13,7 @@ import numpy
 import sys
 import time
 from   ctypes             import windll
+from   ctypes.wintypes    import LPCVOID
 import QDSpy_global       as glo
 import QDSpy_stim_support as ssp
 import QDSpy_stim         as stm
@@ -64,8 +65,10 @@ def setGammaLUT (_winDC, _LUT):
   # for the first time ...
   #
   for j in range(5):
+    res = windll.gdi32.SetDeviceGammaRamp(_winDC & LPCVOID(0xFFFFFFFF), _LUT.ctypes)
     try:
-      res = windll.gdi32.SetDeviceGammaRamp(_winDC & 0xFFFFFFFF, _LUT.ctypes)
+      res = windll.gdi32.SetDeviceGammaRamp(_winDC & LPCVOID(0xFFFFFFFF), _LUT.ctypes)
+      print(1)
     except TypeError:
       res = windll.gdi32.SetDeviceGammaRamp(_winDC, _LUT.ctypes)
     time.sleep(0.1)

@@ -57,7 +57,7 @@ class Presenter:
     self.reset()
 
     self.dtFr_meas_s  = self.Stage.dtFr_s
-    self.dtFr_thres_s = self.dtFr_meas_s +(self.Conf.maxDtTr_ms)/1000.0
+    self.dtFr_thres_s = self.dtFr_meas_s +self.Conf.maxDtTr_ms /1000.0
 
     # Prepare recording of stimulus presentation, if requested
     #      
@@ -94,6 +94,7 @@ class Presenter:
 
     self.nFrTotal     = 0
     self.tFrRel_s     = 0.0
+    self.tFrRelOff_s  = 0.0
     self.avFrDur_s    = 0.0
     self.nRendTotal   = 0
     self.avPresDur_s  = 0.0
@@ -130,9 +131,6 @@ class Presenter:
     self.VideoList    = []    # list, video class objects
     self.VideoCtrlList= []    # list, video control class objects
     
-    '''
-    self.markerVert   = drw.marker2vert(self.Stage, self.Conf)
-    '''
     self.markerVert, self.antiMarkerVert = drw.marker2vert(self.Stage, self.Conf)
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -360,7 +358,8 @@ class Presenter:
               x       = ObjPosXY[iObj][0] +self.Stage.dxScr
               y       = ObjPosXY[iObj][1] +self.Stage.dyScr
               a_rad   = (ObjRot[iObj]+90.0)*np.pi/180.0
-              self.Batch.set_shader_time(ObjID, self.tFrRel_s)
+              self.tFrRelOff_s = self.tFrRel_s
+              self.Batch.set_shader_time(ObjID, 0.0)
               self.Batch.set_shader_parameters(ObjID, [x,y], a_rad, shPar)
               
             else:
@@ -415,21 +414,21 @@ class Presenter:
           # Not first frame of a new scene, just update the shader
           # parameters, if any, ...
           #
-          self.Batch.set_shader_time_all(self.tFrRel_s)
+          self.Batch.set_shader_time_all(self.tFrRel_s -self.tFrRelOff_s)
 
         # Indicate that the batch needs to be drawn
         #
         drawn = False
 
 
-    if (_nSc > 0) and (not(drawn)\
+    if (_nSc > 0) and (not drawn\
        or (len(self.MovieCtrlList) > 0) or (len(self.VideoCtrlList) > 0)):
       # Keep movie control objects updated: Advance or kill, if finished
       #
       iMC = 0
       while iMC < len(self.MovieCtrlList):
         mCtOb, iScWhenStarted, iFrWhenStarted, ID = self.MovieCtrlList[iMC]
-        if (iScWhenStarted == _iSc):
+        if iScWhenStarted == _iSc:
           # Don't start playing the movie if we are still in the no-duration
           # scene that started the movie
           #
@@ -556,14 +555,14 @@ class Presenter:
 
     # Render scene
     #
-    while (self.isNextSce and not(self.isEnd)):
+    while self.isNextSce and not self.isEnd:
       # Load next scene ...
       #
-      if not(self.isFirstSce):
+      if not self.isFirstSce:
         # Increase scene index and check for end of stimulus ...
         #
         self.iSc        += 1
-        self.isEnd      = (self.iSc >= len(self.Stim.SceList))
+        self.isEnd      = self.iSc >= len(self.Stim.SceList)
         if self.isEnd:
           break
 
@@ -613,7 +612,7 @@ class Presenter:
       # TODO: first read port to be able to set/clear only the needed pin
       # ************
       isMaskChanged     = False
-      if self.IO != None:
+      if self.IO is not None:
         if self.Stim.cScMarkList[self.iSc] > 0:
           # ...
           maskMark            = self.IO_maskMark
@@ -689,10 +688,10 @@ class Presenter:
   def run(self):
     # Runs the OpenGL/pyglet event loop, thereby any loaded stimulus
     #
-    if not(self.isReady):
+    if not self.isReady:
       return
       
-    if self.Stim == None:
+    if self.Stim is None:
       ssp.Log.write("ok", "Ready.")
       return
 
@@ -717,7 +716,7 @@ class Presenter:
   def finish(self):
     # Finish presentation
     #
-    if not(self.isReady):
+    if not self.isReady:
       return
       
     if self.isUserAbort:
@@ -744,7 +743,7 @@ class Presenter:
                     .format(self.avPresDur_s*1000.0))
 
       if glo.QDSpy_frRateStatsBufferLen > 0:
-        if not(self.dataDtFrOver):
+        if not self.dataDtFrOver:
           data = self.dataDtFr[:self.dataDtFrLen]
         else:
           data = self.dataDtFr
@@ -799,24 +798,24 @@ class Presenter:
     self.Stim    = _Stim
     self.isReady = True
 
-    if _Sync != None:
+    if _Sync is not None:
       self.isRunFromGUI = True
       self.Sync         = _Sync
 
-    if self.Stim == None:
+    if self.Stim is None:
       self.isReady = False
       
     else:  
       # Setup digital I/O, if used
       # 
-      if self.IO !=  None:
+      if self.IO is not  None:
         self.IO_portOut   = self.IO.getPortFromStr(self.Conf.DIOportOut)
         self.IO_maskMark  = 0x01 << self.Conf.DIOpinMarker
       
       # Load and generate shader(s), if any
       #
       self.ShProgList    = []
-      if not(glo.QDSpy_loadShadersOnce):
+      if not glo.QDSpy_loadShadersOnce:
         self.ShManager   = csh.ShaderManager(self.Conf)
         
       if len(self.Stim.ShList) > 0:
@@ -826,7 +825,7 @@ class Presenter:
             # Create shader program
             #
             shader = self.ShManager.createShader(shType)
-            if shader != None:
+            if shader is not None:
               self.ShProgList.append(shader)
             else:  
               self.isReady = False

@@ -16,7 +16,7 @@ All rights reserved.
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-import sys
+import sys, os
 import argparse
 import configparser
 import QDSpy_stage as stg
@@ -38,6 +38,7 @@ class Config:
     #
     self.isWindows = (sys.platform =='win32')
     self.pyVersion = sys.version_info[0] +sys.version_info[1]/10
+    self.iniPath   = os.getcwd() + "\\" +glo.QDSpy_iniFileName
 
     # Set configuration default values
     #
@@ -85,7 +86,7 @@ class Config:
     self.guiTimeOut        = glo.QDSpy_guiTimeOut
     
     try:
-      self.conf.readfp(open(glo.QDSpy_iniFileName))
+      self.conf.readfp(open(self.iniPath))
   
       self.incPP        = self.getParam("Timing",  
                                         "bool_incr_process_prior",
@@ -374,7 +375,7 @@ class Config:
       self.conf.set("Tweaking","bool_allow_camera",         
                     glo.QDSpy_allowCam)
 
-      with open(glo.QDSpy_iniFileName, 'w') as confFile:
+      with open(self.iniPath, 'w') as confFile:
         self.conf.write(confFile)
 
     self.isLoaded   = True
@@ -383,7 +384,7 @@ class Config:
   def save(self):
     # Safe configuration file
     #
-    with open(glo.QDSpy_iniFileName, 'w') as confFile:
+    with open(self.iniPath, 'w') as confFile:
       self.conf.write(confFile)
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -189,7 +189,7 @@ folder</string>
       <property name="geometry">
        <rect>
         <x>2</x>
-        <y>8</y>
+        <y>4</y>
         <width>361</width>
         <height>89</height>
        </rect>
@@ -462,7 +462,7 @@ folder</string>
       <property name="geometry">
        <rect>
         <x>2</x>
-        <y>104</y>
+        <y>100</y>
         <width>361</width>
         <height>105</height>
        </rect>
@@ -816,513 +816,583 @@ screen</string>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
-      <string>LEDs</string>
+      <string>LightCrafter(s)</string>
      </attribute>
-     <widget class="QGroupBox" name="groupBoxStimInfo_3">
+     <widget class="QPushButton" name="btnLCrInfo0">
       <property name="geometry">
        <rect>
-        <x>2</x>
-        <y>8</y>
-        <width>361</width>
-        <height>201</height>
+        <x>10</x>
+        <y>66</y>
+        <width>80</width>
+        <height>36</height>
        </rect>
       </property>
-      <property name="title">
-       <string>LED control</string>
+      <property name="text">
+       <string>Print info</string>
       </property>
-      <widget class="QLabel" name="label_LED2">
-       <property name="geometry">
-        <rect>
-         <x>128</x>
-         <y>31</y>
-         <width>105</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="autoFillBackground">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignHCenter|Qt::AlignTop</set>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="spinBoxLED4">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>116</y>
-         <width>60</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="suffix">
-        <string/>
-       </property>
-       <property name="maximum">
-        <number>255</number>
-       </property>
-       <property name="singleStep">
-        <number>5</number>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_LED3">
-       <property name="geometry">
-        <rect>
-         <x>246</x>
-         <y>31</y>
-         <width>105</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="autoFillBackground">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignHCenter|Qt::AlignTop</set>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_LED4">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>97</y>
-         <width>105</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="autoFillBackground">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignHCenter|Qt::AlignTop</set>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="spinBoxLED3">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>246</x>
-         <y>50</y>
-         <width>60</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="suffix">
-        <string/>
-       </property>
-       <property name="maximum">
-        <number>255</number>
-       </property>
-       <property name="singleStep">
-        <number>5</number>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="spinBoxLED1">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>50</y>
-         <width>60</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="suffix">
-        <string/>
-       </property>
-       <property name="maximum">
-        <number>255</number>
-       </property>
-       <property name="singleStep">
-        <number>5</number>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_LED1">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>31</y>
-         <width>105</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="autoFillBackground">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignHCenter|Qt::AlignTop</set>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="spinBoxLED2">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>128</x>
-         <y>50</y>
-         <width>60</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="suffix">
-        <string/>
-       </property>
-       <property name="maximum">
-        <number>255</number>
-       </property>
-       <property name="singleStep">
-        <number>5</number>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButtonLED1">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>74</x>
-         <y>50</y>
-         <width>45</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButtonLED2">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>192</x>
-         <y>50</y>
-         <width>45</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButtonLED3">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>310</x>
-         <y>50</y>
-         <width>45</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButtonLED4">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>74</x>
-         <y>116</y>
-         <width>45</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="btnToggleSeqControl">
-       <property name="geometry">
-        <rect>
-         <x>261</x>
-         <y>156</y>
-         <width>96</width>
-         <height>36</height>
-        </rect>
-       </property>
-       <property name="autoFillBackground">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Seq control:
+     </widget>
+     <widget class="QPushButton" name="btnLCrInfo1">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>174</y>
+        <width>80</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Print info</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnToggleSeqControl0">
+      <property name="geometry">
+       <rect>
+        <x>198</x>
+        <y>66</y>
+        <width>80</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Seq control:
 enabled</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButtonLED5">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>192</x>
-         <y>116</y>
-         <width>45</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_LED5">
-       <property name="geometry">
-        <rect>
-         <x>128</x>
-         <y>97</y>
-         <width>105</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="autoFillBackground">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignHCenter|Qt::AlignTop</set>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="spinBoxLED5">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>128</x>
-         <y>116</y>
-         <width>60</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="suffix">
-        <string/>
-       </property>
-       <property name="maximum">
-        <number>255</number>
-       </property>
-       <property name="singleStep">
-        <number>5</number>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="spinBoxLED6">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>246</x>
-         <y>116</y>
-         <width>60</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="suffix">
-        <string/>
-       </property>
-       <property name="maximum">
-        <number>255</number>
-       </property>
-       <property name="singleStep">
-        <number>5</number>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_LED6">
-       <property name="geometry">
-        <rect>
-         <x>246</x>
-         <y>97</y>
-         <width>105</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="autoFillBackground">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignHCenter|Qt::AlignTop</set>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButtonLED6">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>310</x>
-         <y>116</y>
-         <width>45</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_LCr1">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>82</y>
-         <width>249</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>lightcrafter #1</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_LCr0">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>16</y>
-         <width>249</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>lightcrafter #0</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-       </property>
-      </widget>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnLCrStartStop0">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>66</y>
+        <width>80</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Pattern seq:
+n/a</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QPushButton" name="btnSetLEDCurrents">
       <property name="geometry">
        <rect>
         <x>264</x>
-        <y>212</y>
+        <y>218</y>
         <width>96</width>
         <height>24</height>
        </rect>
       </property>
       <property name="text">
        <string>Set LED currents</string>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBoxLED5">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>129</x>
+        <y>146</y>
+        <width>60</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="suffix">
+       <string/>
+      </property>
+      <property name="maximum">
+       <number>255</number>
+      </property>
+      <property name="singleStep">
+       <number>5</number>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBoxLED3">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>247</x>
+        <y>38</y>
+        <width>60</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="suffix">
+       <string/>
+      </property>
+      <property name="maximum">
+       <number>255</number>
+      </property>
+      <property name="singleStep">
+       <number>5</number>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBoxLED6">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>247</x>
+        <y>146</y>
+        <width>60</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="suffix">
+       <string/>
+      </property>
+      <property name="maximum">
+       <number>255</number>
+      </property>
+      <property name="singleStep">
+       <number>5</number>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonLED2">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>193</x>
+        <y>38</y>
+        <width>45</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>n/a</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonLED5">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>193</x>
+        <y>146</y>
+        <width>45</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>n/a</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_LED5">
+      <property name="geometry">
+       <rect>
+        <x>129</x>
+        <y>127</y>
+        <width>105</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>n/a</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_LED1">
+      <property name="geometry">
+       <rect>
+        <x>11</x>
+        <y>19</y>
+        <width>105</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>n/a</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonLED3">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>311</x>
+        <y>38</y>
+        <width>45</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>n/a</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_LED4">
+      <property name="geometry">
+       <rect>
+        <x>11</x>
+        <y>127</y>
+        <width>105</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>n/a</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_LED3">
+      <property name="geometry">
+       <rect>
+        <x>247</x>
+        <y>19</y>
+        <width>105</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>n/a</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonLED4">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>75</x>
+        <y>146</y>
+        <width>45</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>n/a</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_LED6">
+      <property name="geometry">
+       <rect>
+        <x>247</x>
+        <y>127</y>
+        <width>105</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>n/a</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBoxLED1">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>11</x>
+        <y>38</y>
+        <width>60</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="suffix">
+       <string/>
+      </property>
+      <property name="maximum">
+       <number>255</number>
+      </property>
+      <property name="singleStep">
+       <number>5</number>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonLED6">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>311</x>
+        <y>146</y>
+        <width>45</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>n/a</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonLED1">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>75</x>
+        <y>38</y>
+        <width>45</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>n/a</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_LED2">
+      <property name="geometry">
+       <rect>
+        <x>129</x>
+        <y>19</y>
+        <width>105</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>n/a</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBoxLED2">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>129</x>
+        <y>38</y>
+        <width>60</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="suffix">
+       <string/>
+      </property>
+      <property name="maximum">
+       <number>255</number>
+      </property>
+      <property name="singleStep">
+       <number>5</number>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBoxLED4">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>11</x>
+        <y>146</y>
+        <width>60</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="suffix">
+       <string/>
+      </property>
+      <property name="maximum">
+       <number>255</number>
+      </property>
+      <property name="singleStep">
+       <number>5</number>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnToggleSeqControl1">
+      <property name="geometry">
+       <rect>
+        <x>198</x>
+        <y>174</y>
+        <width>80</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Seq control:
+enabled</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnLCrStartStop1">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>174</y>
+        <width>80</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Pattern seq:
+n/a</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBoxStimInfo_8">
+      <property name="geometry">
+       <rect>
+        <x>2</x>
+        <y>4</y>
+        <width>361</width>
+        <height>105</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>LightCrafter #0</string>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBoxStimInfo_9">
+      <property name="geometry">
+       <rect>
+        <x>2</x>
+        <y>112</y>
+        <width>361</width>
+        <height>105</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>LightCrafter #1</string>
       </property>
      </widget>
     </widget>
@@ -1334,7 +1404,7 @@ enabled</string>
       <property name="geometry">
        <rect>
         <x>2</x>
-        <y>8</y>
+        <y>4</y>
         <width>361</width>
         <height>65</height>
        </rect>
@@ -1370,7 +1440,7 @@ enabled</string>
       <property name="geometry">
        <rect>
         <x>2</x>
-        <y>76</y>
+        <y>72</y>
         <width>361</width>
         <height>73</height>
        </rect>
