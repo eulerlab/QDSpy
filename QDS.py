@@ -76,8 +76,12 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   try:
     tLastUpt_pick = datetime.fromtimestamp(os.path.getmtime(fNameDir_pk))
     if tLastUpt_pick > tLastUpt_py and not args.compile:
+      # ***********
+      # CHECK
+      # ***********
       #pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[1]
       pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[0]
+      # ***********
       if len(pythonPath) > 0:
         pythonPath += "\\"
       ssp.Log.write("INFO", "Script has not changed, running stimulus now ...")

@@ -63,9 +63,10 @@ class Renderer:
     #
     # Determine some system properties
     #
+    self.pygletVer = float(pyglet.version[0:3])
     if PYGLET_VER < 1.4:
       platform = pyglet.window.get_platform()
-      display = platform.get_default_display()
+      display  = platform.get_default_display()
     else:
       display = pyglet.canvas.get_display()
     self.Screens  = display.get_screens()
