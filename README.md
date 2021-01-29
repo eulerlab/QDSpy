@@ -6,6 +6,42 @@ This is a software for generating and presenting stimuli for visual neuroscience
 *Note, this is still a beta version.*
 *For disclaimer, see [here](http://qdspy.eulerlab.de/disclaimer.html#disclaimer-of-warranty).*
 
+### New quick(er) installation - beta
+
+This assumes that you are using a fairly recent Anaconda distribution. The advantage of this installation procedure is that it uses a virtual (conda) environment and therefore does not touch your current Python installation.
+
+1. Clone the branch of choice to a new location on your drive:
+   ```    
+   git clone https://github.com/eulerlab/QDSpy.git
+   ```
+   or
+   ```
+   git clone -b experimental https://github.com/eulerlab/QDSpy.git
+   ```
+2. Change into that folder and create a new conda environment:
+   ```
+   cd qdspy
+   conda create -n qdspy python=3.7
+   ```
+   To check if successful, run:
+   ```
+   conda env list
+   ```
+3. Activating this conda environment under Windows does not always work reliably. Therefore, run the "conda prompt" 
+   from your start menu and then go there back into your QDSpy folder.
+4. In the conda prompt window, activate the conda environment and install there the packages QDSpy needs:
+   ```
+   conda activate qdspy
+   pip install -r requirements.txt
+   ```
+
+To remove the conda environment and start over, run:
+```
+conda deactivate
+conda env remove -n qdspy
+```
+
+
 ### Documentation
 
 For documentation, see [here](http://qdspy.eulerlab.de).  
