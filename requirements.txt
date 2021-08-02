@@ -1,7 +1,7 @@
 pyqt5
 numpy
 pywin32
-pyglet==1.4.8
+pyglet==1.4.10
 moviepy
 psutil
 pyserial
