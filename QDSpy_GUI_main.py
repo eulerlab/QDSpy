@@ -3,8 +3,10 @@
 """
 QDSpy module - main program of the GUI version of QDSpy
 
-Copyright (c) 2013-2019 Thomas Euler
+Copyright (c) 2013-2021 Thomas Euler
 All rights reserved.
+
+2021-10-15 - Adapt to LINUX
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -15,7 +17,6 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import sys
 import time
 import pickle
-from   ctypes import windll
 from   PyQt5 import uic
 from   PyQt5.QtWidgets import QMessageBox, QMainWindow, QLabel, QApplication
 from   PyQt5.QtWidgets import QFileDialog, QListWidgetItem, QWidget
@@ -35,6 +36,9 @@ import QDSpy_core_support as csp
 
 if csp.module_exists("cv2"):
   import Devices.camera as cam
+
+if PLATFORM_WINDOWS := (sys.platform == "win32"):
+  from ctypes import windll
 
 # ---------------------------------------------------------------------
 form_class           = uic.loadUiType("QDSpy_GUI_main.ui")[0]
@@ -1101,13 +1105,13 @@ class MainWinClass(QMainWindow, form_class):
 # _____________________________________________________________________
 if __name__ == "__main__":
   # Create GUI
-  #
   QDSApp = QApplication(sys.argv)
   QDSWin = MainWinClass(None)
 
-  # Make sure that Windows uses its icon in the task bar
-  #
-  windll.shell32.SetCurrentProcessExplicitAppUserModelID(glo.QDSpy_appID)
+
+  if PLATFORM_WINDOWS:
+    # Make sure that Windows uses its icon in the task bar
+    windll.shell32.SetCurrentProcessExplicitAppUserModelID(glo.QDSpy_appID)
 
   # Show window and start GUI handler
   #
