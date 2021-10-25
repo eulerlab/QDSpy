@@ -18,7 +18,8 @@ import QDSpy_global       as glo
 import QDSpy_stim_support as ssp
 import QDSpy_stim         as stm
 
-if PLATFORM_WINDOWS := (sys.platform == "win32"):
+PLATFORM_WINDOWS = sys.platform == "win32"
+if PLATFORM_WINDOWS:
   from ctypes             import windll
   from ctypes.wintypes    import LPCVOID
 
