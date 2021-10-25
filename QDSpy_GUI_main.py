@@ -37,7 +37,8 @@ import QDSpy_core_support as csp
 if csp.module_exists("cv2"):
   import Devices.camera as cam
 
-if PLATFORM_WINDOWS := (sys.platform == "win32"):
+PLATFORM_WINDOWS = sys.platform == "win32"
+if PLATFORM_WINDOWS:
   from ctypes import windll
 
 # ---------------------------------------------------------------------
