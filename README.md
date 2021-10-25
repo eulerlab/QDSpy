@@ -41,6 +41,29 @@ conda deactivate
 conda env remove -n qdspy
 ```
 
+### Some notes for installation under Linux - very beta!
+
+`hidapi`:
+```
+sudo apt-get install python-dev libusb-1.0-0-dev libudev-dev 
+sudo pip install --upgrade setuptools 
+sudo pip install hidapi
+```
+Download the respective wheel file from [pypi.org](https://pypi.org/project/hidapi/#files) and extract it into `.../QDSpy/Devices`.
+
+Other requirements:
+``` 
+pip install pyglet==1.4.10 
+sudo pip install moviepy psutil pyserial numpy
+```
+Qt GUI:
+```
+sudo pip install pyqt5 
+```
+Troubleshooting: if: "qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found." try 
+```
+sudo apt install libxcb-xinerama0
+```
 
 ### Documentation
 
@@ -48,6 +71,10 @@ For documentation, see [here](http://qdspy.eulerlab.de).
 To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#installation).
 
 ### Release notes
+
+#### 0.80beta - experimental branch
+
+* Started to enable QDSpy running under Linux (work in progress)
 
 #### 0.78beta - experimental branch
 
