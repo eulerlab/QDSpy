@@ -207,7 +207,7 @@ class View:
   def prepareGrabStim(self):
     # Prepare grabbing the stimulus window
     #
-    self.Renderer.prepare_record_win(0)
+    self.Renderer.prepare_grabbing_win(0)
     ssp.Log.write("DEBUG", "Not implemented: Renderer.prepare_record_win")
 
   def grabStimFrame(self):
