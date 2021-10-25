@@ -59,6 +59,7 @@ sudo apt install libhidapi-hidraw0
 sudo apt install libhidapi-libusb0
 sudo pip3 install hidapi hid
 ```
+pip3 install --ugrade numpy
 
 Other requirements:
 ```
