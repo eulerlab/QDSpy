@@ -8,18 +8,24 @@ of the LCr.
 
 Note that this library requires firmware 3.0 and higher
 
-Copyright (c) 2013-2019 Thomas Euler
+Copyright (c) 2013-2021 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
 __author__ = "thomas.euler@eulerlab.de"
 
 # ---------------------------------------------------------------------
+import sys
 import time
 import numpy as np
-import Devices.hid as hid
 from enum import Enum
 from typing import List, Any
+
+PLATFORM_WINDOWS = sys.platform == "win32"
+if PLATFORM_WINDOWS:
+  import Devices.hid as hid
+else:
+  import hid
 
 # ---------------------------------------------------------------------
 LC_width         = 912
@@ -380,11 +386,11 @@ def enumerateLightcrafters(_funcLog=None):
     if ((dev["product_id"] == LC_PID) and (dev["vendor_id"] == LC_VID) and
         (dev["usage"] == LC_Usage)):
       if _funcLog:
-        _funcLog("ok", "Found lightcrafter device #{0}".format(iDev), 2)     
-        _funcLog(" ",  "Device path=`{0}`".format(dev["path"]), 2)     
+        _funcLog("ok", "Found lightcrafter device #{0}".format(iDev), 2)
+        _funcLog(" ",  "Device path=`{0}`".format(dev["path"]), 2)
       LCrList.append((iDev, dev["path"]))
       nLCrFound += 1
-  return LCrList    
+  return LCrList
 
 # ---------------------------------------------------------------------
 # Class representing a lightcrafter device
@@ -404,7 +410,7 @@ class Lightcrafter:
   """
   def __init__(self, _isCheckOnly=False, _funcLog=None, _logLevel=2):
     global LCrDeviceList
-    
+
     self.LC          = None
     self.nSeq        = 0
     self.isCheckOnly = _isCheckOnly
@@ -415,10 +421,10 @@ class Lightcrafter:
     self.mBoxState   = MailboxCmd.Close
     if _isCheckOnly:
       return
-    
-    if not("LCrDeviceList" in globals()) or (len(LCrDeviceList) == 0): 
+
+    if not("LCrDeviceList" in globals()) or (len(LCrDeviceList) == 0):
       LCrDeviceList  = enumerateLightcrafters(_funcLog)
-     
+
   # -------------------------------------------------------------------
   # Connect and disconnect the device
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -435,14 +441,14 @@ class Lightcrafter:
     =============== ==================================================
     """
     global LCrDeviceList
-    
+
     if not self.isCheckOnly:
       try:
         if _devNum < 0:
           # Using the first device that is available
           #
           self.log(" ", "Trying to connect ...", 2)
-          
+
           self.LC = hid.device()
           self.LC.open(LC_VID, LC_PID)
           self.devNum = 0
@@ -465,13 +471,13 @@ class Lightcrafter:
               errC = ERROR.DEVICE_NOT_FOUND
             else:
               errC = ERROR.NO_DEVICES
-            self.log("ERROR", ErrorStr[errC], 0)                    
-            return [errC]  
+            self.log("ERROR", ErrorStr[errC], 0)
+            return [errC]
 
       except IOError as ex:
         self.LC = None
         errC    = ERROR.COULD_NOT_CONNECT
-        self.log("ERROR", ErrorStr[errC] +", Code '{0}'".format(ex), 0)      
+        self.log("ERROR", ErrorStr[errC] +", Code '{0}'".format(ex), 0)
         return [errC]
 
       self.LC.set_nonblocking(1)
@@ -482,7 +488,7 @@ class Lightcrafter:
       msg = "Connected to {0} by {1}".format(self.sProduct, self.sManufacturer)
       self.log("ok", msg, 2)
       if _devNum >= 0:
-        self.log(" ", "as device #{0}".format(self.devNum), 2)    
+        self.log(" ", "as device #{0}".format(self.devNum), 2)
 
     return [ERROR.OK]
 
@@ -522,9 +528,9 @@ class Lightcrafter:
       if self.LC is not None:
         self.LC.close()
         self.LC = None
-        self.log("ok", "Disconnected", 2)         
-        
-    return [ERROR.OK]    
+        self.log("ok", "Disconnected", 2)
+
+    return [ERROR.OK]
 
   # -------------------------------------------------------------------
   # Hardware and system status-related
@@ -532,20 +538,20 @@ class Lightcrafter:
   def getFirmwareVersion(self):
     """
     Get firmware version
-    
+
     =============== ==================================================
     Result:
     =============== ==================================================
     code            | 0=ok or error code
     data            | the original data byte(s) returned by the device
     info            | a dictionary with following entries:
-                    | applicationSoftwareRev, APISoftwareRevision, 
-                    | softwareConfigurationRevision, 
+                    | applicationSoftwareRev, APISoftwareRevision,
+                    | softwareConfigurationRevision,
                     | sequenceConfigurationRevision
     =============== ==================================================
     """
     if self.isCheckOnly:
-      return [ERROR.OK]      
+      return [ERROR.OK]
 
     res = self.readData(CMD_FORMAT_LIST.GET_VERSION)
     if res[0] == ERROR.OK:
@@ -554,9 +560,9 @@ class Lightcrafter:
       APIVer  = self.verListFromInt32(data, 4)
       confVer = self.verListFromInt32(data, 8)
       seqVer  = self.verListFromInt32(data, 12)
-      info    = {"applicationSoftwareRev": appVer, 
-                 "APISoftwareRevision": APIVer, 
-                 "softwareConfigurationRevision": confVer, 
+      info    = {"applicationSoftwareRev": appVer,
+                 "APISoftwareRevision": APIVer,
+                 "softwareConfigurationRevision": confVer,
                  "sequenceConfigurationRevision": seqVer}
       self.log(" ", (LC_logStrMaskR +"{1}.{2}.{3}")
                     .format("Firmware version",
@@ -564,25 +570,25 @@ class Lightcrafter:
       return [ERROR.OK, data, info]
     else:
       raise LCException(res[0])
-    
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getHardwareStatus(self):
     """
     Requests the device's hardware status and returns a list with up
     to three elements:
-     
+
     =============== ==================================================
     Result:
     =============== ==================================================
     code            | 0=ok or error code
     data            | the original data byte(s) returned by the device
     info            | a dictionary with following entries:
-                    | initOK, DMDError, swapError, seqAbort, 
+                    | initOK, DMDError, swapError, seqAbort,
                     | seqError
     =============== ==================================================
     """
     if self.isCheckOnly:
-      return [ERROR.OK]      
+      return [ERROR.OK]
 
     res    = self.readData(CMD_FORMAT_LIST.STATUS_HW)
     if res[0] == ERROR.OK:
@@ -599,8 +605,8 @@ class Lightcrafter:
                (LC_logStrMaskR +"{1} {2} {3} {4} {5}")
                .format("Hardware errors",
                        "-" if initOK else "init",
-                       "DMD" if DMDError else "-", 
-                       "swap" if swapError else "-", 
+                       "DMD" if DMDError else "-",
+                       "swap" if swapError else "-",
                        "seq_abort" if seqAbort else "-",
                        "sequence" if seqError else "-"), 1)
       return [ERROR.OK, data, info]
@@ -612,7 +618,7 @@ class Lightcrafter:
     """
     Requests the device's system status and returns a list with up
     to three elements:
-     
+
     =============== ==================================================
     Result:
     =============== ==================================================
@@ -623,8 +629,8 @@ class Lightcrafter:
     =============== ==================================================
     """
     if self.isCheckOnly:
-      return [ERROR.OK]      
-  
+      return [ERROR.OK]
+
     res    = self.readData(CMD_FORMAT_LIST.STATUS_SYS)
     if res[0] == ERROR.OK:
       data     = res[1][LC_firstDataByte]
@@ -643,19 +649,19 @@ class Lightcrafter:
     """
     Requests the device's main status and returns a list with up
     to three elements:
-     
+
     =============== ==================================================
     Result:
     =============== ==================================================
     code            | 0=ok or error code
     data            | the original data byte(s) returned by the device
     info            | a dictionary with following entry:
-                    | DMDParked, SeqRunning, FBufFrozen, 
+                    | DMDParked, SeqRunning, FBufFrozen,
                     | FBufFrozen, GammaEnab
     =============== ==================================================
     """
     if self.isCheckOnly:
-      return [ERROR.OK]      
+      return [ERROR.OK]
 
     res    = self.readData(CMD_FORMAT_LIST.STATUS_MAIN)
     if res[0] == ERROR.OK:
@@ -669,8 +675,8 @@ class Lightcrafter:
       self.log(" ", (LC_logStrMaskR +"{1} {2} {3} {4}")
                     .format("Hardware status",
                             "DMD_parked" if DMDParked else "DMD_active",
-                            "seq_running" if SeqRunning else "-", 
-                            "frame_buffer_frozen" if FBufFrozen else "-", 
+                            "seq_running" if SeqRunning else "-",
+                            "frame_buffer_frozen" if FBufFrozen else "-",
                             "gamma_on" if GammaEnab else "-"), _logLev)
       return [ERROR.OK, data, info]
     else:
@@ -681,7 +687,7 @@ class Lightcrafter:
     """
     Requests the status of the video signal received by the device and
     returns a list with up to three elements:
-     
+
     =============== ==================================================
     Result:
     =============== ==================================================
@@ -693,7 +699,7 @@ class Lightcrafter:
     =============== ==================================================
     """
     if self.isCheckOnly:
-      return [ERROR.OK]      
+      return [ERROR.OK]
 
     res    = self.readData(CMD_FORMAT_LIST.VIDEO_SIG_DETECT)
     if res[0] == ERROR.OK:
@@ -741,7 +747,7 @@ class Lightcrafter:
   def softwareReset(self):
     """
     Signal the device to do a software reset. This will take a couple
-    of seconds. After the reset the device is disconnected. 
+    of seconds. After the reset the device is disconnected.
     """
     errC = ERROR.OK
     s0   = self.softwareReset.__name__
@@ -764,11 +770,11 @@ class Lightcrafter:
     """
     Defines the input source of the device. Use enum classes `SourceSel`
     and `SourcePar` for `_source` and `_bitDepth`, respectively.
-     
+
     =============== ==================================================
     Parameters:
     =============== ==================================================
-    _source         | 0=parallel interface (PP), 
+    _source         | 0=parallel interface (PP),
                     | 1=internal test pattern,
                     | 2=Flash
                     | 3=FPD-link
@@ -800,18 +806,18 @@ class Lightcrafter:
     """
     Sets the display mode of the device. Use enum class `DispMode` for
     `_mode`.
-     
+
     =============== ==================================================
     Parameters:
     =============== ==================================================
-    _mode           | 0=video display mode, 
+    _mode           | 0=video display mode,
                     | Assumes streaming video image from the
-                    | 30-bit RGB or FPD-link interface with a 
+                    | 30-bit RGB or FPD-link interface with a
                     | pixel resolution of up to 1280 × 800 up
-                    | to 120 Hz. 
+                    | to 120 Hz.
                     | 1=Pattern display mode
-                    | Assumes a 1-bit through 8-bit image with 
-                    | a pixel resolution of 912 × 1140 and 
+                    | Assumes a 1-bit through 8-bit image with
+                    | a pixel resolution of 912 × 1140 and
                     | bypasses all the image processing functions
                     | of the DLPC350.
     =============== ==================================================
@@ -837,9 +843,9 @@ class Lightcrafter:
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def validateDataCommandResponse(self):
     """
-    The Validate Data command checks the programmed pattern display modes 
+    The Validate Data command checks the programmed pattern display modes
     and indicates any invalid settings.
-     
+
     =============== ==================================================
     Result:
     =============== ==================================================
@@ -922,7 +928,7 @@ class Lightcrafter:
                     | sequence
                     | 1=internally or externally generated triggers
                     | (TRIG_IN_1 and TRIG_IN_2)
-                    | 2=TRIG_IN_1 alternates between two patterns, 
+                    | 2=TRIG_IN_1 alternates between two patterns,
                     | while TRIG_IN_2 advances to next pair of
                     | patterns
                     | 3=internally or externally generated triggers
@@ -954,11 +960,11 @@ class Lightcrafter:
     """
     Sets the Pattern Data Input Source. Use enum class `SourcePat` for
     `_src`.
-    
+
     .. important:: Before executing this command, stop current pattern
                    sequence and after execution of this command,
                    validate before starting sequence.
-    
+
     =============== ==================================================
     Parameters:
     =============== ==================================================
@@ -1012,7 +1018,7 @@ class Lightcrafter:
   def pausePatternSequence(self):
     """
     Pauses the programmed pattern sequence.
-    
+
     .. important:: After executing this command, poll the system status.    """
     s0 = self.pausePatternSequence.__name__
     return self.__patternSequence(s0, PatSeqCmd.Pause)
@@ -1020,7 +1026,7 @@ class Lightcrafter:
   def stopPatternSequence(self):
     """
     Stop the programmed pattern sequence.
-    
+
     .. important:: After executing this command, poll the system status.
     """
     s0 = self.stopPatternSequence.__name__
@@ -1028,15 +1034,15 @@ class Lightcrafter:
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setPatternExpTimeFrPer(self, _pet_us, _frp_us):
-    """ 
+    """
     Set Pattern Exposure Time and Frame Period.
-    
+
     The pattern exposure time (`_pet_us`) and frame period (`_frp_us`)
     dictates the length of time a pattern is exposed and the frame
     period.
 
     Either `_pet_us` == `_frp_us`, or `_pet_us` < (`_frp_us` -230 μs).
-    
+
     .. important:: Before executing this command, stop current pattern
                    sequence and after execution of this command,
                    validate before starting sequence.
@@ -1336,7 +1342,7 @@ class Lightcrafter:
       return [ERROR.INVALID_PARAMS]
 
     if self.isCheckOnly:
-      return [ERROR.OK]      
+      return [ERROR.OK]
 
     self.log(" ", "setVideoGamma", 2)
     data  = (_mode & (_enabled << 7))
@@ -1348,12 +1354,12 @@ class Lightcrafter:
       raise LCException(res[0])
   '''
   # -------------------------------------------------------------------
-  # Internal test pattern-related       
+  # Internal test pattern-related
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setTestPattern(self, _pattern):
-    """ 
+    """
     Set test pattern (video mode).
-     
+
     =============== ==================================================
     Parameters:
     =============== ==================================================
@@ -1389,12 +1395,12 @@ class Lightcrafter:
       raise LCException(errC)
 
   # -------------------------------------------------------------------
-  # LED-related      
+  # LED-related
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getLEDCurrents(self):
-    """ 
+    """
     Get LED currents and returns these as list [code, [r,g,b]] with:
-   
+
     =============== ==================================================
     Result:
     =============== ==================================================
@@ -1422,9 +1428,9 @@ class Lightcrafter:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setLEDCurrents(self, _rgb):
-    """ 
+    """
     Set LED currents.
-    
+
     =============== ==================================================
     Parameters:
     =============== ==================================================
@@ -1449,7 +1455,7 @@ class Lightcrafter:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getLEDEnabled(self):
-    """ 
+    """
     Returns state of LED pins (enabled/disabled) and if the sequence
     controls these pins as list [code, [isR,isG,isB], isSeqCtrl]]
     with:
@@ -1490,9 +1496,9 @@ class Lightcrafter:
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setLEDEnabled(self, _rgb, _enableSeqCtrl):
-    """ 
+    """
     Enable or disable LEDs or allow sequencer to control LED pins
-    
+
     =============== ==================================================
     Parameters:
     =============== ==================================================
@@ -1569,7 +1575,7 @@ class Lightcrafter:
         length = res[2]
         if ((flags & 0x20) > 0) or (length == 0):
           return [ERROR.NAK_ERROR]
-    
+
     return [ERROR.OK]
 
   # -------------------------------------------------------------------
@@ -1578,7 +1584,7 @@ class Lightcrafter:
   @staticmethod
   def verListFromInt32 (data, i):
     ver = (data[i+3] << 24) | (data[i+2] << 16) | (data[i+1] << 8) | data[i]
-    return [(ver & 0xFF000000) >> 24, (ver & 0xFF0000) >> 16, ver & 0xFFFF]        
+    return [(ver & 0xFF000000) >> 24, (ver & 0xFF0000) >> 16, ver & 0xFFFF]
 
   # -------------------------------------------------------------------
   # Logging

@@ -27,7 +27,7 @@ This assumes that you are using a fairly recent Anaconda distribution. The advan
    ```
    conda env list
    ```
-3. Activating this conda environment under Windows does not always work reliably. Therefore, run the "conda prompt" 
+3. Activating this conda environment under Windows does not always work reliably. Therefore, run the "conda prompt"
    from your start menu and then go there back into your QDSpy folder.
 4. In the conda prompt window, activate the conda environment and install there the packages QDSpy needs:
    ```
@@ -43,24 +43,35 @@ conda env remove -n qdspy
 
 ### Some notes for installation under Linux - very beta!
 
-`hidapi`:
+If running Raspberry Pi OS (standard Linux) on a RPi, use `pip3`.
+
+`hidapi` (e.g. Ubuntu):
 ```
-sudo apt-get install python-dev libusb-1.0-0-dev libudev-dev 
-sudo pip install --upgrade setuptools 
+sudo apt-get install python-dev libusb-1.0-0-dev libudev-dev
+sudo pip install --upgrade setuptools
 sudo pip install hidapi
 ```
 Download the respective wheel file from [pypi.org](https://pypi.org/project/hidapi/#files) and extract it into `.../QDSpy/Devices`.
 
+`hidapi` (Raspberry Pi OS):
+```
+sudo apt install libhidapi-hidraw0
+sudo apt install libhidapi-libusb0
+sudo pip3 install hidapi hid
+```
+
 Other requirements:
-``` 
-pip install pyglet==1.4.10 
+```
+pip install pyglet==1.4.10
+sudo apt-get install python-opengl
+pip install pyopengl
 sudo pip install moviepy psutil pyserial numpy
 ```
 Qt GUI:
 ```
-sudo pip install pyqt5 
+sudo pip install pyqt5
 ```
-Troubleshooting: if: "qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found." try 
+Troubleshooting: if: "qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found." try
 ```
 sudo apt install libxcb-xinerama0
 ```
@@ -85,19 +96,19 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   into the shell that runs QDSpy.
 * Two example "stimulus" scripts added: ``__toGB_8bit_patternMode.py`` switches lightcrafter
   #0 to pattern mode, whereas ``__toVideoMode.py`` switches lightcrafter #0 back to video
-  mode. For details on scripts, see [`documentation`](http://qdspy.eulerlab.de/lightcrafter.html). 
-  Note when running these scripts from the QDSpy GUI, it will complain that it cannot compile 
-  the scripts. This is because these scripts do not contain any stimulus instructions; the python 
+  mode. For details on scripts, see [`documentation`](http://qdspy.eulerlab.de/lightcrafter.html).
+  Note when running these scripts from the QDSpy GUI, it will complain that it cannot compile
+  the scripts. This is because these scripts do not contain any stimulus instructions; the python
   code that configures the lightcrafter is just directly executed. Executing these scripts from QDSpy GUI is
   the same as running them from a shell.
 
 #### v0.77beta (August 2019)
 
-* `pyglet` 1.4 is out and there were some changes to the API. Now, QDSpy should be compatible to all `pyglet` 
+* `pyglet` 1.4 is out and there were some changes to the API. Now, QDSpy should be compatible to all `pyglet`
    versions (>= 1.3.x).
-* Bug fix: Maximal number of screens that can be selected for movie presentation was hard-coded; now it is defined 
+* Bug fix: Maximal number of screens that can be selected for movie presentation was hard-coded; now it is defined
   in `QDSpy_global.py` (thanks [Maxime Zimmermann](https://badenlab.org/members/#jp-carousel-1245)).
-* Possibility added to mirror the two screens separately in screen overlay mode, using additional ``QDSpy.ini`` 
+* Possibility added to mirror the two screens separately in screen overlay mode, using additional ``QDSpy.ini``
   parameters `bool_v_flip_screen1`, `bool_h_flip_screen1`, `bool_v_flip_screen2`, and `bool_h_flip_screen2`. When
   updating QDSpy, please follow the instructions about new ``QDSpy.ini`` parameters below.
 * Changes by [Tom Boissonnet](https://github.com/Tom-TBT) added:
@@ -108,16 +119,16 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 * Bug fix: In Python 3.7, terminating QDSpy -> `RuntimeError: dictionary changed size during iteration`; fixed.
 * Bug fix: Default values for Arduino user-defined buttons fixed.
 * Bug fix: Issue with loading gamma LUTs via `windll.gdi32.SetDeviceGammaRamp` fixed.
-* New digital I/O feature added: In addition to the marker pin, two user output pins can be now be defined in 
-  the ``QDSpy.ini`` file. These allow to control simple external TTL-compatible hardware from the GUI, which 
-  now contains two user buttons to switch the signals at the user pins. A simple example application is controlling 
+* New digital I/O feature added: In addition to the marker pin, two user output pins can be now be defined in
+  the ``QDSpy.ini`` file. These allow to control simple external TTL-compatible hardware from the GUI, which
+  now contains two user buttons to switch the signals at the user pins. A simple example application is controlling
   a drug puffing system. Note that this feature is not yet implemented for the Arduino as I/O device.
   See [`inifile`](http://qdspy.eulerlab.de/inifile.html) for details on the new parameters.
 * Changes by [Tom Boissonnet](https://github.com/Tom-TBT):
     * Bug fix in probing center feature.
-    * Parameters added to ``QDSpy.ini`` file: ``float_gui_time_out`` (in seconds), which deals with potential problems 
-      when loading very large stimuli; ``str_antimarkerrgba``, defining the colour of the "anti" marker, which "blanks" 
-      the marker area on the screen when the marker is not displayed. This prevents large stimuli from interacting with 
+    * Parameters added to ``QDSpy.ini`` file: ``float_gui_time_out`` (in seconds), which deals with potential problems
+      when loading very large stimuli; ``str_antimarkerrgba``, defining the colour of the "anti" marker, which "blanks"
+      the marker area on the screen when the marker is not displayed. This prevents large stimuli from interacting with
       the marker display.
 * **IMPORTANT**: The ``QDSpy.ini`` file contains new parameters, which need to be added to the existing ``QDSpy.ini`` file,
   otherwise QDSpy will crash. The easiest way to do so, is to rename the file to, for example, ``QDSpy.ini_COPY``. Then start
@@ -141,10 +152,10 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   a retinal ganglion cell. The probing mode can be left
   by either pressing the right mouse button (saving the position to the log),
   or by pressing "Abort" in the GUI.    
-* **IMPORTANT**: The ``QDSpy.ini`` file contains (a) new parameter(s), which need to be added to the existing 
+* **IMPORTANT**: The ``QDSpy.ini`` file contains (a) new parameter(s), which need to be added to the existing
   ``QDSpy.ini`` file, otherwise QDSpy will crash. The easiest way to do so, is to rename the file to, for example,
-  ``QDSpy.ini_COPY``. Then start QDSpy and let it generate a fresh configuration file. Open both the new file and 
-  your copy in parallel and change the parameters in the new file according to your previous settings. See see 
+  ``QDSpy.ini_COPY``. Then start QDSpy and let it generate a fresh configuration file. Open both the new file and
+  your copy in parallel and change the parameters in the new file according to your previous settings. See see
   :doc:`inifile` for further details on the new parameters.
 
 #### v0.75beta (April 2017)
