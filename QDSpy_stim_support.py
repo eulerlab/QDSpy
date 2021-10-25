@@ -36,7 +36,8 @@ import QDSpy_config as cfg
 import QDSpy_global as glo
 import QDSpy_stim as stm
 
-if PLATFORM_WINDOWS := (sys.platform == "win32"):
+PLATFORM_WINDOWS = sys.platform == "win32"
+if PLATFORM_WINDOWS:
   from ctypes import windll
   import Libraries.color_console as con
 else:
