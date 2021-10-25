@@ -1,0 +1,26 @@
+Metadata-Version: 2.1
+Name: hidapi
+Version: 0.10.1
+Summary: A Cython interface to the hidapi from https://github.com/libusb/hidapi
+Home-page: https://github.com/trezor/cython-hidapi
+Author: Gary Bishop
+Author-email: gb@cs.unc.edu
+Maintainer: Pavol Rusnak
+Maintainer-email: pavol@rusnak.io
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: License :: OSI Approved :: BSD License
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Requires-Dist: setuptools (>=19.0)
+
+UNKNOWN
+
+
