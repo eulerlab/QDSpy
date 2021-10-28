@@ -8,7 +8,7 @@ for visual neuroscience. It is based on QDS, currently uses OpenGL via
 pyglet for graphics. It primarly targets Windows, but may also run on
 other operating systems
 
-Copyright (c) 2013-2019 Thomas Euler
+Copyright (c) 2013-2021 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
