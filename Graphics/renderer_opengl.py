@@ -297,7 +297,7 @@ class Renderer:
     # **********************
     # TODO:
     # something like function(image, self.nFr), containing something like
-    '''
+
     colBuf    = self.bufMan.get_color_buffer()
     image     = colBuf.image_data.get_image_data()
     pil_image = Image.fromstring(image.format, (image.width, image.height),
@@ -305,7 +305,7 @@ class Renderer:
     pil_image = pil_image.transpose(Image.FLIP_TOP_BOTTOM)
     pil_image = pil_image.convert('RGB')
     pil_image.save("D:\SCRATCH\MOVIE\{0:06d}.png".format(self.nFrTotal), "PNG")
-    '''
+    
     # **********************
     # **********************
     pass
