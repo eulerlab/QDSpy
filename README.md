@@ -1,12 +1,12 @@
 
-## QDSpy v.80 beta
+# QDSpy v.80 beta
 
 This is a software for generating and presenting stimuli for visual neuroscience. It is based on QDS, developped in the former Dept. of Biomedical Optics at the MPI for Medical Research in Heidelberg. QDSpy is written in Python, uses OpenGL and primarly targets Windows 7 and above.
 
 *Note, this is still a beta version.*
 *For disclaimer, see [here](http://qdspy.eulerlab.de/disclaimer.html#disclaimer-of-warranty).*
 
-### New quick(er) installation - beta
+## New quick(er) installation - beta
 
 This assumes that you are using a fairly recent Anaconda distribution. The advantage of this installation procedure is that it uses a virtual (conda) environment and therefore does not touch your current Python installation.
 
@@ -41,7 +41,7 @@ conda deactivate
 conda env remove -n qdspy
 ```
 
-### Some notes for installation under Linux - very beta!
+## Some notes for installation under Linux - very beta!
 
 If running Raspberry Pi OS (standard Linux) on a RPi, use `pip3`.
 
@@ -77,19 +77,19 @@ Troubleshooting: if: "qt.qpa.plugin: Could not load the Qt platform plugin "xcb"
 sudo apt install libxcb-xinerama0
 ```
 
-### Documentation
+## Documentation
 
 For documentation, see [here](http://qdspy.eulerlab.de).  
-To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#installation).
+To jump to installation, see above or [here](http://qdspy.eulerlab.de/installation.html#installation).
 
-### Release notes
+## Release notes
 
-#### 0.80beta - experimental branch
+### 0.80beta - experimental branch
 
 * Started to enable QDSpy running under Linux (work in progress)
 * Added a [shader example](https://github.com/eulerlab/QDSpy/wiki/Aspect-ratio-of-shader-patterns) that shows how to deal with display aspect ratio
 
-#### 0.78beta - experimental branch
+### 0.78beta - experimental branch
 
 * Module ``Devices.lightcrafter`` now contains the essential API commands required to setup the pattern mode.
   For details and example scripts, see [`documentation`](http://qdspy.eulerlab.de/lightcrafter.html).
@@ -104,7 +104,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   code that configures the lightcrafter is just directly executed. Executing these scripts from QDSpy GUI is
   the same as running them from a shell.
 
-#### v0.77beta (August 2019)
+### v0.77beta (August 2019)
 
 * `pyglet` 1.4 is out and there were some changes to the API. Now, QDSpy should be compatible to all `pyglet`
    versions (>= 1.3.x).
@@ -139,7 +139,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   parameters.
 * Small bug fix in the GUI.
 
-#### v0.76beta
+### v0.76beta
 
 * 2017-08-13: Accelerated program start (i.e. on PCs with many cores) by simplifying communication between stimulation process
   and GUI, avoiding time-consuming sync manager and by communicating with integers instead of strings.
@@ -160,7 +160,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   your copy in parallel and change the parameters in the new file according to your previous settings. See see
   :doc:`inifile` for further details on the new parameters.
 
-#### v0.75beta (April 2017)
+### v0.75beta (April 2017)
 
 * Bug fix: Problems with "ghost images" when playing more than one movie or video were fixed. Now movie/video objects that are restarted before the previous run was finished are first automatically stopped and ended. Also, movies/videos were also forwarded for no-duration scenes (e.g. a change in object colour), which led to changes in the movie/video frame rate. This should now be fixed as well.
 * Bug fix: The first command in a loop was ignored; this is fixed now.
@@ -193,7 +193,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   * When starting QDSpy the stimulus screen may sometimes go white; as soon as
     the first stimulus is presented, the screen behaves normal.
 
-#### v0.74beta (March 2017)
+### v0.74beta (March 2017)
 
 * Added `hid.cp36-win_amd64.pyd` to ``.\Devices`` to enable ``hid`` under Python
   3.6 (comes with Anaconda version 4.3.x). This means that now QDSpy should
@@ -221,7 +221,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 * Documentation was updated and extended (including, for example, a detailed
   explanation of the parameters in ``QDSpy.ini``).
 
-#### v0.73beta (January - February 2017)
+### v0.73beta (January - February 2017)
 
 * Installation instructions extended (2016-12-20 and 2017-01-18).
 * Dependencies changed from Qt4 to Qt5. The background is that many packages,
@@ -242,13 +242,13 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   files in a subfolder of the default stimulus folder.
 
 
-#### v0.72 beta (August 2016)
+### v0.72 beta (August 2016)
 
 * Bug fix: GUI for adjusting LED currents now remains active after sending a
   change to the lighcrafter. "Refresh display info" button now works and LED
   status is updated after the automatic execution of ``__autorun.pickle``.
 
-#### v0.71 beta (July 2016)
+### v0.71 beta (July 2016)
 
 * **Videos (AVI containers) now work** except for the rotation parameter, which uses
   a corner instead of the centre. The commands are `DefObj_Video()`, `Start_Video()`
@@ -265,7 +265,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   * Duration of stimulus is shown.
   * Minor fixes.
 
-#### v0.70 beta (July 2016)
+### v0.70 beta (July 2016)
 
 * Now reports GLSL version
 * Fixed error when QDSpy GUI does not find a compiled `__autorun`.
@@ -322,7 +322,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   The default for the configuration file is now `bool_use_digitalio = False`.
 
 
-#### v0.6 beta (April 2016)
+### v0.6 beta (April 2016)
 
 * Bug fixes
 * Added `DefObj_Video()`, `Start_Video()` and `GetVideoParamters()` commands.
@@ -339,7 +339,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   frame of the sequence.
 
 
-#### v0.5 beta (December 2015)
+### v0.5 beta (December 2015)
 
 * Bug fixes
 * Documentation updated
@@ -352,7 +352,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   tags for the data analysis.
 
 
-#### v0.4 alpha (November 2015)
+### v0.4 alpha (November 2015)
 
 * Migrated to Python 3.4.3
 * Added GUI
@@ -363,11 +363,11 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
   ("SINE_WAVE_GRATING_MIX").
 
 
-#### v0.3 alpha (March 2015)
+### v0.3 alpha (March 2015)
 
 * Minor bug fixes
 * Fixed transparency of objects (works now)
 
-#### v0.2 alpha (before 2015)
+### v0.2 alpha (before 2015)
 
 * Basic functionality, proof of concept
