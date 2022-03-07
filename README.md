@@ -44,7 +44,7 @@ conda env remove -n qdspy
 ## Documentation
 
 For documentation, see [here](http://qdspy.eulerlab.de).  
-To jump to installation, see above or [here](http://qdspy.eulerlab.de/installation.html#installation).
+To jump to installation, see [above](https://github.com/eulerlab/QDSpy/tree/experimental#new-quicker-installation-windows---beta) or [here](http://qdspy.eulerlab.de/installation.html#installation).
 
 ## Release notes
 
