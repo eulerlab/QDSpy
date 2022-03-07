@@ -87,6 +87,7 @@ To jump to installation, see [here](http://qdspy.eulerlab.de/installation.html#i
 #### 0.80beta - experimental branch
 
 * Started to enable QDSpy running under Linux (work in progress)
+* Added a [shader example](https://github.com/eulerlab/QDSpy/wiki/Aspect-ratio-of-shader-patterns) that shows how to deal with display aspect ratio
 
 #### 0.78beta - experimental branch
 
