@@ -6,9 +6,9 @@ This is a software for generating and presenting stimuli for visual neuroscience
 *Note, this is still a beta version.*
 *For disclaimer, see [here](http://qdspy.eulerlab.de/disclaimer.html#disclaimer-of-warranty).*
 
-## New quick(er) installation - beta
+## New quick(er) installation (Windows) - beta
 
-This assumes that you are using a fairly recent Anaconda distribution. The advantage of this installation procedure is that it uses a virtual (conda) environment and therefore does not touch your current Python installation.
+This is for Windows only; for instructions how to experimentally (!) install QDSpy under Linux, see [here](). The following instructions assume that you are using a fairly recent Anaconda distribution. The advantage of this installation procedure is that it uses a virtual (conda) environment and therefore does not touch your current Python installation.
 
 1. Clone the branch of choice to a new location on your drive:
    ```    
@@ -39,42 +39,6 @@ To remove the conda environment and start over, run:
 ```
 conda deactivate
 conda env remove -n qdspy
-```
-
-## Some notes for installation under Linux - very beta!
-
-If running Raspberry Pi OS (standard Linux) on a RPi, use `pip3`.
-
-`hidapi` (e.g. Ubuntu):
-```
-sudo apt-get install python-dev libusb-1.0-0-dev libudev-dev
-sudo pip install --upgrade setuptools
-sudo pip install hidapi
-```
-Download the respective wheel file from [pypi.org](https://pypi.org/project/hidapi/#files) and extract it into `.../QDSpy/Devices`.
-
-`hidapi` (Raspberry Pi OS):
-```
-sudo apt install libhidapi-hidraw0
-sudo apt install libhidapi-libusb0
-sudo pip3 install hidapi hid
-```
-pip3 install --ugrade numpy
-
-Other requirements:
-```
-pip install pyglet==1.4.10
-sudo apt-get install python-opengl
-pip install pyopengl
-sudo pip install moviepy psutil pyserial numpy
-```
-Qt GUI:
-```
-sudo pip install pyqt5
-```
-Troubleshooting: if: "qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found." try
-```
-sudo apt install libxcb-xinerama0
 ```
 
 ## Documentation
