@@ -8,7 +8,7 @@ for visual neuroscience. It is based on QDS, currently uses OpenGL via
 pyglet for graphics. It primarly targets Windows, but may also run on
 other operating systems
 
-Copyright (c) 2013-2019 Thomas Euler
+Copyright (c) 2013-2021 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -68,6 +68,7 @@ def loadStimulus(_fNameStim, _Stim):
     ssp.Log.write("FATAL", "No stimulus file name provided")
     return False
   try:
+    print(_fNameStim)
     _Stim.load(_fNameStim)
     return True
   except:
@@ -177,6 +178,8 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     if _Conf.DIObrdType.upper() in ["ARDUINO"]:
       _IO  = dio.devIO_Arduino(_Conf.DIObrd, glo.QDSpy_Arduino_baud,
                                _funcLog=ssp.Log.write)
+      ssp.Log.write("WARNING", "Ensure that Arduino BAUD rate is {0}"
+                    .format(glo.QDSpy_Arduino_baud))
     else:
       try:
         ULID = dio.dictULDevices[_Conf.DIObrdType.upper()]
@@ -205,6 +208,9 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
 
       # Set user pins to the resting state
       #
+      print(_IO, _Conf.DIOportOut_User,
+            int(_Conf.DIOpinUserOut1[0]), int(_Conf.DIOpinUserOut1[2]))
+
       csp.setIODevicePin(_IO, _Conf.DIOportOut_User,
                          int(_Conf.DIOpinUserOut1[0]),
                          int(_Conf.DIOpinUserOut1[2]) != 0, False)

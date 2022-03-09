@@ -3,13 +3,13 @@
 """
 Digital I/O API
 
-Digital I/O using different types of devices. 
+Digital I/O using different types of devices.
 Supported are currently:
   - digital I/O card USB1024LS and PCIDIO24 from Measurement Computing
     (http://www.mccdaq.com/daq-software/universal-library.aspx)
-  - Arduino (experimental)  
+  - Arduino (experimental)
 
-Copyright (c) 2013-2017 Thomas Euler
+Copyright (c) 2013-2022 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -42,8 +42,8 @@ class devTypeUL:
   PCIDIO24    = 40
 
 dictULDevices = dict([
-  ("USB1024LS", 118), 
-  ("PCIDIO24",   40)]) 
+  ("USB1024LS", 118),
+  ("PCIDIO24",   40)])
 
 dictUL        = dict([
   (devConst.PORT_A,      ULConst.FIRSTPORTA),
@@ -73,7 +73,7 @@ class devIO(object):
     self.devType   = None
     self.funcLog   = _funcLog
     self.logLevel  = _logLevel
-    
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def _setIsReady(self):
     self.isReady   = True
@@ -95,7 +95,7 @@ class devIO(object):
     # Write byte to digital port
     #
     pass
-  
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def log(self, _sHeader, _sMsg, _logLevel=2):
     # Write message to log
@@ -106,8 +106,8 @@ class devIO(object):
         print("{0!s:>8} #{1}:{2}".format(_sHeader, self.devName, _sMsg))
       else:
         self.funcLog(_sHeader, self.devName +"|" +_sMsg)
-  
-  
+
+
 # =====================================================================
 # I/O class using an Arduino (experimental)
 # ---------------------------------------------------------------------
@@ -127,16 +127,16 @@ class devIO_Arduino(devIO, object):
                                      stopbits=serial.STOPBITS_ONE,
                                      bytesize=serial.EIGHTBITS,
                                      timeout=1.0,
-                                     writeTimeout=None) 
+                                     writeTimeout=None)
       self.serClient.flushInput()
       self.serClient.flushOutput()
       if self.serClient.isOpen():
-        self._setIsReady()  
+        self._setIsReady()
         return
-    
+
     except serial.SerialException as e:
       pass
-    
+
     self.log("ERROR", "Could not open {0}".format(self.COM))
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -146,7 +146,8 @@ class devIO_Arduino(devIO, object):
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def readDPort(self, _port):
-    # ...
+    if self.isReady and self.serClient.in_waiting > 0:
+      return 1 if self.serClient.read(1) == b'1' else 0
     return 0
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -156,13 +157,12 @@ class devIO_Arduino(devIO, object):
         self.serClient.write(b'1')
       else:
         self.serClient.write(b'0')
-    
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getPortFromStr(self, _portStr):
-    if   _portStr.upper() == "A":
+    if _portStr.upper() == "A":
       return devConst.PORT_A
-
-    return devConst.NONE   
+    return devConst.NONE
 
 
 # =====================================================================
@@ -173,7 +173,7 @@ class devIO_UL(devIO, object):
     super(devIO_UL, self).__init__(_funcLog)
 
     if   _type == devTypeUL.none:
-      return 
+      return
 
     else:
       # Load respective hardware DLL
@@ -182,8 +182,8 @@ class devIO_UL(devIO, object):
         self.UL    = ctypes.windll.cbw64
       except WindowsError:
         self.log("ERROR", "Driver library 'cbw64.dll' not found")
-        return 
-        
+        return
+
       self.brdNum  = _boardNum
       self.devNum  = _devNum
       self.bData   = 0
@@ -241,7 +241,7 @@ class devIO_UL(devIO, object):
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def writeDPort(self, _port, _val):
     self.UL.cbDOut(self.brdNum, dictUL[_port], _val)
-    
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getPortFromStr(self, _portStr):
     if   _portStr.upper() == "A":
@@ -252,7 +252,7 @@ class devIO_UL(devIO, object):
       return devConst.PORT_C_LO
     if   _portStr.upper() == "CLO":
       return devConst.PORT_C_HI
-      
-    return devConst.NONE   
+
+    return devConst.NONE
 
 # ---------------------------------------------------------------------

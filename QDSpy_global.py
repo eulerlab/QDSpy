@@ -3,16 +3,16 @@
 """
 QDSpy module - global definitions
 
-Copyright (c) 2013-2021 Thomas Euler
+Copyright (c) 2013-2022 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.80 beta"
-QDSpy_copyrightStr          = "(c) 2013-21 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v080beta.thomas_euler.eulerlab.de"
+QDSpy_versionStr            = "QDSpy v0.81 beta"
+QDSpy_copyrightStr          = "(c) 2013-22 Thomas Euler"
+QDSpy_appID                 = u"QDSpy3.v081beta.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 
 QDSpy_isDebug               = True
@@ -95,7 +95,7 @@ QDSpy_UL_pinMarkerOut       = 2
 QDSpy_UL_pinTriggerIn       = 0
 QDSpy_UL_pinUserOut1        = "3, USER1, 0"
 QDSpy_UL_pinUserOut2        = "4, USER2, 0"
-QDSpy_Arduino_baud          = 115200
+QDSpy_Arduino_baud          = 230400
 
 QDSpy_markerRGBA            = "255,127,127,255"
 QDSpy_antiMarkerRGBA        = "0,0,0,255"

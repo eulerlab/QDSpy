@@ -11,7 +11,7 @@ QDSpy module - support routines related to timing and priority
 'setHighProcessPrior()', 'setNormalProcessPrior()'
   Routines to increase and reset process priority
 
-Copyright (c) 2013-2021 Thomas Euler
+Copyright (c) 2013-2022 Thomas Euler
 Distributed under the terms of the GNU General Public License (GPL)
 
 2021-10-15 - Adapt to LINUX

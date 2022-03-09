@@ -8,7 +8,7 @@ for visual neuroscience. It is based on QDS, currently uses OpenGL via
 pyglet for graphics. It primarly targets Windows, but may also run on
 other operating systems
 
-Copyright (c) 2013-2021 Thomas Euler
+Copyright (c) 2013-2022 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -547,7 +547,6 @@ def GetVideoParameters(_iobj):
     ssp.Log.write("ERROR", "getVideoParams: {0}, {1}".format(e.value, e))
   return params
 
-
 # ---------------------------------------------------------------------
 def DefShader(_ishd, _shType):
   """
@@ -573,7 +572,6 @@ def DefShader(_ishd, _shType):
   except stm.StimException as e:
     ssp.Log.write("ERROR", "DefShader: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
-
 
 # ---------------------------------------------------------------------
 def SetObjColorEx(_iobjs, _ocols, _alphas=[]):
@@ -653,7 +651,6 @@ def SetObjColorAlphaByVertex(_iobjs, _oRGBAs):
                   .format(e.value, e))
   return _Stim.LastErrC
 
-
 # ---------------------------------------------------------------------
 def SetShaderParams(_ishd, _shParams):
   """
@@ -690,7 +687,6 @@ def SetShaderParams(_ishd, _shParams):
     ssp.Log.write("ERROR", "SetShaderParams: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
-
 # ---------------------------------------------------------------------
 def SetObjShader(_iobjs, _ishds):
   """
@@ -725,7 +721,6 @@ def SetObjShader(_iobjs, _ishds):
     ssp.Log.write("ERROR", "SetObjShader: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
-
 # ---------------------------------------------------------------------
 def SetBkgColor(_col):
   """
@@ -747,7 +742,6 @@ def SetBkgColor(_col):
   except stm.StimException as e:
     ssp.Log.write("ERROR", "SetBkgColor: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
-
 
 # ---------------------------------------------------------------------
 def Scene_Clear(_dur, _marker=0):
@@ -771,7 +765,6 @@ def Scene_Clear(_dur, _marker=0):
   except stm.StimException as e:
     ssp.Log.write("ERROR", "Scene_Clear: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
-
 
 # ---------------------------------------------------------------------
 def Scene_RenderEx(_dur, _iobjs, _opos, _omag, _oang, _marker=0,
@@ -813,7 +806,6 @@ def Scene_Render(_dur, _nobjs, _iobjs, _opos, _marker=0):
   _omag   = len(_iobjs)*[(1.0, 1.0)]
   _oang   = len(_iobjs)*[0.0]
   Scene_RenderEx(_dur, _iobjs, _opos, _omag, _oang, _marker)
-
 
 # ---------------------------------------------------------------------
 def Start_Movie(_iobj, _opos, _seq, _omag, _trans, _oang, _screen=0):
@@ -868,6 +860,26 @@ def Start_Video(_iobj, _opos, _omag, _trans, _oang, _screen=0):
     ssp.Log.write("ERROR", "Start_Video: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
+# =====================================================================
+# Trigger-related commands
+
+def AwaitTTL():
+  """
+  Wait for TTL signal. Returns the last error code or ``StimErrC.ok``.
+
+  .. attention:: There is no time-out, as this would defeat
+                 the purpose.
+
+  .. attention:: Only for an Arduino board as digital I/O
+                 device. Specifically, waits for the Arduino to signal
+                 an event via serial USB. In the default Arduino code,
+                 pin 2 waits for a **rising** signal edge.
+  """
+  try:
+    _Stim.awaitTTL()
+  except stm.StimException as e:
+    ssp.Log.write("ERROR", "AwaitTTL: {0}, {1}".format(e.value, e))
+  return _Stim.LastErrC
 
 # =====================================================================
 # Lightcrafter-related commands

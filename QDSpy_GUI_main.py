@@ -3,7 +3,7 @@
 """
 QDSpy module - main program of the GUI version of QDSpy
 
-Copyright (c) 2013-2021 Thomas Euler
+Copyright (c) 2013-2022 Thomas Euler
 All rights reserved.
 
 2021-10-15 - Adapt to LINUX

@@ -7,7 +7,7 @@ QDSpy module - stimulus routines and classes as well as stimulus compiler
   Class representing a visual stimulus
   This class is a graphics API independent.
 
-Copyright (c) 2013-2019 Thomas Euler
+Copyright (c) 2013-2022 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -102,6 +102,7 @@ class StimSceType:
   renderSce           = 212
   startMovie          = 213
   startVideo          = 214
+  awaitTTL            = 215
   beginLoop           = 220
   endLoop             = 221
   # ...
@@ -271,7 +272,6 @@ class Stim:
     #
     self.clear()
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def clear(self):
     # Pseudo code representation of the stimulus
@@ -316,7 +316,6 @@ class Stim:
   def getLastErrStr(self):
     return StimErrStr[self.LastErrC]
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def defObj_box(self, _ID, _dx_um, _dy_um, _enShader):
     # Define a box object and add it to the stimulus object list
@@ -341,7 +340,6 @@ class Stim:
     self.ObjList.append(newBox)
     self.LastErrC = StimErrC.ok
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def defObj_ellipse(self, _ID, _dx_um, _dy_um, _enShader):
     # Define an ellipse object and add it to the stimulus object list
@@ -365,7 +363,6 @@ class Stim:
     self.ObjDict[_ID] = len(self.ObjList)
     self.ObjList.append(newEllipse)
     self.LastErrC = StimErrC.ok
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def defObj_sector(self, _ID, _r, _offs, _angle, _awidth, _astep, _enShader):
@@ -400,7 +397,6 @@ class Stim:
     self.ObjList.append(newSector)
     self.LastErrC = StimErrC.ok
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def defShader(self, _shID, _shType):
     # Define a shader
@@ -428,7 +424,6 @@ class Stim:
     self.ShDict[_shID] = len(self.ShList)
     self.ShList.append(newShader)
     self.LastErrC = StimErrC.ok
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def defObj_movie(self, _ID, _fName):
@@ -471,7 +466,6 @@ class Stim:
     d["dyFr"] = MvOb[SM_field_dyFr]
     d["nFr"]  = MvOb[SM_field_nFr]
     return d
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def defObj_video(self, _ID, _fName):
@@ -550,7 +544,6 @@ class Stim:
     self.SceList.append(newSce)
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setObjColorAlphaByVertex(self, _IDs, _newRGBAs):
@@ -637,7 +630,6 @@ class Stim:
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setObjShader(self, _IDs, _shIDs):
     # Link object(s) with existing shader(s)
@@ -673,7 +665,6 @@ class Stim:
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def setBkgColor(self, _newRGB):
     # Changes the background color by creating a scene w/o duration
@@ -691,6 +682,15 @@ class Stim:
               RGBEx[0]]
     self.SceList.append(newSce)
     self.nSce    += 1
+    self.LastErrC = StimErrC.ok
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def awaitTTL(self):
+    # ...
+    #
+    newSce = [StimSceType.awaitTTL, -1, self.nSce, False]
+    self.SceList.append(newSce)
+    self.nSce += 1
     self.LastErrC = StimErrC.ok
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -727,7 +727,6 @@ class Stim:
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def clearScene(self, _dur_s, _isMarker=False):
     # Clear the scene (the screen) using the current background color
@@ -746,9 +745,8 @@ class Stim:
     newSce = [StimSceType.clearSce, dur, self.nSce, _isMarker,
               self.curBgRGB]
     self.SceList.append(newSce)
-    self.nSce    += 1
+    self.nSce += 1
     self.LastErrC = StimErrC.ok
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def loopBegin(self, _nTrials):
@@ -757,14 +755,13 @@ class Stim:
     if self.inLoop:
       return -1
 
-    self.inLoop   = True
+    self.inLoop = True
     self.iLoopSce = self.nSce
     newSce = [StimSceType.beginLoop, -1, self.nSce, False,
               _nTrials if _nTrials>0 else -1]
     self.SceList.append(newSce)
-    self.nSce    += 1
+    self.nSce += 1
     self.LastErrC = StimErrC.ok
-
 
   def loopEnd(self):
     # ...
@@ -774,8 +771,8 @@ class Stim:
 
     newSce = [StimSceType.endLoop, -1, self.nSce, False]
     self.SceList.append(newSce)
-    self.nSce    += 1
-    self.inLoop   = False
+    self.nSce += 1
+    self.inLoop = False
     self.iLoopSce = -1
     self.LastErrC = StimErrC.ok
 
@@ -861,7 +858,6 @@ class Stim:
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def startMovie(self, _ID, _posXY, _seq, _magXY, _trans, _rot, _screen=0):
     # Start playing a movie object
@@ -895,7 +891,6 @@ class Stim:
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def startVideo(self, _ID, _posXY, _magXY, _trans, _rot, _screen=0):
     # Start playing a video object
@@ -919,7 +914,6 @@ class Stim:
     self.SceList.append(newSce)
     self.nSce    += 1
     self.LastErrC = StimErrC.ok
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def compile(self, _Stage):
@@ -1231,7 +1225,6 @@ class Stim:
     self.isComp   = True
     self.LastErrC = StimErrC.ok
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def save(self, sFileName):
     # Save the compiled stimulus
@@ -1274,7 +1267,6 @@ class Stim:
     ssp.Log.write("ok", "Stimulus '{0}' saved to '{1}'"
                   .format(self.nameStr, sFileName + glo.QDSpy_cPickleFileExt))
     self.LastErrC = StimErrC.ok
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def load(self, sFileName, _onlyInfo=False):
@@ -1343,7 +1335,6 @@ class Stim:
 
     self.isComp   = True
     self.LastErrC = StimErrC.ok
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   """ Is currently done at the vertex level
