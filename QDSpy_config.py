@@ -3,15 +3,14 @@
 """
 QDSpy module - to manage the configuration file
 
-'Config' 
-  This class manages the external configuration file 'QDSpy.ini' using the
-  configparser library
-  
-'getParsedArg()'
-  to parse arguments for the command line version of QDSpy
+The 'Config' class manages the external configuration file 'QDSpy.ini' 
+using the configparser library. Use 'getParsedArg()' to parse arguments
+for the command line version of QDSpy
 
-Copyright (c) 2013-2019 Thomas Euler
+Copyright (c) 2013-2022 Thomas Euler
 All rights reserved.
+
+2022-08-03 - Adapt to LINUX
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -24,6 +23,8 @@ import QDSpy_gamma as gma
 import QDSpy_stim_support as ssp
 import QDSpy_global as glo
 
+PLATFORM_WINDOWS = sys.platform == "win32"
+
 # ---------------------------------------------------------------------
 # Configuration file class
 # ---------------------------------------------------------------------
@@ -31,14 +32,19 @@ class Config:
   def __init__(self):
     # Initialization
     #
-    self.isLoaded  = False
-    self.conf      = configparser.RawConfigParser()
+    self.isLoaded= False
+    self.conf = configparser.RawConfigParser()
 
     # Get some information on the platform
     #
-    self.isWindows = (sys.platform =='win32')
+    self.isWindows = PLATFORM_WINDOWS
     self.pyVersion = sys.version_info[0] +sys.version_info[1]/10
-    self.iniPath   = os.getcwd() + "\\" +glo.QDSpy_iniFileName
+    self.iniPath = os.getcwd() + "\\" +glo.QDSpy_iniFileName
+    print("--- self.iniPath", self.iniPath)
+    # *************************
+    # *************************
+    # *************************
+    # *************************
 
     # Set configuration default values
     #
@@ -245,17 +251,17 @@ class Config:
                     glo.QDSpy_winWidth)
       self.conf.set("Stage", "int_screen_height_pix",     
                     glo.QDSpy_winHeight)
-      self.conf.set("Stage", "int_center_offs_x_pix",     0)
-      self.conf.set("Stage", "int_center_offs_y_pix",     0)
+      self.conf.set("Stage", "int_center_offs_x_pix", 0)
+      self.conf.set("Stage", "int_center_offs_y_pix", 0)
       self.conf.set("Stage", "float_center_rotation_deg", 0.0)
-      self.conf.set("Stage", "float_scale_x_um_per_pix",  1.0)
-      self.conf.set("Stage", "float_scale_y_um_per_pix",  1.0)
+      self.conf.set("Stage", "float_scale_x_um_per_pix", 1.0)
+      self.conf.set("Stage", "float_scale_y_um_per_pix", 1.0)
       self.conf.set("Stage", "int_screen_index",          
                     glo.QDSpy_screenIndex)
       self.conf.set("Stage", "bool_disableFullScrCmd",    
                     glo.QDSpy_disableFullScrCmd)
-      self.conf.set("Stage", "int_window_left_pix",       0)
-      self.conf.set("Stage", "int_window_top_pix",        0)
+      self.conf.set("Stage", "int_window_left_pix", 0)
+      self.conf.set("Stage", "int_window_top_pix", 0)
       
       self.conf.add_section("Overlay")
       self.conf.set("Overlay","bool_use_screen_overlay",   
@@ -378,7 +384,7 @@ class Config:
       with open(self.iniPath, 'w') as confFile:
         self.conf.write(confFile)
 
-    self.isLoaded   = True
+    self.isLoaded = True
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def save(self):
@@ -394,30 +400,54 @@ class Config:
     #
     if self.isLoaded:
       d = {}
-      d["scrReqFreq_Hz"]  = self.conf.getfloat("Stage", "float_refresh_frequency_Hz")
-      d["dxScr"]          = self.conf.getint("Stage", "int_screen_width_pix")
-      d["dyScr"]          = self.conf.getint("Stage", "int_screen_height_pix")
-      d["centOffX_pix"]   = self.conf.getint("Stage", "int_center_offs_x_pix")
-      d["centOffY_pix"]   = self.conf.getint("Stage", "int_center_offs_y_pix")
-      d["scalX_umPerPix"] = self.conf.getfloat("Stage", "float_scale_x_um_per_pix")
-      d["scalY_umPerPix"] = self.conf.getfloat("Stage", "float_scale_y_um_per_pix")
-      d["rot_angle"]      = self.conf.getfloat("Stage", "float_center_rotation_deg")
-      d["scrIndex"]       = self.conf.getint("Stage", "int_screen_index")
-      d["disFScr"]        = self.conf.getboolean("Stage","bool_disableFullScrCmd")
-      d["xWinLeft"]       = self.conf.getint("Stage", "int_window_left_pix")
-      d["yWinTop"]        = self.conf.getint("Stage", "int_window_top_pix")
-      d["useScrOvl"]      = self.conf.getboolean("Overlay", "bool_use_screen_overlay")
-      d["scrIndGUI"]      = self.conf.getint("Overlay", "int_screen_index_GUI")
-      d["dxScr12"]        = self.conf.getint("Overlay", "int_screen1_2_width_pix")
-      d["dyScr12"]        = self.conf.getint("Overlay", "int_screen1_2_height_pix")
-      d["offXScr1_pix"]   = self.conf.getint("Overlay", "int_x_offset_screen1_pix")
-      d["offYScr1_pix"]   = self.conf.getint("Overlay", "int_y_offset_screen1_pix")
-      d["offXScr2_pix"]   = self.conf.getint("Overlay", "int_x_offset_screen2_center_pix")
-      d["offYScr2_pix"]   = self.conf.getint("Overlay", "int_y_offset_screen2_center_pix")
-      d["vFlipScr1"]      = self.conf.getboolean("Overlay", "bool_v_flip_screen1")
-      d["hFlipScr1"]      = self.conf.getboolean("Overlay", "bool_h_flip_screen1")
-      d["vFlipScr2"]      = self.conf.getboolean("Overlay", "bool_v_flip_screen2")
-      d["hFlipScr2"]      = self.conf.getboolean("Overlay", "bool_h_flip_screen2")
+      d["scrReqFreq_Hz"]  = self.conf.getfloat(
+                              "Stage", "float_refresh_frequency_Hz")
+      d["dxScr"]          = self.conf.getint(
+                              "Stage", "int_screen_width_pix")
+      d["dyScr"]          = self.conf.getint(
+                              "Stage", "int_screen_height_pix")
+      d["centOffX_pix"]   = self.conf.getint(
+                              "Stage", "int_center_offs_x_pix")
+      d["centOffY_pix"]   = self.conf.getint(
+                              "Stage", "int_center_offs_y_pix")
+      d["scalX_umPerPix"] = self.conf.getfloat(
+                              "Stage", "float_scale_x_um_per_pix")
+      d["scalY_umPerPix"] = self.conf.getfloat(
+                              "Stage", "float_scale_y_um_per_pix")
+      d["rot_angle"]      = self.conf.getfloat(
+                              "Stage", "float_center_rotation_deg")
+      d["scrIndex"]       = self.conf.getint(
+                              "Stage", "int_screen_index")
+      d["disFScr"]        = self.conf.getboolean(
+                              "Stage","bool_disableFullScrCmd")
+      d["xWinLeft"]       = self.conf.getint(
+                              "Stage", "int_window_left_pix")
+      d["yWinTop"]        = self.conf.getint(
+                              "Stage", "int_window_top_pix")
+      d["useScrOvl"]      = self.conf.getboolean(
+                              "Overlay", "bool_use_screen_overlay")
+      d["scrIndGUI"]      = self.conf.getint(
+                              "Overlay", "int_screen_index_GUI")
+      d["dxScr12"]        = self.conf.getint(
+                              "Overlay", "int_screen1_2_width_pix")
+      d["dyScr12"]        = self.conf.getint(
+                              "Overlay", "int_screen1_2_height_pix")
+      d["offXScr1_pix"]   = self.conf.getint(
+                              "Overlay", "int_x_offset_screen1_pix")
+      d["offYScr1_pix"]   = self.conf.getint(
+                              "Overlay", "int_y_offset_screen1_pix")
+      d["offXScr2_pix"]   = self.conf.getint(
+                              "Overlay", "int_x_offset_screen2_center_pix")
+      d["offYScr2_pix"]   = self.conf.getint(
+                              "Overlay", "int_y_offset_screen2_center_pix")
+      d["vFlipScr1"]      = self.conf.getboolean(
+                              "Overlay", "bool_v_flip_screen1")
+      d["hFlipScr1"]      = self.conf.getboolean(
+                              "Overlay", "bool_h_flip_screen1")
+      d["vFlipScr2"]      = self.conf.getboolean(
+                              "Overlay", "bool_v_flip_screen2")
+      d["hFlipScr2"]      = self.conf.getboolean(
+                              "Overlay", "bool_h_flip_screen2")
      
       Stage = stg.Stage(d, _isNew=True)
                           
@@ -471,8 +501,8 @@ class Config:
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getParam(self, _section, _key, _default):
-    # Return value of key in given section; if it does not exist, add this 
-    # key and set it to the default value
+    # Return value of key in given section; if it does not exist, add 
+    # this key and set it to the default value
     #
     if self.conf.has_option(_section, _key):
       typeStr = _key.split("_")[0].lower()

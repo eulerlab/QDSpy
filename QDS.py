@@ -10,6 +10,8 @@ other operating systems
 
 Copyright (c) 2013-2022 Thomas Euler
 All rights reserved.
+
+2022-08-03 - Adapt to LINUX
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -24,6 +26,10 @@ import QDSpy_global as glo
 import QDSpy_stim as stm
 import QDSpy_stim_support as ssp
 import QDSpy_config as cfg
+
+PLATFORM_WINDOWS = sys.platform == "win32"
+if not PLATFORM_WINDOWS:
+  WindowsError = FileNotFoundError
 
 # ---------------------------------------------------------------------
 _Stim   = stm.Stim()
@@ -44,27 +50,31 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   =============== ==================================================
   """
   _Stim.clear()
-  _Stim.nameStr   = _sName
-  _Stim.descrStr  = _sDescr
-  _Stim.ErrC      = stm.StimErrC.ok
-  _Stim.tStart    = time.time()
+  _Stim.nameStr = _sName
+  _Stim.descrStr = _sDescr
+  _Stim.ErrC = stm.StimErrC.ok
+  _Stim.tStart = time.time()
   _Stim.isRunSect = False
-  _Stim.Conf      = cfg.Config()
+  _Stim.Conf = cfg.Config()
 
   # Parse command-line arguments
   #
-  fName           = (os.path.splitext(os.path.basename(sys.argv[0])))[0]
-  fNameOnlyDir    = os.path.dirname(sys.argv[0])
-  _Stim.fNameDir  = fNameOnlyDir +"/" +fName
-  fNameDir_py     = _Stim.fNameDir +".py"
-  fNameDir_pk     = _Stim.fNameDir +".pickle"
-  args            = cfg.getParsedArgv()
-
+  fName = (os.path.splitext(os.path.basename(sys.argv[0])))[0]
+  fNameOnlyDir = os.path.dirname(sys.argv[0])
+  s = fNameOnlyDir +"/" +fName
+  s = s if len(fNameOnlyDir) > 0 or PLATFORM_WINDOWS else s[1:]
+  _Stim.fNameDir = s
+  fNameDir_py = _Stim.fNameDir +".py"
+  fNameDir_pk = _Stim.fNameDir +".pickle"
+  args = cfg.getParsedArgv()
+  
   # Display startup message and return if running the up-to-date stimulus
   # immediately is not requested
   #
-  ssp.Log.write("***", glo.QDSpy_versionStr +
-                " Compiler - " +glo.QDSpy_copyrightStr)
+  ssp.Log.write(
+      "***", glo.QDSpy_versionStr +
+      " Compiler - " +glo.QDSpy_copyrightStr
+    )
   ssp.Log.write(" ", "Initializing ...")
   if _runMode == 0:
     return
@@ -72,17 +82,20 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   # Check if pickle-file is current, if so, run the stimulus without
   # recompiling
   #
-  tLastUpt_py     = datetime.fromtimestamp(os.path.getmtime(fNameDir_py))
+  tLastUpt_py = datetime.fromtimestamp(os.path.getmtime(fNameDir_py))
   try:
     tLastUpt_pick = datetime.fromtimestamp(os.path.getmtime(fNameDir_pk))
     if tLastUpt_pick > tLastUpt_py and not args.compile:
-      #pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[1]
       pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[0]
       if len(pythonPath) > 0:
-        pythonPath += "\\"
+        pythonPath += "\\" if PLATFORM_WINDOWS else "/"
       ssp.Log.write("INFO", "Script has not changed, running stimulus now ...")
-      os.system("python "+ pythonPath +"QDSpy_core.py -t={0} {1} {2}"
-                .format(args.timing, "-v" if args.verbose else "", fName))
+      s = "python {0}QDSpy_core.py -t={1} {2} {3}"
+      os.system(s.format(
+          pythonPath if PLATFORM_WINDOWS else "",
+          args.timing, "-v" if args.verbose else "",
+          fName if PLATFORM_WINDOWS else _Stim.fNameDir)
+        )
       exit()
   except WindowsError:
     pass

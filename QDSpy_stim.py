@@ -1278,7 +1278,6 @@ class Stim:
 
     try:
       with open(sFileName + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
-
         self.fileName = sFileName.replace("\\\\", "\\")
         stimPick      = pickle.Unpickler(stimFile)
         ID            = stimPick.load()
