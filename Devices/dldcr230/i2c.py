@@ -36,7 +36,7 @@ import sys
 from logging import log, DEBUG
 
 DEFAULT_SLAVE_ADDRESS = 0x36  # 8-bit I2C slave address
-DEFAULT_I2C_BUS = 7  # 7 for SW-based I2C bus
+DEFAULT_I2C_BUS = 22  # 7 for SW-based I2C bus
 
 _slave_address = DEFAULT_SLAVE_ADDRESS
 _i2c = None

@@ -11,6 +11,7 @@ Copyright (c) 2013-2022 Thomas Euler
 All rights reserved.
 
 2022-08-03 - Adapt to LINUX
+2022-08-06 - Some reformatting
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -39,13 +40,9 @@ class Config:
     #
     self.isWindows = PLATFORM_WINDOWS
     self.pyVersion = sys.version_info[0] +sys.version_info[1]/10
-    self.iniPath = os.getcwd() + "\\" +glo.QDSpy_iniFileName
-    print("--- self.iniPath", self.iniPath)
-    # *************************
-    # *************************
-    # *************************
-    # *************************
-
+    _sep = "\\" if PLATFORM_WINDOWS else "/"
+    self.iniPath = os.getcwd() +_sep +glo.QDSpy_iniFileName
+      
     # Set configuration default values
     #
     self.incPP             = glo.QDSpy_incProcessPrior
@@ -454,9 +451,9 @@ class Config:
       # Read user-define gamma LUT, if one is defined
       #                          
       if len(self.userLUTFName) > 0:
-        Stage.LUT_userDefined = gma.loadGammaLUT(self.pathApp +
-                                                 self.userLUTFName)
-                          
+        Stage.LUT_userDefined = gma.loadGammaLUT(
+            self.pathApp +self.userLUTFName
+          )
       return Stage
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -465,28 +462,50 @@ class Config:
     # rotation) from the Stage object to the ini file
     #
     if self.isLoaded and _Stage is not None:
-      self.conf.set("Stage", "int_center_offs_x_pix",
-                    _Stage.centOffX_pix)
-      self.conf.set("Stage", "int_center_offs_y_pix",
-                    _Stage.centOffY_pix)
-      self.conf.set("Stage", "float_center_rotation_deg",
-                    _Stage.rot_angle)
-      self.conf.set("Stage", "float_scale_x_um_per_pix",
-                    _Stage.scalX_umPerPix)
-      self.conf.set("Stage", "float_scale_y_um_per_pix",
-                    _Stage.scalY_umPerPix)
-      self.conf.set("Overlay", "int_screen1_2_width_pix",
-                    _Stage.dxScr12)
-      self.conf.set("Overlay", "int_screen1_2_height_pix",
-                    _Stage.dyScr12)
-      self.conf.set("Overlay", "int_x_offset_screen1_pix",
-                    _Stage.offXScr1_pix)
-      self.conf.set("Overlay", "int_y_offset_screen1_pix",
-                    _Stage.offYScr1_pix)
-      self.conf.set("Overlay", "int_x_offset_screen2_center_pix",
-                    _Stage.offXScr2_pix)
-      self.conf.set("Overlay", "int_y_offset_screen2_center_pix",
-                    _Stage.offYScr2_pix)
+      self.conf.set(
+          "Stage", "int_center_offs_x_pix",
+          _Stage.centOffX_pix
+        )
+      self.conf.set(
+          "Stage", "int_center_offs_y_pix",
+          _Stage.centOffY_pix
+        )
+      self.conf.set(
+          "Stage", "float_center_rotation_deg",
+          _Stage.rot_angle
+        )
+      self.conf.set(
+          "Stage", "float_scale_x_um_per_pix",
+          _Stage.scalX_umPerPix
+        )
+      self.conf.set(
+          "Stage", "float_scale_y_um_per_pix",
+          _Stage.scalY_umPerPix
+        )
+      self.conf.set(
+          "Overlay", "int_screen1_2_width_pix",
+          _Stage.dxScr12
+        )
+      self.conf.set(
+          "Overlay", "int_screen1_2_height_pix",
+          _Stage.dyScr12
+        )
+      self.conf.set(
+          "Overlay", "int_x_offset_screen1_pix",
+          _Stage.offXScr1_pix
+        )
+      self.conf.set(
+          "Overlay", "int_y_offset_screen1_pix",
+          _Stage.offYScr1_pix
+        )
+      self.conf.set(
+          "Overlay", "int_x_offset_screen2_center_pix",
+          _Stage.offXScr2_pix
+        )
+      self.conf.set(
+          "Overlay", "int_y_offset_screen2_center_pix",
+          _Stage.offYScr2_pix
+        )
       self.save()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -494,9 +513,10 @@ class Config:
     # Save window positions to the ini file
     #
     if self.isLoaded:
-      
-      self.conf.set("Tweaking","str_window_geometry_cam",         
-                    self.camWinGeom.__str__()[1:-1])
+      self.conf.set(
+          "Tweaking","str_window_geometry_cam",         
+          self.camWinGeom.__str__()[1:-1]
+        )
       self.save()
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -517,7 +537,6 @@ class Config:
     else:
       self.conf.set(_section, _key, _default)
       return _default
-     
       
 # ---------------------------------------------------------------------
 # Parsing command-line arguments
@@ -526,19 +545,28 @@ class Config:
 def getParsedArgv():
   # Return the parsed command-line arguments
   #
-  parser    = argparse.ArgumentParser(description="Present a stimulus.")
-  parser.add_argument("-t", "--timing", type=int, choices=[0],
-                      default=glo.QDSpy_graphicsAPI,
-                      help="mechanism used for stimulus timing")
-  parser.add_argument("-v", "--verbose", action="store_true",
-                      help="show detailed analysis of timimg etc.")
-  parser.add_argument("-c", "--compile", action="store_true",
-                      help="re-compile stimulus, even if up-to-date")
-  parser.add_argument("-g", "--gui", action="store_true",
-                      help="send messages to GUI only")
-  parser.add_argument("fNameStim", default="x", nargs="?",
-                      help="optional stimulus file name w/o file extension")
-
+  parser = argparse.ArgumentParser(description="Present a stimulus.")
+  parser.add_argument(
+      "-t", "--timing", type=int, choices=[0],
+      default=glo.QDSpy_graphicsAPI,
+      help="mechanism used for stimulus timing"
+    )
+  parser.add_argument(
+      "-v", "--verbose", action="store_true",
+      help="show detailed analysis of timimg etc."
+    )
+  parser.add_argument(
+      "-c", "--compile", action="store_true",
+      help="re-compile stimulus, even if up-to-date"
+    )
+  parser.add_argument(
+      "-g", "--gui", action="store_true",
+      help="send messages to GUI only"
+    )
+  parser.add_argument(
+      "fNameStim", default="x", nargs="?",
+      help="optional stimulus file name w/o file extension"
+    )
   return parser.parse_args()
 
 # ---------------------------------------------------------------------

@@ -12,6 +12,7 @@ Copyright (c) 2013-2022 Thomas Euler
 All rights reserved.
 
 2022-08-03 - Adapt to LINUX
+2022-08-06 - Some reformatting
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -280,8 +281,11 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     try:
       _Presenter.prepare(_Stim)
       setPerformanceHigh(_Conf)
-      _Presenter.run()
-
+      try:
+        _Presenter.run()
+      except KeyboardInterrupt:
+        ssp.Log.write(" ", "Aborted by user.")
+        
     finally:
       _Presenter.finish()
       setPerformanceNormal(_Conf)

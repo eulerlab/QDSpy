@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-QDSpy module - stimulus routines and classes as well as stimulus compiler
+QDSpy module - stimulus routines, classes, and compiler
 
 'Stim'
   Class representing a visual stimulus
@@ -24,9 +24,9 @@ import QDSpy_core_shader as csh
 
 if glo.QDSpy_use_Lightcrafter:
   import Devices.lightcrafter as lcr
-  _LCr   = lcr.Lightcrafter(_isCheckOnly=True, _funcLog=ssp.Log.write)
+  _LCr = lcr.Lightcrafter(_isCheckOnly=True, _funcLog=ssp.Log.write)
 else:
-  _LCr   = None
+  _LCr = None
 
 # ---------------------------------------------------------------------
 class ColorMode:
@@ -257,9 +257,9 @@ class StimException(Exception):
   def __init__(self, value, subvalue=0):
     self.value  = value
     if subvalue == 0:
-      self.str  = StimErrStr[value]
+      self.str = StimErrStr[value]
     else:
-      self.str  = StimErrStr[value].format(subvalue)
+      self.str = StimErrStr[value].format(subvalue)
   def __str__(self):
     return self.str
 
@@ -307,7 +307,6 @@ class Stim:
     self.Conf      = None
     self.ShManager = None
     self.isUseLCr  = False
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def getLastErrC(self):
@@ -818,7 +817,8 @@ class Stim:
     self.LastErrC = StimErrC.ok
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def renderScene(self, _dur_s, _IDs, _posXY, _magXY, _rot, _isMarker=False):
+  def renderScene(self, _dur_s, _IDs, _posXY, _magXY, _rot, 
+                  _isMarker=False):
     # Render objects and present that scene for the given duration.
     # NOTE that all special objects, like moving bars movies etc. that
     # have not finished, are continued to be updated
@@ -833,8 +833,10 @@ class Stim:
     #             [90,180])
     #
     if (not(isinstance(_IDs, list))
-        or not(isinstance(_posXY, list)) or not(isinstance(_posXY[0], tuple))
-        or not(isinstance(_magXY, list)) or not(isinstance(_magXY[0], tuple))
+        or not(isinstance(_posXY, list)) 
+        or not(isinstance(_posXY[0], tuple))
+        or not(isinstance(_magXY, list)) 
+        or not(isinstance(_magXY[0], tuple))
         or not(isinstance(_rot, list))
         or (len(_IDs) != len(_posXY)) or (len(_IDs) != len(_magXY))
         or (len(_IDs) != len(_rot))):
@@ -852,14 +854,17 @@ class Stim:
         self.LastErrC = StimErrC.noMatchingID
         raise StimException
 
-    newSce  = [StimSceType.renderSce, float(_dur_s), self.nSce, _isMarker,
-               _IDs, _posXY, _magXY, _rot]
+    newSce = [
+        StimSceType.renderSce, float(_dur_s), self.nSce, _isMarker,
+        _IDs, _posXY, _magXY, _rot
+      ]
     self.SceList.append(newSce)
-    self.nSce    += 1
+    self.nSce += 1
     self.LastErrC = StimErrC.ok
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def startMovie(self, _ID, _posXY, _seq, _magXY, _trans, _rot, _screen=0):
+  def startMovie(self, _ID, _posXY, _seq, _magXY, _trans, _rot, 
+                 _screen=0):
     # Start playing a movie object
     # (For parameters, see QDS.py)
     #

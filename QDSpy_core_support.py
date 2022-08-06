@@ -4,8 +4,9 @@
 QDSpy module - support routines related to timing and priority
 
 'Clock'
-  Class that provides a high-precision clock and is based on "clock.py", from
-  PsychoPy library Copyright (C) 2015 Jonathan Peirce, Distributed under the
+  Class that provides a high-precision clock and is based on 
+  "clock.py", from PsychoPy library. 
+  Copyright (C) 2015 Jonathan Peirce, Distributed under the
   terms of the GNU General Public License (GPL)
 
 'setHighProcessPrior()', 'setNormalProcessPrior()'
@@ -15,6 +16,7 @@ Copyright (c) 2013-2022 Thomas Euler
 Distributed under the terms of the GNU General Public License (GPL)
 
 2021-10-15 - Adapt to LINUX
+2022-08-06 - Some reformatting
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -32,8 +34,9 @@ PLATFORM_WINDOWS = sys.platform == "win32"
 # ---------------------------------------------------------------------
 # Multiprocessing support
 # ---------------------------------------------------------------------
-WORKING, CANCELED, TERMINATING, IDLE = ("Working", "Canceled",
-                                        "Terminating", "Idle")
+WORKING, CANCELED, TERMINATING, IDLE = (
+    "Working", "Canceled", "Terminating", "Idle"
+  )
 
 # ---------------------------------------------------------------------
 # Set the default timing mechanism
@@ -44,9 +47,9 @@ if PLATFORM_WINDOWS:
   global _fcounter, _qpfreq, _winQPC
   from ctypes import byref, c_int64, windll
   _fcounter = c_int64()
-  _qpfreq   = c_int64()
+  _qpfreq = c_int64()
   windll.Kernel32.QueryPerformanceFrequency(byref(_qpfreq))
-  _qpfreq   = float(_qpfreq.value)
+  _qpfreq = float(_qpfreq.value)
   _winQPC=windll.Kernel32.QueryPerformanceCounter
 
   def getTime():
@@ -126,6 +129,6 @@ def setNormalProcessPrior():
 
 # ---------------------------------------------------------------------
 def module_exists(module_name):
-  return module_name in (name for loader, name, ispkg in iter_modules())
+  return module_name in (name for loader,name,ispkg in iter_modules())
 
 # ---------------------------------------------------------------------
