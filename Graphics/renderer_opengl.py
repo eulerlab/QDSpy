@@ -23,9 +23,10 @@ import sys
 import ctypes
 import pyglet
 import numpy as np
+from PIL.Image import Image
+
 '''
 import scipy
-import PIL
 '''
 pyglet.options["debug_gl"] = True
 import pyglet.gl as GL
@@ -279,36 +280,30 @@ class Renderer:
       win.close()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def prepare_grabbing_win(self, _iWin):
+  def prepare_record_win(self):
     """ Prepare grabbing of window content for a recording of the stimulus
     """
-    self.bufMan  = pyglet.image.get_buffer_manager()
-    self.iRecWin = _iWin
-    # **********************
-    # **********************
-    # TODO:
-    # **********************
-    # **********************
+    self.bufMan = pyglet.image.get_buffer_manager()
 
-  def grab_frame(self):
+  def grab_frame(self, f_downsample: int = 1):
     """ Prepare recording of window content
     """
-    # **********************
-    # **********************
-    # TODO:
-    # something like function(image, self.nFr), containing something like
-    '''
-    colBuf    = self.bufMan.get_color_buffer()
-    image     = colBuf.image_data.get_image_data()
-    pil_image = Image.fromstring(image.format, (image.width, image.height),
-                                 image.get_data(image.format, image.pitch))
+    colBuf = self.bufMan.get_color_buffer()
+    image = colBuf.get_image_data()
+
+    pitch = -(image.width * len('RGB'))
+    pil_image = Image.frombytes('RGB', (image.width, image.height), image.get_data('RGB', pitch))
+    """    
+    pil_image = Image.frombytes(image.format, (image.width, image.height),
+                                image.get_data(image.format, image.pitch))
+    """
+    if f_downsample > 1:
+      pil_image = pil_image.resize(tuple(s//f_downsample for s in pil_image.size))
+
     pil_image = pil_image.transpose(Image.FLIP_TOP_BOTTOM)
     pil_image = pil_image.convert('RGB')
-    pil_image.save("D:\SCRATCH\MOVIE\{0:06d}.png".format(self.nFrTotal), "PNG")
-    '''
-    # **********************
-    # **********************
-    pass
+
+    return pil_image
 
 # =====================================================================
 #

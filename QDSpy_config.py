@@ -224,6 +224,11 @@ class Config:
       self.recordStim   = self.getParam("Tweaking",  
                                         "bool_recordStim",
                                         glo.QDSpy_recordStim)
+
+
+      self.rec_f_downsample_x = self.getParam("Tweaking", "int_rec_f_downsample_x", glo.QDSpy_recordStim)
+      self.rec_f_downsample_t = self.getParam("Tweaking", "int_rec_f_downsample_t", glo.QDSpy_recordStim)
+
       temp              = self.getParam("Tweaking",  
                                         "str_window_geometry_cam",
                                         glo.QDSpy_camWinGeometry)
@@ -332,7 +337,7 @@ class Config:
                     glo.QDSpy_pathLogFiles)
       
       self.conf.add_section("Display")      
-      self.conf.set("Display","bool_use_lightcrafter",   
+      self.conf.set("Display","bool_use_lightcrafter",
                     glo.QDSpy_use_Lightcrafter)
       self.conf.set("Display","str_LED_names",            
                     glo.QDSpy_LEDNames_default)
@@ -370,6 +375,10 @@ class Config:
                     glo.QDSpy_use3DTextures)
       self.conf.set("Tweaking","bool_recordStim",         
                     glo.QDSpy_recordStim)
+
+      self.conf.set = self.getParam("Tweaking", "int_rec_f_downsample_x", glo.QDSpy_recordStim)
+      self.conf.set = self.getParam("Tweaking", "int_rec_f_downsample_t", glo.QDSpy_recordStim)
+
       self.conf.set("Tweaking","str_window_geometry_cam",         
                     glo.QDSpy_camWinGeometry)
       self.conf.set("Tweaking","bool_allow_camera",         

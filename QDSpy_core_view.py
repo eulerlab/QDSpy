@@ -206,15 +206,12 @@ class View:
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def prepareGrabStim(self):
     # Prepare grabbing the stimulus window
-    #
-    self.Renderer.prepare_record_win(0)
-    ssp.Log.write("DEBUG", "Not implemented: Renderer.prepare_record_win")
+    self.Renderer.prepare_record_win()
+    ssp.Log.write("INFO", "Renderer.prepare_record_win()")
 
-  def grabStimFrame(self):
+  def grabStimFrame(self, f_downsample: int = 1):
     # Grab the current frame of the stimulus window
-    #
-    self.Renderer.grab_frame()
-    ssp.Log.write("DEBUG", "Not implemented: Renderer.grab_frame")
+    return self.Renderer.grab_frame(f_downsample=f_downsample)
 
 
 # ---------------------------------------------------------------------
