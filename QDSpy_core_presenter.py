@@ -7,7 +7,7 @@ QDSpy module - interprets and presents compiled stimuli
   Presents a compiled stimulus.
   This class is a graphics API independent.
 
-Copyright (c) 2013-2022 Thomas Euler
+Copyright (c) 2013-2023 Thomas Euler
 Distributed under the terms of the GNU General Public License (GPL)
 
 2022-08-06 - Some reformatting (partially)
@@ -118,8 +118,8 @@ class Presenter:
     self.nLoopRepeats = 0
     self.iFirstLoopSc = -1
 
-    self.vertTr       = np.array([], dtype=np.int)   # temporary vertex arrays
-    self.iVertTr      = np.array([], dtype=np.int)   # temporary index arrays
+    self.vertTr       = np.array([], dtype=np.int32)   # temporary vertex arrays
+    self.iVertTr      = np.array([], dtype=np.int32)   # temporary index arrays
     self.vRGBTr       = np.array([], dtype=np.uint8) # temporary RGBA arrays
     self.vRGBTr2      = np.array([], dtype=np.uint8)
 
@@ -540,7 +540,7 @@ class Presenter:
       if self.Sync.pipeSrv.poll():
          data = self.Sync.pipeSrv.recv()
          if data[0] == mpr.PipeValType.toSrv_changedStage:
-           # Stage properties were adjusted by the user, reflect 
+           # Stage properties were adjusted by the user, reflect
            # immediately in the stimulus presentation
            #
            self.Stage.scalX_umPerPix = data[1]["scalX_umPerPix"]
@@ -568,7 +568,7 @@ class Presenter:
            #
            csp.setIODevicePin(
               self.IO, data[1][0], data[1][1], data[1][2]
-             ) 
+             )
 
     # Render scene
     #
@@ -603,7 +603,7 @@ class Presenter:
         self.isNextSce = False
 
     if self.isEnd:
-      # No more scenes to display or aborted by used, in any case, 
+      # No more scenes to display or aborted by used, in any case,
       # end presentation
       #
       isDone = (self.iSc >= len(self.Stim.SceList))
@@ -626,7 +626,7 @@ class Presenter:
 
       # Determine if marker should be shown ...
       # ************
-      # TODO: first read port to be able to set/clear only the needed 
+      # TODO: first read port to be able to set/clear only the needed
       #       pin
       # ************
       isMaskChanged = False
@@ -780,7 +780,7 @@ class Presenter:
         # Generate a plot ...
         #
         ssp.Log.write("WARNING", "Code needs to be updated")
-        ''' 
+        '''
         pylab.title("Timing")
         pylab.subplot(2,1,1)
         pylab.plot(list(range(len(data))), data*1000, "-")

@@ -7,7 +7,7 @@ QDSpy module - stimulus routines, classes, and compiler
   Class representing a visual stimulus
   This class is a graphics API independent.
 
-Copyright (c) 2013-2022 Thomas Euler
+Copyright (c) 2013-2023 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -817,7 +817,7 @@ class Stim:
     self.LastErrC = StimErrC.ok
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def renderScene(self, _dur_s, _IDs, _posXY, _magXY, _rot, 
+  def renderScene(self, _dur_s, _IDs, _posXY, _magXY, _rot,
                   _isMarker=False):
     # Render objects and present that scene for the given duration.
     # NOTE that all special objects, like moving bars movies etc. that
@@ -833,9 +833,9 @@ class Stim:
     #             [90,180])
     #
     if (not(isinstance(_IDs, list))
-        or not(isinstance(_posXY, list)) 
+        or not(isinstance(_posXY, list))
         or not(isinstance(_posXY[0], tuple))
-        or not(isinstance(_magXY, list)) 
+        or not(isinstance(_magXY, list))
         or not(isinstance(_magXY[0], tuple))
         or not(isinstance(_rot, list))
         or (len(_IDs) != len(_posXY)) or (len(_IDs) != len(_magXY))
@@ -863,7 +863,7 @@ class Stim:
     self.LastErrC = StimErrC.ok
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def startMovie(self, _ID, _posXY, _seq, _magXY, _trans, _rot, 
+  def startMovie(self, _ID, _posXY, _seq, _magXY, _trans, _rot,
                  _screen=0):
     # Start playing a movie object
     # (For parameters, see QDS.py)
@@ -1136,9 +1136,9 @@ class Stim:
         _RGBATr      = []
         _RGBATr2     = []
         for iObj in range(nObjs):
-          np_iVertTr = np.array(iVertTr[iObj], dtype=np.int)
+          np_iVertTr = np.array(iVertTr[iObj], dtype=np.int32)
           _iVertTr.append([SC_vertDataChanged, ObjIDs[iObj], np_iVertTr])
-          np_vertTr  = np.array(vertTr[iObj], dtype=np.int)
+          np_vertTr  = np.array(vertTr[iObj], dtype=np.int32)
           _vertTr.append([SC_vertDataChanged, ObjIDs[iObj], np_vertTr])
           np_RGBATr  = np.array(RGBATr[iObj], dtype=np.uint8)
           _RGBATr.append([SC_vertDataChanged, ObjIDs[iObj], np_RGBATr])
