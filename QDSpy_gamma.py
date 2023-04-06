@@ -3,8 +3,10 @@
 """
 QDSpy module - gamma correction functions
 
-Copyright (c) 2013-2019 Thomas Euler
+Copyright (c) 2013-2021 Thomas Euler
 All rights reserved.
+
+2021-10-15 - Adapt to LINUX
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -12,11 +14,14 @@ __author__ 	= "code@eulerlab.de"
 import numpy
 import sys
 import time
-from   ctypes             import windll
-from   ctypes.wintypes    import LPCVOID
 import QDSpy_global       as glo
 import QDSpy_stim_support as ssp
 import QDSpy_stim         as stm
+
+PLATFORM_WINDOWS = sys.platform == "win32"
+if PLATFORM_WINDOWS:
+  from ctypes             import windll
+  from ctypes.wintypes    import LPCVOID
 
 # ---------------------------------------------------------------------
 def generateLinearLUT ():
@@ -55,7 +60,7 @@ def setGammaLUT (_winDC, _LUT):
   #
   # _LUT has to be an uint16-type 3x256 numpy array.
   #
-  if not(sys.platform=='win32'):
+  if not PLATFORM_WINDOWS:
     return stm.StimErrC.notYetImplemented
 
   if (len(_LUT) != 3) or (len(_LUT[0]) != 256):

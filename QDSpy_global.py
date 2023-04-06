@@ -3,16 +3,16 @@
 """
 QDSpy module - global definitions
 
-Copyright (c) 2013-2021 Thomas Euler
+Copyright (c) 2013-2022 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.78 beta"
-QDSpy_copyrightStr          = "(c) 2013-21 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v078beta.thomas_euler.eulerlab.de"
+QDSpy_versionStr            = "QDSpy v0.82 beta"
+QDSpy_copyrightStr          = "(c) 2013-22 Thomas Euler"
+QDSpy_appID                 = u"QDSpy3.v082beta.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 
 QDSpy_isDebug               = True
@@ -40,7 +40,7 @@ QDSpy_ctrlWinScale          = 0.2
 
 QDSpy_showFPS               = False
 QDSpy_trackTiming           = True
-QDSpy_frRateStatsBufferLen  = 18000  # 0=continous, >0=circular buffer 
+QDSpy_frRateStatsBufferLen  = 18000  # 0=continous, >0=circular buffer
 QDSpy_warnDroppedFrames     = True
 QDSpy_showStimInfo          = False
 QDSpy_incProcessPrior       = True
@@ -91,11 +91,11 @@ QDSpy_UL_deviceNum          = 6
 QDSpy_UL_portOut            = "A"
 QDSpy_UL_portIn             = "CLO"
 QDSpy_UL_portOut_User       = "B"
-QDSpy_UL_pinMarkerOut       = 2  
+QDSpy_UL_pinMarkerOut       = 2
 QDSpy_UL_pinTriggerIn       = 0
 QDSpy_UL_pinUserOut1        = "3, USER1, 0"
 QDSpy_UL_pinUserOut2        = "4, USER2, 0"
-QDSpy_Arduino_baud          = 115200
+QDSpy_Arduino_baud          = 230400
 
 QDSpy_markerRGBA            = "255,127,127,255"
 QDSpy_antiMarkerRGBA        = "0,0,0,255"
@@ -137,8 +137,3 @@ QDSpy_camWinGeometry        = "20,30,300,200"
 
 QDSpy_probing_center        = 1
 # ---------------------------------------------------------------------
-
-
-
-
-

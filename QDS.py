@@ -8,8 +8,10 @@ for visual neuroscience. It is based on QDS, currently uses OpenGL via
 pyglet for graphics. It primarly targets Windows, but may also run on
 other operating systems
 
-Copyright (c) 2013-2019 Thomas Euler
+Copyright (c) 2013-2022 Thomas Euler
 All rights reserved.
+
+2022-08-03 - Adapt to LINUX
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -24,6 +26,10 @@ import QDSpy_global as glo
 import QDSpy_stim as stm
 import QDSpy_stim_support as ssp
 import QDSpy_config as cfg
+
+PLATFORM_WINDOWS = sys.platform == "win32"
+if not PLATFORM_WINDOWS:
+  WindowsError = FileNotFoundError
 
 # ---------------------------------------------------------------------
 _Stim   = stm.Stim()
@@ -44,27 +50,31 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   =============== ==================================================
   """
   _Stim.clear()
-  _Stim.nameStr   = _sName
-  _Stim.descrStr  = _sDescr
-  _Stim.ErrC      = stm.StimErrC.ok
-  _Stim.tStart    = time.time()
+  _Stim.nameStr = _sName
+  _Stim.descrStr = _sDescr
+  _Stim.ErrC = stm.StimErrC.ok
+  _Stim.tStart = time.time()
   _Stim.isRunSect = False
-  _Stim.Conf      = cfg.Config()
+  _Stim.Conf = cfg.Config()
 
   # Parse command-line arguments
   #
-  fName           = (os.path.splitext(os.path.basename(sys.argv[0])))[0]
-  fNameOnlyDir    = os.path.dirname(sys.argv[0])
-  _Stim.fNameDir  = fNameOnlyDir +"/" +fName
-  fNameDir_py     = _Stim.fNameDir +".py"
-  fNameDir_pk     = _Stim.fNameDir +".pickle"
-  args            = cfg.getParsedArgv()
-
+  fName = (os.path.splitext(os.path.basename(sys.argv[0])))[0]
+  fNameOnlyDir = os.path.dirname(sys.argv[0])
+  s = fNameOnlyDir +"/" +fName
+  s = s if len(fNameOnlyDir) > 0 or PLATFORM_WINDOWS else s[1:]
+  _Stim.fNameDir = s
+  fNameDir_py = _Stim.fNameDir +".py"
+  fNameDir_pk = _Stim.fNameDir +".pickle"
+  args = cfg.getParsedArgv()
+  
   # Display startup message and return if running the up-to-date stimulus
   # immediately is not requested
   #
-  ssp.Log.write("***", glo.QDSpy_versionStr +
-                " Compiler - " +glo.QDSpy_copyrightStr)
+  ssp.Log.write(
+      "***", glo.QDSpy_versionStr +
+      " Compiler - " +glo.QDSpy_copyrightStr
+    )
   ssp.Log.write(" ", "Initializing ...")
   if _runMode == 0:
     return
@@ -72,21 +82,20 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   # Check if pickle-file is current, if so, run the stimulus without
   # recompiling
   #
-  tLastUpt_py     = datetime.fromtimestamp(os.path.getmtime(fNameDir_py))
+  tLastUpt_py = datetime.fromtimestamp(os.path.getmtime(fNameDir_py))
   try:
     tLastUpt_pick = datetime.fromtimestamp(os.path.getmtime(fNameDir_pk))
     if tLastUpt_pick > tLastUpt_py and not args.compile:
-      # ***********
-      # CHECK
-      # ***********
-      #pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[1]
       pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[0]
-      # ***********
       if len(pythonPath) > 0:
-        pythonPath += "\\"
+        pythonPath += "\\" if PLATFORM_WINDOWS else "/"
       ssp.Log.write("INFO", "Script has not changed, running stimulus now ...")
-      os.system("python "+ pythonPath +"QDSpy_core.py -t={0} {1} {2}"
-                .format(args.timing, "-v" if args.verbose else "", fName))
+      s = "python {0}QDSpy_core.py -t={1} {2} {3}"
+      os.system(s.format(
+          pythonPath if PLATFORM_WINDOWS else "",
+          args.timing, "-v" if args.verbose else "",
+          fName if PLATFORM_WINDOWS else _Stim.fNameDir)
+        )
       exit()
   except WindowsError:
     pass
@@ -551,7 +560,6 @@ def GetVideoParameters(_iobj):
     ssp.Log.write("ERROR", "getVideoParams: {0}, {1}".format(e.value, e))
   return params
 
-
 # ---------------------------------------------------------------------
 def DefShader(_ishd, _shType):
   """
@@ -577,7 +585,6 @@ def DefShader(_ishd, _shType):
   except stm.StimException as e:
     ssp.Log.write("ERROR", "DefShader: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
-
 
 # ---------------------------------------------------------------------
 def SetObjColorEx(_iobjs, _ocols, _alphas=[]):
@@ -657,7 +664,6 @@ def SetObjColorAlphaByVertex(_iobjs, _oRGBAs):
                   .format(e.value, e))
   return _Stim.LastErrC
 
-
 # ---------------------------------------------------------------------
 def SetShaderParams(_ishd, _shParams):
   """
@@ -694,7 +700,6 @@ def SetShaderParams(_ishd, _shParams):
     ssp.Log.write("ERROR", "SetShaderParams: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
-
 # ---------------------------------------------------------------------
 def SetObjShader(_iobjs, _ishds):
   """
@@ -729,7 +734,6 @@ def SetObjShader(_iobjs, _ishds):
     ssp.Log.write("ERROR", "SetObjShader: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
-
 # ---------------------------------------------------------------------
 def SetBkgColor(_col):
   """
@@ -751,7 +755,6 @@ def SetBkgColor(_col):
   except stm.StimException as e:
     ssp.Log.write("ERROR", "SetBkgColor: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
-
 
 # ---------------------------------------------------------------------
 def Scene_Clear(_dur, _marker=0):
@@ -775,7 +778,6 @@ def Scene_Clear(_dur, _marker=0):
   except stm.StimException as e:
     ssp.Log.write("ERROR", "Scene_Clear: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
-
 
 # ---------------------------------------------------------------------
 def Scene_RenderEx(_dur, _iobjs, _opos, _omag, _oang, _marker=0,
@@ -817,7 +819,6 @@ def Scene_Render(_dur, _nobjs, _iobjs, _opos, _marker=0):
   _omag   = len(_iobjs)*[(1.0, 1.0)]
   _oang   = len(_iobjs)*[0.0]
   Scene_RenderEx(_dur, _iobjs, _opos, _omag, _oang, _marker)
-
 
 # ---------------------------------------------------------------------
 def Start_Movie(_iobj, _opos, _seq, _omag, _trans, _oang, _screen=0):
@@ -872,6 +873,26 @@ def Start_Video(_iobj, _opos, _omag, _trans, _oang, _screen=0):
     ssp.Log.write("ERROR", "Start_Video: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
+# =====================================================================
+# Trigger-related commands
+
+def AwaitTTL():
+  """
+  Wait for TTL signal. Returns the last error code or ``StimErrC.ok``.
+
+  .. attention:: There is no time-out, as this would defeat
+                 the purpose.
+
+  .. attention:: Only for an Arduino board as digital I/O
+                 device. Specifically, waits for the Arduino to signal
+                 an event via serial USB. In the default Arduino code,
+                 pin 2 waits for a **rising** signal edge.
+  """
+  try:
+    _Stim.awaitTTL()
+  except stm.StimException as e:
+    ssp.Log.write("ERROR", "AwaitTTL: {0}, {1}".format(e.value, e))
+  return _Stim.LastErrC
 
 # =====================================================================
 # Lightcrafter-related commands

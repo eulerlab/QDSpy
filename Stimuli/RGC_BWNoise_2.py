@@ -30,7 +30,7 @@ print(os.getcwd(), fPath)
 # Read file with M sequence 
 #
 try:
-  f         = open(fPath +"\\" +p["fNameNoise"] +'.txt', 'r')
+  f         = open(fPath +os.path.sep +p["fNameNoise"] +'.txt', 'r')
   iLn       = 0 
   Frames    = []
     
