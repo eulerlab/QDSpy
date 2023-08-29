@@ -288,6 +288,9 @@ class Renderer:
   def grab_frame(self, f_downsample: int = 1):
     """ Prepare recording of window content
     """
+    #TODO: This does not work for some PIL versions. Fix this.
+
+
     colBuf = self.bufMan.get_color_buffer()
     image = colBuf.get_image_data()
 
