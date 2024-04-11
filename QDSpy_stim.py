@@ -1136,9 +1136,9 @@ class Stim:
         _RGBATr      = []
         _RGBATr2     = []
         for iObj in range(nObjs):
-          np_iVertTr = np.array(iVertTr[iObj], dtype=np.int)
+          np_iVertTr = np.array(iVertTr[iObj], dtype=int)
           _iVertTr.append([SC_vertDataChanged, ObjIDs[iObj], np_iVertTr])
-          np_vertTr  = np.array(vertTr[iObj], dtype=np.int)
+          np_vertTr  = np.array(vertTr[iObj], dtype=int)
           _vertTr.append([SC_vertDataChanged, ObjIDs[iObj], np_vertTr])
           np_RGBATr  = np.array(RGBATr[iObj], dtype=np.uint8)
           _RGBATr.append([SC_vertDataChanged, ObjIDs[iObj], np_RGBATr])

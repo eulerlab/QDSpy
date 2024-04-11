@@ -25,7 +25,7 @@ import sys
 import ctypes
 import pyglet
 import numpy as np
-from PIL.Image import Image
+import PIL
 
 '''
 import scipy
@@ -249,15 +249,13 @@ class Renderer:
     image = colBuf.get_image_data()
 
     pitch = -(image.width * len('RGB'))
-    pil_image = Image.frombytes('RGB', (image.width, image.height), image.get_data('RGB', pitch))
-    """    
-    pil_image = Image.frombytes(image.format, (image.width, image.height),
-                                image.get_data(image.format, image.pitch))
-    """
+    pil_image = PIL.Image.new(mode="RGB", size=(image.width, image.height))
+    img_data = image.get_data('RGB', pitch)
+    pil_image.frombytes(img_data)
     if f_downsample > 1:
       pil_image = pil_image.resize(tuple(s//f_downsample for s in pil_image.size))
 
-    pil_image = pil_image.transpose(Image.FLIP_TOP_BOTTOM)
+    pil_image = pil_image.transpose(PIL.Image.Transpose.FLIP_TOP_BOTTOM)
     pil_image = pil_image.convert('RGB')
 
     return pil_image

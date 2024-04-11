@@ -121,8 +121,8 @@ class Presenter:
     self.nLoopRepeats = 0
     self.iFirstLoopSc = -1
 
-    self.vertTr       = np.array([], dtype=np.int)   # temporary vertex arrays
-    self.iVertTr      = np.array([], dtype=np.int)   # temporary index arrays
+    self.vertTr       = np.array([], dtype=int)   # temporary vertex arrays
+    self.iVertTr      = np.array([], dtype=int)   # temporary index arrays
     self.vRGBTr       = np.array([], dtype=np.uint8) # temporary RGBA arrays
     self.vRGBTr2      = np.array([], dtype=np.uint8)
 
