@@ -3,12 +3,14 @@
 """
 QDSpy module - interprets and presents compiled stimuli
 
-'Presenter' 
-  Presents a compiled stimulus. 
+'Presenter'
+  Presents a compiled stimulus.
   This class is a graphics API independent.
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2022 Thomas Euler
 Distributed under the terms of the GNU General Public License (GPL)
+
+2022-08-06 - Some reformatting (partially)
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -92,6 +94,7 @@ class Presenter:
     self.Sync         = None
 
     self.IO_portOut   = dio.devConst.NONE
+    self.IO_portIn    = dio.devConst.NONE
     self.IO_maskMark  = 0
     self.IO_isMarkSet = False
 
@@ -154,7 +157,19 @@ class Presenter:
     drawn = True
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    if sc[stm.SC_field_type] == stm.StimSceType.beginLoop:
+    if sc[stm.SC_field_type] == stm.StimSceType.awaitTTL:
+      ssp.Log.write("INFO", "Waiting for trigger ...")
+      while True:
+        res = self.IO.readDPort(self.IO_portIn)
+        if res > 0:
+          break
+        if self.Sync.Request.value in [mpr.CANCELING, mpr.TERMINATING]:
+          self.Sync.setStateSafe(mpr.CANCELING)
+          self.isUserAbort = True
+          break
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    elif sc[stm.SC_field_type] == stm.StimSceType.beginLoop:
       # Begin of a loop
       #
       self.isInLoop        = True
@@ -506,7 +521,7 @@ class Presenter:
     #
     if self.Stim == None:
       self.View.clear()
-      self.isEnd  = True
+      self.isEnd = True
 
       if self.isIdle:
         # Stimulus has already ended; nothing to do ...
@@ -528,33 +543,35 @@ class Presenter:
       if self.Sync.pipeSrv.poll():
          data = self.Sync.pipeSrv.recv()
          if data[0] == mpr.PipeValType.toSrv_changedStage:
-           # Stage properties were adjusted by the user, reflect immediately
-           # in the stimulus presentation
+           # Stage properties were adjusted by the user, reflect 
+           # immediately in the stimulus presentation
            #
            self.Stage.scalX_umPerPix = data[1]["scalX_umPerPix"]
            self.Stage.scalY_umPerPix = data[1]["scalY_umPerPix"]
-           self.Stage.centOffX_pix   = data[1]["centOffX_pix"]
-           self.Stage.centOffY_pix   = data[1]["centOffY_pix"]
-           self.Stage.rot_angle      = data[1]["rot_angle"]
-           self.Stage.dxScr12        = data[1]["dxScr12"]
-           self.Stage.dyScr12        = data[1]["dyScr12"]
-           self.Stage.offXScr1_pix   = data[1]["offXScr1_pix"]
-           self.Stage.offYScr1_pix   = data[1]["offYScr1_pix"]
-           self.Stage.offXScr2_pix   = data[1]["offXScr2_pix"]
-           self.Stage.offYScr2_pix   = data[1]["offYScr2_pix"]
+           self.Stage.centOffX_pix = data[1]["centOffX_pix"]
+           self.Stage.centOffY_pix = data[1]["centOffY_pix"]
+           self.Stage.rot_angle = data[1]["rot_angle"]
+           self.Stage.dxScr12 = data[1]["dxScr12"]
+           self.Stage.dyScr12 = data[1]["dyScr12"]
+           self.Stage.offXScr1_pix = data[1]["offXScr1_pix"]
+           self.Stage.offYScr1_pix = data[1]["offYScr1_pix"]
+           self.Stage.offXScr2_pix = data[1]["offXScr2_pix"]
+           self.Stage.offYScr2_pix = data[1]["offYScr2_pix"]
 
          if data[0] == mpr.PipeValType.toSrv_changedLEDs:
            # User changed LED currents and/or toggled LEDs, notify
            # lightcrafter immediately
            #
-           self.Stage.LEDs            = data[1][0]
+           self.Stage.LEDs = data[1][0]
            self.Stage.isLEDSeqEnabled = data[1][1]
            self.Stage.sendLEDChangesToLCr(self.Conf)
 
          if data[0] == mpr.PipeValType.toSrv_setIODevPins:
            # User pressed a user button, change IO device pins accordingly
            #
-           csp.setIODevicePin(self.IO, data[1][0], data[1][1], data[1][2])
+           csp.setIODevicePin(
+              self.IO, data[1][0], data[1][1], data[1][2]
+             ) 
 
     # Render scene
     #
@@ -564,8 +581,8 @@ class Presenter:
       if not self.isFirstSce:
         # Increase scene index and check for end of stimulus ...
         #
-        self.iSc        += 1
-        self.isEnd      = self.iSc >= len(self.Stim.SceList)
+        self.iSc += 1
+        self.isEnd = self.iSc >= len(self.Stim.SceList)
         if self.isEnd:
           break
 
@@ -573,81 +590,67 @@ class Presenter:
         #	... except it is the first scene
         #
         self.isFirstSce = False
-        self.tStart     = Clock.getTime_s()
+        self.tStart = Clock.getTime_s()
 
-      self.nFr          = self.Stim.cScDurList[self.iSc]
-      self.is1FrOfSce   = True
+      self.nFr = self.Stim.cScDurList[self.iSc]
+      self.is1FrOfSce = True
       if self.nFr <= 0:
         # Scene w/o duration, handle immediately
         #
         self.renderSce(self.iSc, self.nFr)
-        self.isNextSce  = True
+        self.isNextSce = True
 
       else:
         # Scene has a duration, handle it below
         #
-        self.isNextSce  = False
+        self.isNextSce = False
 
     if self.isEnd:
-      # No more scenes to display or aborted by used,
-      # in any case, end presentation
+      # No more scenes to display or aborted by used, in any case, 
+      # end presentation
       #
       isDone = (self.iSc >= len(self.Stim.SceList))
       ssp.Log.write("ok", "Done" if isDone else "Aborted by user")
-      ssp.Log.write("DATA", {"stimFileName": self.Stim.fileName,
-                             "stimState": "FINISHED" if isDone else "ABORTED"}
-                             .__str__())
-
-      self.Stim         = None
-      self.isIdle       = True
+      ssp.Log.write(
+          "DATA", {"stimFileName": self.Stim.fileName,
+          "stimState": "FINISHED" if isDone else "ABORTED"}.__str__()
+        )
+      self.Stim = None
+      self.isIdle = True
       return
 
     if self.nFr > 0:
       # Scene has a duration, handle it ...
       #
       self.renderSce(self.iSc, self.nFr)
-      self.nFr         -= 1
-      self.is1FrOfSce   = False
-      self.isNextSce    = (self.nFr == 0)
+      self.nFr -= 1
+      self.is1FrOfSce = False
+      self.isNextSce = (self.nFr == 0)
 
       # Determine if marker should be shown ...
       # ************
-      # TODO: first read port to be able to set/clear only the needed pin
+      # TODO: first read port to be able to set/clear only the needed 
+      #       pin
       # ************
-      isMaskChanged     = False
+      isMaskChanged = False
       if self.IO is not None:
         if self.Stim.cScMarkList[self.iSc] > 0:
           # ...
-          maskMark            = self.IO_maskMark
-          isMaskChanged       = True
-          self.IO_isMarkSet   = True
+          maskMark = self.IO_maskMark
+          isMaskChanged = True
+          self.IO_isMarkSet = True
         else:
           if self.IO_isMarkSet:
             # ...
-            maskMark          = 0
-            isMaskChanged     = True
+            maskMark = 0
+            isMaskChanged = True
             self.IO_isMarkSet = False
 
       # Flip display buffer ...
       #
-      t1  = Clock.getTime_s()
+      t1 = Clock.getTime_s()
       self.View.present()
       self.avPresDur_s += Clock.getTime_s() -t1
-
-      # ****************************
-      # ****************************
-      # ****************************
-      # ****************************
-      # ****************************
-      '''
-      if self.isRunFromGUI and not(self.View.Renderer.pil_img_data is None):
-        print("******************", len(self.View.Renderer.pil_img_data))
-        #self.Sync.Frame.value = self.View.Renderer.pil_img_data
-      '''
-      # ****************************
-      # ****************************
-      # ****************************
-      # ****************************
 
       # Send marker signal, if needed
       #
@@ -665,28 +668,26 @@ class Presenter:
     #
     if self.Conf.isTrackTime:
       if self.nFrTotal == 0:
-        self.tFr            = Clock.getTime_s()
+        self.tFr = Clock.getTime_s()
       else:
-        t0                  = Clock.getTime_s()
-        dt                  = t0 -self.tFr
-        self.avFrDur_s     += dt
-        self.tFr            = t0
+        t0 = Clock.getTime_s()
+        dt = t0 -self.tFr
+        self.avFrDur_s += dt
+        self.tFr = t0
         self.dataDtFr[self.dataDtFrLen] = dt
-        self.dataDtFrLen   += 1
-        if self.dataDtFrLen >=  self.dataDtFr.size:
+        self.dataDtFrLen += 1
+        if self.dataDtFrLen >= self.dataDtFr.size:
           self.dataDtFrOver = True
-          self.dataDtFrLen  = 0
-        """
-        if (self.Conf.isWarnFrDrop and
-           (abs(dt -self.dtFr_meas_s) > self.Conf.maxDtTr_ms/1000.0)):
-        """
+          self.dataDtFrLen = 0
         if self.Conf.isWarnFrDrop and (dt > self.dtFr_thres_s):
-          self.nDroppedFr  += 1
-          ssp.Log.write("WARNING", "dt of frame #{0} was {1:.3f} ms"
-                        .format(self.nFrTotal, dt *1000.0))
+          self.nDroppedFr += 1
+          ssp.Log.write(
+              "WARNING", "dt of frame #{0} was {1:.3f} ms"
+              .format(self.nFrTotal, dt *1000.0)
+            )
 
-    self.nFrTotal  += 1
-    self.tFrRel_s   = self.nFrTotal*self.Stage.dtFr_s
+    self.nFrTotal += 1
+    self.tFrRel_s = self.nFrTotal*self.Stage.dtFr_s
 
 
   # --------------------------------------------------------------------
@@ -751,13 +752,17 @@ class Presenter:
     if self.Conf.isTrackTime:
       self.avRendDur_s  = self.avRendDur_s /self.nRendTotal
       self.avPresDur_s  = self.avPresDur_s /self.nRendTotal
-      self.avFrDur_s    = self.avFrDur_s /self.nFrTotal
-      ssp.Log.write("INFO", "{0:.3f} ms/frame ({1:.3f} Hz), rendering: "
-                    "{2:.3f} ms/frame ({3} frames in total)"
-                    .format(self.avFrDur_s*1000.0, 1/self.avFrDur_s,
-                            self.avRendDur_s*1000.0, self.nFrTotal))
-      ssp.Log.write("INFO", "presenting: {0:.3f} ms/frame"
-                    .format(self.avPresDur_s*1000.0))
+      self.avFrDur_s = self.avFrDur_s /self.nFrTotal
+      ssp.Log.write(
+          "INFO", "{0:.3f} ms/frame ({1:.3f} Hz), rendering: "
+          "{2:.3f} ms/frame ({3} frames in total)"
+          .format(self.avFrDur_s*1000.0, 1/self.avFrDur_s,
+                  self.avRendDur_s*1000.0, self.nFrTotal)
+        )
+      ssp.Log.write(
+          "INFO", "presenting: {0:.3f} ms/frame"
+          .format(self.avPresDur_s*1000.0)
+        )
 
       if glo.QDSpy_frRateStatsBufferLen > 0:
         if not self.dataDtFrOver:
@@ -765,25 +770,32 @@ class Presenter:
         else:
           data = self.dataDtFr
       else:
-        data   = np.array(self.dataDtFr)
-      av       = data.mean() *1000.0
-      std      = data.std()  *1000.0
-      ssp.Log.write("INFO", "{0:.3f} +/- {1:.3f} ms/frame (over the last {2}"
-                    " frames) = {3:.3} Hz"
-                    .format(av, std, len(data), 1000.0/av))
+        data = np.array(self.dataDtFr)
+      av = data.mean() *1000.0
+      std = data.std() *1000.0
+      ssp.Log.write(
+          "INFO", "{0:.3f} +/- {1:.3f} ms/frame (over the last {2}"
+          " frames) = {3:.3} Hz"
+          .format(av, std, len(data), 1000.0/av)
+        )
       if self.nDroppedFr > 0:
         pcDrFr = 100.0*self.nDroppedFr/self.nFrTotal
-        ssp.Log.write("WARNING", "{0} frames dropped (={1:.3f} %)"
-                      .format(self.nDroppedFr, pcDrFr))
+        ssp.Log.write(
+            "WARNING", "{0} frames dropped (={1:.3f} %)"
+            .format(self.nDroppedFr, pcDrFr)
+          )
 
-      ssp.Log.write("DATA", {"avgFreq_Hz": 1/self.avFrDur_s,
-                             "nFrames": self.nFrTotal,
-                             "nDroppedFrames": self.nDroppedFr}
-                             .__str__())
+      ssp.Log.write(
+          "DATA", {"avgFreq_Hz": 1/self.avFrDur_s,
+          "nFrames": self.nFrTotal,
+          "nDroppedFrames": self.nDroppedFr}.__str__()
+        )
 
       if QDSpy_verbose:
         # Generate a plot ...
         #
+        ssp.Log.write("WARNING", "Code needs to be updated")
+        ''' 
         pylab.title("Timing")
         pylab.subplot(2,1,1)
         pylab.plot(list(range(len(data))), data*1000, "-")
@@ -805,6 +817,7 @@ class Presenter:
         pylab.xlabel("frame duration [ms]")
         pylab.tight_layout()
         pylab.show()
+        '''
 
   def save_stim_to_file(self):
       ssp.Log.write("DEBUG", "Prepare saving stimulus recording")
@@ -818,18 +831,17 @@ class Presenter:
 
       ssp.Log.write("DEBUG", "Successfully saved stimulus recording")
 
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def prepare(self, _Stim, _Sync=None):
     # Prepare a stimulus, to be started with the run() function
     #
     self.reset()
-    self.Stim    = _Stim
+    self.Stim = _Stim
     self.isReady = True
 
     if _Sync is not None:
       self.isRunFromGUI = True
-      self.Sync         = _Sync
+      self.Sync = _Sync
 
     if self.Stim is None:
       self.isReady = False
@@ -837,15 +849,15 @@ class Presenter:
     else:
       # Setup digital I/O, if used
       #
-      if self.IO is not  None:
-        self.IO_portOut   = self.IO.getPortFromStr(self.Conf.DIOportOut)
-        self.IO_maskMark  = 0x01 << self.Conf.DIOpinMarker
+      if self.IO is not None:
+        self.IO_portOut = self.IO.getPortFromStr(self.Conf.DIOportOut)
+        self.IO_maskMark = 0x01 << self.Conf.DIOpinMarker
 
       # Load and generate shader(s), if any
       #
-      self.ShProgList    = []
+      self.ShProgList = []
       if not glo.QDSpy_loadShadersOnce:
-        self.ShManager   = csh.ShaderManager(self.Conf)
+        self.ShManager = csh.ShaderManager(self.Conf)
 
       if len(self.Stim.ShList) > 0:
         for iSh, Sh in enumerate(self.Stim.ShList):
@@ -858,23 +870,29 @@ class Presenter:
               self.ShProgList.append(shader)
             else:
               self.isReady = False
-              ssp.Log.write("ERROR", "Stimulus '{0}' uses shader '{1}' that "
-                            "could not be compiled"
-                            .format(_Stim.nameStr, shType))
+              ssp.Log.write(
+                  "ERROR", "Stimulus '{0}' uses shader '{1}' that "
+                  "could not be compiled"
+                  .format(_Stim.nameStr, shType)
+                )
           else:
             # A shaders that is not in the shader folder is required
             #
             self.isReady  = False
-            ssp.Log.write("ERROR", "Stimulus '{0}' uses shader '{1}' that "
-                          "cannot be found".format(_Stim.nameStr, shType))
+            ssp.Log.write(
+                "ERROR", "Stimulus '{0}' uses shader '{1}' that "
+                "cannot be found".format(_Stim.nameStr, shType)
+              )
 
       # Load movie files, if any
       #
-      self.MovieList    = []
+      self.MovieList = []
       if len(self.Stim.MovList) > 0:
         for Mov in self.Stim.MovList:
           movOb = mov.Movie(self.Conf)
-          res   = movOb.load(self.Conf.pathStim +Mov[stm.SM_field_movieFName])
+          res = movOb.load(
+              self.Conf.pathStim +Mov[stm.SM_field_movieFName]
+            )
           if res == stm.StimErrC.ok:
             # Add movie class object to list
             #
@@ -884,17 +902,21 @@ class Presenter:
             # The movie file(s) could not be loaded
             #
             self.isReady = False
-            ssp.Log.write("ERROR", "Stimulus '{0}' uses movie '{1}' that "
-                          "cannot be found".format(
-                          _Stim.nameStr,Mov[stm.SM_field_movieFName]))
+            ssp.Log.write(
+                "ERROR", "Stimulus '{0}' uses movie '{1}' that "
+                "cannot be found".format(
+                _Stim.nameStr,Mov[stm.SM_field_movieFName])
+              )
 
       # Load videos, if any
       #
-      self.VideoList    = []
+      self.VideoList = []
       if len(self.Stim.VidList) > 0:
         for Vid in self.Stim.VidList:
           vidOb = vid.Video(self.Conf)
-          res   = vidOb.load(self.Conf.pathStim +Vid[stm.SV_field_videoFName])
+          res = vidOb.load(
+              self.Conf.pathStim +Vid[stm.SV_field_videoFName]
+            )
           if res == stm.StimErrC.ok:
             # Add video class object to list
             #
@@ -904,9 +926,11 @@ class Presenter:
             # The video file(s) could not be loaded
             #
             self.isReady = False
-            ssp.Log.write("ERROR", "Stimulus '{0}' uses video '{1}' that "
-                          "cannot be found".format(
-                          _Stim.nameStr, Vid[stm.SV_field_videoFName]))
+            ssp.Log.write(
+                "ERROR", "Stimulus '{0}' uses video '{1}' that "
+                "cannot be found".format(
+                _Stim.nameStr, Vid[stm.SV_field_videoFName])
+              )
 
       # Create batch object for rendering objects
       #
@@ -914,6 +938,8 @@ class Presenter:
       self.Batch.set_shader_manager(self.ShManager)
 
       if self.isReady:
-        ssp.Log.write("ok", "Stimulus '{0}' prepared".format(_Stim.nameStr))
+        ssp.Log.write(
+            "ok", "Stimulus '{0}' prepared".format(_Stim.nameStr)
+          )
 
 # ---------------------------------------------------------------------
