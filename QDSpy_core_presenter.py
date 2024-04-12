@@ -821,29 +821,12 @@ class Presenter:
         pylab.show()
         '''
 
-  def stim_to_numpy_array(self, image: pyglet.image.ImageData):
-    pitch = -(image.width * len('RGB'))
-    img_data = image.get_data('RGB', pitch)
-
-    pil_image = PIL.Image.new(mode="RGB", size=(image.width, image.height))
-    pil_image.frombytes(img_data)
-
-    f_downsample = self.Conf.rec_f_downsample_x
-    if f_downsample > 1:
-      pil_image = pil_image.resize(tuple(s//f_downsample for s in pil_image.size))
-
-    pil_image = pil_image.transpose(PIL.Image.Transpose.FLIP_TOP_BOTTOM)
-    pil_image = pil_image.convert('RGB')
-
-    return pil_image
-
-  def stimToPilImage(self, image: pyglet.image.ImageData) -> PIL.Image.Image:
+  def stim_to_pil_image(self, image: pyglet.image.ImageData, f_downsample: int = 1) -> PIL.Image.Image:
     img_data = image.get_data()
 
     pil_image = PIL.Image.new(mode="RGBA", size=(image.width, image.height))
     pil_image.frombytes(img_data)
 
-    f_downsample = self.Conf.rec_f_downsample_x
     if f_downsample > 1:
       pil_image = pil_image.resize(tuple(s // f_downsample for s in pil_image.size))
 
@@ -854,16 +837,17 @@ class Presenter:
 
   def save_stim_to_file(self):
       ssp.Log.write("DEBUG", f"Prepare saving {len(self.recordedStim)} stimulus frames")
-      self.stim_folder = "RecordedStimuli"
-      if not os.path.isdir(self.stim_folder):
-        os.mkdir(self.stim_folder)
+      stim_folder = "RecordedStimuli"
+      if not os.path.isdir(stim_folder):
+        os.mkdir(stim_folder)
 
-      np_stimuli_array = [self.stimToPilImage(s) for s in self.recordedStim]
-      recordedStim_arr = np.stack(np_stimuli_array)
+      pil_image_array = [self.stim_to_pil_image(s, f_downsample=self.Conf.rec_f_downsample_x)
+                         for s in self.recordedStim]
+      recorded_stimulus_stack = np.stack(pil_image_array)
 
-      file_name = f"{self.stim_folder}/{self.recordedStimName}.pickle"
+      file_name = f"{stim_folder}/{self.recordedStimName}.pickle"
       with open(file_name, 'wb') as file:
-        pickle.dump(recordedStim_arr, file, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(recorded_stimulus_stack, file, protocol=pickle.HIGHEST_PROTOCOL)
 
       ssp.Log.write("DEBUG", f"Successfully saved stimulus recording to {file_name}")
 
