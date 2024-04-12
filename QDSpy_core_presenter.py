@@ -19,6 +19,8 @@ import os
 import pickle
 
 import numpy as np
+import pyglet
+import PIL
 import QDSpy_global as glo
 import QDSpy_stim as stm
 import QDSpy_stim_movie as mov
@@ -661,7 +663,7 @@ class Presenter:
       #
       if self.recordStim:
         if self.nFrTotal % self.Conf.rec_f_downsample_t == 0:
-          stimframe = self.View.grabStimFrame(f_downsample=self.Conf.rec_f_downsample_x)
+          stimframe = self.View.grabStimFrame()
           self.recordedStim.append(stimframe)
 
     # Keep track of refresh duration
@@ -819,17 +821,51 @@ class Presenter:
         pylab.show()
         '''
 
+  def stim_to_numpy_array(self, image: pyglet.image.ImageData):
+    pitch = -(image.width * len('RGB'))
+    img_data = image.get_data('RGB', pitch)
+
+    pil_image = PIL.Image.new(mode="RGB", size=(image.width, image.height))
+    pil_image.frombytes(img_data)
+
+    f_downsample = self.Conf.rec_f_downsample_x
+    if f_downsample > 1:
+      pil_image = pil_image.resize(tuple(s//f_downsample for s in pil_image.size))
+
+    pil_image = pil_image.transpose(PIL.Image.Transpose.FLIP_TOP_BOTTOM)
+    pil_image = pil_image.convert('RGB')
+
+    return pil_image
+
+  def stimToPilImage(self, image: pyglet.image.ImageData) -> PIL.Image.Image:
+    img_data = image.get_data()
+
+    pil_image = PIL.Image.new(mode="RGBA", size=(image.width, image.height))
+    pil_image.frombytes(img_data)
+
+    f_downsample = self.Conf.rec_f_downsample_x
+    if f_downsample > 1:
+      pil_image = pil_image.resize(tuple(s // f_downsample for s in pil_image.size))
+
+    pil_image = pil_image.convert('RGB')
+    pil_image = pil_image.transpose(PIL.Image.Transpose.FLIP_TOP_BOTTOM)
+
+    return pil_image
+
   def save_stim_to_file(self):
-      ssp.Log.write("DEBUG", "Prepare saving stimulus recording")
+      ssp.Log.write("DEBUG", f"Prepare saving {len(self.recordedStim)} stimulus frames")
       self.stim_folder = "RecordedStimuli"
       if not os.path.isdir(self.stim_folder):
         os.mkdir(self.stim_folder)
-      recordedStim_arr = np.stack(self.recordedStim)
 
-      with open(f"{self.stim_folder}/{self.recordedStimName}.pickle", 'wb') as file:
+      np_stimuli_array = [self.stimToPilImage(s) for s in self.recordedStim]
+      recordedStim_arr = np.stack(np_stimuli_array)
+
+      file_name = f"{self.stim_folder}/{self.recordedStimName}.pickle"
+      with open(file_name, 'wb') as file:
         pickle.dump(recordedStim_arr, file, protocol=pickle.HIGHEST_PROTOCOL)
 
-      ssp.Log.write("DEBUG", "Successfully saved stimulus recording")
+      ssp.Log.write("DEBUG", f"Successfully saved stimulus recording to {file_name}")
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def prepare(self, _Stim, _Sync=None):

@@ -25,7 +25,6 @@ import sys
 import ctypes
 import pyglet
 import numpy as np
-import PIL
 
 '''
 import scipy
@@ -239,26 +238,12 @@ class Renderer:
     """
     self.bufMan = pyglet.image.get_buffer_manager()
 
-  def grab_frame(self, f_downsample: int = 1):
+  def grab_frame(self) -> pyglet.image.ImageData:
     """ Prepare recording of window content
     """
-    #TODO: This does not work for some PIL versions. Fix this.
-
-
     colBuf = self.bufMan.get_color_buffer()
     image = colBuf.get_image_data()
-
-    pitch = -(image.width * len('RGB'))
-    pil_image = PIL.Image.new(mode="RGB", size=(image.width, image.height))
-    img_data = image.get_data('RGB', pitch)
-    pil_image.frombytes(img_data)
-    if f_downsample > 1:
-      pil_image = pil_image.resize(tuple(s//f_downsample for s in pil_image.size))
-
-    pil_image = pil_image.transpose(PIL.Image.Transpose.FLIP_TOP_BOTTOM)
-    pil_image = pil_image.convert('RGB')
-
-    return pil_image
+    return image
 
 # =====================================================================
 #

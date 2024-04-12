@@ -225,8 +225,8 @@ class View:
     ssp.Log.write("INFO", "Renderer.prepare_record_win()")
 
 
-  def grabStimFrame(self, f_downsample: int = 1):
+  def grabStimFrame(self):
     # Grab the current frame of the stimulus window
-    return self.Renderer.grab_frame(f_downsample=f_downsample)
+    return self.Renderer.grab_frame()
 
 # ---------------------------------------------------------------------
