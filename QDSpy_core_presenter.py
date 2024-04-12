@@ -855,7 +855,7 @@ class Presenter:
 
     return stimulus_stack
 
-  def save_stim_to_file(self):
+  def save_stim_to_file(self) -> None:
       ssp.Log.write("DEBUG", f"Prepare saving {len(self.recordedStim)} stimulus frames")
       stim_folder = "RecordedStimuli"
       if not os.path.isdir(stim_folder):

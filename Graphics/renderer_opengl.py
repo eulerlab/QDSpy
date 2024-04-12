@@ -25,9 +25,9 @@ import sys
 import ctypes
 import pyglet
 import numpy as np
-
 '''
 import scipy
+import PIL
 '''
 pyglet.options["debug_gl"] = True
 import pyglet.gl as GL
