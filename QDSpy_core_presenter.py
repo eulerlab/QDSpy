@@ -821,7 +821,8 @@ class Presenter:
         pylab.show()
         '''
 
-  def stim_to_pil_image(self, image: pyglet.image.ImageData, f_downsample: int = 1) -> PIL.Image.Image:
+  @staticmethod
+  def stim_to_pil_image(image: pyglet.image.ImageData, f_downsample: int = 1) -> PIL.Image.Image:
     img_data = image.get_data()
 
     pil_image = PIL.Image.new(mode="RGBA", size=(image.width, image.height))
@@ -835,6 +836,25 @@ class Presenter:
 
     return pil_image
 
+  @staticmethod
+  def adapt_stimulus_recording_to_setup(stimulus_stack: np.array, setup_id: int) -> np.array:
+    """ Tweak stimulus according to https://cin-10.medizin.uni-tuebingen.de/eulerwiki/index.php/Orientation
+        stimulus_stack.shape: frame, y, x, color
+    """
+    # for both setups the x and y plane is swapped
+    if setup_id == 1:
+      # swap x and y
+      stimulus_stack = stimulus_stack.transpose(0, 2, 1, 3)
+    elif setup_id == 3:
+      # swap x and y
+      stimulus_stack = stimulus_stack.transpose(0, 2, 1, 3)
+      # flip direction in y-axis
+      stimulus_stack = np.flip(stimulus_stack, axis=1)
+    else:
+      raise ValueError(f"Unknown setup: {setup_id=}")
+
+    return stimulus_stack
+
   def save_stim_to_file(self):
       ssp.Log.write("DEBUG", f"Prepare saving {len(self.recordedStim)} stimulus frames")
       stim_folder = "RecordedStimuli"
@@ -844,6 +864,9 @@ class Presenter:
       pil_image_array = [self.stim_to_pil_image(s, f_downsample=self.Conf.rec_f_downsample_x)
                          for s in self.recordedStim]
       recorded_stimulus_stack = np.stack(pil_image_array)
+      if self.Conf.rec_setup_id is not None:
+        recorded_stimulus_stack = self.adapt_stimulus_recording_to_setup(
+          recorded_stimulus_stack, self.Conf.rec_setup_id)
 
       file_name = f"{stim_folder}/{self.recordedStimName}.pickle"
       with open(file_name, 'wb') as file:

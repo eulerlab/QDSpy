@@ -36,6 +36,7 @@ QDSpy_use3DTextures         = 0
 QDSpy_recordStim            = 0      # 0=normal presentation
 QDSpy_rec_f_downsample_x    = 10
 QDSpy_rec_f_downsample_t    = 100
+QDSpy_rec_setup_id          = None
 
 QDSpy_useCtrlWin            = False
 QDSpy_ctrlWinScale          = 0.2

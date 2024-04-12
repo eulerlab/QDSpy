@@ -231,6 +231,8 @@ class Config:
 
       self.rec_f_downsample_x = self.getParam("Tweaking", "int_rec_f_downsample_x", glo.QDSpy_recordStim)
       self.rec_f_downsample_t = self.getParam("Tweaking", "int_rec_f_downsample_t", glo.QDSpy_recordStim)
+      self.rec_setup_id = self.getParam("Tweaking", "int_rec_setup_id", glo.QDSpy_rec_setup_id)
+
 
       temp              = self.getParam("Tweaking",  
                                         "str_window_geometry_cam",
