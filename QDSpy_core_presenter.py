@@ -15,7 +15,12 @@ Distributed under the terms of the GNU General Public License (GPL)
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
+import os
+import pickle
+
 import numpy as np
+import pyglet
+import PIL
 import QDSpy_global as glo
 import QDSpy_stim as stm
 import QDSpy_stim_movie as mov
@@ -118,8 +123,8 @@ class Presenter:
     self.nLoopRepeats = 0
     self.iFirstLoopSc = -1
 
-    self.vertTr       = np.array([], dtype=np.int)   # temporary vertex arrays
-    self.iVertTr      = np.array([], dtype=np.int)   # temporary index arrays
+    self.vertTr       = np.array([], dtype=int)   # temporary vertex arrays
+    self.iVertTr      = np.array([], dtype=int)   # temporary index arrays
     self.vRGBTr       = np.array([], dtype=np.uint8) # temporary RGBA arrays
     self.vRGBTr2      = np.array([], dtype=np.uint8)
 
@@ -656,8 +661,10 @@ class Presenter:
 
       # Record stimulus presentation, if requested
       #
-      if self.Conf.recordStim:
-        self.View.grabStimFrame()
+      if self.recordStim:
+        if self.nFrTotal % self.Conf.rec_f_downsample_t == 0:
+          stimframe = self.View.grabStimFrame()
+          self.recordedStim.append(stimframe)
 
     # Keep track of refresh duration
     #
@@ -700,13 +707,23 @@ class Presenter:
     #
     self.isEnd  = False
     ssp.Log.write("ok", "Running...")
-    ssp.Log.write(
-        "DATA", {"stimFileName": self.Stim.fileName,
-        "stimState": "STARTED",
-        "stimMD5": self.Stim.md5Str}.__str__()
-      )
+    ssp.Log.write("DATA", {"stimFileName": self.Stim.fileName,
+                           "stimState": "STARTED",
+                           "stimMD5": self.Stim.md5Str}.__str__())
+
+    # Prepare recording stimulus if requested
+    self.recordStim = self.Conf.recordStim and self.Stim is not None and not self.Stim.nameStr.startswith('__')
+
+    if self.recordStim:
+      self.View.prepareGrabStim()
+      self.recordedStim = []
+      self.recordedStimName = self.Stim.nameStr
+
     self.Stage.logData()
     self.View.startRenderingLoop(self)
+
+    if self.recordStim:
+      self.save_stim_to_file()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def stop(self):
@@ -803,6 +820,59 @@ class Presenter:
         pylab.tight_layout()
         pylab.show()
         '''
+
+  @staticmethod
+  def stim_to_pil_image(image: pyglet.image.ImageData, f_downsample: int = 1) -> PIL.Image.Image:
+    img_data = image.get_data()
+
+    pil_image = PIL.Image.new(mode="RGBA", size=(image.width, image.height))
+    pil_image.frombytes(img_data)
+
+    if f_downsample > 1:
+      pil_image = pil_image.resize(tuple(s // f_downsample for s in pil_image.size))
+
+    pil_image = pil_image.convert('RGB')
+    pil_image = pil_image.transpose(PIL.Image.Transpose.FLIP_TOP_BOTTOM)
+
+    return pil_image
+
+  @staticmethod
+  def adapt_stimulus_recording_to_setup(stimulus_stack: np.array, setup_id: int) -> np.array:
+    """ Tweak stimulus according to https://cin-10.medizin.uni-tuebingen.de/eulerwiki/index.php/Orientation
+        stimulus_stack.shape: frame, y, x, color
+    """
+    # for both setups the x and y plane is swapped
+    if setup_id == 1:
+      # swap x and y
+      stimulus_stack = stimulus_stack.transpose(0, 2, 1, 3)
+    elif setup_id == 3:
+      # swap x and y
+      stimulus_stack = stimulus_stack.transpose(0, 2, 1, 3)
+      # flip direction in y-axis
+      stimulus_stack = np.flip(stimulus_stack, axis=1)
+    else:
+      raise ValueError(f"Unknown setup: {setup_id=}")
+
+    return stimulus_stack
+
+  def save_stim_to_file(self) -> None:
+      ssp.Log.write("DEBUG", f"Prepare saving {len(self.recordedStim)} stimulus frames")
+      stim_folder = "RecordedStimuli"
+      if not os.path.isdir(stim_folder):
+        os.mkdir(stim_folder)
+
+      pil_image_array = [self.stim_to_pil_image(s, f_downsample=self.Conf.rec_f_downsample_x)
+                         for s in self.recordedStim]
+      recorded_stimulus_stack = np.stack(pil_image_array)
+      if self.Conf.rec_setup_id is not None:
+        recorded_stimulus_stack = self.adapt_stimulus_recording_to_setup(
+          recorded_stimulus_stack, self.Conf.rec_setup_id)
+
+      file_name = f"{stim_folder}/{self.recordedStimName}.pickle"
+      with open(file_name, 'wb') as file:
+        pickle.dump(recorded_stimulus_stack, file, protocol=pickle.HIGHEST_PROTOCOL)
+
+      ssp.Log.write("DEBUG", f"Successfully saved stimulus recording to {file_name}")
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   def prepare(self, _Stim, _Sync=None):

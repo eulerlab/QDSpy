@@ -2,3 +2,6 @@
 Logs
 QDSpy.ini
 Stimuli/*.pickle
+Stimuli/New Stimuli/*.pickle
+.idea/*
+RecordedStimuli/
