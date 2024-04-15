@@ -233,43 +233,17 @@ class Renderer:
       win.close()
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def prepare_grabbing_win(self, _iWin):
-    """ Prepare grabbing of window content for a stimulus recording
+  def prepare_record_win(self):
+    """ Prepare grabbing of window content for a recording of the stimulus
     """
-    pass
-    # **********************
-    # **********************
-    # TODO:
-    '''
-    self.bufMan  = pyglet.image.get_buffer_manager()
-    self.iRecWin = _iWin
-    '''    
-    # **********************
-    # **********************
+    self.bufMan = pyglet.image.get_buffer_manager()
 
-  def grab_frame(self):
+  def grab_frame(self) -> pyglet.image.ImageData:
     """ Prepare recording of window content
     """
-    # **********************
-    # **********************
-    # TODO:
-    # something like function(image, self.nFr)
-    '''
-    colBuf    = self.bufMan.get_color_buffer()
-    image     = colBuf.image_data.get_image_data()
-    pil_image = Image.fromstring(
-        image.format, (image.width, image.height),
-        image.get_data(image.format, image.pitch)
-      )
-    pil_image = pil_image.transpose(Image.FLIP_TOP_BOTTOM)
-    pil_image = pil_image.convert('RGB')
-    pil_image.save(
-        "D:\SCRATCH\MOVIE\{0:06d}.png".format(self.nFrTotal), "PNG"
-      )
-    '''
-    # **********************
-    # **********************
-    pass
+    colBuf = self.bufMan.get_color_buffer()
+    image = colBuf.get_image_data()
+    return image
 
 # =====================================================================
 #
