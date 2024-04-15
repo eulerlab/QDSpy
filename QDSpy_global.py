@@ -3,7 +3,7 @@
 """
 QDSpy module - global definitions
 
-Copyright (c) 2013-2023 Thomas Euler
+Copyright (c) 2013-2024 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
