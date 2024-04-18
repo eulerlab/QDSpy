@@ -8,3 +8,5 @@ dependencies:
   - conda-forge::moviepy
   - psutil
   - pyserial
+  - pip:
+    - hid
