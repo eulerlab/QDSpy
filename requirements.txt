@@ -5,3 +5,5 @@ pyglet==1.4.10
 moviepy
 psutil
 pyserial
+hidapi
+hid
