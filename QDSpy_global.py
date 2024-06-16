@@ -3,16 +3,19 @@
 """
 QDSpy module - global definitions
 
-Copyright (c) 2013-2023 Thomas Euler
+Copyright (c) 2013-2024 Thomas Euler
 All rights reserved.
+
+2024-06-15 - Fix for breaking change in `configparser`; now using
+             `ConfigParser` instead of `RawConfigParser`
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.82 beta"
-QDSpy_copyrightStr          = "(c) 2013-23 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v082beta.thomas_euler.eulerlab.de"
+QDSpy_versionStr            = "QDSpy v0.90 beta"
+QDSpy_copyrightStr          = "(c) 2013-24 Thomas Euler"
+QDSpy_appID                 = u"QDSpy3.v090beta.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 
 QDSpy_isDebug               = True
@@ -36,7 +39,10 @@ QDSpy_use3DTextures         = 0
 QDSpy_recordStim            = 0      # 0=normal presentation
 QDSpy_rec_f_downsample_x    = 10
 QDSpy_rec_f_downsample_t    = 100
-QDSpy_rec_setup_id          = None
+# --> TE: Incompatible with `ConfigParser`, see `QDSpy_config.py`
+#QDSpy_rec_setup_id          = None  
+QDSpy_rec_setup_id          = -1
+# <--
 
 QDSpy_useCtrlWin            = False
 QDSpy_ctrlWinScale          = 0.2

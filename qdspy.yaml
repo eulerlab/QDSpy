@@ -1,10 +1,10 @@
 name: qdspy
 dependencies:
   - python>=3.8
-  - conda-forge::numpy
-  - conda-forge::pyqt==5.*
+  - numpy
   - pywin32
-  - conda-forge::pyglet==1.4.10
-  - conda-forge::moviepy
   - psutil
   - pyserial
+  - conda-forge::pyqt==5.*
+  - conda-forge::pyglet==1.4.10
+  - conda-forge::moviepy

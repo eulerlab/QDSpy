@@ -8,7 +8,7 @@ QDS.Initialize("movie_water1", "Water movie test")
 
 # Define global stimulus parameters
 #
-FrRefr_Hz = QDS.GetDefaultRefreshRate()
+FrRefr_Hz = QDS.GetDefaultRefreshRate() 
 
 p = {"nTrials"         : 1,           # number of stimulus presentations  
      "movScale"        : (4.0, 4.0),  # movie scaling (x, y)
@@ -36,7 +36,7 @@ p = {"nTrials"         : 1,           # number of stimulus presentations
                                       # changes
 QDS.LogUserParameters(p)
 
-# Define objects
+# Define objects 
 #
 QDS.DefObj_Movie(1, p["movName"])   
 movparams         = QDS.GetMovieParameters(1)
