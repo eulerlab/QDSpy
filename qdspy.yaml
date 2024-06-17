@@ -4,7 +4,7 @@ dependencies:
   - conda-forge::numpy
   - conda-forge::pyqt==5.*
   - pywin32
-  - conda-forge::pyglet==1.4.10
+  - conda-forge::pyglet==1.5.7
   - conda-forge::moviepy
   - psutil
   - pyserial
