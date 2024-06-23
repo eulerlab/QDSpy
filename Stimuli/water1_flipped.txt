@@ -1,0 +1,7 @@
+[QDSMovie2Description]
+QDSVersionID=xQDS
+FrWidth=128
+FrHeight=90
+FrCount=10800
+isFirstFrBottomLeft=True
+Comment=a water movie

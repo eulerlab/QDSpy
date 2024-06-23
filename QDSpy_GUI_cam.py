@@ -3,15 +3,17 @@
 """
 QDSpy module - camera dialog
 
-Copyright (c) 2013-2016 Thomas Euler
+Copyright (c) 2013-2024 Thomas Euler
 All rights reserved.
+
+2024-06-19 - Ported from `PyQt5` to `PyQt6`
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-from   PyQt5 import QtGui, QtCore, uic
-from   PyQt5.QtCore import QTimer
-from   PyQt5.QtWidgets import QDialog
+from   PyQt6 import QtGui, QtCore, uic
+from   PyQt6.QtCore import QTimer
+from   PyQt6.QtWidgets import QDialog
 import QDSpy_core_support as csp
 
 if csp.module_exists("cv2"):
@@ -66,7 +68,7 @@ class CamWinClass(QDialog, form_class):
     
     # Update parent 
     #
-    if not(self.parent is None) and not(self.funcUpdate is None):
+    if self.parent is not None and self.funcUpdate is not None:
       self.funcUpdate()
       
     self.accept()    
