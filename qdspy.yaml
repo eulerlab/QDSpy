@@ -6,5 +6,5 @@ dependencies:
   - psutil
   - pyserial
   - conda-forge::pyqt==5.*
-  - conda-forge::pyglet==1.4.10
+  - conda-forge::pyglet==1.5.7
   - conda-forge::moviepy
