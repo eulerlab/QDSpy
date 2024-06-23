@@ -19,6 +19,7 @@ All rights reserved.
 2022-08-06 - Some reformatting
 2024-06-12 - Fixed a bug that prevented using the probe spot tool
            - Reformatted (using Ruff)
+           - Fixed a bug when using `pyglet` higher than v1.5.7
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -28,7 +29,7 @@ import ctypes
 import pyglet
 import numpy as np
 
-pyglet.options["debug_gl"] = True
+pyglet.options["debug_gl"] = False
 import pyglet.gl as GL  # noqa: E402
 from pyglet.gl.gl_info import GLInfo  # noqa: E402
 
@@ -738,17 +739,14 @@ class Batch:
 class CommonParentGroup(pyglet.graphics.OrderedGroup):
     """Parent class for all groups, based on a pyglet group
     """
-
     def __init__(self):
+        super(CommonParentGroup, self).__init__(order=0, parent=None)
         self.iObj = 0
-        self.parent = None
-        self.order = 0
 
 
 class CommonShaderParentGroup(pyglet.graphics.OrderedGroup):
     """Parent class for a shader object group
     """
-
     def __init__(self):
         super(CommonShaderParentGroup, self).__init__(order=1, parent=CommonParent)
 
@@ -764,7 +762,6 @@ CommonShaderParent = CommonShaderParentGroup()
 class ShaderBindGroup(pyglet.graphics.Group):
     """Pyglet group to bind/unbind shader objects
     """
-
     def __init__(self, _shader, _shType, _iObj, _ShMan):
         super(ShaderBindGroup, self).__init__(parent=CommonShaderParent)
         self.parent.order = _iObj
@@ -873,8 +870,8 @@ def vertFromRect(_rect, _pos, _RGBA, _angle=0):
 # ---------------------------------------------------------------------
 def rotateTranslate(_c, _rot_deg, _pxy):
     """Rotate the coordinates in the list ([x1,y1,x2,y2, ...]) by the
-       given angle and then translates the coordinates to the given
-       position
+    given angle and then translates the coordinates to the given
+    position
     """
     nc = []
     a_rad = np.radians(_rot_deg)

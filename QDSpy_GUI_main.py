@@ -10,6 +10,9 @@ All rights reserved.
 2024-06-11 - Reformatted (using Ruff)
            - Small fixes for PEP violations
            - `int()` where Qt5 does not accept float
+2024-06-19 - Ported from `PyQt5` to `PyQt6`
+             (note that `QDSApp.setStyle("Fusion")` is needed to make
+              the GUI designed for Qt5 look decent)   
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -18,11 +21,11 @@ import os
 import sys
 import time
 import pickle
-from PyQt5 import uic  # type: ignore
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QLabel, QApplication  # type: ignore
-from PyQt5.QtWidgets import QFileDialog, QListWidgetItem, QWidget  # type: ignore
-from PyQt5.QtGui import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor  # type: ignore
-from PyQt5.QtCore import QRect, QSize  # type: ignore
+from PyQt6 import uic  
+from PyQt6.QtWidgets import QMessageBox, QMainWindow, QLabel, QApplication  
+from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QWidget  
+from PyQt6.QtGui import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor 
+from PyQt6.QtCore import QRect, QSize  
 from multiprocessing import Process
 import QDSpy_stim as stm
 import QDSpy_stim_support as ssp
@@ -46,6 +49,7 @@ if PLATFORM_WINDOWS:
 
 # ---------------------------------------------------------------------
 form_class = uic.loadUiType("QDSpy_GUI_main.ui")[0]
+
 toggle_btn_style_str = "QPushButton:checked{background-color: lightGreen;border: none;}"
 user_btn_style_str = "QPushButton:checked{background-color: orange;border: none;}"
 
@@ -53,7 +57,6 @@ user_btn_style_str = "QPushButton:checked{background-color: orange;border: none;
 fStrPreRed = '<html><head/><body><p><span style="color:#ff0000;">'
 fStrPreGreen = '<html><head/><body><p><span style="color:#00aa00;">'
 fStrPost = "</span></p></body></html>"
-
 
 # ---------------------------------------------------------------------
 class State:
@@ -67,11 +70,9 @@ class State:
     probing = 7
     # ...
 
-
 # ---------------------------------------------------------------------
 class Canceled(Exception):
     pass
-
 
 # ---------------------------------------------------------------------
 # Main application window
@@ -79,7 +80,6 @@ class Canceled(Exception):
 class MainWinClass(QMainWindow, form_class):
     def __init__(self, parent=None):
         # Initialize
-        #
         self.HDMagFactor = 1.0
         self.Conf = cfg.Config()
         self.Stim = stm.Stim()
@@ -103,7 +103,6 @@ class MainWinClass(QMainWindow, form_class):
         self.setWindowTitle(glo.QDSpy_versionStr)
 
         # Bind GUI ...
-        #
         self.btnRefreshStimList.clicked.connect(self.OnClick_btnRefreshStimList)
         self.listStim.itemClicked.connect(self.OnClick_listStim)
         self.listStim.itemDoubleClicked.connect(self.OnDblClick_listStim)
@@ -218,7 +217,6 @@ class MainWinClass(QMainWindow, form_class):
 
         # Create status objects and a pipe for communicating with the
         # presentation process (see below)
-        #
         self.logWrite("DEBUG", "Creating sync object ...")
         self.state = State.undefined
         self.Sync = mpr.Sync()
@@ -227,7 +225,6 @@ class MainWinClass(QMainWindow, form_class):
 
         # Create process that opens a view (an OpenGL window) and waits for
         # instructions to play stimuli
-        #
         self.logWrite("DEBUG", "Creating worker thread ...")
         self.worker = Process(
             target=QDSpy_core.main, args=(self.currStimFName, True, self.Sync)
@@ -242,81 +239,74 @@ class MainWinClass(QMainWindow, form_class):
         self.setState(State.idle, True)
 
         # Update GUI ...
-        #
         self.updateStimList()
         self.updateAll()
 
-        # If screen resolution is above a certain dpi levels (->HD), all GUI
-        # elements are scaled in order to keep the GUI readable
-        #
-        nHDScr = 0
-        maxdpi = 0
-        screens = QDSApp.screens()
-        for s in screens:
-            dpi = s.logicalDotsPerInch()
-            if dpi > maxdpi:
-                maxdpi = dpi
-            if dpi > glo.QDSpy_dpiThresholdForHD:
-                nHDScr += 1
+        if glo.QDSpy_useGUIScalingForHD:
+            # If screen resolution is above a certain dpi levels (->HD), all GUI
+            # elements are scaled in order to keep the GUI readable
+            # (Needed for PyQt5 and lower)
+            nHDScr = 0
+            maxdpi = 0
+            screens = QDSApp.screens()
+            for s in screens:
+                dpi = s.logicalDotsPerInch()
+                if dpi > maxdpi:
+                    maxdpi = dpi
+                if dpi > glo.QDSpy_dpiThresholdForHD:
+                    nHDScr += 1
 
-        if nHDScr == 0:
-            # "Normal" display
-            #
-            self.HDMagFactor = 1.0
+            if nHDScr == 0:
+                # "Normal" display
+                self.HDMagFactor = 1.0
 
-        else:
-            # Scale all GUI elements to account for HD display
-            #
-            self.HDMagFactor = maxdpi / 100.0
-            listChildren = self.findChildren(QWidget)
-            for child in listChildren:
-                rect = child.geometry().getRect()
-                child.setGeometry(
-                    QRect(
-                        int(rect[0] * self.HDMagFactor),
-                        int(rect[1] * self.HDMagFactor),
-                        int(rect[2] * self.HDMagFactor),
-                        int(rect[3] * self.HDMagFactor),
+            else:
+                # Scale all GUI elements to account for HD display
+                self.HDMagFactor = maxdpi / 100.0
+                listChildren = self.findChildren(QWidget)
+                for child in listChildren:
+                    rect = child.geometry().getRect()
+                    child.setGeometry(
+                        QRect(
+                            int(rect[0] * self.HDMagFactor),
+                            int(rect[1] * self.HDMagFactor),
+                            int(rect[2] * self.HDMagFactor),
+                            int(rect[3] * self.HDMagFactor),
+                        )
+                    )
+                rect = self.minimumSize()
+                self.setMinimumSize(
+                    QSize(
+                        int(rect.width() * self.HDMagFactor),
+                        int(rect.height() * self.HDMagFactor),
                     )
                 )
-
-            rect = self.minimumSize()
-            self.setMinimumSize(
-                QSize(
-                    int(rect.width() * self.HDMagFactor),
-                    int(rect.height() * self.HDMagFactor),
+                rect = self.maximumSize()
+                self.setMaximumSize(
+                    QSize(
+                        int(rect.width() * self.HDMagFactor),
+                        int(rect.height() * self.HDMagFactor),
+                    )
                 )
-            )
-            rect = self.maximumSize()
-            self.setMaximumSize(
-                QSize(
-                    int(rect.width() * self.HDMagFactor),
-                    int(rect.height() * self.HDMagFactor),
+                self.resize(self.maximumSize())
+                self.logWrite(
+                    "INFO",
+                    "High display pixel density ({0} dpi), scaling GUI"
+                    "by a factor of {1:.2f}".format(maxdpi, self.HDMagFactor),
                 )
-            )
-            self.resize(self.maximumSize())
-
-            self.logWrite(
-                "INFO",
-                "High display pixel density ({0} dpi), scaling GUI"
-                "by a factor of {1:.2f}".format(maxdpi, self.HDMagFactor),
-            )
 
         # ************************
         # ************************
         # ************************
         """
-    self.winStimView = StimViewWinClass(self, self.updateAll, self.logWrite,
-                                        self.Sync)
-    self.winStimView.show()
-    """
-
+        self.winStimView = StimViewWinClass(self, self.updateAll, self.logWrite, self.Sync)
+        self.winStimView.show()
+        """
         # ************************
         # ************************
         # ************************
 
         # Check if worker process is still alive
-        #
         self.logWrite("DEBUG", "Check worker thread ...")
         time.sleep(1.0)
         if not (self.worker.is_alive()):
@@ -324,7 +314,6 @@ class MainWinClass(QMainWindow, form_class):
         self.logWrite("DEBUG", "... done")
 
         # Wait until the worker thread send info about the stage via the pipe
-        #
         self.logWrite("DEBUG", "Waiting for stage info from worker ...")
         while not self.Stage:
             self.processPipe()
@@ -332,13 +321,11 @@ class MainWinClass(QMainWindow, form_class):
         self.logWrite("DEBUG", "... done")
 
         # Update display info
-        #
         self.Stage.updateLEDs(self.Conf)
         self.currStimPath = os.path.abspath(self.currStimPath)
         self.updateDisplayInfo()
 
         # Update IO device info
-        #
         self.logWrite("DEBUG", "Waiting for IO device state from worker ...")
         self.Sync.pipeCli.send([mpr.PipeValType.toSrv_checkIODev, []])
         while self.isIODevReady is None:
@@ -348,7 +335,6 @@ class MainWinClass(QMainWindow, form_class):
         self.logWrite("DEBUG", "... done")
 
         # Check if autorun stimulus file present and if so run it
-        #
         try:
             self.isStimCurr = False
             self.currStimFName = os.path.join(
@@ -358,12 +344,10 @@ class MainWinClass(QMainWindow, form_class):
             if isAutoRunExists:
                 # Check if a current compiled version of the autorun file
                 # exists
-                #
                 self.isStimCurr = gsu.getStimCompileState(self.currStimFName)
 
             if not isAutoRunExists or not self.isStimCurr:
                 # No current compiled auto-run file present, so use default file
-                #
                 self.currStimFName = os.path.join(
                     self.currQDSPath, glo.QDSpy_autorunDefFileName
                 )
@@ -378,7 +362,6 @@ class MainWinClass(QMainWindow, form_class):
                 )
 
             # Run either autorun file ...
-            #
             self.logWrite("DEBUG", "Running {0} ...".format(self.currStimFName))
             self.Stim.load(self.currStimFName, _onlyInfo=True)
             self.setState(State.ready)
@@ -387,7 +370,6 @@ class MainWinClass(QMainWindow, form_class):
 
         except:  # noqa: E722
             # Failed ...
-            #
             if self.Stim.getLastErrC() != stm.StimErrC.ok:
                 self.updateStatusBar(self.Stim.getLastErrStr(), True)
                 ssp.Log.isRunFromGUI = False
@@ -404,27 +386,24 @@ class MainWinClass(QMainWindow, form_class):
                 sys.exit(0)
 
         # Update GUI
-        #
         self.updateAll()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def __del__(self):
-        # ...
-        #
         pass
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def keyPressEvent(self, e):
-        # Allow pressing ESC to abort stimulus presentation ...
-        #
+        """ Allow pressing ESC to abort stimulus presentation ...
+        """
         if e.key() in glo.QDSpy_KEY_KillPresent:
             if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING, mpr.PROBING]:
                 self.OnClick_btnStimAbort()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def closeEvent(self, event):
-        # User requested to close the application
-        #
+        """ User requested to close the application
+        """
         if glo.QDSpy_isGUIQuitWithDialog:
             result = QMessageBox.question(
                 self,
@@ -438,23 +417,19 @@ class MainWinClass(QMainWindow, form_class):
                 return
 
         # Save position of camera window, and close it if open
-        #
         if self.winCam is not None:
             self.Conf.camWinGeom = self.winCam.geometry().getRect()
             self.winCam.close()
 
         # Save config
-        #
         self.Conf.saveWinPosToConfig()
         self.Conf.save()
 
         # Closing is immanent, stop stimulus, if running ...
-        #
         if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING]:
             self.OnClick_btnStimAbort()
 
         # Save log
-        #
         os.makedirs(self.Conf.pathLogs, exist_ok=True)
         fName = time.strftime("%Y%m%d_%H%M%S")
         j = 0
@@ -469,7 +444,6 @@ class MainWinClass(QMainWindow, form_class):
             logFile.write(str(self.textBrowserHistory.toPlainText()))
 
         # ... and clean up
-        #
         self.logWrite("DEBUG", "Kill worker thread ...")
         self.Sync.setRequestSafe(mpr.TERMINATING)
         self.worker.join()
@@ -480,16 +454,16 @@ class MainWinClass(QMainWindow, form_class):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setState(self, _newState, _doUpdateGUI=False):
-        # Update GUI state and GUI as well, if requested
-        #
+        """ Update GUI state and GUI as well, if requested
+        """
         self.state = _newState
         if _doUpdateGUI:
             self.updateAll()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def updateAll(self):
-        # Update the complete GUI
-        #
+        """ Update the complete GUI
+        """
         txt = gsu.getShortText(self, self.currStimPath, self.lblCurrStimFolder)
         self.lblCurrStimFolder.setText(txt)
 
@@ -589,8 +563,8 @@ class MainWinClass(QMainWindow, form_class):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def updateStimList(self):
-        # Update stimulus list widget
-        #
+        """ Update stimulus list widget
+        """
         self.currStimFNames = gsu.getStimFileLists(self.currStimPath)
         self.listStim.clear()
         for stimFName in self.currStimFNames:
@@ -598,8 +572,8 @@ class MainWinClass(QMainWindow, form_class):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def updateStatusBar(self, _msg="Ready", _isErr=False):
-        # Update status bar
-        #
+        """ Update status bar
+        """
         if _isErr:
             self.stbarErrMsg.setText(fStrPreRed + "Error: " + _msg + fStrPost)
         else:
@@ -612,8 +586,8 @@ class MainWinClass(QMainWindow, form_class):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def updateIOInfo(self):
-        # Update IO device info and status
-        #
+        """ Update IO device info and status
+        """
         if self.Conf.useDIO:
             self.lblIODevName.setText(
                 "{0}, board #{1}, device #{2} {3}".format(
@@ -645,8 +619,8 @@ class MainWinClass(QMainWindow, form_class):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def updateDisplayInfo(self):
-        # Update display info and status
-        #
+        """ Update display info and status
+        """
         try:
             self.lblDisplDevName.setText(
                 "{0}, screen #{1}".format(self.Stage.scrDevName, self.Stage.scrIndex)
@@ -681,8 +655,8 @@ class MainWinClass(QMainWindow, form_class):
 
                 for iLED, LED in enumerate(self.Stage.LEDs):
                     sTemp += "{0}={1} ".format(LED["name"], LED["current"])
-                    pal.setColor(QPalette.Window, QColor(LED["Qt_color"]))
-                    pal.setColor(QPalette.WindowText, QColor("white"))
+                    pal.setColor(QPalette.ColorRole.Window, QColor(LED["Qt_color"]))
+                    pal.setColor(QPalette.ColorRole.WindowText, QColor("white"))
                     [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, LED)
                     spinBoxLED.setValue(LED["current"])
                     spinBoxLED.setEnabled(LEDsEnabled)
@@ -709,7 +683,6 @@ class MainWinClass(QMainWindow, form_class):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def OnClick_btnChangeStimFolder(self):
-        # ...
         newPath = QFileDialog.getExistingDirectory(
             self,
             "Select new stimulus folder",
@@ -718,15 +691,14 @@ class MainWinClass(QMainWindow, form_class):
         )
         if len(newPath) > 0:
             # Change path and update stimulus list ...
-            #
             self.currStimPath = newPath
             self.logWrite(" ", "New stimulus folder `{0}`".format(newPath))
             self.updateStimList()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def OnClick_listStim(self, _selItem):
-        # Show name of selected stimulus and some info
-        #
+        """ Show name of selected stimulus and some info
+        """
         txtInfo = "n/a"
         txtCompState = "n/a"
         txtDuration = "n/a"
@@ -744,7 +716,6 @@ class MainWinClass(QMainWindow, form_class):
                 self.Stim.load(self.currStimFName, _onlyInfo=True)
 
                 # Succeed, now get info
-                #
                 self.setState(State.ready)
                 self.isStimReady = True
                 self.isStimCurr = gsu.getStimCompileState(self.currStimFName)
@@ -764,13 +735,11 @@ class MainWinClass(QMainWindow, form_class):
 
             except:  # noqa: E722
                 # Failed ...
-                #
                 txtCompState = fStrPreRed + "not compiled (no .pickle)" + fStrPost
                 if self.Stim.getLastErrC() != stm.StimErrC.ok:
                     self.updateStatusBar(self.Stim.getLastErrStr(), True)
 
             # Show info ...
-            #
             self.lblSelStimName.setText(self.currStimName)
             self.lblSelStimInfo.setText(txtInfo)
             self.lblSelStimStatus.setText(txtCompState)
@@ -1021,14 +990,13 @@ class MainWinClass(QMainWindow, form_class):
         self.compileStim()
 
     def OnClick_btnStimAbort(self):
-        # Send a request to the worker to cancel the presentation
-        #
+        """ Send a request to the worker to cancel the presentation
+        """
         self.setState(State.canceling)
         self.Sync.setRequestSafe(mpr.CANCELING)
         self.setState(State.canceling, True)
 
         # Wait for the worker to finish cancelling
-        #
         if self.Sync.waitForState(mpr.IDLE, self.Conf.guiTimeOut, self.updateAll):
             self.setState(State.ready, True)
         else:
@@ -1060,9 +1028,9 @@ class MainWinClass(QMainWindow, form_class):
     # Compiling and running stimuli
     # -------------------------------------------------------------------
     def compileStim(self):
-        # Send stimulus file name via pipe and signal worker thread to
-        # compile the stimulus
-        #
+        """ Send stimulus file name via pipe and signal worker thread to
+            compile the stimulus
+        """
         self.Sync.pipeCli.send(
             [mpr.PipeValType.toSrv_fileName, self.currStimFName, self.currStimPath]
         )
@@ -1070,13 +1038,11 @@ class MainWinClass(QMainWindow, form_class):
         self.logWrite(" ", "Compiling stimulus script ...")
 
         # Wait for the worker to start ...
-        #
         if self.Sync.waitForState(mpr.COMPILING, self.Conf.guiTimeOut, self.updateAll):
             self.setState(State.compiling, True)
 
             # Wait for the worker to finish the presentation, while keeping the
             # GUI alive
-            #
             self.Sync.waitForState(mpr.IDLE, 0.0, self.updateAll)
             self.OnClick_listStim(QListWidgetItem(self.currStimFName))
             self.updateAll()
@@ -1086,9 +1052,9 @@ class MainWinClass(QMainWindow, form_class):
 
     # -------------------------------------------------------------------
     def runStim(self):
-        # Send stimulus file name via pipe and signal worker thread to
-        # start presenting the stimulus
-        #
+        """ Send stimulus file name via pipe and signal worker thread to
+            start presenting the stimulus
+        """
         self.Sync.pipeCli.send(
             [mpr.PipeValType.toSrv_fileName, self.currStimFName, self.currStimPath]
         )
@@ -1096,13 +1062,11 @@ class MainWinClass(QMainWindow, form_class):
         self.logWrite(" ", "Presenting stimulus ...")
 
         # Wait for the worker to start ...
-        #
         if self.Sync.waitForState(mpr.PRESENTING, self.Conf.guiTimeOut, self.updateAll):
             self.setState(State.playing, True)
 
             # Wait for the worker to finish the presentation, while keeping the
             # GUI alive
-            #
             self.Sync.waitForState(mpr.IDLE, 0.0, self.updateAll)
             self.updateAll()
 
@@ -1111,21 +1075,19 @@ class MainWinClass(QMainWindow, form_class):
 
     # -------------------------------------------------------------------
     def probeCenter(self):
-        # Send parameters of the probe center via pipe and signal worker thread to
-        # start presenting the stimulus
-        #
+        """ Send parameters of the probe center via pipe and signal worker thread to
+            start presenting the stimulus
+        """
         self.signalProbeParamChange()
         self.Sync.setRequestSafe(mpr.PROBING)
         self.logWrite(" ", "Probing center ...")
 
         # Wait for the worker to start ...
-        #
         if self.Sync.waitForState(mpr.PROBING, self.Conf.guiTimeOut, self.updateAll):
             self.setState(State.playing, True)
 
             # Wait for the worker to finish the presentation, while keeping the
             # GUI alive
-            #
             self.Sync.waitForState(mpr.IDLE, 0.0, self.updateAll)
             self.updateAll()
 
@@ -1136,18 +1098,16 @@ class MainWinClass(QMainWindow, form_class):
     # Communication with worker-thread
     # -------------------------------------------------------------------
     def processPipe(self):
-        # Read data from pipe to worker thread, if available
-        #
+        """ Read data from pipe to worker thread, if available
+        """
         while self.Sync.pipeCli.poll():
             data = self.Sync.pipeCli.recv()
             if data[0] == mpr.PipeValType.toCli_log:
                 # Handle log data -> write to history
-                #
                 self.log(data)
 
             elif data[0] == mpr.PipeValType.toCli_displayInfo:
                 # Handle display information data -> update GUI
-                #
                 self.Stage = pickle._loads(data[1])
                 self.isLCrUsed = self.Conf.useLCr and (
                     self.Stage.scrDevType == stg.ScrDevType.DLPLCR4500EVM
@@ -1171,8 +1131,8 @@ class MainWinClass(QMainWindow, form_class):
                 pass
 
     def waitForPipe(self, _func, _timeOut_s=1.0):
-        # Wait for the passed function to return True or for time-out
-        #
+        """ Wait for the passed function to return True or for time-out
+        """
         n = _timeOut_s / 0.05
         while not (_func()) and (n > 0):
             self.processPipe()
@@ -1183,8 +1143,8 @@ class MainWinClass(QMainWindow, form_class):
     # Logging-related
     # -------------------------------------------------------------------
     def logWrite(self, _headerStr, _msgStr):
-        # Log a message to the appropriate output
-        #
+        """ Log a message to the appropriate output
+        """
         data = ssp.Log.write(_headerStr, _msgStr, _getStr=True)
         if data is not None:
             self.log(data)
@@ -1200,7 +1160,7 @@ class MainWinClass(QMainWindow, form_class):
         else:
             form.setFontPointSize(glo.QDSpy_fontPntSizeHistory)
 
-        cursor.movePosition(QTextCursor.End)
+        cursor.movePosition(QTextCursor.MoveOperation.End)
         cursor.setCharFormat(form)
         cursor.insertText(msg)
         self.textBrowserHistory.setTextCursor(cursor)
@@ -1213,14 +1173,14 @@ if __name__ == "__main__":
     # Create GUI
     QDSApp = QApplication(sys.argv)
     QDSWin = MainWinClass(None)
+    QDSApp.setStyle("Fusion")
 
     if PLATFORM_WINDOWS:
         # Make sure that Windows uses its icon in the task bar
         windll.shell32.SetCurrentProcessExplicitAppUserModelID(glo.QDSpy_appID)
 
     # Show window and start GUI handler
-    #
     QDSWin.show()
-    QDSApp.exec_()
+    QDSApp.exec()
 
 # ---------------------------------------------------------------------
