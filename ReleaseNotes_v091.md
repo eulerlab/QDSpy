@@ -7,14 +7,11 @@
 ### Changes:
   - `QDSpy_GUI_main.py`, `QDSpy_GUI_main.ui`, `QDSpy_GUI_support.py`
     - Migrated to `PyQt6`
-
   - `QDSpy_global.py`, 
     - `QDSpy_useGUIScalingForHD` introduced to control if QDSpy attempts to rescale the GUI for high screen resolutions. If off for `PyQt6`. 
-    
   - `QDSpy_multiprocessing.py`
     - Reformatted (using Ruff)
     - Small bug fix
-
   - `Graphics/renderer_opengl.py`
      - Fixed a bug when using `pyglet` higher than v1.5.7
 
