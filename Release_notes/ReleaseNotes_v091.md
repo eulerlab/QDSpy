@@ -11,6 +11,7 @@
 - More modules reformatted using `ruff`
 
 ### Changes:
+- Additional dependency: `pygame`
 - `Graphics/sounds.py` w/ folder `Sounds` now supports audio signals.
 - `QDSpy_GUI_main.py`, `QDSpy_GUI_main.ui`, `QDSpy_GUI_support.py`
   - Migrated to `PyQt6`
