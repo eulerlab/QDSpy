@@ -19,7 +19,7 @@ QDSpy module - support functions for stimulus generation and compilation
   is defined in this module. Writes log messages to stdout and/or sends
   messages via a pipe to the GUI process.
 
-Copyright (c) 2013-2021 Thomas Euler
+Copyright (c) 2013-2024 Thomas Euler
 All rights reserved.
 
 2021-10-15 - Account for LINUX console text coloring
@@ -38,7 +38,7 @@ import QDSpy_stim as stm
 
 PLATFORM_WINDOWS = sys.platform == "win32"
 if PLATFORM_WINDOWS:
-  from ctypes import windll
+  #from ctypes import windll
   import Libraries.color_console as con
 else:
   import Libraries.color_console_linux as con

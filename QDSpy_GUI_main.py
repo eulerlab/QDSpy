@@ -21,11 +21,12 @@ import os
 import sys
 import time
 import pickle
+from datetime import timedelta
 from PyQt6 import uic  
 from PyQt6.QtWidgets import QMessageBox, QMainWindow, QLabel, QApplication  
-from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QWidget  
+from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QWidget, QProgressBar  
 from PyQt6.QtGui import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor 
-from PyQt6.QtCore import QRect, QSize  
+from PyQt6.QtCore import Qt, QRect, QSize  
 from multiprocessing import Process
 import QDSpy_stim as stm
 import QDSpy_stim_support as ssp
@@ -96,6 +97,17 @@ class MainWinClass(QMainWindow, form_class):
         self.IOCmdCount = 0
         self.Stage = None
         self.noMsgToStdOut = cfg.getParsedArgv().gui
+
+        # For reporting the stimulus status during presentation
+        self.Stim_tFrRel_s = 0
+        self.Stim_nFrTotal = 0
+        self.Stim_percent = 0
+        self.Stim_completed = False
+        self.Stim_soundVol = 0
+
+        # GUI style-related
+        cs = QDSApp.styleHints().colorScheme() 
+        self.isDarkSchemeGUI = cs == Qt.ColorScheme.Dark 
 
         self.logWrite("DEBUG", "Initializing GUI")
         QMainWindow.__init__(self, parent)
@@ -209,8 +221,12 @@ class MainWinClass(QMainWindow, form_class):
 
         self.stbarErrMsg = QLabel()
         self.stbarStimMsg = QLabel()
+        self.prbarPresent = QProgressBar()
+        self.prbarPresent.setRange(0, 100)
+        self.prbarPresent.reset()
         self.statusbar.addWidget(self.stbarErrMsg, 2)
-        self.statusbar.addPermanentWidget(self.stbarStimMsg, 2)
+        self.statusbar.addWidget(self.stbarStimMsg, 2)
+        self.statusbar.addPermanentWidget(self.prbarPresent, 2)
         self.lblSelStimName.setText(self.currStimName)
 
         self.lineEditComment.returnPressed.connect(self.OnClick_AddComment)
@@ -295,17 +311,6 @@ class MainWinClass(QMainWindow, form_class):
                     "by a factor of {1:.2f}".format(maxdpi, self.HDMagFactor),
                 )
 
-        # ************************
-        # ************************
-        # ************************
-        """
-        self.winStimView = StimViewWinClass(self, self.updateAll, self.logWrite, self.Sync)
-        self.winStimView.show()
-        """
-        # ************************
-        # ************************
-        # ************************
-
         # Check if worker process is still alive
         self.logWrite("DEBUG", "Check worker thread ...")
         time.sleep(1.0)
@@ -386,7 +391,9 @@ class MainWinClass(QMainWindow, form_class):
                 sys.exit(0)
 
         # Update GUI
+        self.Stim_soundVol = glo.QDSpy_volume
         self.updateAll()
+        self.updateProgressBar(-1)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def __del__(self):
@@ -577,12 +584,37 @@ class MainWinClass(QMainWindow, form_class):
         if _isErr:
             self.stbarErrMsg.setText(fStrPreRed + "Error: " + _msg + fStrPost)
         else:
+            if self.state == State.playing:
+                self.Stim_percent = int((self.Stim_tFrRel_s /self.Stim.lenStim_s) *100)
+                self.updateProgressBar(self.Stim_percent)
+                dt = timedelta(seconds=int(self.Stim.lenStim_s))
+                t1 = timedelta(seconds=int(self.Stim_tFrRel_s))
+                _msg += f" ({t1} of {dt})"
+            else:
+                if self.Stim_percent > 0:
+                    if self.Stim_completed:
+                        self.updateProgressBar(100, "Done")
+                    else:
+                        self.updateProgressBar(0, "Aborted", keep_val=True)
+                self.Stim_percent = 0
             self.stbarErrMsg.setText(_msg)
 
         if (len(self.currStimName) > 0) and (self.isStimReady):
             self.stbarStimMsg.setText("Stimulus: " + self.currStimName)
         else:
-            self.stbarStimMsg.setText("")
+            self.stbarStimMsg.setText("n/a")
+
+    def updateProgressBar(self, val, msg="", keep_val=False):
+        """ Update progress bar
+        """
+        if len(msg) > 0:
+            self.prbarPresent.setFormat(msg +" (%p%)")    
+        if keep_val:
+            return
+        if val < 0:
+            self.prbarPresent.reset()
+        else:    
+            self.prbarPresent.setValue(val)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def updateIOInfo(self):
@@ -706,6 +738,7 @@ class MainWinClass(QMainWindow, form_class):
         self.isStimCurr = False
         self.currStimName = _selItem.text()
         self.setState(State.idle)
+        self.updateProgressBar(-1)
 
         iSel = self.listStim.currentRow()
         if iSel >= 0:
@@ -1055,8 +1088,10 @@ class MainWinClass(QMainWindow, form_class):
         """ Send stimulus file name via pipe and signal worker thread to
             start presenting the stimulus
         """
+        self.updateProgressBar(0, "Presenting ...")
         self.Sync.pipeCli.send(
-            [mpr.PipeValType.toSrv_fileName, self.currStimFName, self.currStimPath]
+            [mpr.PipeValType.toSrv_fileName, self.currStimFName, self.currStimPath,
+             self.Stim_soundVol]
         )
         self.Sync.setRequestSafe(mpr.PRESENTING)
         self.logWrite(" ", "Presenting stimulus ...")
@@ -1068,6 +1103,8 @@ class MainWinClass(QMainWindow, form_class):
             # Wait for the worker to finish the presentation, while keeping the
             # GUI alive
             self.Sync.waitForState(mpr.IDLE, 0.0, self.updateAll)
+
+            # Update status                
             self.updateAll()
 
         else:
@@ -1102,6 +1139,7 @@ class MainWinClass(QMainWindow, form_class):
         """
         while self.Sync.pipeCli.poll():
             data = self.Sync.pipeCli.recv()
+            
             if data[0] == mpr.PipeValType.toCli_log:
                 # Handle log data -> write to history
                 self.log(data)
@@ -1116,11 +1154,21 @@ class MainWinClass(QMainWindow, form_class):
                 self.updateDisplayInfo()
 
             elif data[0] == mpr.PipeValType.toCli_IODevInfo:
+                # Receive I/O device information
                 self.isIODevReady = data[1][0]
                 if self.isIODevReady is None:
                     self.isIODevReady = False
                 self.lastIOInfo = data[1]
                 self.updateIOInfo()
+
+            elif data[0] == mpr.PipeValType.toCli_time:
+                # Receive information about stimulus presentation progress
+                self.Stim_tFrRel_s = data[1]
+                self.Stim_nFrTotal = data[2]
+
+            elif data[0] == mpr.PipeValType.toCli_playEndInfo:
+                # Receive information about stimulus presentation end
+                self.Stim_completed = data[1]
 
             else:
                 # ***************************
@@ -1152,6 +1200,8 @@ class MainWinClass(QMainWindow, form_class):
     def log(self, _data):
         msg = _data[2] + "\r"
         colStr = _data[3]
+        if self.isDarkSchemeGUI: 
+            colStr = "lightgray" if colStr == "black" else colStr
         cursor = self.textBrowserHistory.textCursor()
         form = QTextCharFormat()
         form.setForeground(QBrush(QColor(colStr)))
@@ -1172,9 +1222,9 @@ class MainWinClass(QMainWindow, form_class):
 if __name__ == "__main__":
     # Create GUI
     QDSApp = QApplication(sys.argv)
-    QDSWin = MainWinClass(None)
     QDSApp.setStyle("Fusion")
-
+    QDSWin = MainWinClass(None)
+    
     if PLATFORM_WINDOWS:
         # Make sure that Windows uses its icon in the task bar
         windll.shell32.SetCurrentProcessExplicitAppUserModelID(glo.QDSpy_appID)

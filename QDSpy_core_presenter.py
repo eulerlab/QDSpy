@@ -4,16 +4,20 @@
 QDSpy module - interprets and presents compiled stimuli
 
 'Presenter'
-  Presents a compiled stimulus.
-  This class is a graphics API independent.
+Presents a compiled stimulus.
+This class is a graphics API independent.
 
 Copyright (c) 2013-2024 Thomas Euler
 Distributed under the terms of the GNU General Public License (GPL)
 
 2022-08-06 - Some reformatting (partially)
 2024-05-15 - Improved error message for movie errors
-"""
+           - Added the option to play sounds, e.g., at the start and
+             end of a stimulus presentation (see `QDSpy_global.py`) 
 
+Note1: `pyglet`is imported but only used to extract image data from
+       the screen to record the stimulus, if selected
+"""
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
@@ -31,9 +35,10 @@ import QDSpy_stim_draw as drw
 import QDSpy_stim_support as ssp
 import QDSpy_core_support as csp
 import QDSpy_core_shader as csh
-import QDSpy_config as cfg
 import QDSpy_multiprocessing as mpr
 import Devices.digital_io as dio
+import QDSpy_config as cfg
+from Graphics.sounds import Sounds, SoundPlayer
 
 global Clock
 Clock = csp.defaultClock
@@ -46,21 +51,27 @@ args = cfg.getParsedArgv()
 global QDSpy_verbose
 QDSpy_verbose = args.verbose
 if QDSpy_verbose:
-    """
+    # ***************************
+    # ***************************
+    # TODO: Import modules here needed for stimulus statistics
+    # ***************************
+    # ***************************
+    '''
     import pylab
-    """
+    '''
+    # ***************************
+    # ***************************
     pass
-
 
 # =====================================================================
 #
 # ---------------------------------------------------------------------
 class Presenter:
-    """Presenter class
+    """ Presenter class
     """
 
     def __init__(self, _Stage, _IO, _Conf, _View, _View2=None, _LCr=[]):
-        """Initializing
+        """ Initializing
         """
         self.Stage = _Stage
         self.IO = _IO
@@ -68,8 +79,9 @@ class Presenter:
         self.View = _View
         self.LCr = _LCr
         self.ShManager = csh.ShaderManager(self.Conf)
+        self.useSound = glo.QDSpy_isUseSound
         self.reset()
-
+        
         self.dtFr_meas_s = self.Stage.dtFr_s
         self.dtFr_thres_s = self.dtFr_meas_s + self.Conf.maxDtTr_ms / 1000.0
 
@@ -77,13 +89,23 @@ class Presenter:
         if self.Conf.recordStim:
             self.View.prepareGrabStim()
 
+        # Load sounds, if requested
+        if self.useSound:
+            ssp.Log.write("DEBUG", "Loading sounds ...")
+            self.SoundPlayer = SoundPlayer()    
+            self.SoundPlayer.add(Sounds.OK, glo.QDSpy_soundOk)
+            self.SoundPlayer.add(Sounds.ERROR, glo.QDSpy_soundError)
+            self.SoundPlayer.add(Sounds.STIM_START, glo.QDSpy_soundStimStart)
+            self.SoundPlayer.add(Sounds.STIM_END, glo.QDSpy_soundStimEnd)
+            ssp.Log.write("DEBUG", "... done")
+
         # Define event handler(s)
         self.View.setOnKeyboardHandler(self.onKeyboard)
         self.View.setOnDrawHandler(self.onDraw)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def reset(self):
-        """Reset presenter
+        """ Reset presenter
         """
         self.Stim = None
         self.isReady = False
@@ -105,16 +127,16 @@ class Presenter:
         self.IO_maskMark = 0
         self.IO_isMarkSet = False
 
-        self.nFrTotal = 0
-        self.tFrRel_s = 0.0
+        self.nFrTotal = 0       # # of frames rendered
+        self.tFrRel_s = 0.0     # current stimulus time (relative to stimulus start)
         self.tFrRelOff_s = 0.0
         self.avFrDur_s = 0.0
-        self.nRendTotal = 0
+        self.nRendTotal = 0     # # of scenes rendered (some scene have no duration!)
         self.avPresDur_s = 0.0
         self.avRendDur_s = 0.0
         self.rendDur_s = 0.0
-        self.tFr = 0.0
-        self.tStart = 0.0
+        self.tFr = 0.0         # absolute stimulus time (from program start) 
+        self.tStart = 0.0      # start of stimulus (from program start) 
 
         if glo.QDSpy_frRateStatsBufferLen > 0:
             self.dataDtFr = np.zeros(glo.QDSpy_frRateStatsBufferLen, dtype=float)
@@ -134,13 +156,9 @@ class Presenter:
         self.vRGBTr2 = np.array([], dtype=np.uint8)
 
         self.currShObjIDs = []    # list, IDs of current shader-enabled objects
-        self.prevShObjIDs = []    # list, IDs of previously shown shader-enabled
-        
-        # objects
+        self.prevShObjIDs = []    # list, IDs of previously shown shader-enabled objects
         self.prevObjIDs = []      # list, previously shown objects (all)
-        self.ShProgList = []      # list, available shader programs
-        
-        # (ready to bind)
+        self.ShProgList = []      # list, available shader programs (ready to bind)
         self.MovieList = []       # list, movie class objects
         self.MovieCtrlList = []   # list, movie control class objects
         self.VideoList = []       # list, video class objects
@@ -158,7 +176,7 @@ class Presenter:
     # Scene rendering function
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def renderSce(self, _iSc, _nSc):
-        """Renders the indexed scene
+        """ Renders the indexed scene
         """
         if self.Conf.isTrackTime:
             t0 = Clock.getTime_s()
@@ -514,8 +532,9 @@ class Presenter:
     # Frame refresh handler
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def onDraw(self):
-        """Check if stimulus is defined
+        """ Frame refresh handler
         """
+        # Check if stimulus is defined
         if self.Stim is None:
             self.View.clear()
             self.isEnd = True
@@ -562,6 +581,11 @@ class Presenter:
                     # User pressed a user button, change IO device pins accordingly
                     csp.setIODevicePin(self.IO, data[1][0], data[1][1], data[1][2])
 
+            # Send time info back to client (GUI)
+            self.Sync.pipeSrv.send(
+                [mpr.PipeValType.toCli_time, self.tFrRel_s, self.nFrTotal]
+            )
+
         # Render scene
         while self.isNextSce and not self.isEnd:
             # Load next scene ...
@@ -592,7 +616,10 @@ class Presenter:
             # No more scenes to display or aborted by used, in any case,
             # end presentation
             isDone = self.iSc >= len(self.Stim.SceList)
-            ssp.Log.write("ok", "Done" if isDone else "Aborted by user")
+            self.Sync.pipeSrv.send(
+                [mpr.PipeValType.toCli_playEndInfo, isDone]
+            )
+            ssp.Log.write("ok", "Done" if isDone else "Aborted by user xxx")
             ssp.Log.write(
                 "DATA",
                 {
@@ -673,7 +700,7 @@ class Presenter:
 
     # --------------------------------------------------------------------
     def run(self):
-        """Runs the OpenGL/pyglet event loop, thereby any loaded stimulus
+        """ Runs the OpenGL/pyglet event loop, thereby any loaded stimulus
         """
         if not self.isReady:
             return
@@ -681,6 +708,10 @@ class Presenter:
         if self.Stim is None:
             ssp.Log.write("ok", "Ready.")
             return
+
+        # Signal start of presentation
+        if self.useSound:
+            self.SoundPlayer.play(Sounds.STIM_START)
 
         # Start stimulus ...
         self.isEnd = False
@@ -700,7 +731,6 @@ class Presenter:
             and self.Stim is not None
             and not self.Stim.nameStr.startswith("__")
         )
-
         if self.recordStim:
             self.View.prepareGrabStim()
             self.recordedStim = []
@@ -714,14 +744,14 @@ class Presenter:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def stop(self):
-        """Signals event loop to stop
+        """ Signals event loop to stop
         """
         self.isEnd = True
         ssp.Log.write("DEBUG", "Presenter.stop()")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def finish(self):
-        """Finish presentation
+        """ Finish presentation
         """
         if not self.isReady:
             return
@@ -751,7 +781,8 @@ class Presenter:
                 ),
             )
             ssp.Log.write(
-                "INFO", "presenting: {0:.3f} ms/frame".format(self.avPresDur_s * 1000.0)
+                "INFO", "presenting: {0:.3f} ms/frame".format(
+                    self.avPresDur_s * 1000.0)
             )
 
             if glo.QDSpy_frRateStatsBufferLen > 0:
@@ -783,11 +814,17 @@ class Presenter:
                     "nDroppedFrames": self.nDroppedFr,
                 }.__str__(),
             )
+            # Signal end of presentation
+            if self.useSound:
+                self.SoundPlayer.play(Sounds.STIM_END)
 
             if QDSpy_verbose:
                 # Generate a plot ...
                 ssp.Log.write("WARNING", "Code needs to be updated")
-                """
+                # ***************************
+                # ***************************
+                # TODO: Update code to return some statistics
+                '''
                 pylab.title("Timing")
                 pylab.subplot(2,1,1)
                 pylab.plot(list(range(len(data))), data*1000, "-")
@@ -809,12 +846,17 @@ class Presenter:
                 pylab.xlabel("frame duration [ms]")
                 pylab.tight_layout()
                 pylab.show()
-                """
+                '''
+                # ***************************
+                # ***************************
+
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @staticmethod
     def stim_to_pil_image(
         image: pyglet.image.ImageData, f_downsample: int = 1
     ) -> PIL.Image.Image:
+        """ Converts a stimulus frame into a PIL image
+        """
         img_data = image.get_data()
 
         pil_image = PIL.Image.new(mode="RGBA", size=(image.width, image.height))
@@ -827,31 +869,31 @@ class Presenter:
 
         pil_image = pil_image.convert("RGB")
         pil_image = pil_image.transpose(PIL.Image.Transpose.FLIP_TOP_BOTTOM)
-
         return pil_image
 
     @staticmethod
     def adapt_stimulus_recording_to_setup(
         stimulus_stack: np.array, setup_id: int
     ) -> np.array:
-        """Tweak stimulus according to https://cin-10.medizin.uni-tuebingen.de/eulerwiki/index.php/Orientation
+        """ Tweak stimulus according to https://cin-10.medizin.uni-tuebingen.de/eulerwiki/index.php/Orientation
         stimulus_stack.shape: frame, y, x, color
         """
-        # for both setups the x and y plane is swapped
+        # For both setups the x and y plane is swapped
         if setup_id == 1:
-            # swap x and y
+            # Swap x and y
             stimulus_stack = stimulus_stack.transpose(0, 2, 1, 3)
         elif setup_id == 3:
-            # swap x and y
+            # Swap x and y
             stimulus_stack = stimulus_stack.transpose(0, 2, 1, 3)
             # flip direction in y-axis
             stimulus_stack = np.flip(stimulus_stack, axis=1)
         else:
             raise ValueError(f"Unknown setup: {setup_id=}")
-
         return stimulus_stack
 
     def save_stim_to_file(self) -> None:
+        """ Save (downsampled) stimulus to file 
+        """
         ssp.Log.write(
             "DEBUG", f"Prepare saving {len(self.recordedStim)} stimulus frames"
         )
@@ -877,8 +919,8 @@ class Presenter:
 
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def prepare(self, _Stim, _Sync=None):
-        """Prepare a stimulus, to be started with the run() function
+    def prepare(self, _Stim, _Sync=None, _vol=0):
+        """ Prepare a stimulus, to be started with the run() function
         """
         self.reset()
         self.Stim = _Stim
@@ -892,6 +934,10 @@ class Presenter:
             self.isReady = False
 
         else:
+            # Set sound volume, if requested
+            if self.useSound:
+                self.SoundPlayer.setVol(_vol)
+
             # Setup digital I/O, if used
             if self.IO is not None:
                 self.IO_portOut = self.IO.getPortFromStr(self.Conf.DIOportOut)

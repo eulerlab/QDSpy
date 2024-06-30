@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>780</width>
-    <height>560</height>
+    <width>784</width>
+    <height>570</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>780</width>
-    <height>342</height>
+    <width>784</width>
+    <height>356</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>780</width>
-    <height>560</height>
+    <width>784</width>
+    <height>570</height>
    </size>
   </property>
   <property name="font">
@@ -56,7 +56,7 @@
       <x>4</x>
       <y>4</y>
       <width>372</width>
-      <height>270</height>
+      <height>280</height>
      </rect>
     </property>
     <property name="tabShape">
@@ -126,7 +126,7 @@ list</string>
         <x>66</x>
         <y>24</y>
         <width>297</width>
-        <height>214</height>
+        <height>224</height>
        </rect>
       </property>
       <property name="font">
@@ -151,7 +151,7 @@ list</string>
       <property name="geometry">
        <rect>
         <x>2</x>
-        <y>72</y>
+        <y>73</y>
         <width>60</width>
         <height>48</height>
        </rect>
@@ -217,7 +217,7 @@ folder</string>
        <property name="geometry">
         <rect>
          <x>174</x>
-         <y>59</y>
+         <y>61</y>
          <width>57</width>
          <height>22</height>
         </rect>
@@ -238,8 +238,8 @@ folder</string>
       <widget class="QLabel" name="label_StageCS_4">
        <property name="geometry">
         <rect>
-         <x>174</x>
-         <y>16</y>
+         <x>173</x>
+         <y>19</y>
          <width>57</width>
          <height>16</height>
         </rect>
@@ -264,7 +264,7 @@ folder</string>
        <property name="geometry">
         <rect>
          <x>174</x>
-         <y>35</y>
+         <y>37</y>
          <width>57</width>
          <height>22</height>
         </rect>
@@ -286,7 +286,7 @@ folder</string>
        <property name="geometry">
         <rect>
          <x>72</x>
-         <y>16</y>
+         <y>19</y>
          <width>97</width>
          <height>16</height>
         </rect>
@@ -311,7 +311,7 @@ folder</string>
        <property name="geometry">
         <rect>
          <x>72</x>
-         <y>35</y>
+         <y>37</y>
          <width>97</width>
          <height>22</height>
         </rect>
@@ -345,7 +345,7 @@ folder</string>
        <property name="geometry">
         <rect>
          <x>72</x>
-         <y>59</y>
+         <y>61</y>
          <width>97</width>
          <height>22</height>
         </rect>
@@ -376,7 +376,7 @@ folder</string>
        <property name="geometry">
         <rect>
          <x>4</x>
-         <y>39</y>
+         <y>41</y>
          <width>65</width>
          <height>16</height>
         </rect>
@@ -395,7 +395,7 @@ folder</string>
        <property name="geometry">
         <rect>
          <x>4</x>
-         <y>63</y>
+         <y>65</y>
          <width>65</width>
          <height>16</height>
         </rect>
@@ -414,7 +414,7 @@ folder</string>
        <property name="geometry">
         <rect>
          <x>237</x>
-         <y>16</y>
+         <y>19</y>
          <width>57</width>
          <height>16</height>
         </rect>
@@ -439,7 +439,7 @@ folder</string>
        <property name="geometry">
         <rect>
          <x>237</x>
-         <y>35</y>
+         <y>37</y>
          <width>57</width>
          <height>22</height>
         </rect>
@@ -490,7 +490,7 @@ folder</string>
        <property name="geometry">
         <rect>
          <x>72</x>
-         <y>72</y>
+         <y>76</y>
          <width>74</width>
          <height>22</height>
         </rect>
@@ -515,7 +515,7 @@ folder</string>
        <property name="geometry">
         <rect>
          <x>68</x>
-         <y>16</y>
+         <y>19</y>
          <width>81</width>
          <height>32</height>
         </rect>
@@ -541,7 +541,7 @@ offset</string>
        <property name="geometry">
         <rect>
          <x>72</x>
-         <y>48</y>
+         <y>52</y>
          <width>74</width>
          <height>22</height>
         </rect>
@@ -566,7 +566,7 @@ offset</string>
        <property name="geometry">
         <rect>
          <x>4</x>
-         <y>52</y>
+         <y>56</y>
          <width>65</width>
          <height>16</height>
         </rect>
@@ -585,7 +585,7 @@ offset</string>
        <property name="geometry">
         <rect>
          <x>4</x>
-         <y>76</y>
+         <y>80</y>
          <width>65</width>
          <height>16</height>
         </rect>
@@ -604,7 +604,7 @@ offset</string>
        <property name="geometry">
         <rect>
          <x>148</x>
-         <y>16</y>
+         <y>19</y>
          <width>81</width>
          <height>32</height>
         </rect>
@@ -630,7 +630,7 @@ offset</string>
        <property name="geometry">
         <rect>
          <x>152</x>
-         <y>72</y>
+         <y>76</y>
          <width>74</width>
          <height>22</height>
         </rect>
@@ -658,7 +658,7 @@ offset</string>
        <property name="geometry">
         <rect>
          <x>152</x>
-         <y>48</y>
+         <y>52</y>
          <width>74</width>
          <height>22</height>
         </rect>
@@ -686,7 +686,7 @@ offset</string>
        <property name="geometry">
         <rect>
          <x>275</x>
-         <y>72</y>
+         <y>76</y>
          <width>81</width>
          <height>22</height>
         </rect>
@@ -714,7 +714,7 @@ offset</string>
        <property name="geometry">
         <rect>
          <x>275</x>
-         <y>48</y>
+         <y>52</y>
          <width>81</width>
          <height>22</height>
         </rect>
@@ -739,7 +739,7 @@ offset</string>
        <property name="geometry">
         <rect>
          <x>278</x>
-         <y>16</y>
+         <y>19</y>
          <width>73</width>
          <height>32</height>
         </rect>
@@ -762,7 +762,7 @@ screen</string>
        <property name="geometry">
         <rect>
          <x>230</x>
-         <y>76</y>
+         <y>80</y>
          <width>41</width>
          <height>16</height>
         </rect>
@@ -781,7 +781,7 @@ screen</string>
        <property name="geometry">
         <rect>
          <x>230</x>
-         <y>52</y>
+         <y>56</y>
          <width>41</width>
          <height>16</height>
         </rect>
@@ -803,8 +803,8 @@ screen</string>
       </property>
       <property name="geometry">
        <rect>
-        <x>264</x>
-        <y>212</y>
+        <x>262</x>
+        <y>219</y>
         <width>96</width>
         <height>24</height>
        </rect>
@@ -822,7 +822,7 @@ screen</string>
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>66</y>
+        <y>69</y>
         <width>80</width>
         <height>36</height>
        </rect>
@@ -835,7 +835,7 @@ screen</string>
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>174</y>
+        <y>177</y>
         <width>80</width>
         <height>36</height>
        </rect>
@@ -847,8 +847,8 @@ screen</string>
      <widget class="QPushButton" name="btnToggleSeqControl0">
       <property name="geometry">
        <rect>
-        <x>198</x>
-        <y>66</y>
+        <x>194</x>
+        <y>69</y>
         <width>80</width>
         <height>36</height>
        </rect>
@@ -873,8 +873,8 @@ enabled</string>
       </property>
       <property name="geometry">
        <rect>
-        <x>280</x>
-        <y>66</y>
+        <x>276</x>
+        <y>69</y>
         <width>80</width>
         <height>36</height>
        </rect>
@@ -896,8 +896,8 @@ n/a</string>
      <widget class="QPushButton" name="btnSetLEDCurrents">
       <property name="geometry">
        <rect>
-        <x>264</x>
-        <y>218</y>
+        <x>262</x>
+        <y>219</y>
         <width>96</width>
         <height>24</height>
        </rect>
@@ -913,7 +913,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>129</x>
-        <y>146</y>
+        <y>153</y>
         <width>60</width>
         <height>23</height>
        </rect>
@@ -935,7 +935,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>247</x>
-        <y>38</y>
+        <y>44</y>
         <width>60</width>
         <height>23</height>
        </rect>
@@ -957,7 +957,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>247</x>
-        <y>146</y>
+        <y>153</y>
         <width>60</width>
         <height>23</height>
        </rect>
@@ -979,7 +979,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>193</x>
-        <y>38</y>
+        <y>44</y>
         <width>45</width>
         <height>23</height>
        </rect>
@@ -1004,7 +1004,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>193</x>
-        <y>146</y>
+        <y>153</y>
         <width>45</width>
         <height>23</height>
        </rect>
@@ -1026,7 +1026,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>129</x>
-        <y>127</y>
+        <y>134</y>
         <width>105</width>
         <height>16</height>
        </rect>
@@ -1048,7 +1048,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>11</x>
-        <y>19</y>
+        <y>25</y>
         <width>105</width>
         <height>16</height>
        </rect>
@@ -1073,7 +1073,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>311</x>
-        <y>38</y>
+        <y>44</y>
         <width>45</width>
         <height>23</height>
        </rect>
@@ -1095,7 +1095,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>11</x>
-        <y>127</y>
+        <y>134</y>
         <width>105</width>
         <height>16</height>
        </rect>
@@ -1117,7 +1117,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>247</x>
-        <y>19</y>
+        <y>25</y>
         <width>105</width>
         <height>16</height>
        </rect>
@@ -1142,7 +1142,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>75</x>
-        <y>146</y>
+        <y>153</y>
         <width>45</width>
         <height>23</height>
        </rect>
@@ -1164,7 +1164,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>247</x>
-        <y>127</y>
+        <y>134</y>
         <width>105</width>
         <height>16</height>
        </rect>
@@ -1189,7 +1189,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>11</x>
-        <y>38</y>
+        <y>44</y>
         <width>60</width>
         <height>23</height>
        </rect>
@@ -1211,7 +1211,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>311</x>
-        <y>146</y>
+        <y>153</y>
         <width>45</width>
         <height>23</height>
        </rect>
@@ -1236,7 +1236,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>75</x>
-        <y>38</y>
+        <y>44</y>
         <width>45</width>
         <height>23</height>
        </rect>
@@ -1258,7 +1258,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>129</x>
-        <y>19</y>
+        <y>25</y>
         <width>105</width>
         <height>16</height>
        </rect>
@@ -1283,7 +1283,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>129</x>
-        <y>38</y>
+        <y>44</y>
         <width>60</width>
         <height>23</height>
        </rect>
@@ -1305,7 +1305,7 @@ n/a</string>
       <property name="geometry">
        <rect>
         <x>11</x>
-        <y>146</y>
+        <y>153</y>
         <width>60</width>
         <height>23</height>
        </rect>
@@ -1323,8 +1323,8 @@ n/a</string>
      <widget class="QPushButton" name="btnToggleSeqControl1">
       <property name="geometry">
        <rect>
-        <x>198</x>
-        <y>174</y>
+        <x>194</x>
+        <y>177</y>
         <width>80</width>
         <height>36</height>
        </rect>
@@ -1349,8 +1349,8 @@ enabled</string>
       </property>
       <property name="geometry">
        <rect>
-        <x>280</x>
-        <y>174</y>
+        <x>276</x>
+        <y>177</y>
         <width>80</width>
         <height>36</height>
        </rect>
@@ -1395,6 +1395,33 @@ n/a</string>
        <string>LightCrafter #1</string>
       </property>
      </widget>
+     <zorder>groupBoxStimInfo_8</zorder>
+     <zorder>groupBoxStimInfo_9</zorder>
+     <zorder>btnLCrInfo0</zorder>
+     <zorder>btnLCrInfo1</zorder>
+     <zorder>btnToggleSeqControl0</zorder>
+     <zorder>btnLCrStartStop0</zorder>
+     <zorder>btnSetLEDCurrents</zorder>
+     <zorder>spinBoxLED5</zorder>
+     <zorder>spinBoxLED3</zorder>
+     <zorder>spinBoxLED6</zorder>
+     <zorder>pushButtonLED2</zorder>
+     <zorder>pushButtonLED5</zorder>
+     <zorder>label_LED5</zorder>
+     <zorder>label_LED1</zorder>
+     <zorder>pushButtonLED3</zorder>
+     <zorder>label_LED4</zorder>
+     <zorder>label_LED3</zorder>
+     <zorder>pushButtonLED4</zorder>
+     <zorder>label_LED6</zorder>
+     <zorder>spinBoxLED1</zorder>
+     <zorder>pushButtonLED6</zorder>
+     <zorder>pushButtonLED1</zorder>
+     <zorder>label_LED2</zorder>
+     <zorder>spinBoxLED2</zorder>
+     <zorder>spinBoxLED4</zorder>
+     <zorder>btnToggleSeqControl1</zorder>
+     <zorder>btnLCrStartStop1</zorder>
     </widget>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -1429,7 +1456,7 @@ n/a</string>
        <property name="geometry">
         <rect>
          <x>8</x>
-         <y>16</y>
+         <y>24</y>
          <width>121</width>
          <height>22</height>
         </rect>
@@ -1452,7 +1479,7 @@ n/a</string>
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>16</y>
+         <y>23</y>
          <width>50</width>
          <height>22</height>
         </rect>
@@ -1468,7 +1495,7 @@ n/a</string>
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>40</y>
+         <y>47</y>
          <width>50</width>
          <height>22</height>
         </rect>
@@ -1484,7 +1511,7 @@ n/a</string>
        <property name="geometry">
         <rect>
          <x>126</x>
-         <y>16</y>
+         <y>23</y>
          <width>50</width>
          <height>22</height>
         </rect>
@@ -1500,7 +1527,7 @@ n/a</string>
        <property name="geometry">
         <rect>
          <x>126</x>
-         <y>40</y>
+         <y>47</y>
          <width>50</width>
          <height>22</height>
         </rect>
@@ -1516,7 +1543,7 @@ n/a</string>
        <property name="geometry">
         <rect>
          <x>56</x>
-         <y>16</y>
+         <y>23</y>
          <width>65</width>
          <height>22</height>
         </rect>
@@ -1541,7 +1568,7 @@ n/a</string>
        <property name="geometry">
         <rect>
          <x>56</x>
-         <y>40</y>
+         <y>47</y>
          <width>65</width>
          <height>22</height>
         </rect>
@@ -1566,7 +1593,7 @@ n/a</string>
        <property name="geometry">
         <rect>
          <x>184</x>
-         <y>16</y>
+         <y>23</y>
          <width>73</width>
          <height>22</height>
         </rect>
@@ -1591,7 +1618,7 @@ n/a</string>
        <property name="geometry">
         <rect>
          <x>184</x>
-         <y>40</y>
+         <y>47</y>
          <width>73</width>
          <height>22</height>
         </rect>
@@ -1619,7 +1646,7 @@ n/a</string>
        <property name="geometry">
         <rect>
          <x>261</x>
-         <y>21</y>
+         <y>24</y>
          <width>96</width>
          <height>36</height>
         </rect>
@@ -1637,8 +1664,8 @@ n/a</string>
     </property>
     <property name="geometry">
      <rect>
-      <x>5</x>
-      <y>298</y>
+      <x>7</x>
+      <y>308</y>
       <width>771</width>
       <height>193</height>
      </rect>
@@ -1675,8 +1702,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <widget class="QCheckBox" name="checkShowHistory">
     <property name="geometry">
      <rect>
-      <x>8</x>
-      <y>280</y>
+      <x>10</x>
+      <y>290</y>
       <width>97</width>
       <height>17</height>
      </rect>
@@ -1691,8 +1718,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <widget class="QLineEdit" name="lineEditComment">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>494</y>
+      <x>102</x>
+      <y>504</y>
       <width>676</width>
       <height>20</height>
      </rect>
@@ -1704,8 +1731,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <widget class="QLabel" name="label_StInfo1_4">
     <property name="geometry">
      <rect>
-      <x>8</x>
-      <y>494</y>
+      <x>10</x>
+      <y>504</y>
       <width>89</width>
       <height>16</height>
      </rect>
@@ -1723,8 +1750,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <widget class="QPushButton" name="btnStimCompile">
     <property name="geometry">
      <rect>
-      <x>376</x>
-      <y>23</y>
+      <x>378</x>
+      <y>30</y>
       <width>96</width>
       <height>36</height>
      </rect>
@@ -1739,8 +1766,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <widget class="QPushButton" name="btnStimPlay">
     <property name="geometry">
      <rect>
-      <x>376</x>
-      <y>70</y>
+      <x>378</x>
+      <y>78</y>
       <width>96</width>
       <height>36</height>
      </rect>
@@ -1752,8 +1779,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <widget class="QPushButton" name="btnStimAbort">
     <property name="geometry">
      <rect>
-      <x>376</x>
-      <y>107</y>
+      <x>378</x>
+      <y>115</y>
       <width>96</width>
       <height>36</height>
      </rect>
@@ -1765,10 +1792,10 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <widget class="QGroupBox" name="groupBoxStimInfo_2">
     <property name="geometry">
      <rect>
-      <x>475</x>
-      <y>92</y>
+      <x>479</x>
+      <y>101</y>
       <width>302</width>
-      <height>103</height>
+      <height>117</height>
      </rect>
     </property>
     <property name="title">
@@ -1778,9 +1805,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>46</y>
+       <y>51</y>
        <width>217</width>
-       <height>33</height>
+       <height>32</height>
       </rect>
      </property>
      <property name="baseSize">
@@ -1812,7 +1839,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>16</y>
+       <y>17</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -1831,7 +1858,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>31</y>
+       <y>34</y>
        <width>217</width>
        <height>16</height>
       </rect>
@@ -1856,7 +1883,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>31</y>
+       <y>34</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -1875,7 +1902,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>46</y>
+       <y>51</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -1894,7 +1921,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>16</y>
+       <y>17</y>
        <width>217</width>
        <height>16</height>
       </rect>
@@ -1919,7 +1946,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>73</y>
+       <y>83</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -1938,9 +1965,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>73</y>
+       <y>83</y>
        <width>217</width>
-       <height>28</height>
+       <height>32</height>
       </rect>
      </property>
      <property name="autoFillBackground">
@@ -1966,10 +1993,10 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <widget class="QGroupBox" name="groupBoxStimInfo">
     <property name="geometry">
      <rect>
-      <x>475</x>
+      <x>479</x>
       <y>0</y>
       <width>302</width>
-      <height>92</height>
+      <height>102</height>
      </rect>
     </property>
     <property name="title">
@@ -1979,7 +2006,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>16</y>
+       <y>17</y>
        <width>217</width>
        <height>16</height>
       </rect>
@@ -2004,9 +2031,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>61</y>
+       <y>68</y>
        <width>217</width>
-       <height>28</height>
+       <height>32</height>
       </rect>
      </property>
      <property name="baseSize">
@@ -2014,6 +2041,12 @@ li.checked::marker { content: &quot;\2612&quot;; }
        <width>0</width>
        <height>26</height>
       </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <kerning>true</kerning>
+      </font>
      </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
@@ -2035,7 +2068,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>16</y>
+       <y>17</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -2054,7 +2087,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>61</y>
+       <y>68</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -2073,7 +2106,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>31</y>
+       <y>34</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -2092,7 +2125,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>31</y>
+       <y>34</y>
        <width>217</width>
        <height>16</height>
       </rect>
@@ -2117,7 +2150,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>46</y>
+       <y>51</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -2136,7 +2169,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>46</y>
+       <y>51</y>
        <width>217</width>
        <height>16</height>
       </rect>
@@ -2161,8 +2194,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <widget class="QPushButton" name="btnToggleWaitForTrigger">
     <property name="geometry">
      <rect>
-      <x>376</x>
-      <y>144</y>
+      <x>378</x>
+      <y>152</y>
       <width>96</width>
       <height>36</height>
      </rect>
@@ -2181,8 +2214,8 @@ disabled</string>
    <widget class="QPushButton" name="btnToggleLEDEnable">
     <property name="geometry">
      <rect>
-      <x>376</x>
-      <y>190</y>
+      <x>378</x>
+      <y>199</y>
       <width>96</width>
       <height>36</height>
      </rect>
@@ -2207,8 +2240,8 @@ enabled</string>
    <widget class="QPushButton" name="btnRefreshDisplayInfo">
     <property name="geometry">
      <rect>
-      <x>376</x>
-      <y>238</y>
+      <x>378</x>
+      <y>247</y>
       <width>96</width>
       <height>36</height>
      </rect>
@@ -2221,10 +2254,10 @@ display info</string>
    <widget class="QGroupBox" name="groupBoxIODevInfo">
     <property name="geometry">
      <rect>
-      <x>475</x>
-      <y>195</y>
+      <x>479</x>
+      <y>217</y>
       <width>201</width>
-      <height>79</height>
+      <height>87</height>
      </rect>
     </property>
     <property name="title">
@@ -2234,7 +2267,7 @@ display info</string>
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>16</y>
+       <y>17</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -2253,7 +2286,7 @@ display info</string>
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>16</y>
+       <y>17</y>
        <width>113</width>
        <height>16</height>
       </rect>
@@ -2278,7 +2311,7 @@ display info</string>
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>31</y>
+       <y>34</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -2297,7 +2330,7 @@ display info</string>
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>31</y>
+       <y>34</y>
        <width>113</width>
        <height>16</height>
       </rect>
@@ -2322,7 +2355,7 @@ display info</string>
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>46</y>
+       <y>51</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -2341,7 +2374,7 @@ display info</string>
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>46</y>
+       <y>51</y>
        <width>113</width>
        <height>16</height>
       </rect>
@@ -2366,7 +2399,7 @@ display info</string>
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>61</y>
+       <y>68</y>
        <width>69</width>
        <height>16</height>
       </rect>
@@ -2385,7 +2418,7 @@ display info</string>
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>61</y>
+       <y>68</y>
        <width>113</width>
        <height>16</height>
       </rect>
@@ -2413,8 +2446,8 @@ display info</string>
     </property>
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>200</y>
+      <x>684</x>
+      <y>231</y>
       <width>96</width>
       <height>36</height>
      </rect>
@@ -2435,8 +2468,8 @@ display info</string>
     </property>
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>237</y>
+      <x>684</x>
+      <y>268</y>
       <width>96</width>
       <height>36</height>
      </rect>
@@ -2457,7 +2490,7 @@ display info</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>780</width>
+     <width>784</width>
      <height>21</height>
     </rect>
    </property>

@@ -23,6 +23,13 @@ QDSpy_isGUIQuitWithDialog   = False
 QDSpy_workerMsgsToStdOut    = True
 QDSpy_noStimArg             = False
 
+QDSpy_isUseSound            = True  
+QDSpy_soundStimStart        = ".\\Sounds\\stim_start.mp3"
+QDSpy_soundStimEnd          = ".\\Sounds\\stim_end.mp3"
+QDSpy_soundError            = ".\\Sounds\\error.mp3" 
+QDSpy_soundOk               = ".\\Sounds\\ok.mp3" 
+QDSpy_volume                = 0.1
+
 QDSpy_dpiThresholdForHD     = 110
 QDSpy_useGUIScalingForHD    = False  # not needed in PyQt6
 QDSpy_fontPntSizeHistoryHD  = 9

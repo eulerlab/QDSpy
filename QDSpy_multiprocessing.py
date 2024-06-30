@@ -11,6 +11,7 @@ Copyright (c) 2013-2024 Thomas Euler
 All rights reserved.
 
 2024-06-11 - Reformatted (using Ruff)
+           - Suport sending stimulus time info back to client
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -47,6 +48,8 @@ class PipeValType:
     toCli_displayInfo = 1
     toCli_IODevInfo = 2
     toCli_TEMP = 3
+    toCli_time = 4
+    toCli_playEndInfo = 5
     # ...
     toSrv_None = 9
     toSrv_fileName = 10
@@ -67,16 +70,6 @@ class Sync:
         self.Request = Value("i", IDLE)
         self.State = Value("i", UNDEFINED)
         self.pipeCli, self.pipeSrv = Pipe()
-        """
-        dx = 64  #912 //6
-        dy = 128 #1140 //6
-        self.FrameSize = (dx, dy)
-        self.Frame     = Manager().Array("B", [0]*dx*dy*3)
-        '''
-        multiprocessing.sharedctypes.Array(typecode_or_type, size_or_initializer, *args[, lock])
-        '''
-        print("class Sync|_init__|len(self.Frame)=", len(self.Frame))
-        """
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setStateSafe(self, _newState):

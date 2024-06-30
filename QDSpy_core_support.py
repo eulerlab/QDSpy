@@ -4,31 +4,32 @@
 QDSpy module - support routines related to timing and priority
 
 'Clock'
-  Class that provides a high-precision clock and is based on 
-  "clock.py", from PsychoPy library. 
+  Class that provides a high-precision clock and is based on
+  "clock.py", from PsychoPy library.
   Copyright (C) 2015 Jonathan Peirce, Distributed under the
   terms of the GNU General Public License (GPL)
 
 'setHighProcessPrior()', 'setNormalProcessPrior()'
   Routines to increase and reset process priority
 
-Copyright (c) 2013-2022 Thomas Euler
+Copyright (c) 2013-2024 Thomas Euler
 Distributed under the terms of the GNU General Public License (GPL)
 
 2021-10-15 - Adapt to LINUX
 2022-08-06 - Some reformatting
+2024-06-30 - Reformatted with Ruff
 """
 # ---------------------------------------------------------------------
-__author__ 	= "code@eulerlab.de"
+__author__ = "code@eulerlab.de"
 
 import os
 import sys
 import QDSpy_global as glb
-from   pkgutil import iter_modules
-from   operator import xor
+from pkgutil import iter_modules
+from operator import xor
 
 if glb.QDSpy_incProcessPrior:
-  import psutil
+    import psutil
 PLATFORM_WINDOWS = sys.platform == "win32"
 
 # ---------------------------------------------------------------------
@@ -36,62 +37,69 @@ PLATFORM_WINDOWS = sys.platform == "win32"
 # ---------------------------------------------------------------------
 WORKING, CANCELED, TERMINATING, IDLE = (
     "Working", "Canceled", "Terminating", "Idle"
-  )
+)
 
 # ---------------------------------------------------------------------
 # Set the default timing mechanism
 # ---------------------------------------------------------------------
-getTime  = None
+getTime = None
 
 if PLATFORM_WINDOWS:
-  global _fcounter, _qpfreq, _winQPC
-  from ctypes import byref, c_int64, windll
-  _fcounter = c_int64()
-  _qpfreq = c_int64()
-  windll.Kernel32.QueryPerformanceFrequency(byref(_qpfreq))
-  _qpfreq = float(_qpfreq.value)
-  _winQPC=windll.Kernel32.QueryPerformanceCounter
+    global _fcounter, _qpfreq, _winQPC
+    from ctypes import byref, c_int64, windll
 
-  def getTime():
-    _winQPC(byref(_fcounter))
-    return  _fcounter.value/_qpfreq
+    _fcounter = c_int64()
+    _qpfreq = c_int64()
+    windll.Kernel32.QueryPerformanceFrequency(byref(_qpfreq))
+    _qpfreq = float(_qpfreq.value)
+    _winQPC = windll.Kernel32.QueryPerformanceCounter
+
+    def getTime():
+        _winQPC(byref(_fcounter))
+        return _fcounter.value / _qpfreq
 
 else:
-  cur_pyver = sys.version_info
-  if cur_pyver[0]==2 and cur_pyver[1]<=6:
-    import time
-    getTime = time.time
-  else:
-    import timeit
-    getTime = timeit.default_timer
+    cur_pyver = sys.version_info
+    if cur_pyver[0] == 2 and cur_pyver[1] <= 6:
+        import time
+
+        getTime = time.time
+    else:
+        import timeit
+
+        getTime = timeit.default_timer
+
 
 # ---------------------------------------------------------------------
 # A high-precision clock
 # ---------------------------------------------------------------------
 class Clock:
-  def __init__(self):
-    self.t0_s = getTime()
+    def __init__(self):
+        self.t0_s = getTime()
 
-  def getTime_s(self):
-    return getTime() -self.t0_s
+    def getTime_s(self):
+        return getTime() - self.t0_s
 
-  def getOffset_s(self):
-    return self.t0_s
+    def getOffset_s(self):
+        return self.t0_s
+
 
 defaultClock = Clock()
+
 
 # ---------------------------------------------------------------------
 # IO device-related helper
 # ---------------------------------------------------------------------
 def setIODevicePin(_IO, _portStr, _pin, _invert, _state):
-  port = _IO.getPortFromStr(_portStr)
-  mask = 0x01 << _pin
-  data = _IO.readDPort(port)
-  if xor(_state, _invert):
-    data = data | mask
-  else:
-    data = data & ~mask
-  _IO.writeDPort(port, data)
+    port = _IO.getPortFromStr(_portStr)
+    mask = 0x01 << _pin
+    data = _IO.readDPort(port)
+    if xor(_state, _invert):
+        data = data | mask
+    else:
+        data = data & ~mask
+    _IO.writeDPort(port, data)
+
 
 # ---------------------------------------------------------------------
 # Increase/decrease process priority
@@ -104,31 +112,34 @@ def setIODevicePin(_IO, _portStr, _pin, _invert, _state):
 # psutil.REALTIME_PRIORITY_CLASS
 #
 def setHighProcessPrior():
-  if glb.QDSpy_incProcessPrior:
-    if PLATFORM_WINDOWS:
-      proc = psutil.Process(os.getpid())
-      pyVersion = sys.version_info[0] +sys.version_info[1]/10
-      if pyVersion <= 3.4:
-        proc.set_nice(psutil.HIGH_PRIORITY_CLASS)
-      else:
-        proc.nice(psutil.HIGH_PRIORITY_CLASS)
-      return True
-  return False
+    if glb.QDSpy_incProcessPrior:
+        if PLATFORM_WINDOWS:
+            proc = psutil.Process(os.getpid())
+            pyVersion = sys.version_info[0] + sys.version_info[1] / 10
+            if pyVersion <= 3.4:
+                proc.set_nice(psutil.HIGH_PRIORITY_CLASS)
+            else:
+                proc.nice(psutil.HIGH_PRIORITY_CLASS)
+            return True
+    return False
+
 
 def setNormalProcessPrior():
-  if glb.QDSpy_incProcessPrior:
-    if PLATFORM_WINDOWS:
-      proc = psutil.Process(os.getpid())
-      pyVersion = sys.version_info[0] +sys.version_info[1]/10
-      if pyVersion <= 3.4:
-        proc.set_nice(psutil.NORMAL_PRIORITY_CLASS)
-      else:
-        proc.nice(psutil.NORMAL_PRIORITY_CLASS)
-      return True
-  return False
+    if glb.QDSpy_incProcessPrior:
+        if PLATFORM_WINDOWS:
+            proc = psutil.Process(os.getpid())
+            pyVersion = sys.version_info[0] + sys.version_info[1] / 10
+            if pyVersion <= 3.4:
+                proc.set_nice(psutil.NORMAL_PRIORITY_CLASS)
+            else:
+                proc.nice(psutil.NORMAL_PRIORITY_CLASS)
+            return True
+    return False
+
 
 # ---------------------------------------------------------------------
 def module_exists(module_name):
-  return module_name in (name for loader,name,ispkg in iter_modules())
+    return module_name in (name for loader, name, ispkg in iter_modules())
+
 
 # ---------------------------------------------------------------------

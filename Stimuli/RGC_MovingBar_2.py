@@ -56,7 +56,9 @@ umPerFr        = float(p["vel_umSec"]) /freq_Hz
 moveDist_um    = p["vel_umSec"] *p["tMoveDur_s"]
 nFrToMove      = float(moveDist_um) /umPerFr
 
+'''
 print(nFrToMove, int(nFrToMove), int(nFrToMove)*p["durFr_s"], durMarker_s)
+'''
 # Define stimulus objects
 #
 QDS.DefObj_Box(1, p["barDx_um"], p["barDy_um"])
