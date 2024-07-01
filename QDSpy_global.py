@@ -24,10 +24,11 @@ QDSpy_workerMsgsToStdOut    = True
 QDSpy_noStimArg             = False
 
 QDSpy_isUseSound            = True  
-QDSpy_soundStimStart        = ".\\Sounds\\stim_start.mp3"
-QDSpy_soundStimEnd          = ".\\Sounds\\stim_end.mp3"
-QDSpy_soundError            = ".\\Sounds\\error.mp3" 
-QDSpy_soundOk               = ".\\Sounds\\ok.mp3" 
+QDSpy_pathSounds            = ".\\Sounds\\"
+QDSpy_soundStimStart        = "stim_start.mp3"
+QDSpy_soundStimEnd          = "stim_end.mp3"
+QDSpy_soundError            = "error.mp3" 
+QDSpy_soundOk               = "ok.mp3" 
 QDSpy_volume                = 0.1
 
 QDSpy_dpiThresholdForHD     = 110

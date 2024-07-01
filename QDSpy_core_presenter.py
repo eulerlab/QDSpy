@@ -70,7 +70,7 @@ class Presenter:
     """ Presenter class
     """
 
-    def __init__(self, _Stage, _IO, _Conf, _View, _View2=None, _LCr=[]):
+    def __init__(self, _Stage, _IO, _Conf, _View, _LCr=[], _path=""):
         """ Initializing
         """
         self.Stage = _Stage
@@ -93,10 +93,11 @@ class Presenter:
         if self.useSound:
             ssp.Log.write("DEBUG", "Loading sounds ...")
             self.SoundPlayer = SoundPlayer()    
-            self.SoundPlayer.add(Sounds.OK, glo.QDSpy_soundOk)
-            self.SoundPlayer.add(Sounds.ERROR, glo.QDSpy_soundError)
-            self.SoundPlayer.add(Sounds.STIM_START, glo.QDSpy_soundStimStart)
-            self.SoundPlayer.add(Sounds.STIM_END, glo.QDSpy_soundStimEnd)
+            p = _path +glo.QDSpy_pathSounds
+            self.SoundPlayer.add(Sounds.OK, p +glo.QDSpy_soundOk)
+            self.SoundPlayer.add(Sounds.ERROR, p +glo.QDSpy_soundError)
+            self.SoundPlayer.add(Sounds.STIM_START, p +glo.QDSpy_soundStimStart)
+            self.SoundPlayer.add(Sounds.STIM_END, p +glo.QDSpy_soundStimEnd)
             ssp.Log.write("DEBUG", "... done")
 
         # Define event handler(s)
@@ -616,9 +617,10 @@ class Presenter:
             # No more scenes to display or aborted by used, in any case,
             # end presentation
             isDone = self.iSc >= len(self.Stim.SceList)
-            self.Sync.pipeSrv.send(
-                [mpr.PipeValType.toCli_playEndInfo, isDone]
-            )
+            if self.Sync:
+                self.Sync.pipeSrv.send(
+                    [mpr.PipeValType.toCli_playEndInfo, isDone]
+                )
             ssp.Log.write("ok", "Done" if isDone else "Aborted by user xxx")
             ssp.Log.write(
                 "DATA",

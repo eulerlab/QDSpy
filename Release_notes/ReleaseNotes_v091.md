@@ -1,4 +1,4 @@
-## Release notes v0.91 (June 2024)
+## Release notes v0.91 (July 2024)
 
 ### New features
 - GUI migrated to `PyQt6`, now supporting dark mode.
@@ -6,6 +6,7 @@
 - Added the option to play sounds, e.g., at the start and end of a stimulus presentation (see `QDSpy_global.py`, for settings) 
 
 ### Fixed issues
+- Running stimuli from the command line (w/o GUI) fixed
 - Now works with the latest release of `pyglet` version 1 (v.1.5.29)
 - GUI migrated to `PyQt6`
 - More modules reformatted using `ruff`
@@ -24,7 +25,6 @@
   - Fixed a bug when using `pyglet` higher than v1.5.7
 
 ### Open issues:
-- Running stimuli from the command line (w/o GUI) does not work currently.
 - Error message `QWindowsContext: OleInitialize() failed:  "COM error 0x80010106: Der Threadmodus kann nicht nach dem Einstellen geändert werden."` appears when starting QDSpy. It appears to result from some interaction between `pyglet` v1.5.x and `PyQt6` but seems to have no consequences. With `pyglet` v1.4.x the error is gone.
 - Stimulus containing a wait raises an uncaught error if no respective hardware is connected (e.g., stimulus `noise_Colored_Wait.py`)
 
