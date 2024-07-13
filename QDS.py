@@ -13,6 +13,7 @@ All rights reserved.
 
 2022-08-03 - Adapt to LINUX
 2024-06-15 - Small fixes for PEP violations  
+2024-07-12 - Detect user abort by Ctrl-C 
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -82,7 +83,10 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   try:
     tLastUpt_pick = datetime.fromtimestamp(os.path.getmtime(fNameDir_pk))
     if tLastUpt_pick > tLastUpt_py and not args.compile:
+      '''
       pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[0]
+      '''
+      pythonPath = glo.getQDSpyPath()
       if len(pythonPath) > 0:
         pythonPath += "\\" if PLATFORM_WINDOWS else "/"
       ssp.Log.write("INFO", "Script has not changed, running stimulus now ...")
@@ -93,8 +97,13 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
           fName if PLATFORM_WINDOWS else _Stim.fNameDir)
         )
       exit()
-  except WindowsError:
-    pass
+      '''
+      except WindowsError:
+          pass
+      '''
+  except KeyboardInterrupt:
+      ssp.Log.write("INFO", "User abort.")
+  sys.exit()
   
 # ---------------------------------------------------------------------
 def GetDefaultRefreshRate():

@@ -12,6 +12,8 @@ All rights reserved.
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
+import os
+
 # ---------------------------------------------------------------------
 QDSpy_versionStr            = "QDSpy v0.91 beta"
 QDSpy_copyrightStr          = "(c) 2013-24 Thomas Euler"
@@ -151,5 +153,17 @@ QDSpy_allowCam              = False
 QDSpy_camWinGeometry        = "20,30,300,200"
 
 QDSpy_probing_center        = 1
+
+# ---------------------------------------------------------------------
+def getQDSpyPath() -> str:
+    """Get QDSpy path from `PYTHONPATH`
+    """
+    _pathQDSpy = ""
+    pList = os.environ['PYTHONPATH'].split(";")
+    for p in pList:
+        pParts = os.path.split(p)
+        if pParts[-1].lower() == "qdspy":
+            _pathQDSpy = p
+    return _pathQDSpy        
 
 # ---------------------------------------------------------------------

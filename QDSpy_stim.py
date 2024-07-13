@@ -435,7 +435,8 @@ class Stim:
         shader type exists
         """
         if self.ShManager is None:
-            self.ShManager = csh.ShaderManager(self.Conf)
+            _path = glo.getQDSpyPath()
+            self.ShManager = csh.ShaderManager(self.Conf, _path)
         if _shType not in self.ShManager.getShaderTypes():
             self.LastErrC = StimErrC.invalidShaderType
             raise StimException(StimErrC.invalidShaderType)
@@ -547,7 +548,7 @@ class Stim:
             VdOb = self.VidList[iVdOb]
         except KeyError:
             self.LastErrC = StimErrC.noMatchingID
-            raise StimException
+            raise StimException(self.LastErrC)
 
         d = dict()
         d["dxFr"] = VdOb[SV_field_dxFr]
@@ -576,14 +577,14 @@ class Stim:
             or (len(_IDs) != len(_newAlphas))
         ):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         for ID in _IDs:
             try:
                 self.ObjDict[ID]
             except KeyError:
                 self.LastErrC = StimErrC.noMatchingID
-                raise StimException
+                raise StimException(self.LastErrC)
 
         RGBEx = ssp.completeRGBList(_newRGBs)
         newSce = [
@@ -613,14 +614,14 @@ class Stim:
             or (len(_IDs) != len(_newRGBAs))
         ):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         for ID in _IDs:
             try:
                 self.ObjDict[ID]
             except KeyError:
                 self.LastErrC = StimErrC.noMatchingID
-                raise StimException
+                raise StimException(self.LastErrC)
 
         RGBAEx = ssp.completeRGBAList(_newRGBAs)
         newSce = [
@@ -649,7 +650,7 @@ class Stim:
             or len(_rgb) not in [3, 6]
         ):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
     # *********************
     # *********************
@@ -666,13 +667,13 @@ class Stim:
         """
         if not (isinstance(_shID, int)) or not (isinstance(_shParams, list)):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         try:
             iSh = self.ShDict[_shID]
         except KeyError:
             self.LastErrC = StimErrC.noMatchingID
-            raise StimException
+            raise StimException(self.LastErrC)
 
         shP = _shParams
         shType = self.ShList[iSh][SH_field_shaderType]
@@ -681,7 +682,7 @@ class Stim:
             ShD = self.ShManager.ShDesc[iShD]
         except ValueError:
             self.LastErrC = StimErrC.invalidShaderType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         # Convert RBG values for each shader parameter (uniform) that
         # contains the substring "rgb"
@@ -701,17 +702,17 @@ class Stim:
         """
         if not (isinstance(_IDs, list)) or not (isinstance(_shIDs, list)):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         for ID in _IDs:
             try:
                 # self.ObjDict[ID]
                 if self.ObjList[self.ObjDict[ID]][SO_field_useShader] == 0:
                     self.LastErrC = StimErrC.notShaderObject
-                    raise StimException
+                    raise StimException(self.LastErrC)
             except KeyError:
                 self.LastErrC = StimErrC.noMatchingID
-                raise StimException
+                raise StimException(self.LastErrC)
 
         for ID in _shIDs:
             if ID < 0:
@@ -720,7 +721,7 @@ class Stim:
                 self.ShDict[ID]
             except KeyError:
                 self.LastErrC = StimErrC.noMatchingID
-                raise StimException
+                raise StimException(self.LastErrC)
 
         newSce = [StimSceType.changeObjShader, -1, self.nSce, False, _IDs, _shIDs]
         self.SceList.append(newSce)
@@ -737,7 +738,7 @@ class Stim:
         """
         if not (isinstance(_newRGB, tuple)):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         RGBEx = ssp.completeRGBList([_newRGB])
         newSce = [StimSceType.changeBkgCol, -1, self.nSce, False, RGBEx[0]]
@@ -768,7 +769,7 @@ class Stim:
         """
         if not (isinstance(_dict, dict)):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         # **************************************
         # **************************************
@@ -794,7 +795,7 @@ class Stim:
         """
         if _dur_s < 0:
             self.LastErrC = StimErrC.invalidDuration
-            raise StimException
+            raise StimException(self.LastErrC)
         elif _dur_s == 0:
             dur = -1
         else:
@@ -866,7 +867,7 @@ class Stim:
 
         if res[0] != lcr.ERROR.OK:
             self.LastErrC = StimErrC.DeviceError_LCr
-            raise StimException
+            raise StimException(self.LastErrC)
 
         newSce = [StimSceType.sendCommandToLCr, -1, self.nSce, False, [_cmd] + _p]
         self.SceList.append(newSce)
@@ -902,18 +903,18 @@ class Stim:
             or (len(_IDs) != len(_rot))
         ):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         if _dur_s <= 0:
             self.LastErrC = StimErrC.invalidDuration
-            raise StimException
+            raise StimException(self.LastErrC)
 
         for ID in _IDs:
             try:
                 self.ObjDict[ID]
             except KeyError:
                 self.LastErrC = StimErrC.noMatchingID
-                raise StimException
+                raise StimException(self.LastErrC)
 
         newSce = [
             StimSceType.renderSce,
@@ -945,7 +946,7 @@ class Stim:
             or (_screen >= glo.QDSpy_maxNumberOfScreens)
         ):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         try:
             iMvOb = self.MovDict[_ID]
@@ -954,12 +955,12 @@ class Stim:
             # raise(StimException(self.LastErrC))
         except KeyError:
             self.LastErrC = StimErrC.noMatchingID
-            raise StimException
+            raise StimException(self.LastErrC)
 
         tmpMCtr = mov.MovieCtrl(_seq, _ID, _nFr=self.MovList[iMvOb][SM_field_nFr])
         if not (tmpMCtr.check()):
             self.LastErrC = StimErrC.invalidMovieSeq
-            raise StimException
+            raise StimException(self.LastErrC)
 
         newSce = [
             StimSceType.startMovie,
@@ -991,13 +992,13 @@ class Stim:
             or _screen not in [0, 1]
         ):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         try:
             _ = self.VidDict[_ID]
         except KeyError:
             self.LastErrC = StimErrC.noMatchingID
-            raise StimException
+            raise StimException(self.LastErrC)
 
         newSce = [
             StimSceType.startVideo,
@@ -1027,7 +1028,7 @@ class Stim:
             and (len(self.VidList) == 0)
         ) or (len(self.SceList) == 0):
             self.LastErrC = StimErrC.nothingToCompile
-            raise StimException
+            raise StimException(self.LastErrC)
 
         # Clear compiled scene data
         # First, lists corresponding to SceList, then lists with entries

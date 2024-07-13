@@ -70,7 +70,7 @@ class Presenter:
     """ Presenter class
     """
 
-    def __init__(self, _Stage, _IO, _Conf, _View, _LCr=[], _path=""):
+    def __init__(self, _Stage, _IO, _Conf, _View, _LCr=[]):
         """ Initializing
         """
         self.Stage = _Stage
@@ -78,7 +78,8 @@ class Presenter:
         self.Conf = _Conf
         self.View = _View
         self.LCr = _LCr
-        self.ShManager = csh.ShaderManager(self.Conf)
+        self.pathQDSpy = glo.getQDSpyPath()
+        self.ShManager = csh.ShaderManager(self.Conf, self.pathQDSpy)
         self.useSound = glo.QDSpy_isUseSound
         self.reset()
         
@@ -93,7 +94,7 @@ class Presenter:
         if self.useSound:
             ssp.Log.write("DEBUG", "Loading sounds ...")
             self.SoundPlayer = SoundPlayer()    
-            p = _path +glo.QDSpy_pathSounds
+            p = self.pathQDSpy +glo.QDSpy_pathSounds
             self.SoundPlayer.add(Sounds.OK, p +glo.QDSpy_soundOk)
             self.SoundPlayer.add(Sounds.ERROR, p +glo.QDSpy_soundError)
             self.SoundPlayer.add(Sounds.STIM_START, p +glo.QDSpy_soundStimStart)

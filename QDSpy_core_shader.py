@@ -37,7 +37,7 @@ class ShaderFileCmd:
 # Shader manager class
 # ---------------------------------------------------------------------
 class ShaderManager:
-    def __init__(self, _Conf):
+    def __init__(self, _Conf, _path: str):
         # Initializing
         self.Conf = _Conf
         self.ShFileList = []
@@ -45,20 +45,20 @@ class ShaderManager:
         self.ShTypes = []
         self.ShVertCode = []
         self.ShFragCode = []
+        pshader = _path +self.Conf.pathShader
 
         # Make a list of the available shader files ...
         f = []
-        for dirpath, dirnames, filenames in os.walk(self.Conf.pathShader):
+        for dirpath, dirnames, filenames in os.walk(pshader):
             f.extend(filenames)
             break
         for fName in f:
             if (os.path.splitext(fName)[1]).lower() == glo.QDSpy_shaderFileExt:
-                self.ShFileList.append(self.Conf.pathShader + "\\" + fName)
+                self.ShFileList.append(pshader + fName)
 
         # Parse each shader file ...
         isInVert = False
         isInFrag = False
-
         for fName in self.ShFileList:
             shName = ""
             shPara = []

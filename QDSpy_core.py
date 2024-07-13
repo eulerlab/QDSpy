@@ -182,14 +182,6 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
         ),
     )
 
-    # Get QDSpy path from `PYTHONPATH`
-    _pathQDSpy = ""
-    pList = os.environ['PYTHONPATH'].split(";")
-    for p in pList:
-        pParts = os.path.split(p)
-        if pParts[-1].lower() == "qdspy":
-            _pathQDSpy = p
-  
     # Log info about the relevant software packages
     v = sys.version_info
     txt = "{0}.{1}.{2}".format(v[0], v[1], v[2])
@@ -282,7 +274,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
         _IO = None
 
     # Create a presenter instance
-    _Presenter = cpr.Presenter(_Stage, _IO, _Conf, _View, _path=_pathQDSpy)
+    _Presenter = cpr.Presenter(_Stage, _IO, _Conf, _View)
     _Presenter.SoundPlayer.play(Sounds.OK)
 
     if not _isParentGUI:
