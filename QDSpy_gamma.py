@@ -70,7 +70,6 @@ def setGammaLUT (_winDC, _LUT):
   # for the first time ...
   #
   for j in range(5):
-    res = windll.gdi32.SetDeviceGammaRamp(_winDC & LPCVOID(0xFFFFFFFF), _LUT.ctypes)
     try:
       res = windll.gdi32.SetDeviceGammaRamp(_winDC & LPCVOID(0xFFFFFFFF), _LUT.ctypes)
       print(1)

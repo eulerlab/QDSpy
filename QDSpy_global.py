@@ -25,7 +25,7 @@ QDSpy_isGUIQuitWithDialog   = False
 QDSpy_workerMsgsToStdOut    = True
 QDSpy_noStimArg             = False
 
-QDSpy_isUseSound            = True  
+QDSpy_isUseSound            = True
 QDSpy_pathSounds            = ".\\Sounds\\"
 QDSpy_soundStimStart        = "stim_start.mp3"
 QDSpy_soundStimEnd          = "stim_end.mp3"

@@ -6,6 +6,7 @@
 - Added the option to play sounds, e.g., at the start and end of a stimulus presentation (see `QDSpy_global.py`, for settings) 
 
 ### Fixed issues
+- Fixed an issue with loading gamma LUTs
 - Fixed finding shader files when run from the command line
 - Running stimuli from the command line (w/o GUI) fixed
 - Now works with the latest release of `pyglet` version 1 (v.1.5.29)

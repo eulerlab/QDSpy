@@ -40,7 +40,6 @@ import QDSpy_multiprocessing as mpr
 import QDSpy_gamma as gma
 import QDSpy_probeCenter as pce
 import Devices.digital_io as dio
-from Graphics.sounds import Sounds
 
 if glo.QDSpy_use_Lightcrafter:
     import Devices.lightcrafter as lcr
@@ -275,8 +274,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
 
     # Create a presenter instance
     _Presenter = cpr.Presenter(_Stage, _IO, _Conf, _View)
-    _Presenter.SoundPlayer.play(Sounds.OK)
-
+    
     if not _isParentGUI:
         # Called from the command line - - - -- - - - - - - - - - - - - - -
         #
