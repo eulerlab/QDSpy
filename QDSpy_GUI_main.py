@@ -715,11 +715,13 @@ class MainWinClass(QMainWindow, form_class):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def OnClick_btnChangeStimFolder(self):
+
         newPath = QFileDialog.getExistingDirectory(
             self,
             "Select new stimulus folder",
             self.currStimPath,
-            options=QFileDialog.ShowDirsOnly,
+            #options=QFileDialog.ShowDirsOnly,
+            options=QFileDialog.Option.ShowDirsOnly
         )
         if len(newPath) > 0:
             # Change path and update stimulus list ...
@@ -1224,7 +1226,7 @@ if __name__ == "__main__":
     QDSApp = QApplication(sys.argv)
     QDSApp.setStyle("Fusion")
     QDSWin = MainWinClass(None)
-    
+
     if PLATFORM_WINDOWS:
         # Make sure that Windows uses its icon in the task bar
         windll.shell32.SetCurrentProcessExplicitAppUserModelID(glo.QDSpy_appID)
@@ -1232,5 +1234,6 @@ if __name__ == "__main__":
     # Show window and start GUI handler
     QDSWin.show()
     QDSApp.exec()
+
 
 # ---------------------------------------------------------------------

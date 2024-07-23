@@ -72,7 +72,6 @@ def setGammaLUT (_winDC, _LUT):
   for j in range(5):
     try:
       res = windll.gdi32.SetDeviceGammaRamp(_winDC & LPCVOID(0xFFFFFFFF), _LUT.ctypes)
-      print(1)
     except TypeError:
       res = windll.gdi32.SetDeviceGammaRamp(_winDC, _LUT.ctypes)
     time.sleep(0.1)

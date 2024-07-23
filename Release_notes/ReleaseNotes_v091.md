@@ -9,7 +9,7 @@
 - Fixed an issue with loading gamma LUTs
 - Fixed finding shader files when run from the command line
 - Running stimuli from the command line (w/o GUI) fixed
-- Now works with the latest release of `pyglet` version 1 (v.1.5.29)
+- Now works with a newer release of `pyglet` version 1 (v1.5.5 instead of v1.4.x)
 - GUI migrated to `PyQt6`
 - More modules reformatted using `ruff`
 
@@ -24,11 +24,11 @@
 - `QDSpy_multiprocessing.py`
   - Small bug fix
 - `Graphics/renderer_opengl.py`
-  - Fixed a bug when using `pyglet` higher than v1.5.7
+  - Fixed a bug when using `pyglet` v1.5.x (still fixed to v1.5.5, see below)
 
 ### Open issues:
 - Linux version: Cannot abort qith `Q`
-- Error message `QWindowsContext: OleInitialize() failed:  "COM error 0x80010106: Der Threadmodus kann nicht nach dem Einstellen geändert werden."` appears when starting QDSpy. It appears to result from some interaction between `pyglet` v1.5.x and `PyQt6` but seems to have no consequences. With `pyglet` v1.4.x the error is gone.
+- Error message `QWindowsContext: OleInitialize() failed:  "COM error 0x80010106: Der Threadmodus kann nicht nach dem Einstellen geändert werden."` appears when starting QDSpy. It appears to result from some interaction between `pyglet` v1.5.6 and higher and `PyQt6`. I first thought it has no consequences but then saw that now the file dialog is not working anymore. For now, make sure that `pyglet` v1.5.5 is used.
 - Stimulus containing a wait raises an uncaught error if no respective hardware is connected (e.g., stimulus `noise_Colored_Wait.py`)
 
 ### Notes on the 
