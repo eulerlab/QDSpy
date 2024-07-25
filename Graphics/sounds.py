@@ -31,11 +31,13 @@ class SoundPlayer():
     def __init__(self):
         self._sounds = {}
         pygame.mixer.init()
+        self._ready = True
         self.setVol(0.1)
 
     def __del__(self):
         self._sounds = None
-        pygame.mixer.music.unload()
+        if self._ready:
+            pygame.mixer.music.unload()
 
     def add(self, id, fname):    
         if id in Sounds:
