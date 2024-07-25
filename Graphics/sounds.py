@@ -36,8 +36,10 @@ class SoundPlayer():
 
     def __del__(self):
         self._sounds = None
+        '''
         if self._ready:
             pygame.mixer.music.unload()
+        '''
 
     def add(self, id, fname):    
         if id in Sounds:
@@ -46,6 +48,8 @@ class SoundPlayer():
                 self._sounds.update({id: fname})
 
     def play(self, id):
+        if not self._ready:
+            return
         try:
             pygame.mixer.music.load(self._sounds[id])
             pygame.mixer.music.play()
@@ -56,6 +60,8 @@ class SoundPlayer():
             pass
 
     def setVol(self, vol):
+        if not self._ready:
+            return
         vol = min(max(0, vol), 1)
         pygame.mixer.music.set_volume(vol)
 
