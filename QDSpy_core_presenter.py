@@ -38,7 +38,8 @@ import QDSpy_core_shader as csh
 import QDSpy_multiprocessing as mpr
 import Devices.digital_io as dio
 import QDSpy_config as cfg
-from Graphics.sounds import Sounds, SoundPlayer
+if glo.QDSpy_isUseSound:
+    from Graphics.sounds import Sounds, SoundPlayer
 
 global Clock
 Clock = csp.defaultClock

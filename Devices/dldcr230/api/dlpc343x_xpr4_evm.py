@@ -43,7 +43,11 @@ def InitGPIO():
     os.system("raspi-gpio set 0 op pn")
     os.system("raspi-gpio set 1-27 ip pn")
     time.sleep(1)
+    ''' TE 2024-07-25
+        Not sure how that ever worked; wrong command? 
+        In any case, the drive strength seems not to be critical here
     os.system("gpio drive 0 {0}".format(gpio_drive_strength))
+    '''
     os.system("raspi-gpio set 22 op pn")
     os.system("raspi-gpio set 23 op pn")
     os.system("raspi-gpio set 0-21 a2 pn")
@@ -52,5 +56,6 @@ def InitGPIO():
 
 
 if __name__ == "__main__" : main()
+
 
 
