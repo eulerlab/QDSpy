@@ -101,6 +101,8 @@ class Presenter:
             self.SoundPlayer.add(Sounds.STIM_START, p +glo.QDSpy_soundStimStart)
             self.SoundPlayer.add(Sounds.STIM_END, p +glo.QDSpy_soundStimEnd)
             ssp.Log.write("DEBUG", "... done")
+        else:
+            self.SoundPlayer = None    
 
         # Define event handler(s)
         self.View.setOnKeyboardHandler(self.onKeyboard)
