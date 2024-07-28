@@ -22,6 +22,7 @@ import os
 import time
 import sys
 from   datetime import datetime
+import QDSpy_checks
 import QDSpy_global as glo
 import QDSpy_stim as stm
 import QDSpy_stim_support as ssp
