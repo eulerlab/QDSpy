@@ -20,6 +20,7 @@ __author__ 	= "code@eulerlab.de"
 
 import os
 import time
+import sys
 import platform
 from   datetime import datetime
 import QDSpy_checks
