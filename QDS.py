@@ -20,7 +20,7 @@ __author__ 	= "code@eulerlab.de"
 
 import os
 import time
-import sys
+import platform
 from   datetime import datetime
 import QDSpy_checks
 import QDSpy_global as glo
@@ -29,7 +29,7 @@ import QDSpy_stim_support as ssp
 import QDSpy_config as cfg
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
-PLATFORM_WINDOWS = sys.platform == "win32"
+PLATFORM_WINDOWS = platform.system == "Windows"
 if not PLATFORM_WINDOWS:
   WindowsError = FileNotFoundError
 
@@ -92,7 +92,7 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
         ssp.Log.write("INFO", "Script has not changed, running stimulus now ...")
         s = "python {0}QDSpy_core.py -t={1} {2} {3}"
         os.system(s.format(
-            pythonPath,
+            pythonPath if PLATFORM_WINDOWS else "",
             args.timing, "-v" if args.verbose else "",
             _Stim.fNameDir)
           )
