@@ -13,6 +13,7 @@ All rights reserved.
 __author__ 	= "code@eulerlab.de"
 
 import os
+import platform
 
 # ---------------------------------------------------------------------
 QDSpy_versionStr            = "QDSpy v0.91 beta"
@@ -165,5 +166,15 @@ def getQDSpyPath() -> str:
         if pParts[-1].lower() == "qdspy":
             _pathQDSpy = p
     return _pathQDSpy        
+
+
+def repairPath(_path: str) -> str:
+    """Repair path if necessary
+    """
+    if platform.system() == "Linux":
+        _path = _path.replace("\\", "/").replace(".", "")
+        _path = _path[1:] if _path[0] == ":" else _path
+    return _path
+
 
 # ---------------------------------------------------------------------

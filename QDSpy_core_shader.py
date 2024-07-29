@@ -20,7 +20,6 @@ import QDSpy_stim_support as ssp
 import QDSpy_global as glo
 from Graphics.shader_opengl import Shader
 
-
 # ---------------------------------------------------------------------
 class ShaderFileCmd:
     ShaderName = "shadername"
@@ -45,7 +44,7 @@ class ShaderManager:
         self.ShTypes = []
         self.ShVertCode = []
         self.ShFragCode = []
-        pshader = _path +self.Conf.pathShader
+        pshader = glo.repairPath(_path +self.Conf.pathShader)
 
         # Make a list of the available shader files ...
         f = []

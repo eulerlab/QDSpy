@@ -12,7 +12,7 @@ All rights reserved.
 __author__ = "code@eulerlab.de"
 
 import sys
-from pyglet.canvas.xlib import NoSuchDisplayException
+import pyglet
 
 PLATFORM_WINDOWS = sys.platform == "win32"
 
@@ -20,7 +20,7 @@ if not PLATFORM_WINDOWS:
     # Check if screens exist under Linux
     try: 
         import pyglet.gl as GL  
-    except NoSuchDisplayException:
+    except pyglet.canvas.xlib.NoSuchDisplayException:
         print("FATAL ERROR: No dislay devices detected")
         sys.exit()
 

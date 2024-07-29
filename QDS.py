@@ -92,10 +92,17 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
         ssp.Log.write("INFO", "Script has not changed, running stimulus now ...")
         s = "python {0}QDSpy_core.py -t={1} {2} {3}"
         os.system(s.format(
+            pythonPath,
+            args.timing, "-v" if args.verbose else "",
+            _Stim.fNameDir)
+          )
+        '''
+        os.system(s.format(
             pythonPath if PLATFORM_WINDOWS else "",
             args.timing, "-v" if args.verbose else "",
             fName if PLATFORM_WINDOWS else _Stim.fNameDir)
           )
+        '''  
         exit()
 
   except KeyboardInterrupt:
