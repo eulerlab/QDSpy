@@ -26,12 +26,14 @@ TODO: Still uses pyglet directly ...
 __author__ = "code@eulerlab.de"
 
 import os.path
+import platform
 import configparser
 import pyglet
 import QDSpy_stim as stm
 import QDSpy_global as glo
 import Graphics.renderer_opengl as rdr
 
+PLATFORM_WINDOWS = platform.system() == "Windows"
 
 # ---------------------------------------------------------------------
 # Movie object class
@@ -150,13 +152,19 @@ class Movie:
            Returns an error of the QDSpy_stim.StimErrC class
         """
         tempStr = (os.path.splitext(os.path.basename(_fName)))[0]
-        tempDir = os.path.dirname(_fName)
-        if len(tempDir) > 0:
-            tempDir += "\\"
-        self.fNameDesc = tempDir + tempStr + glo.QDSpy_movDescFileExt
-        self.fNameImg = _fName
         self.fExtImg = os.path.splitext(_fName)[1].lower()
         self.isTestOnly = _testOnly
+
+        if PLATFORM_WINDOWS:
+            tempDir = os.path.dirname(_fName)
+            if len(tempDir) > 0:
+                tempDir += "\\"
+            self.fNameDesc = tempDir + tempStr + glo.QDSpy_movDescFileExt
+            self.fNameImg = _fName
+        else:
+            tempDir = os.getcwd()
+            self.fNameDesc = glo.repairPath(tempDir + tempStr) + glo.QDSpy_movDescFileExt
+            self.fNameImg = glo.repairPath(tempDir + tempStr) + self.fExtImg
 
         if self.fExtImg in glo.QDSpy_movAllowedMovieExts:
             return self.__loadMontage()
