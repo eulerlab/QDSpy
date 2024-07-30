@@ -1,4 +1,4 @@
-#version 400
+#version 300
 
 //#QDS ShaderName          =SQUARE_WAVE_GRATING_MIX2
 //#QDS ShaderParamNames    =perLen_um; perDur_s; minRGB; maxRGB; mixA
