@@ -10,8 +10,8 @@ QDS.Initialize("dome_grid", "Grid to visualize stimulus in dome")
 # Define global stimulus parameters
 gridRGB = (255, 255, 255)
 bkgRGB  = (0, 0, 0)
-dxScr   = 1920
-dyScr   = 1080
+dxScr   = 1920 //2
+dyScr   = 1080 //2
 nx      = 12
 ny      = int(nx * dyScr / dxScr)
 nTrials = 20
