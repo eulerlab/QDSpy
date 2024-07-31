@@ -56,7 +56,7 @@ class StimObjType:
     shader            = 201
     # ...
 
-Ellipse_maxTr         = 72
+Ellipse_maxTr         = 180 # 72
 Sector_maxTr          = 360
 Sector_maxStep        = 10
 
