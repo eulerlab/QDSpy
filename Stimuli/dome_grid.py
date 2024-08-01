@@ -14,7 +14,7 @@ dxScr   = 1920 //2
 dyScr   = 1080 //2
 nx      = 12
 ny      = int(nx * dyScr / dxScr)
-nTrials = 20
+nTrials = 200
 dtTrial = 1.0
 
 dxBox   = dxScr / nx
