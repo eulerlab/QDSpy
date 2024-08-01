@@ -352,7 +352,7 @@ class Window(pyglet.window.Window):
                 width=_dx,
                 height=_dy,
                 caption=_title,
-                style=pyglet.window.Window.WINDOW_STYLE_TOOL,
+                style=pyglet.window.Window.WINDOW_STYLE_BORDERLESS,
             )
             self.set_location(_left, _top)
 
