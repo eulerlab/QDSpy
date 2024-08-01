@@ -3,6 +3,7 @@
 #
 # ---------------------------------------------------------------------
 import QDS
+import random
 
 QDS.Initialize("Optokinetic1", "Moving vertical bar gratings")
 
@@ -44,8 +45,7 @@ for iX in range(p["nCols"]):
         y = (iY + 0.5 - p["nRows"] / 2.0) * boxDy * border
         ObjPosList.append((x, y))
 
-# QDS.DefShader(1, "SINE_WAVE_GRATING_MIX2")
-QDS.DefShader(1, "SQUARE_WAVE_GRATING_MIX2")
+QDS.DefShader(1, "SQUARE_WAVE_GRATING_MIX4")
 
 perLen_um = 30.0
 perDur_s = 0.5
