@@ -31,6 +31,7 @@ import configparser
 import pyglet
 import QDSpy_stim as stm
 import QDSpy_global as glo
+import QDSpy_stim_support as ssp
 import Graphics.renderer_opengl as rdr
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
@@ -70,21 +71,19 @@ class Movie:
             return stm.StimErrC.movieFileNotFound
 
         # Read description file
-        # --> TE
-        #self.Desc = configparser.RawConfigParser()
         self.Desc = configparser.ConfigParser()
-        # <--
         try:
-            # --> TE
-            # self.Desc.readfp(open(self.fNameDesc))
             self.Desc.read(self.fNameDesc)
-            # <--
             self.dxFr = self.Desc.getint(glo.QDSpy_movDescSect, glo.QDSpy_movFrWidth)
             self.dyFr = self.Desc.getint(glo.QDSpy_movDescSect, glo.QDSpy_movFrHeight)
             self.nFr = self.Desc.getint(glo.QDSpy_movDescSect, glo.QDSpy_movFrCount)
             self.comment = self.Desc.get(glo.QDSpy_movDescSect, glo.QDSpy_movComment)
             self.is1FrBL = self.Desc.getboolean(
                 glo.QDSpy_movDescSect, glo.QDSpy_movIsFirstFrBottLeft
+            )
+            ssp.Log.write(
+                "DEBUG", 
+                f"__loadMontage: {self.nFr} frames, {self.dxFr} x {self.dyFr} pixels"
             )
 
         except IOError:
@@ -93,6 +92,10 @@ class Movie:
 
         # Load and check image data
         self.img = pyglet.image.load(self.fNameImg)
+        ssp.Log.write(
+            "DEBUG", 
+            f"__loadMontage: image is {self.img.width} x {self.img.height} pixels"
+        )
         self.nFrX = self.img.width // self.dxFr
         self.nFrY = self.img.height // self.dyFr
         n = self.nFrX * self.nFrY
