@@ -15,8 +15,9 @@ __author__ 	= "code@eulerlab.de"
 import os
 import platform
 
+# fmt: off
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.91 beta"
+QDSpy_versionStr            = "QDSpy v0.92 beta"
 QDSpy_copyrightStr          = "(c) 2013-24 Thomas Euler"
 QDSpy_appID                 = u"QDSpy3.v090beta.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
@@ -155,6 +156,7 @@ QDSpy_camWinGeometry        = "20,30,300,200"
 
 QDSpy_probing_center        = 1
 
+# fmt: on
 # ---------------------------------------------------------------------
 def getQDSpyPath() -> str:
     """Get QDSpy path from `PYTHONPATH`

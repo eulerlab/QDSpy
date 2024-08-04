@@ -8,20 +8,20 @@ of the LCr.
 
 Note that this library requires firmware 3.0 and higher
 
-Copyright (c) 2013-2021 Thomas Euler
+Copyright (c) 2013-2024 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
 __author__ = "thomas.euler@eulerlab.de"
 
 # ---------------------------------------------------------------------
-import sys
+import platform
 import time
 import numpy as np
 from enum import Enum
 from typing import List, Any
 
-PLATFORM_WINDOWS = sys.platform == "win32"
+PLATFORM_WINDOWS = platform.system == "Windows"
 if PLATFORM_WINDOWS:
   import Devices.hid as hid
 else:
@@ -422,7 +422,7 @@ class Lightcrafter:
     if _isCheckOnly:
       return
 
-    if not("LCrDeviceList" in globals()) or (len(LCrDeviceList) == 0):
+    if "LCrDeviceList" not in globals() or (len(LCrDeviceList) == 0):
       LCrDeviceList  = enumerateLightcrafters(_funcLog)
 
   # -------------------------------------------------------------------
@@ -1185,7 +1185,7 @@ class Lightcrafter:
     errC = ERROR.OK
     s0   = self.setPatternDispLUTAccessControl.__name__
 
-    if not _cmd in MailboxCmd:
+    if _cmd not in MailboxCmd:
       errC = ERROR.INVALID_PARAMS
     elif not self.isCheckOnly:
       self.mBoxState = _cmd

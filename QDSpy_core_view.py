@@ -20,7 +20,7 @@ All rights reserved.
 __author__ = "code@eulerlab.de"
 
 import QDSpy_global as glo
-import QDSpy_stim_support as ssp
+import Libraries.log_helper as _log
 import Graphics.renderer_opengl as rdr
 
 # ---------------------------------------------------------------------
@@ -66,11 +66,11 @@ class View:
         # Create window(s) ...
         #
         # Log some information about OpenGL on this machine
-        ssp.Log.write("INFO", self.Renderer.get_info_GL_str())
-        ssp.Log.write("INFO", self.Renderer.get_info_GLSL_str())
-        ssp.Log.write("INFO", self.Renderer.get_info_renderer_str())
-        ssp.Log.write("INFO", self.Renderer.get_implementation_str())
-        ssp.Log.write(
+        _log.Log.write("INFO", self.Renderer.get_info_GL_str())
+        _log.Log.write("INFO", self.Renderer.get_info_GLSL_str())
+        _log.Log.write("INFO", self.Renderer.get_info_renderer_str())
+        _log.Log.write("INFO", self.Renderer.get_implementation_str())
+        _log.Log.write(
             "INFO", "Expected   : {0:.1f} Hz".format(self.Stage.scrReqFreq_Hz)
         )
 
@@ -97,8 +97,8 @@ class View:
                 _iScrGUI=self.Stage.scrIndexGUI,
                 _offset=xy,
             )
-            ssp.Log.write("INFO", self.Renderer.get_info_screen_str())
-            ssp.Log.write(
+            _log.Log.write("INFO", self.Renderer.get_info_screen_str())
+            _log.Log.write(
                 "ok",
                 "Overlay mode, 2x {0}x{1} pixels, starting on " "screen #{2}".format(
                     dxy[0] // 2, dxy[1], self.iScr
@@ -109,8 +109,8 @@ class View:
             # Fullscreen mode - Normal full-screen window for single display
             dxy = self.Renderer.get_screen_size(self.iScr)
             self.winPre = self.Renderer.create_window(self.iScr, self.winTitle)
-            ssp.Log.write("INFO", self.Renderer.get_info_screen_str())
-            ssp.Log.write(
+            _log.Log.write("INFO", self.Renderer.get_info_screen_str())
+            _log.Log.write(
                 "ok",
                 "Fullscreen mode, {0}x{1} pixels, on screen #{2}".format(
                     dxy[0], dxy[1], self.iScr
@@ -132,7 +132,7 @@ class View:
             self.winPre = self.Renderer.create_window(
                 self.iScr, self.winTitle, dxy[0], dxy[1], xy[0], xy[1]
             )
-            ssp.Log.write("ok", "Window mode, {0}x{1} pixels".format(dxy[0], dxy[1]))
+            _log.Log.write("ok", "Window mode, {0}x{1} pixels".format(dxy[0], dxy[1]))
 
             # Adjust scaling factor such that presentation in window is
             # to scale; assuming that 1 pix = 1um is true for the current
@@ -153,16 +153,16 @@ class View:
         # Try to force vsync, if requested
         result = self.Renderer.force_vSync()
         if result < 0:
-            ssp.Log.write("WARNING", "SwapIntervalEXT() not supported")
+            _log.Log.write("WARNING", "SwapIntervalEXT() not supported")
         elif result >= 0:
-            ssp.Log.write(
+            _log.Log.write(
                 " ",
                 "{0:11}: forced fsync".format(
                     "ENABLED" if self.Conf.fSync else "disabled"
                 ),
             )
             if result == 1:
-                ssp.Log.write("ok", "SwapIntervalEXT() reported success")
+                _log.Log.write("ok", "SwapIntervalEXT() reported success")
 
         # Success ...
         self.isWinAvailable = True
@@ -221,7 +221,7 @@ class View:
         """ Prepare grabbing the stimulus window
         """
         self.Renderer.prepare_record_win()
-        ssp.Log.write("INFO", "Renderer.prepare_record_win()")
+        _log.Log.write("INFO", "Renderer.prepare_record_win()")
 
     def grabStimFrame(self):
         """ Grab the current frame of the stimulus window

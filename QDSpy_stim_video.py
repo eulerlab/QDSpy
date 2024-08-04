@@ -12,11 +12,7 @@ QDSpy module - defines video-related classes (ALPHA)
 Copyright (c) 2013-2024 Thomas Euler
 All rights reserved.
 
-***********************************************************************
-***********************************************************************
-TODO: Still uses pyglet directly ...
-***********************************************************************
-***********************************************************************
+2024-08-04 - `pyglet` calls encapsulated in `renderer_opengl.py`             
 """
 
 # ---------------------------------------------------------------------
@@ -24,10 +20,9 @@ __author__ = "code@eulerlab.de"
 
 import os
 import platform
-import pyglet
 import QDSpy_stim as stm
-import QDSpy_stim_support as ssp
 import QDSpy_global as glo
+import Libraries.log_helper as _log
 import moviepy.editor as mpe
 import Graphics.renderer_opengl as rdr
 
@@ -65,7 +60,7 @@ class Video:
         self.dyFr = self.video.size[1]
         self.nFr = self.video.duration * self.video.fps
         self.fps = self.video.fps
-        ssp.Log.write(
+        _log.Log.write(
             "DEBUG",
             "stim_video: {0}x{1} pixel, {2} frames, {3} fps".format(
                 self.dxFr, self.dyFr, self.nFr, self.fps
@@ -130,7 +125,10 @@ class VideoCtrl:
         self.isFirst = True
 
         self.kill()
+        '''
         self.Group = pyglet.graphics.OrderedGroup(self.order)
+        '''
+        self.Group = rdr.getOrderedGroup(self.order)
         self.isReady = self.check()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -197,6 +195,7 @@ class VideoCtrl:
 
         if not (self.isDone):
             frame = next(self.Video.frames)
+            '''
             pyglet_img = pyglet.image.ImageData(
                 self.Video.dxFr,
                 self.Video.dyFr,
@@ -207,11 +206,15 @@ class VideoCtrl:
             self.Sprite = pyglet.sprite.Sprite(
                 pyglet_img.get_texture(), usage="stream", group=self.Group
             )
-
-            if rdr.PYGLET_VER < 1.4:
-                self.Sprite.set_position(self.posXY[0], y=self.posXY[1])
-            else:
-                self.Sprite.position = self.posXY
+            '''
+            tmpImg = rdr.getImageData(
+                self.Video.dxFr, self.Video.dyFr, "RGB",
+                frame.tostring(), pitch=self.Video.dxFr *3,
+            )
+            self.Sprite = rdr.getSprite(
+                tmpImg.get_texture(), "stream", self.Group
+            )
+            self.Sprite.position = self.posXY
             self.Sprite.scale = self.magXY[0]
             self.Sprite.rotation = self.rot
             self.Sprite.opacity = self.trans

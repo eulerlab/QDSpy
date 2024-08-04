@@ -16,8 +16,8 @@ All rights reserved.
 __author__ = "code@eulerlab.de"
 
 import os
-import QDSpy_stim_support as ssp
 import QDSpy_global as glo
+import Libraries.log_helper as _log
 from Graphics.shader_opengl import Shader
 
 # ---------------------------------------------------------------------
@@ -114,7 +114,7 @@ class ShaderManager:
             self.ShFragCode.append(strShFrag)
             self.ShTypes.append(shName)
 
-        ssp.Log.write(
+        _log.Log.write(
             "{0:8}".format(" WARNING" if len(self.ShTypes) == 0 else " "),
             "{0} shader type(s) found".format(len(self.ShTypes)),
         )
@@ -172,9 +172,9 @@ class ShaderManager:
             pass
 
         if shader.nErrors > 0:
-            ssp.Log.write("ERROR", "Creating shader(s) failed:")
+            _log.Log.write("ERROR", "Creating shader(s) failed:")
             for msg in shader.errStrs:
-                ssp.Log.write(" ", msg)
+                _log.Log.write(" ", msg)
             return None
 
         return shader

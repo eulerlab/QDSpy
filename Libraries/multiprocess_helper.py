@@ -12,6 +12,7 @@ All rights reserved.
 
 2024-06-11 - Reformatted (using Ruff)
            - Suport sending stimulus time info back to client
+2024-08-04 - Moved into `Libraries`
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"

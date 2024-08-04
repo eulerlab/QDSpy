@@ -22,14 +22,15 @@ __author__ = "code@eulerlab.de"
 
 import sys
 import os
+import platform
 import argparse
 import configparser
 import QDSpy_stage as stg
 import QDSpy_gamma as gma
-import QDSpy_stim_support as ssp
+import Libraries.log_helper as _log
 import QDSpy_global as glo
 
-PLATFORM_WINDOWS = sys.platform == "win32"
+PLATFORM_WINDOWS = platform.system == "Windows"
 
 # ---------------------------------------------------------------------
 # Configuration file class
@@ -255,7 +256,7 @@ class Config:
         else:
             # Initialization file does not exist, recreate
             #
-            ssp.Log.write(
+            _log.Log.write(
                 "WARNING",
                 "`QDSpy.ini`not found, generating new "
                 "configuration file from default values",
@@ -520,8 +521,8 @@ class Config:
 #
 # ---------------------------------------------------------------------
 def getParsedArgv():
-    # Return the parsed command-line arguments
-    #
+    '''Return the parsed command-line arguments
+    '''
     parser = argparse.ArgumentParser(description="Present a stimulus.")
     parser.add_argument(
         "-t",

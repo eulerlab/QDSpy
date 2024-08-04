@@ -18,7 +18,7 @@ TODO: Still uses pyglet directly ...
 import pyglet
 from math import sin, cos, pi
 import QDSpy_stim_support as ssp
-import QDSpy_multiprocessing as mpr
+import Libraries.multiprocess_helper as mpr
 import Graphics.renderer_opengl as rdr
 
 

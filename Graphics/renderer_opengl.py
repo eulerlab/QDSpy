@@ -20,6 +20,8 @@ All rights reserved.
 2024-06-12 - Fixed a bug that prevented using the probe spot tool
            - Reformatted (using Ruff)
            - Fixed a bug when using `pyglet` higher than v1.5.7
+2024-08-04 - Helper functions for `QDSpy_stim_movie.py` added to remove
+             direct calls to `pyglet`  in that module           
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -870,5 +872,30 @@ def rotateTranslate(_c, _rot_deg, _pxy):
         nc += [x, y]
     return nc
 
+# ---------------------------------------------------------------------
+# Support functions related to QDSpy "movies"
+# ---------------------------------------------------------------------
+def imageLoad(fName):
+    return pyglet.image.load(fName)
+
+def getImageData(dx, dy, img_format, data_as_str, pitch):
+    return pyglet.image.ImageData(
+        dx, dy, img_format, data_as_str, pitch
+    )
+
+def getImageGrid(img, nx, ny):
+    return pyglet.image.ImageGrid(img, nx, ny)
+
+def getTextureSequence(img, use_3d=False):
+    if use_3d:
+        return pyglet.image.Texture3D.create_for_image_grid(img)
+    else:
+        return img.get_texture_sequence()
+
+def getOrderedGroup(order):
+    return pyglet.graphics.OrderedGroup(order)
+
+def getSprite(img, usage, group):
+    return pyglet.sprite.Sprite(img, usage=usage, group=group)
 
 # ---------------------------------------------------------------------

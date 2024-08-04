@@ -15,12 +15,7 @@ All rights reserved.
 
 2024-06-15 - Fix for breaking change in `configparser`; now using
              `ConfigParser` instead of `RawConfigParser`
-
-***********************************************************************
-***********************************************************************
-TODO: Still uses pyglet directly ...
-***********************************************************************
-***********************************************************************
+2024-08-04 - `pyglet` calls encapsulated in `renderer_opengl.py`             
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -28,10 +23,9 @@ __author__ = "code@eulerlab.de"
 import os.path
 import platform
 import configparser
-import pyglet
 import QDSpy_stim as stm
 import QDSpy_global as glo
-import QDSpy_stim_support as ssp
+import Libraries.log_helper as _log
 import Graphics.renderer_opengl as rdr
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
@@ -81,7 +75,7 @@ class Movie:
             self.is1FrBL = self.Desc.getboolean(
                 glo.QDSpy_movDescSect, glo.QDSpy_movIsFirstFrBottLeft
             )
-            ssp.Log.write(
+            _log.Log.write(
                 "DEBUG", 
                 f"__loadMontage: {self.nFr} frames, {self.dxFr} x {self.dyFr} pixels"
             )
@@ -91,8 +85,11 @@ class Movie:
             return stm.StimErrC.invalidMovieDesc
 
         # Load and check image data
+        '''
         self.img = pyglet.image.load(self.fNameImg)
-        ssp.Log.write(
+        '''
+        self.img = rdr.imageLoad(self.fNameImg)
+        _log.Log.write(
             "DEBUG", 
             f"__loadMontage: image is {self.img.width} x {self.img.height} pixels"
         )
@@ -123,11 +120,15 @@ class Movie:
             pass
 
         # Create a 3D texture (basically an image sequence) from the montage
+        '''
         tmpSeq = pyglet.image.ImageGrid(self.img, self.nFrY, self.nFrX)
         if self.use3DTex:
             self.imgSeq = pyglet.image.Texture3D.create_for_image_grid(tmpSeq)
         else:
             self.imgSeq = tmpSeq.get_texture_sequence()
+        '''
+        tmpSeq = rdr.getImageGrid(self.img, self.nFrY, self.nFrX)
+        self.imgSeq = rdr.getTextureSequence(tmpSeq, use_3d=self.use3DTex)
         # *****************
         # *****************
         # TODO: Texture3D is supposed to be faster but I could not get rid of
@@ -213,11 +214,18 @@ class MovieCtrl:
 
         self.kill()
         if self.Movie is not None:
+            '''
             self.Group = pyglet.graphics.OrderedGroup(self.order)
             self.Sprite = pyglet.sprite.Sprite(
                 self.Movie.imgSeq[0], usage="dynamic", group=self.Group
             )
             # usage="stream", group=self.Group)
+            '''
+            self.Group = rdr.getOrderedGroup(self.order)
+            self.Sprite = rdr.getSprite(
+                self.Movie.imgSeq[0], "dynamic", self.Group
+            )
+
         self.isReady = self.check()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -251,10 +259,7 @@ class MovieCtrl:
         self.trans = _trans
 
         if self.Sprite is not None:
-            if rdr.PYGLET_VER < 1.4:
-                self.Sprite.set_position(self.posXY[0], y=self.posXY[1])
-            else:
-                self.Sprite.position = self.posXY
+            self.Sprite.position = self.posXY
             self.Sprite.scale = self.magXY[0]
             self.Sprite.rotation = self.rot
             self.Sprite.opacity = self.trans

@@ -20,6 +20,7 @@ import pickle
 import numpy as np
 import QDSpy_global as glo
 import QDSpy_stim_support as ssp
+import Libraries.log_helper as _log
 import QDSpy_stim_draw as drw
 import QDSpy_stim_movie as mov
 import QDSpy_stim_video as vid
@@ -27,7 +28,7 @@ import QDSpy_core_shader as csh
 
 if glo.QDSpy_use_Lightcrafter:
     import Devices.lightcrafter as lcr
-    _LCr = lcr.Lightcrafter(_isCheckOnly=True, _funcLog=ssp.Log.write)
+    _LCr = lcr.Lightcrafter(_isCheckOnly=True, _funcLog=_log.Log.write)
 else:
     _LCr = None
 
@@ -1076,7 +1077,7 @@ class Stim:
         for sc in self.SceList:
             # Progress message to user
             percent = sc[SC_field_index] * 100.0 / len(self.SceList)
-            ssp.Log.write(
+            _log.Log.write(
                 "ok",
                 "Scene {0} of {1}; {2:.0f}% compiled...".format(
                     sc[SC_field_index], len(self.SceList), percent
@@ -1089,7 +1090,7 @@ class Stim:
             self.cScDurList.append(dur)
 
             if not (isIntNumFrames):
-                ssp.Log.write(
+                _log.Log.write(
                     "WARNING",
                     "Scene #{0} duration unequals integer number" " of frames".format(
                         sc[SC_field_index]
@@ -1300,7 +1301,7 @@ class Stim:
             self.cScOList.append([icODrEntry, ObjNewMask, ObjIDs, ObjPosXY, ObjRot])
 
         # Finished compiling
-        ssp.Log.write(
+        _log.Log.write(
             "ok",
             "Stimulus '{0}' compiled for {1} Hz refresh".format(
                 self.nameStr, self.cFreq_Hz
@@ -1314,11 +1315,11 @@ class Stim:
         """ Save the compiled stimulus
         """
         if not (self.isComp):
-            ssp.Log.write("WARNING", "No stimulus defined or not yet compiled")
+            _log.Log.write("WARNING", "No stimulus defined or not yet compiled")
             self.LastErrC = StimErrC.noStimOrNotCompiled
             return
 
-        ssp.Log.write(" ", "Saving stimulus...", True)
+        _log.Log.write(" ", "Saving stimulus...", True)
         with open(sFileName + glo.QDSpy_cPickleFileExt, "wb") as stimFile:
             stimPick = pickle.Pickler(stimFile, glo.QDSpy_cPickleProtocol)
 
@@ -1348,7 +1349,7 @@ class Stim:
             stimPick.dump(self.cODr_tr_vertRGBA)
             stimPick.dump(self.cODr_tr_vertRGBA2)
 
-        ssp.Log.write(
+        _log.Log.write(
             "ok",
             "Stimulus '{0}' saved to '{1}'".format(
                 self.nameStr, sFileName + glo.QDSpy_cPickleFileExt
@@ -1362,7 +1363,7 @@ class Stim:
         """
         self.clear()
         if not (_onlyInfo):
-            ssp.Log.write(" ", "Loading compiled stimulus...", True)
+            _log.Log.write(" ", "Loading compiled stimulus...", True)
 
         try:
             with open(sFileName + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
@@ -1372,7 +1373,7 @@ class Stim:
 
                 if ID != glo.QDSpy_fileVersionID:
                     self.LastErrC = StimErrC.wrongStimFileFormat
-                    ssp.Log.write("ERROR", self.getLastErrStr())
+                    _log.Log.write("ERROR", self.getLastErrStr())
                     raise StimException(self.LastErrC)
 
                 self.nameStr = stimPick.load()
@@ -1403,7 +1404,7 @@ class Stim:
 
         except IOError:
             self.LastErrC = StimErrC.noCompiledStim
-            ssp.Log.write("ERROR", self.getLastErrStr())
+            _log.Log.write("ERROR", self.getLastErrStr())
             raise StimException(self.LastErrC)
 
         # Get hash for pickle file
@@ -1412,13 +1413,13 @@ class Stim:
 
         # Log some information
         if not (_onlyInfo):
-            ssp.Log.write(
+            _log.Log.write(
                 "ok",
                 "Stimulus '{0}' loaded".format(sFileName + glo.QDSpy_cPickleFileExt),
             )
-            ssp.Log.write(" ", "Name       : {0}".format(self.nameStr))
-            ssp.Log.write(" ", "Description: {0}".format(self.descrStr))
-            ssp.Log.write(" ", "Frequency  : {0} Hz".format(self.cFreq_Hz))
+            _log.Log.write(" ", "Name       : {0}".format(self.nameStr))
+            _log.Log.write(" ", "Description: {0}".format(self.descrStr))
+            _log.Log.write(" ", "Frequency  : {0} Hz".format(self.cFreq_Hz))
 
         self.isComp = True
         self.LastErrC = StimErrC.ok
@@ -1428,7 +1429,7 @@ class Stim:
     def adjust(self, _Stage):
       # Adjust compiled stimulus to current stage parameters
       #
-      ssp.Log.write(" ", "Adjusting stimulus to stage parameters...", True)
+      _log.Log.write(" ", "Adjusting stimulus to stage parameters...", True)
 
       for iVC in range(len(self.cODr_tr_vertCoord)):
         if self.cODr_tr_vertCoord[iVC][0] > 0:
@@ -1440,7 +1441,7 @@ class Stim:
           # Convert back to integer?
           # ************
 
-      ssp.Log.write("ok", "Stimulus '{0}' adjusted to stage parameters"
+      _log.Log.write("ok", "Stimulus '{0}' adjusted to stage parameters"
                 .format(self.nameStr))
       self.LastErrC = StimErrC.ok
     """

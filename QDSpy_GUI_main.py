@@ -13,6 +13,7 @@ All rights reserved.
 2024-06-19 - Ported from `PyQt5` to `PyQt6`
              (note that `QDSApp.setStyle("Fusion")` is needed to make
               the GUI designed for Qt5 look decent)   
+2024-08-04 - `Log` moved into its own module              
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -29,11 +30,11 @@ from PyQt6.QtGui import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor
 from PyQt6.QtCore import Qt, QRect, QSize  
 from multiprocessing import Process
 import QDSpy_stim as stm
-import QDSpy_stim_support as ssp
+import Libraries.log_helper as _log
 import QDSpy_config as cfg
 import QDSpy_GUI_support as gsu
 from QDSpy_GUI_cam import CamWinClass
-import QDSpy_multiprocessing as mpr
+import Libraries.multiprocess_helper as mpr
 import QDSpy_stage as stg
 import QDSpy_global as glo
 import QDSpy_core
@@ -236,7 +237,7 @@ class MainWinClass(QMainWindow, form_class):
         self.logWrite("DEBUG", "Creating sync object ...")
         self.state = State.undefined
         self.Sync = mpr.Sync()
-        ssp.Log.setGUISync(self.Sync)
+        _log.Log.setGUISync(self.Sync, noStdOut=self.noMsgToStdOut)
         self.logWrite("DEBUG", "... done")
 
         # Create process that opens a view (an OpenGL window) and waits for
@@ -377,8 +378,8 @@ class MainWinClass(QMainWindow, form_class):
             # Failed ...
             if self.Stim.getLastErrC() != stm.StimErrC.ok:
                 self.updateStatusBar(self.Stim.getLastErrStr(), True)
-                ssp.Log.isRunFromGUI = False
-                ssp.Log.write(
+                _log.Log.isRunFromGUI = False
+                _log.Log.write(
                     "ERROR",
                     "No compiled `{0}` in current stimulus folder,"
                     " and `{1}.pickle` is not in `{2}`. Program is"
@@ -1195,7 +1196,7 @@ class MainWinClass(QMainWindow, form_class):
     def logWrite(self, _headerStr, _msgStr):
         """ Log a message to the appropriate output
         """
-        data = ssp.Log.write(_headerStr, _msgStr, _getStr=True)
+        data = _log.Log.write(_headerStr, _msgStr, _getStr=True)
         if data is not None:
             self.log(data)
 

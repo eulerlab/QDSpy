@@ -31,12 +31,12 @@ import pickle
 from multiprocessing import freeze_support
 import QDSpy_global as glo
 import QDSpy_stim as stm
-import QDSpy_stim_support as ssp
-import QDSpy_config as cnf
+import QDSpy_config as cfg
 import QDSpy_core_presenter as cpr
 import QDSpy_core_view as cvw
 import QDSpy_core_support as csp
-import QDSpy_multiprocessing as mpr
+import Libraries.multiprocess_helper as mpr
+import Libraries.log_helper as _log
 import QDSpy_gamma as gma
 import QDSpy_probeCenter as pce
 import Devices.digital_io as dio
@@ -53,11 +53,11 @@ def logGraphModuleInfo():
         import pyglet
         import moviepy.version as mpv
 
-        ssp.Log.write("INFO", "{0:11}: v{1}".format("pyglet", pyglet.version))
-        ssp.Log.write("INFO", "{0:11}: v{1}".format("moviepy", mpv.__version__))
+        _log.Log.write("INFO", "{0:11}: v{1}".format("pyglet", pyglet.version))
+        _log.Log.write("INFO", "{0:11}: v{1}".format("moviepy", mpv.__version__))
 
     except ModuleNotFoundError:
-        ssp.Log.write("WARNING", "pyglet and/or moviepy not present")
+        _log.Log.write("WARNING", "pyglet and/or moviepy not present")
 
 
 # ---------------------------------------------------------------------
@@ -78,7 +78,7 @@ def setPerformanceNormal(_Conf):
 # ---------------------------------------------------------------------
 def loadStimulus(_fNameStim, _Stim):
     if len(_fNameStim) == 0:
-        ssp.Log.write("FATAL", "No stimulus file name provided")
+        _log.Log.write("FATAL", "No stimulus file name provided")
         return False
     try:
         _Stim.load(_fNameStim)
@@ -86,7 +86,7 @@ def loadStimulus(_fNameStim, _Stim):
     except:  # noqa: E722
         if _Stim.getLastErrC() != stm.StimErrC.ok:
             _sErr = _Stim.getLastErrStr()
-            ssp.Log.write("FATAL", "Aborted ({0})".format(_sErr))
+            _log.Log.write("FATAL", "Aborted ({0})".format(_sErr))
             return False
 
 
@@ -107,7 +107,7 @@ def connectLCrs(_Conf=None, _Stim=None):
         LCrs.append(
             lcr.Lightcrafter(
                 _isCheckOnly=False,
-                _funcLog=ssp.Log.write,
+                _funcLog=_log.Log.write,
                 _logLevel=glo.QDSpy_LCr_LogLevel,
             )
         )
@@ -117,7 +117,7 @@ def connectLCrs(_Conf=None, _Stim=None):
         else:
             nLCrOk += 1
     if nLCrOk == 0:
-        ssp.Log.write("WARNING", "This script requires a lightcrafter")
+        _log.Log.write("WARNING", "This script requires a lightcrafter")
     return LCrs
 
 
@@ -134,10 +134,10 @@ def switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim):
         if _Stim is not None:
             _modes = [stm.ColorMode.range0_1, stm.ColorMode.range0_255]
             if _Stim.colorMode in _modes:
-                ssp.Log.write(" ", "Trying to set user-defined gamma LUT ...")
+                _log.Log.write(" ", "Trying to set user-defined gamma LUT ...")
                 gma.setGammaLUT(_View.winPre._dc, _Stage.LUT_userDefined)
             else:
-                ssp.Log.write(
+                _log.Log.write(
                     " ",
                     "Special color mode (#{0}), setting linear "
                     " gamma LUT ...".format(_Stim.colorMode),
@@ -147,7 +147,7 @@ def switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim):
 
 def restoreGammaLUT(_Conf, _View):
     if _Conf.allowGammaLUT:
-        ssp.Log.write(" ", "Restoring linear gamma LUT ...")
+        _log.Log.write(" ", "Restoring linear gamma LUT ...")
         gma.restoreGammaLUT(_View.winPre._dc)
 
 
@@ -158,23 +158,23 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     """ Run a stimulus file.
     """
     if _isParentGUI:
-        ssp.Log.setGUISync(_Sync)
-
+        _log.Log.setGUISync(_Sync, noStdOut=cfg.getParsedArgv().gui)
+    
     # Load configuration ...
-    _Conf = cnf.Config()
-
+    _Conf = cfg.Config()
+    
     # Display startup message
-    ssp.Log.write(
+    _log.Log.write(
         "***", glo.QDSpy_versionStr + " Presenter - " + glo.QDSpy_copyrightStr
     )
-    ssp.Log.write("ok", "Initializing ...")
-    ssp.Log.write(
+    _log.Log.write("ok", "Initializing ...")
+    _log.Log.write(
         " ",
         "{0:11}: high process priority during presentation".format(
             "ENABLED" if _Conf.incPP else "disabled"
         ),
     )
-    ssp.Log.write(
+    _log.Log.write(
         " ",
         "{0:11}: automatic garbage collection".format(
             "DISABLED" if _Conf.disGC else "enabled"
@@ -184,7 +184,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     # Log info about the relevant software packages
     v = sys.version_info
     txt = "{0}.{1}.{2}".format(v[0], v[1], v[2])
-    ssp.Log.write("INFO", "{0:11}: v{1}".format("Python", txt))
+    _log.Log.write("INFO", "{0:11}: v{1}".format("Python", txt))
     if PLATFORM_WINDOWS:
         from distutils.spawn import find_executable  # type: ignore
 
@@ -192,7 +192,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             txt = subprocess.Popen(
                 "conda -V", shell=True, stdout=subprocess.PIPE
             ).stdout.read()
-            ssp.Log.write("INFO", "{0:11}: v{1}".format("Conda", txt.decode()[6:12]))
+            _log.Log.write("INFO", "{0:11}: v{1}".format("Conda", txt.decode()[6:12]))
     logGraphModuleInfo()
 
     # Generate stage and stimulus instances, as well as a view instance
@@ -211,9 +211,9 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     if _Conf.useDIO:
         if _Conf.DIObrdType.upper() in ["ARDUINO"]:
             _IO = dio.devIO_Arduino(
-                _Conf.DIObrd, glo.QDSpy_Arduino_baud, _funcLog=ssp.Log.write
+                _Conf.DIObrd, glo.QDSpy_Arduino_baud, _funcLog=_log.Log.write
             )
-            ssp.Log.write(
+            _log.Log.write(
                 "WARNING",
                 "Ensure that Arduino BAUD rate is {0}".format(glo.QDSpy_Arduino_baud),
             )
@@ -221,16 +221,16 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             try:
                 ULID = dio.dictULDevices[_Conf.DIObrdType.upper()]
                 _IO = dio.devIO_UL(
-                    ULID, _Conf.DIObrd, _Conf.DIOdev, _funcLog=ssp.Log.write
+                    ULID, _Conf.DIObrd, _Conf.DIOdev, _funcLog=_log.Log.write
                 )
             except KeyError:
                 _IO = None
 
         if not (_IO):
-            ssp.Log.write("ERROR", "I/O hardware device name not recognized.")
+            _log.Log.write("ERROR", "I/O hardware device name not recognized.")
 
         elif not _IO.isReady:
-            ssp.Log.write(
+            _log.Log.write(
                 "ERROR",
                 "I/O hardware could not be initialized. Set "
                 + "`bool_use_digitalio` in `QDSpy.ini` to False.",
@@ -293,7 +293,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             try:
                 _Presenter.run()
             except KeyboardInterrupt:
-                ssp.Log.write(" ", "Aborted by user.")
+                _log.Log.write(" ", "Aborted by user.")
 
         finally:
             _Presenter.finish()
@@ -382,7 +382,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
                             setPerformanceNormal(_Conf)
 
                     else:
-                        ssp.Log.write("DEBUG", "mpr.PRESENTING, unexpected client data")
+                        _log.Log.write("DEBUG", "mpr.PRESENTING, unexpected client data")
 
                     _Sync.setStateSafe(mpr.IDLE)
 
@@ -394,13 +394,13 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
                         _Sync.setStateSafe(mpr.COMPILING)
                         try:
                             subprocess.check_call(["python", _fNameStim])
-                            ssp.Log.write("ok", "... done")
+                            _log.Log.write("ok", "... done")
 
                         except subprocess.CalledProcessError:
-                            ssp.Log.write("ERROR", "... failed.")
+                            _log.Log.write("ERROR", "... failed.")
 
                     else:
-                        ssp.Log.write("DEBUG", "mpr.COMPILING, unexpected client data")
+                        _log.Log.write("DEBUG", "mpr.COMPILING, unexpected client data")
 
                     _Sync.setStateSafe(mpr.IDLE)
 
@@ -423,7 +423,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
                             setPerformanceNormal(_Conf)
 
                     else:
-                        ssp.Log.write(
+                        _log.Log.write(
                             "DEBUG", "mpr.PROBE_CENTER, unexpected client data"
                         )
 
@@ -435,12 +435,12 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
                     mpr.IDLE,
                 ]:
                     # Unknown request
-                    ssp.Log.write(
+                    _log.Log.write(
                         "DEBUG", "Request {0} unknown".format(_Sync.Request.value)
                     )
 
                 if data[0] != mpr.PipeValType.toSrv_None:
-                    ssp.Log.write("DEBUG", "unexpected client data left after loop")
+                    _log.Log.write("DEBUG", "unexpected client data left after loop")
 
             finally:
                 # Clear request
@@ -460,13 +460,13 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     _View.killWindows()
     _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
 
-    ssp.Log.write("ok", "... done")
+    _log.Log.write("ok", "... done")
 
 
 # ---------------------------------------------------------------------
 if __name__ == "__main__":
     freeze_support()
-    args = cnf.getParsedArgv()
+    args = cfg.getParsedArgv()
     main(args.fNameStim, False)
 
 # ---------------------------------------------------------------------

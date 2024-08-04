@@ -23,11 +23,11 @@ import time
 import sys
 import platform
 from   datetime import datetime
-import QDSpy_checks
+#import QDSpy_checks
 import QDSpy_global as glo
 import QDSpy_stim as stm
-import QDSpy_stim_support as ssp
 import QDSpy_config as cfg
+import Libraries.log_helper as _log
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 PLATFORM_WINDOWS = platform.system == "Windows"
@@ -71,11 +71,11 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   
   # Display startup message and return if running the up-to-date stimulus
   # immediately is not requested
-  ssp.Log.write(
+  _log.Log.write(
       "***", glo.QDSpy_versionStr +
       " Compiler - " +glo.QDSpy_copyrightStr
     )
-  ssp.Log.write(" ", "Initializing ...")
+  _log.Log.write(" ", "Initializing ...")
   if _runMode == 0:
     return
 
@@ -90,7 +90,7 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
         if len(pythonPath) > 0:
           pythonPath += "\\" if PLATFORM_WINDOWS else "/"
         
-        ssp.Log.write("INFO", "Script has not changed, running stimulus now ...")
+        _log.Log.write("INFO", "Script has not changed, running stimulus now ...")
         s = "python {0}QDSpy_core.py -t={1} {2} {3}"
         os.system(s.format(
             pythonPath if PLATFORM_WINDOWS else "",
@@ -107,7 +107,7 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
         exit()
 
   except KeyboardInterrupt:
-    ssp.Log.write("INFO", "User abort.")
+    _log.Log.write("INFO", "User abort.")
     sys.exit()
   
 # ---------------------------------------------------------------------
@@ -147,7 +147,7 @@ def GetRandom(_seed):
     _Stim.getRandom(_seed)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "GetRandom: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "GetRandom: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
@@ -173,7 +173,7 @@ def LogUserParameters(_dict):
     _Stim.logUserParameters(_dict)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "logUserParameters: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "logUserParameters: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
@@ -205,7 +205,7 @@ def SetColorLUTEntry (_index, _rgb):
     _Stim.setColorLUTEntry(_index, _rgb)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "LUT_changeEntry(Ex): {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "LUT_changeEntry(Ex): {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
@@ -263,9 +263,9 @@ def StartScript():
   scenes are called.
   """
   # ...
-  ssp.Log.write("ok", "{0} object(s) defined.".format(len(_Stim.ObjList)))
-  ssp.Log.write("ok", "{0} shader(s) defined.".format(len(_Stim.ShList)))
-  ssp.Log.write(" ",   "Generating scenes ...")
+  _log.Log.write("ok", "{0} object(s) defined.".format(len(_Stim.ObjList)))
+  _log.Log.write("ok", "{0} shader(s) defined.".format(len(_Stim.ShList)))
+  _log.Log.write(" ",   "Generating scenes ...")
   _Stim.isRunSect = True
   return
 
@@ -294,7 +294,7 @@ def EndScript():
   """ Must be called after all stimulus scenes have been created, i.e.
   at the end of the script.
   """
-  ssp.Log.write("ok", "{0} scene(s) defined.".format(_Stim.nSce))
+  _log.Log.write("ok", "{0} scene(s) defined.".format(_Stim.nSce))
 
   # Compile stimulus
   _Conf  = cfg.Config()
@@ -308,7 +308,7 @@ def EndScript():
   """
   _Stim.save(_Stim.fNameDir)
 
-  ssp.Log.write("ok", "... done in {0:.3f} s"
+  _log.Log.write("ok", "... done in {0:.3f} s"
                 .format(time.time() -_Stim.tStart))
 
 # ---------------------------------------------------------------------
@@ -330,12 +330,12 @@ def DefObj_BoxEx(_iobj, _dx, _dy, _enShader=0):
       _Stim.LastErrC = stm.StimErrC.noDefsInRunSection
       raise stm
     if len(_Stim.ObjList) == 0:
-      ssp.Log.write(" ", "Defining objects ...")
+      _log.Log.write(" ", "Defining objects ...")
 
     _Stim.defObj_box(_iobj, _dx, _dy, _enShader)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "DefObj_Box(Ex): {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "DefObj_Box(Ex): {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -346,7 +346,7 @@ def DefObj_Box(_iobj, _dx, _dy, _angle=0.0):
             angle of an object is now set in the render command.
   """
   if _angle != 0:
-    ssp.Log.write("WARNING", "DefObj_Box: 'angle' is depreciated")
+    _log.Log.write("WARNING", "DefObj_Box: 'angle' is depreciated")
   DefObj_BoxEx(_iobj, _dx, _dy, 0)
 
 
@@ -375,14 +375,14 @@ def DefObj_SectorEx(_iobj, _r, _offs, _angle, _awidth, _astep=None,
   =============== ==================================================
   """
   if len(_Stim.ObjList) == 0:
-    ssp.Log.write(" ", "Defining objects ...")
+    _log.Log.write(" ", "Defining objects ...")
 
   try:
     _Stim.defObj_sector(_iobj, _r, _offs, _angle, _awidth, _astep,
                         _enShader)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "DefObj_Sector(Ex): {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "DefObj_Sector(Ex): {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -407,13 +407,13 @@ def DefObj_EllipseEx(_iobj, _dx, _dy, _enShader=0):
   =============== ==================================================
   """
   if len(_Stim.ObjList) == 0:
-    ssp.Log.write(" ", "Defining objects ...")
+    _log.Log.write(" ", "Defining objects ...")
 
   try:
     _Stim.defObj_ellipse(_iobj, _dx, _dy, _enShader)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "DefObj_Ellipse: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "DefObj_Ellipse: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -424,7 +424,7 @@ def DefObj_Ellipse(_iobj, _dx, _dy, _angle=0.0):
             angle of an object is now set in the render command.
   """
   if _angle != 0:
-    ssp.Log.write("WARNING", "DefObj_Ellipse: 'angle' is depreciated")
+    _log.Log.write("WARNING", "DefObj_Ellipse: 'angle' is depreciated")
   DefObj_EllipseEx(_iobj, _dx, _dy, 0)
 
 
@@ -463,13 +463,13 @@ def DefObj_Movie(_iobj, _fName):
   =============== ==================================================
   """
   if len(_Stim.ObjList) == 0:
-    ssp.Log.write(" ", "Defining objects ...")
+    _log.Log.write(" ", "Defining objects ...")
 
   try:
     _Stim.defObj_movie(_iobj, _fName)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "DefObj_Movie: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "DefObj_Movie: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
@@ -496,7 +496,7 @@ def GetMovieParameters(_iobj):
     params = _Stim.getMovieParams(_iobj)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "getMovieParameters: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "getMovieParameters: {0}, {1}".format(e.value, e))
   return params
 
 
@@ -515,13 +515,13 @@ def DefObj_Video(_iobj, _fName):
   =============== ==================================================
   """
   if len(_Stim.ObjList) == 0:
-    ssp.Log.write(" ", "Defining objects ...")
+    _log.Log.write(" ", "Defining objects ...")
 
   try:
     _Stim.defObj_video(_iobj, _fName)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "DefObj_Video: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "DefObj_Video: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
@@ -548,7 +548,7 @@ def GetVideoParameters(_iobj):
     params = _Stim.getVideoParams(_iobj)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "getVideoParams: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "getVideoParams: {0}, {1}".format(e.value, e))
   return params
 
 # ---------------------------------------------------------------------
@@ -568,12 +568,12 @@ def DefShader(_ishd, _shType):
       _Stim.LastErrC = stm.StimErrC.noDefsInRunSection
       raise stm
     if len(_Stim.ObjList) == 0:
-      ssp.Log.write(" ", "Defining shaders ...")
+      _log.Log.write(" ", "Defining shaders ...")
 
     _Stim.defShader(_ishd, _shType)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "DefShader: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "DefShader: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
@@ -609,7 +609,7 @@ def SetObjColorEx(_iobjs, _ocols, _alphas=[]):
     _Stim.setObjColor(_iobjs, _ocols, _alphas)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "SetObjColor(Ex): {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "SetObjColor(Ex): {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -648,7 +648,7 @@ def SetObjColorAlphaByVertex(_iobjs, _oRGBAs):
     _Stim.setObjColorAlphaByVertex(_iobjs, _oRGBAs)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "SetObjColorAlphaByVertex: {0}, {1}"
+    _log.Log.write("ERROR", "SetObjColorAlphaByVertex: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
@@ -684,7 +684,7 @@ def SetShaderParams(_ishd, _shParams):
     _Stim.setShaderParams(_ishd, _shParams)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "SetShaderParams: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "SetShaderParams: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
@@ -717,7 +717,7 @@ def SetObjShader(_iobjs, _ishds):
     _Stim.setObjShader(_iobjs, _ishds)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "SetObjShader: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "SetObjShader: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
@@ -738,7 +738,7 @@ def SetBkgColor(_col):
     _Stim.setBkgColor(_col)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "SetBkgColor: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "SetBkgColor: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
@@ -760,7 +760,7 @@ def Scene_Clear(_dur, _marker=0):
     _Stim.clearScene(_dur, (_marker==1))
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "Scene_Clear: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "Scene_Clear: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
@@ -794,7 +794,7 @@ def Scene_RenderEx(_dur, _iobjs, _opos, _omag, _oang, _marker=0,
     _Stim.renderScene(_dur, _iobjs, _opos, _omag, _oang, (_marker==1))
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "Scene_Render(Ex): {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "Scene_Render(Ex): {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -828,7 +828,7 @@ def Start_Movie(_iobj, _opos, _seq, _omag, _trans, _oang, _screen=0):
     _Stim.startMovie(_iobj, _opos, _seq, _omag, _trans, _oang, _screen)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "Start_Movie: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "Start_Movie: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
@@ -851,7 +851,7 @@ def Start_Video(_iobj, _opos, _omag, _trans, _oang, _screen=0):
     _Stim.startVideo(_iobj, _opos, _omag, _trans, _oang, _screen)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "Start_Video: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "Start_Video: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # =====================================================================
@@ -871,7 +871,7 @@ def AwaitTTL():
   try:
     _Stim.awaitTTL()
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "AwaitTTL: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "AwaitTTL: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # =====================================================================
@@ -891,7 +891,7 @@ def LC_softwareReset(_devIndex):
     _Stim.processLCrCommand(stm.StimLCrCmd.softwareReset,
                             [_devIndex])
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "LC_softwareReset: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "LC_softwareReset: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
@@ -914,7 +914,7 @@ def LC_setInputSource(_devIndex, _source, _bitDepth):
     _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource,
                             [_devIndex, _source, _bitDepth])
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
+    _log.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
@@ -947,7 +947,7 @@ def LC_setDisplayMode(_devIndex, _mode):
                             [_devIndex])
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
+    _log.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
@@ -967,7 +967,7 @@ def LC_setLEDCurrents(_devIndex, _rgb):
     _Stim.processLCrCommand(stm.StimLCrCmd.setLEDCurrents,
                             [_devIndex, _rgb])
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "LC_setLEDCurrents: {0}, {1}"
+    _log.Log.write("ERROR", "LC_setLEDCurrents: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
@@ -987,7 +987,7 @@ def LC_setLEDEnabled(_devIndex, _rgb):
     _Stim.processLCrCommand(stm.StimLCrCmd.setLEDEnabled,
                             [_devIndex, _rgb])
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "LC_setLEDEnabled: {0}, {1}"
+    _log.Log.write("ERROR", "LC_setLEDEnabled: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
