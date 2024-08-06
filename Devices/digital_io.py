@@ -167,7 +167,7 @@ class devIO_RPi(devIO, object):
 
 
 # =====================================================================
-# I/O class using an Arduino (experimental)
+# I/O class using an Arduino
 # ---------------------------------------------------------------------
 class devIO_Arduino(devIO, object):
     def __init__(self, _boardNum, _baud, _funcLog=None):
