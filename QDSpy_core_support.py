@@ -24,13 +24,15 @@ __author__ = "code@eulerlab.de"
 
 import os
 import sys
+import platform
 import QDSpy_global as glb
 from pkgutil import iter_modules
 from operator import xor
 
+PLATFORM_WINDOWS = platform.system() == "Windows"
+
 if glb.QDSpy_incProcessPrior:
     import psutil
-PLATFORM_WINDOWS = sys.platform == "win32"
 
 # ---------------------------------------------------------------------
 # Multiprocessing support

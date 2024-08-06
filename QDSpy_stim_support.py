@@ -32,7 +32,7 @@ import hashlib
 import numpy as  np
 import QDSpy_stim as stm
 
-PLATFORM_WINDOWS = platform.system == "Windows"
+PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
   #from ctypes import windll
   import Libraries.color_console as con

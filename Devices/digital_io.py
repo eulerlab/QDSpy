@@ -8,19 +8,25 @@ Supported are currently:
   - digital I/O card USB1024LS and PCIDIO24 from Measurement Computing
     (http://www.mccdaq.com/daq-software/universal-library.aspx)
   - Arduino (experimental)
+  - Raspberry Pi (experimental)
 
-Copyright (c) 2013-2022 Thomas Euler
+Copyright (c) 2013-2024 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
 # ---------------------------------------------------------------------
+import platform
 import ctypes
-from   ctypes                     import byref
+from ctypes import byref
 from . import digital_io_UL_const as ULConst
 import serial
 
+PLATFORM_WINDOWS = platform.system() == "Windows"
+if not PLATFORM_WINDOWS:
+  import gpiozero as gpio
+  
 # ---------------------------------------------------------------------
 # General definitions
 #
@@ -59,6 +65,13 @@ dictUL        = dict([
 class devTypeArduino:
   none        = 0
   Uno         = 1
+  
+# ---------------------------------------------------------------------
+# Raspberry Pi
+#
+class devTypeRPi:
+  none        = 0
+  RPi4B       = 1  
 
 
 # ---------------------------------------------------------------------
@@ -106,6 +119,44 @@ class devIO(object):
         print("{0!s:>8} #{1}:{2}".format(_sHeader, self.devName, _sMsg))
       else:
         self.funcLog(_sHeader, self.devName +"|" +_sMsg)
+
+# =====================================================================
+# I/O class for a Raspberry Pi using IO pins (experimental)
+# ---------------------------------------------------------------------
+class devIO_RPi(devIO, object):
+  def __init__(self, _pinDin=26, _pinDOut=27, _funcLog=None):
+    super(devIO_RPi, self).__init__(_funcLog)
+
+    self.isReady = False
+    self.devName = "Raspberry Pi"
+    self.devType = devTypeRPi.RPi4B
+    self._pinDIn = _pinDin
+    self._pinDOut = _pinDOut
+    self._DIn = gpio.Button(self._pinDIn)
+    self._DOut = gpio.LED(self._pinDOut)
+    self._setIsReady()
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def configDPort(self, _port, _dir):
+    # ...
+    pass
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def readDPort(self, _port):
+    if self.isReady:
+      return self._DIn.is_pressed
+    else:  
+      return 0
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def writeDPort(self, _port, _val):
+    if self.isReady:
+      self._DOut.value = _val > 0
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def getPortFromStr(self, _portStr):
+    # TODO
+    return devConst.NONE
 
 
 # =====================================================================

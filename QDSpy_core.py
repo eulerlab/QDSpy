@@ -26,6 +26,7 @@ import time
 import sys
 import gc
 import os
+import platform
 import subprocess
 import pickle
 from multiprocessing import freeze_support
@@ -41,9 +42,10 @@ import QDSpy_gamma as gma
 import QDSpy_probeCenter as pce
 import Devices.digital_io as dio
 
+PLATFORM_WINDOWS = platform.system() == "Windows"
+
 if glo.QDSpy_use_Lightcrafter:
     import Devices.lightcrafter as lcr
-PLATFORM_WINDOWS = sys.platform == "win32"
 
 # ---------------------------------------------------------------------
 # Convenience functions

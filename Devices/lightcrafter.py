@@ -21,7 +21,7 @@ import numpy as np
 from enum import Enum
 from typing import List, Any
 
-PLATFORM_WINDOWS = platform.system == "Windows"
+PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
   import Devices.hid as hid
 else:

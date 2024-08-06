@@ -24,7 +24,7 @@ import datetime
 import Libraries.multiprocess_helper as mpr
 import QDSpy_global as glo
 
-PLATFORM_WINDOWS = platform.system == "Windows"
+PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
     # from ctypes import windll
     import Libraries.color_console as con

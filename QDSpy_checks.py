@@ -12,10 +12,10 @@ All rights reserved.
 __author__ = "code@eulerlab.de"
 
 import sys
+import platform
 import pyglet
 
-PLATFORM_WINDOWS = sys.platform == "win32"
-
+PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:
     # Check if screens exist under Linux
     try: 

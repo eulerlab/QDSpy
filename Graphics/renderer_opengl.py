@@ -26,8 +26,8 @@ All rights reserved.
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
-import sys
 import ctypes
+import platform
 import pyglet
 import numpy as np
 import pyglet.gl as GL  
@@ -36,7 +36,7 @@ from pyglet.gl.gl_info import GLInfo
 pyglet.options["debug_gl"] = False
 PYGLET_VER = float(pyglet.version[0:3])
 
-PLATFORM_WINDOWS = sys.platform == "win32"
+PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
     from win32api import SetCursorPos
 
@@ -227,7 +227,9 @@ class Renderer:
             win.switch_to()
 
             if len(pyglet.app.windows) == 1:
+                ''' TE: Why needed?
                 win.dispatch_event("on_draw")
+                '''
                 win.dispatch_events()
             win.flip()
 

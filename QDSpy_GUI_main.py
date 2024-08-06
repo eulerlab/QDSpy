@@ -22,6 +22,7 @@ import os
 import sys
 import time
 import pickle
+import platform
 from datetime import timedelta
 from PyQt6 import uic  
 from PyQt6.QtWidgets import QMessageBox, QMainWindow, QLabel, QApplication  
@@ -45,7 +46,7 @@ os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 if csp.module_exists("cv2"):
     import Devices.camera as cam
 
-PLATFORM_WINDOWS = sys.platform == "win32"
+PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
     from ctypes import windll
 
@@ -72,7 +73,6 @@ class State:
     probing = 7
     # ...
 
-# ---------------------------------------------------------------------
 class Canceled(Exception):
     pass
 

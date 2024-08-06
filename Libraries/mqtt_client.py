@@ -15,23 +15,15 @@ import platform
 from types import FunctionType
 import paho.mqtt.client as mqtt
 import Libraries.log_helper as _log
+import Libraries.mqtt_globals as mgl
 
-PLATFORM_WINDOWS = platform.system == "Windows"
+PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:
     WindowsError = FileNotFoundError
 
-# fmt: off
-# MQTT broker settings
-#broker_address  = "mqtt.eclipseprojects.io"
-broker_address   = "broker.hivemq.com"
-broker_port      = 1883
-broker_timeout_s = 60
-topic_root       = "qds"
-# fmt: on
-
 # ---------------------------------------------------------------------
-class QDS_MQTT():
-    '''MQTT class for QDSpy
+class QDS_MQTTClient(object):
+    '''MQTT client class for QDSpy
     Use only instance of this class created in this module
     '''
     def __init__(self):
@@ -49,7 +41,8 @@ class QDS_MQTT():
         self._UUID = ID
         self.log("DEBUG", "MQTT|Connecting ...", _isProgress=True)
         self._client.connect(
-            broker_address, broker_port, broker_timeout_s
+            mgl.broker_address, mgl.broker_port, 
+            mgl.broker_timeout_s
         )
 
     def start(self) -> None:
@@ -92,21 +85,21 @@ def _on_connect(client, userdata, flags, reason_code, properties):
     else:
         Client.log(
             "OK", 
-            f"MQTT|Connected to `{broker_address}`")
-        sTopic = f"{topic_root}/{Client._UUID}"
+            f"MQTT|Connected to `{mgl.broker_address}`")
+        sTopic = f"{mgl.topic_root}/{Client._UUID}"
         Client._client.subscribe(sTopic)
 
 
-def _on_message(client, userdata, msg):
+def _on_message(_client, userdata, msg):
     # The callback for when a PUBLISH message is received from the 
     # server.
-    data = msg.payload.decode("UTF8")
-    Client.log("DEBUG", f"Message `{msg.topic}`, `{data}`")
-    print(data.split(","))
+    if Client._debug:
+        data = msg.payload.decode("UTF8")
+        Client.log("DEBUG", f"Message `{msg.topic}`, `{data}`")
     if Client._on_msg_handler:
         Client._on_msg_handler(msg)
 
 # ---------------------------------------------------------------------
-Client = QDS_MQTT()
+Client = QDS_MQTTClient()
 
 # ---------------------------------------------------------------------

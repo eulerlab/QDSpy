@@ -30,7 +30,7 @@ import QDSpy_config as cfg
 import Libraries.log_helper as _log
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
-PLATFORM_WINDOWS = platform.system == "Windows"
+PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:
   WindowsError = FileNotFoundError
 

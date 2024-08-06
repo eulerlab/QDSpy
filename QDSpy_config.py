@@ -30,7 +30,7 @@ import QDSpy_gamma as gma
 import Libraries.log_helper as _log
 import QDSpy_global as glo
 
-PLATFORM_WINDOWS = platform.system == "Windows"
+PLATFORM_WINDOWS = platform.system() == "Windows"
 
 # ---------------------------------------------------------------------
 # Configuration file class
