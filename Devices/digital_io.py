@@ -135,12 +135,13 @@ class devIO_RPi(devIO, object):
         super(devIO_RPi, self).__init__(_funcLog)
 
         self.isReady = False
-        self.devName = "Raspberry Pi"
+        self.devName = "RaspberryPi"
         self.devType = devTypeRPi.RPi4B
         self._pinDIn = _pinDin
         self._pinDOut = _pinDOut
         self._DIn = gpio.Button(self._pinDIn)
         self._DOut = gpio.LED(self._pinDOut)
+        self._DOut.value = 0
         self._setIsReady()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -162,7 +163,6 @@ class devIO_RPi(devIO, object):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def getPortFromStr(self, _portStr):
-        # TODO
         return devConst.NONE
 
 
@@ -241,7 +241,7 @@ class devIO_UL(devIO, object):
             #
             try:
                 self.UL = ctypes.windll.cbw64
-            except WindowsError:
+            except AttributeError or WindowsError:
                 self.log("ERROR", "Driver library 'cbw64.dll' not found")
                 return
 

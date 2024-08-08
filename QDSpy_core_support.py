@@ -26,6 +26,7 @@ import os
 import sys
 import platform
 import QDSpy_global as glb
+import Devices.digital_io as dio
 from pkgutil import iter_modules
 from operator import xor
 
@@ -61,16 +62,17 @@ if PLATFORM_WINDOWS:
         return _fcounter.value / _qpfreq
 
 else:
+    ''' TE: Only Python 3 is supported
     cur_pyver = sys.version_info
     if cur_pyver[0] == 2 and cur_pyver[1] <= 6:
         import time
-
         getTime = time.time
     else:
         import timeit
-
         getTime = timeit.default_timer
-
+    '''
+    from timeit import default_timer as getTime
+    
 
 # ---------------------------------------------------------------------
 # A high-precision clock
@@ -93,14 +95,16 @@ defaultClock = Clock()
 # IO device-related helper
 # ---------------------------------------------------------------------
 def setIODevicePin(_IO, _portStr, _pin, _invert, _state):
-    port = _IO.getPortFromStr(_portStr)
-    mask = 0x01 << _pin
-    data = _IO.readDPort(port)
-    if xor(_state, _invert):
-        data = data | mask
-    else:
-        data = data & ~mask
-    _IO.writeDPort(port, data)
+    if _IO.devType in [dio.devTypeUL.USB1024LS, dio.devTypeUL.PCIDIO24]:
+        # Currently only available for Measurment Computing devices
+        port = _IO.getPortFromStr(_portStr)
+        mask = 0x01 << _pin
+        data = _IO.readDPort(port)
+        if xor(_state, _invert):
+            data = data | mask
+        else:
+            data = data & ~mask
+        _IO.writeDPort(port, data)
 
 
 # ---------------------------------------------------------------------

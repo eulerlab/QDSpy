@@ -103,8 +103,9 @@ QDSpy_loadShadersOnce       = True
 
 QDSpy_KEY_KillPresent       = [ord(b'Q'), ord(b'q')]
 
+# For more details, see http://qdspy.eulerlab.de/inifile.html#timing
 QDSpy_useUL_DIO             = False
-QDSpy_UL_boardType          = "PCIDIO24" # "Arduino", "USB1024LS"
+QDSpy_UL_boardType          = "PCIDIO24" # "Arduino", "USB1024LS", "RaspberryPi"
 QDSpy_UL_boardNum           = 0
 QDSpy_UL_deviceNum          = 6
 QDSpy_UL_portOut            = "A"

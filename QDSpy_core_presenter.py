@@ -14,6 +14,7 @@ Distributed under the terms of the GNU General Public License (GPL)
 2024-05-15 - Improved error message for movie errors
            - Added the option to play sounds, e.g., at the start and
              end of a stimulus presentation (see `QDSpy_global.py`) 
+2024-08-08 - New digital I/O device added ("RaspberryPi")           
 
 Note1: `pyglet`is imported but only used to extract image data from
        the screen to record the stimulus, if selected
@@ -23,7 +24,7 @@ __author__ = "code@eulerlab.de"
 
 import os
 import pickle
-
+import time
 import numpy as np
 import pyglet
 import PIL
@@ -37,7 +38,6 @@ import QDSpy_core_shader as csh
 import Libraries.log_helper as _log
 import Libraries.multiprocess_helper as mpr
 import Devices.digital_io as dio
-import QDSpy_config as cfg
 if glo.QDSpy_isUseSound:
     from Graphics.sounds import Sounds, SoundPlayer
 
@@ -192,6 +192,7 @@ class Presenter:
                     self.Sync.setStateSafe(mpr.CANCELING)
                     self.isUserAbort = True
                     break
+                time.sleep(0.01)
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         elif sc[stm.SC_field_type] == stm.StimSceType.beginLoop:

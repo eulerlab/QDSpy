@@ -16,6 +16,7 @@ All rights reserved.
 2024-05-12 - Catch if `conda` is not installed
            - Reformatted (using Ruff)
            - Sound volume as parameter of `prepare`
+2024-08-08 - New digital I/O device added ("RaspberryPi")           
 
 Note1: `pyglet`is imported but only to determine if it is installed
 """
@@ -211,13 +212,21 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
 
     # Initialize digital IO hardware, if requested
     if _Conf.useDIO:
-        if _Conf.DIObrdType.upper() in ["ARDUINO"]:
+        if _Conf.DIObrdType.lower() == "arduino":
             _IO = dio.devIO_Arduino(
                 _Conf.DIObrd, glo.QDSpy_Arduino_baud, _funcLog=_log.Log.write
             )
             _log.Log.write(
                 "WARNING",
                 "Ensure that Arduino BAUD rate is {0}".format(glo.QDSpy_Arduino_baud),
+            )
+        elif _Conf.DIObrdType.lower() == "raspberrypi":    
+            # Note: Currently works only with the default pins 
+            # (GPIO26 for trigger-in and GPIO27 for marker-out)
+            _IO = dio.devIO_RPi(_funcLog=_log.Log.write)
+            _log.Log.write(
+                "INFO", 
+                "Raspberry Pi: GPIO26 for trigger-in and GPIO27 for marker-out"
             )
         else:
             try:
@@ -238,7 +247,8 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
                 + "`bool_use_digitalio` in `QDSpy.ini` to False.",
             )
         else:
-            # Configure I/O hardware
+            # Measurement Computing hardware is used, and needs to be 
+            # configured ...
             port = _IO.getPortFromStr(_Conf.DIOportOut)
             _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
             _IO.writeDPort(port, 0)
@@ -249,13 +259,13 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             _IO.writeDPort(port, 0)
 
             # Set user pins to the resting state
+            # TODO: Change to correct log message
             print(
                 _IO,
                 _Conf.DIOportOut_User,
                 int(_Conf.DIOpinUserOut1[0]),
                 int(_Conf.DIOpinUserOut1[2]),
             )
-
             csp.setIODevicePin(
                 _IO,
                 _Conf.DIOportOut_User,

@@ -2,6 +2,7 @@
 
 ### New features
 - Version that can be controlled via MQTT (work in progress)
+- New digital I/O device added: "RaspberryPi". It uses by default pins GPIO26 for trigger-in and GPIO27 for marker-out. These pins cannot be changed as these are the only two free pins when using the DLP Lightcrafter 230NP EVM (dldcr203).
 
 ### Fixed issues
 
