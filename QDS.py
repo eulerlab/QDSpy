@@ -23,7 +23,7 @@ import time
 import sys
 import platform
 from   datetime import datetime
-#import QDSpy_checks
+import QDSpy_checks  # noqa: F401
 import QDSpy_global as glo
 import QDSpy_stim as stm
 import QDSpy_config as cfg

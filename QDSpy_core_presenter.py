@@ -15,18 +15,13 @@ Distributed under the terms of the GNU General Public License (GPL)
            - Added the option to play sounds, e.g., at the start and
              end of a stimulus presentation (see `QDSpy_global.py`) 
 2024-08-08 - New digital I/O device added ("RaspberryPi")           
-
-Note1: `pyglet`is imported but only used to extract image data from
-       the screen to record the stimulus, if selected
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
 import os
 import pickle
-import time
 import numpy as np
-import pyglet
 import PIL
 import QDSpy_global as glo
 import QDSpy_stim as stm
@@ -184,7 +179,7 @@ class Presenter:
         drawn = True
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        if sc[stm.SC_field_type] == stm.StimSceType.awaitTTL:
+        if sc[stm.SC_field_type] == stm.StimSceType.awaitTTL and self.IO:
             _log.Log.write("INFO", "Waiting for trigger ...", _isProgress=True)
             self.ignoreFr = True
             while not self.isUserAbort:
@@ -878,7 +873,7 @@ class Presenter:
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @staticmethod
     def stim_to_pil_image(
-        image: pyglet.image.ImageData, f_downsample: int = 1
+        image, f_downsample: int = 1
     ) -> PIL.Image.Image:
         """ Converts a stimulus frame into a PIL image
         """
