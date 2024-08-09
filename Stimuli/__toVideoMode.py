@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import Devices.lightcrafter as lcr
+import Devices.lightcrafter_4500 as lcr
 import time
 
 # Generate lightcrafter object and try to connect to it

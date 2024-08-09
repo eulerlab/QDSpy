@@ -13,7 +13,8 @@ All rights reserved.
 2024-06-19 - Ported from `PyQt5` to `PyQt6`
              (note that `QDSApp.setStyle("Fusion")` is needed to make
               the GUI designed for Qt5 look decent)   
-2024-08-04 - `Log` moved into its own module              
+2024-08-04 - `Log` moved into its own module       
+2024-08-10 - Moved GUI-related methods from `QDSpy_GUI_support` to here
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -27,13 +28,13 @@ from datetime import timedelta
 from PyQt6 import uic  
 from PyQt6.QtWidgets import QMessageBox, QMainWindow, QLabel, QApplication  
 from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QWidget, QProgressBar  
-from PyQt6.QtGui import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor 
+from PyQt6.QtGui import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor, QFontMetrics 
 from PyQt6.QtCore import Qt, QRect, QSize  
 from multiprocessing import Process
 import QDSpy_stim as stm
 import Libraries.log_helper as _log
 import QDSpy_config as cfg
-import QDSpy_GUI_support as gsu
+import QDSpy_file_support as fsu
 from QDSpy_GUI_cam import CamWinClass
 import Libraries.multiprocess_helper as mpr
 import QDSpy_stage as stg
@@ -346,11 +347,11 @@ class MainWinClass(QMainWindow, form_class):
             self.currStimFName = os.path.join(
                 self.currStimPath, glo.QDSpy_autorunStimFileName
             )
-            isAutoRunExists = gsu.getStimExists(self.currStimFName)
+            isAutoRunExists = fsu.getStimExists(self.currStimFName)
             if isAutoRunExists:
                 # Check if a current compiled version of the autorun file
                 # exists
-                self.isStimCurr = gsu.getStimCompileState(self.currStimFName)
+                self.isStimCurr = fsu.getStimCompileState(self.currStimFName)
 
             if not isAutoRunExists or not self.isStimCurr:
                 # No current compiled auto-run file present, so use default file
@@ -472,7 +473,7 @@ class MainWinClass(QMainWindow, form_class):
     def updateAll(self):
         """ Update the complete GUI
         """
-        txt = gsu.getShortText(self, self.currStimPath, self.lblCurrStimFolder)
+        txt = self.getShortText(self.currStimPath, self.lblCurrStimFolder)
         self.lblCurrStimFolder.setText(txt)
 
         stateWorker = self.Sync.State.value
@@ -548,14 +549,14 @@ class MainWinClass(QMainWindow, form_class):
         self.btnToggleSeqControl.setEnabled(self.isLCrUsed and not(enabledLEDs))
         """
         self.btnToggleSeqControl0.setChecked(enabledSeq)
-        gsu.updateToggleButton(self.btnToggleSeqControl0)
+        self.updateToggleButton(self.btnToggleSeqControl0)
         self.btnToggleSeqControl1.setChecked(enabledSeq)
-        gsu.updateToggleButton(self.btnToggleSeqControl1)
+        self.updateToggleButton(self.btnToggleSeqControl1)
 
         self.btnRefreshDisplayInfo.setEnabled(self.isLCrUsed)
         if self.Stage:
             for iLED, LED in enumerate(self.Stage.LEDs):
-                [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, LED)
+                [spinBoxLED, labelLED, btnLED] = self.getLEDGUIObjects(self, LED)
                 spinBoxLED.setEnabled(self.isLCrUsed)
                 spinBoxLED.setMaximum(LED["max_current"])
                 btnLED.setEnabled(self.isLCrUsed and not (enabledSeq))
@@ -563,7 +564,7 @@ class MainWinClass(QMainWindow, form_class):
                     btnLED.setChecked(LED["enabled"])
                 else:
                     btnLED.setChecked(True)
-                gsu.updateToggleButton(btnLED)
+                self.updateToggleButton(btnLED)
 
         self.processPipe()
         self.updateStatusBar(mpr.StateStr[stateWorker])
@@ -573,10 +574,10 @@ class MainWinClass(QMainWindow, form_class):
     def updateStimList(self):
         """ Update stimulus list widget
         """
-        self.currStimFNames = gsu.getStimFileLists(self.currStimPath)
+        self.currStimFNames = fsu.getStimFileLists(self.currStimPath)
         self.listStim.clear()
         for stimFName in self.currStimFNames:
-            self.listStim.addItem(gsu.getFNameNoExt(stimFName))
+            self.listStim.addItem(fsu.getFNameNoExt(stimFName))
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def updateStatusBar(self, _msg="Ready", _isErr=False):
@@ -690,14 +691,14 @@ class MainWinClass(QMainWindow, form_class):
                     sTemp += "{0}={1} ".format(LED["name"], LED["current"])
                     pal.setColor(QPalette.ColorRole.Window, QColor(LED["Qt_color"]))
                     pal.setColor(QPalette.ColorRole.WindowText, QColor("white"))
-                    [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, LED)
+                    [spinBoxLED, labelLED, btnLED] = self.getLEDGUIObjects(self, LED)
                     spinBoxLED.setValue(LED["current"])
                     spinBoxLED.setEnabled(LEDsEnabled)
                     labelLED.setPalette(pal)
                     labelLED.setText(LED["name"])
                     btnLED.setEnabled(not LEDsEnabled)
                     btnLED.setText("")
-                    gsu.updateToggleButton(btnLED)
+                    self.updateToggleButton(btnLED)
                 self.lblDisplDevLEDs.setText(sTemp)
 
             self.spinBoxStageCS_hOffs.setValue(self.Stage.centOffX_pix)
@@ -708,6 +709,40 @@ class MainWinClass(QMainWindow, form_class):
 
         except KeyError:
             pass
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def updateToggleButton(self, _btn, _txtList=["on", "off"]):
+        s = _btn.text().split("\n")
+        f = _btn.isChecked()
+        if len(s) == 1:
+            s = "{0}".format(_txtList[0] if f else _txtList[1])
+        else:
+            s = "{0}\n{1}".format(s[0], _txtList[0] if f else _txtList[1])
+        _btn.setText(s)
+
+    # ---------------------------------------------------------------------
+    def getLEDGUIObjects(self, _LED):
+        if (_LED["LEDIndex"] == 0) and (_LED["devIndex"] == 0):
+            return [self.spinBoxLED1, self.label_LED1, self.pushButtonLED1]
+        elif (_LED["LEDIndex"] == 1) and (_LED["devIndex"] == 0):
+            return [self.spinBoxLED2, self.label_LED2, self.pushButtonLED2]
+        elif (_LED["LEDIndex"] == 2) and (_LED["devIndex"] == 0):
+            return [self.spinBoxLED3, self.label_LED3, self.pushButtonLED3]
+        elif (_LED["LEDIndex"] == 0) and (_LED["devIndex"] == 1):
+            return [self.spinBoxLED4, self.label_LED4, self.pushButtonLED4]
+        elif (_LED["LEDIndex"] == 1) and (_LED["devIndex"] == 1):
+            return [self.spinBoxLED5, self.label_LED5, self.pushButtonLED5]
+        elif (_LED["LEDIndex"] == 2) and (_LED["devIndex"] == 1):
+            return [self.spinBoxLED6, self.label_LED6, self.pushButtonLED6]
+        else:
+            return [None] * 3
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def getShortText(self, _txt, _widget):
+        metrics = QFontMetrics(self.font())
+        return metrics.elidedText(
+            _txt, Qt.TextElideMode.ElideRight, _widget.width()
+        )
 
     # -------------------------------------------------------------------
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -754,7 +789,7 @@ class MainWinClass(QMainWindow, form_class):
                 # Succeed, now get info
                 self.setState(State.ready)
                 self.isStimReady = True
-                self.isStimCurr = gsu.getStimCompileState(self.currStimFName)
+                self.isStimCurr = fsu.getStimCompileState(self.currStimFName)
                 if self.isStimCurr:
                     txtCompState = (
                         fStrPreGreen + "compiled (.pickle) is up-to-date" + fStrPost
@@ -799,7 +834,7 @@ class MainWinClass(QMainWindow, form_class):
         LEDsEnabled = not (self.btnToggleLEDEnable.isChecked())
 
         for iLED, LED in enumerate(self.Stage.LEDs):
-            (spinBoxLED, labelLED, btnLED) = gsu.getLEDGUIObjects(self, LED)
+            (spinBoxLED, labelLED, btnLED) = self.getLEDGUIObjects(self, LED)
             btnLED.setEnabled(LEDsEnabled)
             val = btnLED.isChecked()
             enabled.append(val)
@@ -838,19 +873,19 @@ class MainWinClass(QMainWindow, form_class):
                 [self.Stage.LEDs, self.Stage.isLEDSeqEnabled],
             ]
         )
-        gsu.updateToggleButton(self.btnToggleLEDEnable)
+        self.updateToggleButton(self.btnToggleLEDEnable)
         self.updateDisplayInfo()
         self.updateAll()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def OnClick_btnToggleSeqControl0(self):
-        gsu.updateToggleButton(self.btnToggleSeqControl0)
+        self.updateToggleButton(self.btnToggleSeqControl0)
         print("OnClick_btnToggleSeqControl0 - TO BE IMPLEMENTED")
         # *****************************
         # *****************************
 
     def OnClick_btnToggleSeqControl1(self):
-        gsu.updateToggleButton(self.btnToggleSeqControl1)
+        self.updateToggleButton(self.btnToggleSeqControl1)
         print("OnClick_btnToggleSeqControl1 - TO BE IMPLEMENTED")
         # *****************************
         # *****************************
@@ -863,13 +898,13 @@ class MainWinClass(QMainWindow, form_class):
         self.handleLCrStartStopButton(self.btnLCrStartStop1, 1)
 
     def handleLCrStartStopButton(self, _btn, _iLcr):
-        gsu.updateToggleButton(_btn, ["running", "stopped"])
+        self.updateToggleButton(_btn, ["running", "stopped"])
         checked = _btn.isChecked()
         self.Stage.togglePatternSeq(_iLcr, self.Conf, checked)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def OnClick_btnToggleWaitForTrigger(self):
-        gsu.updateToggleButton(self.btnToggleWaitForTrigger)
+        self.updateToggleButton(self.btnToggleWaitForTrigger)
         print("OnClick_btnToggleWaitForTrigger.TO BE IMPLEMENTED")
         # *****************************
         # *****************************
@@ -890,7 +925,7 @@ class MainWinClass(QMainWindow, form_class):
         )
 
     def handleIOUserButton(self, _btn, _pin, _invert):
-        gsu.updateToggleButton(_btn)
+        self.updateToggleButton(_btn)
         self.IOCmdCount += 1
         data = dict(
             [
@@ -925,7 +960,7 @@ class MainWinClass(QMainWindow, form_class):
 
         curr = []
         for iLED, LED in enumerate(self.Stage.LEDs):
-            (spinBoxLED, labelLED, btnLED) = gsu.getLEDGUIObjects(self, LED)
+            (spinBoxLED, labelLED, btnLED) = self.getLEDGUIObjects(self, LED)
             val = spinBoxLED.value()
             curr.append(val)
             self.Stage.setLEDCurrent(iLED, val)
@@ -1151,7 +1186,7 @@ class MainWinClass(QMainWindow, form_class):
                 # Handle display information data -> update GUI
                 self.Stage = pickle._loads(data[1])
                 self.isLCrUsed = self.Conf.useLCr and (
-                    self.Stage.scrDevType == stg.ScrDevType.DLPLCR4500EVM
+                    self.Stage.scrDevType == stg.ScrDevType.DLPLCR4500
                 )
                 self.updateAll()
                 self.updateDisplayInfo()

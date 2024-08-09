@@ -1,21 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-QDSpy module - support routines for the GUI version of QDSpy
+QDSpy module - support routines for file handling
 
 Copyright (c) 2013-2024 Thomas Euler
 All rights reserved.
 
 2024-06-19 - Ported from `PyQt5` to `PyQt6`
            - Reformatted (using Ruff)
+2024-08-10 - GUI-related routines moved to `QDSpy_GUI_main`
+           - Moved hash support functions here 
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
 import os
+import platform
+import hashlib
 from datetime import datetime
-from PyQt6 import QtCore, QtGui
 import QDSpy_global as glo
+
+PLATFORM_WINDOWS = platform.system() == "Windows"
+if not PLATFORM_WINDOWS:
+    WindowsError = FileNotFoundError
+
 
 # ---------------------------------------------------------------------
 def getStimFileLists(_path):
@@ -65,6 +73,7 @@ def getStimExists(_fName):
 
 
 # ---------------------------------------------------------------------
+'''
 def getShortText(_win, _txt, _widget):
     metrics = QtGui.QFontMetrics(_win.font())
     return metrics.elidedText(_txt, QtCore.Qt.TextElideMode.ElideRight, _widget.width())
@@ -97,6 +106,26 @@ def updateToggleButton(_btn, _txtList=["on", "off"]):
     else:
         s = "{0}\n{1}".format(s[0], _txtList[0] if f else _txtList[1])
     _btn.setText(s)
+'''
+# ---------------------------------------------------------------------
+def getHashStr(_str):
+  #
+  #
+  m = hashlib.md5()
+  m.update(_str.encode('utf-8'))
+  return m.hexdigest()
 
+# ---------------------------------------------------------------------
+def getHashStrForFile(_sFName):
+  #
+  #
+  m = hashlib.md5()
+  with open(_sFName, "rb") as f:
+    while True:
+      data = f.read(65536)
+      if not data:
+        break
+      m.update(data)
+  return m.hexdigest()
 
 # ---------------------------------------------------------------------

@@ -4,7 +4,7 @@
 # ---------------------------------------------------------------------
 import  random 
 import  QDS
-import  Devices.lightcrafter as LCr
+import  Devices.lightcrafter_4500 as LCr
 
 QDS.Initialize("Test1", "Test for Lightcrafter")
 

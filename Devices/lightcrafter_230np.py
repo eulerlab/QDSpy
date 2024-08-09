@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Lightcrafter API
+Lightcrafter 230NP API
 Implements a Python class that covers a the subset of LCr functions
-that is needed to set up Pattern Display Mode and inquire the status
-of the LCr.
 
-Note that this library requires firmware 3.0 and higher
-
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2024 Thomas Euler
 All rights reserved.
 """
 # ---------------------------------------------------------------------
@@ -16,8 +12,6 @@ __author__ = "thomas.euler@eulerlab.de"
 
 # ---------------------------------------------------------------------
 import platform
-import time
-import numpy as np
 from enum import Enum
 from typing import List, Any
 
@@ -25,9 +19,13 @@ PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
   import Devices.hid as hid
 else:
-  import hid
+  import hid # type: ignore
 
+# fmt: off
 # ---------------------------------------------------------------------
+LC_deviceName    = "lcr230np"
+
+'''
 LC_width         = 912
 LC_height        = 1140
 
@@ -36,248 +34,20 @@ LC_VID           = 0x0451
 LC_PID           = 0x6401
 LC_IDStr         = "LCr"
 LC_Usage         = 65280
+'''
 
-LC_MaxDataLen    = 64
-LC_Timeout_ms    = 2000
-LC_B1Flags_read  = 0b11000000   # bit7=1 read transaction,
-                                # bit6=1 reply requested
-LC_B1Flags_write = 0b00000000
-LC_firstDataByte = 4
-
-LC_logStrMaskL   = "{0:<32}: "
-LC_logStrMaskR   = "{0:>32}: "
-LC_logStrMaskErr = "{0:<32}: {1}"
-
-# ---------------------------------------------------------------------
-# Source selection
-#
-class SourceSel(Enum):
-  HDMI        = 0
-  TestPattern = 1
-  Flash       = 2
-  FPDLink     = 3
-
-SourceSelStr = dict([
-  (SourceSel.HDMI,        "parallel interface(HDMI)"),
-  (SourceSel.TestPattern, "internal test pattern"),
-  (SourceSel.Flash,       "Flash"),
-  (SourceSel.FPDLink,     "FPD link")])
-
-# Source bit width
-#
-class SourcePar(Enum):
-  Bit30 = 0
-  Bit24 = 1
-  Bit20 = 2
-  Bit16 = 3
-  Bit10 = 4
-  Bit8  = 5
-
-SourceParStr = dict([
-  (SourcePar.Bit30, "30 bit"),
-  (SourcePar.Bit24, "24 bit"),
-  (SourcePar.Bit20, "20 bit"),
-  (SourcePar.Bit16, "16 bit"),
-  (SourcePar.Bit10, "10 bit"),
-  (SourcePar.Bit8,  "8 bit")])
-
-# Display mode
-#
-class DispMode(Enum):
-  Video   = 0x00
-  Pattern = 0x01
-
-DispModeStr = dict([
-  (DispMode.Video,   "video mode"),
-  (DispMode.Pattern, "pattern mode")])
-
-# Test pattern
-#
-class TestPattern(Enum):
-  SolidField      = 0x0
-  HorizontalRamp  = 0x1
-  VerticalRamp    = 0x2
-  HorizontalLines = 0x3
-  DiagonalLines   = 0x4
-  VerticalLines   = 0x5
-  Grid            = 0x6
-  Checkerboard    = 0x7
-  RGBRamp         = 0x8
-  ColorBars       = 0x9
-  StepBars        = 0xA
-
-# Pattern display data input source
-#
-class SourcePat(Enum):
-  Parallel = 0x0
-  Flash    = 0x3
-
-SourcePatStr = dict([
-  (SourcePat.Parallel, "data is streamed through the 24bit RGB/FPD link interface"),
-  (SourcePat.Flash,    "data is fetched from flash memory")])
-
-# Pattern trigger mode
-#
-class PatTrigMode(Enum):
-  Vsync_fixedExposure   = 0
-  TrigIn12              = 1
-  TrigIn12_alternating  = 2
-  TrigIn12_varExposure  = 3
-  Vsync_varExposure     = 4
-
-PatTrigModeStr = dict([
-  (PatTrigMode.Vsync_fixedExposure,  "VSYNC, fixed exposure"),
-  (PatTrigMode.TrigIn12,             "TRIG_IN_1/2"),
-  (PatTrigMode.TrigIn12_alternating, "TRIG_IN_1 alternates, TRIG_IN_2 advances"),
-  (PatTrigMode.TrigIn12_varExposure, "TRIG_IN_1/2, variable exposure"),
-  (PatTrigMode.Vsync_varExposure,    "VSYNC, variable exposure")])
-
-# Pattern sequence commands
-#
-class PatSeqCmd(Enum):
-  Stop  = 0x0
-  Pause = 0x1
-  Start = 0x2
-
-# Mailbox commands
-#
-class MailboxCmd(Enum):
-  Close          = 0
-  OpenImageIndex = 1
-  OpenPat        = 2
-  OpenPatVarExp  = 3
-
-MailboxCmdStr = dict([
-  (MailboxCmd.Close,          "close mailbox"),
-  (MailboxCmd.OpenImageIndex, "open mailbox (image index)"),
-  (MailboxCmd.OpenPat,        "open mailbox (pattern)"),
-  (MailboxCmd.OpenPatVarExp,  "open mailbox (pattern, variable exposure")])
-
-# Pattern trigger modes
-#
-class MailboxTrig(Enum):
-  Internal    = 0x0
-  ExternalPos = 0x1
-  ExternalNeg = 0x2
-  None_       = 0x3
-
-MailboxTrigStr = dict([
-  (MailboxTrig.Internal,    "internal"),
-  (MailboxTrig.ExternalPos, "external-positive"),
-  (MailboxTrig.ExternalNeg, "external-negative"),
-  (MailboxTrig.None_,       "no trigger")])
-
-# Pattern LED combinations
-#
-class MailboxLED(Enum):
-  None_   = 0b000
-  Red     = 0b001
-  Green   = 0b010
-  Blue    = 0b100
-  Yellow  = 0b011
-  Magenta = 0b101
-  Cyan    = 0b110
-  White   = 0b111
-
-# ---------------------------------------------------------------------
-# Pattern input bit plane combinations
-# TODO: 25=white, 63=no pattern ??
-#
-class MailboxPat(Enum):
-  G0        = 0
-  G10       = 0
-  G210      = 0
-  G3210     = 0
-  G43210    = 0
-  G543210   = 0
-  G6543210  = 0
-  G76543210 = 0
-  G1        = 1
-  G32       = 1
-  G543      = 1
-  G7654     = 1
-  R3210_G7  = 1
-  R3210_G76 = 1
-  R7654321  = 1
-  R76543210 = 1
-  G2        = 2
-  G54       = 2
-  R0_G76    = 2
-  R3210     = 2
-  B10_R765  = 2
-  B10_R7654 = 2
-  B7654321  = 2
-  B76543210 = 2
-  G3        = 3
-  G76       = 3
-  R321      = 3
-  R7654     = 3
-  B76543    = 3
-  B765432   = 3
-  G4        = 4
-  R10       = 4
-  R654      = 4
-  B3210     = 4
-  G5        = 5
-  R32       = 5
-  B10_R7    = 5
-  B7654     = 5
-  G6        = 6
-  R54       = 6
-  B432      = 6
-  G7        = 7
-  R76       = 7
-  B765      = 7
-  R0        = 8
-  B10       = 8
-  R1        = 9
-  B32       = 9
-  R2        = 10
-  B54       = 10
-  R3        = 11
-  B76       = 11
-  R4        = 12
-  R5        = 13
-  R6        = 14
-  R7        = 15
-  B0        = 16
-  B1        = 17
-  B2        = 18
-  B3        = 19
-  B4        = 20
-  B5        = 21
-  B6        = 22
-  B7        = 23
-  BLACK     = 24
-
+# fmt: on
 # ---------------------------------------------------------------------
 # Error codes and messages
 #
 class ERROR:
-  OK                 = 0
-  OPEN_FAILED        = -1
-  TIME_OUT           = -2
-  NO_RESPONSE        = -3
-  NAK_ERROR          = -4
-  COULD_NOT_CONNECT  = -5
-  INVALID_PARAMS     = -6
-  DEVICE_NOT_FOUND   = -7
-  NO_DEVICES         = -8
-  NOT_IMPLEMENTED    = -9
-  MAILBOX_NOT_OPEN   = -10
+    OK = 0
+    # ...
 
-ErrorStr             = dict([
-  (ERROR.OK,                "ok"),
-  (ERROR.OPEN_FAILED,       "Failed to open device"),
-  (ERROR.TIME_OUT,          "Time-out"),
-  (ERROR.NO_RESPONSE,       "No response from device"),
-  (ERROR.NAK_ERROR,         "Command not acknowledged"),
-  (ERROR.COULD_NOT_CONNECT, "Could not connect to device"),
-  (ERROR.INVALID_PARAMS,    "One or more parameters are invalid"),
-  (ERROR.DEVICE_NOT_FOUND,  "Device with this index not found"),
-  (ERROR.NO_DEVICES,        "No device found"),
-  (ERROR.NOT_IMPLEMENTED,   "Not yet implemented"),
-  (ERROR.MAILBOX_NOT_OPEN,  "Mailbox not open")])
+
+ErrorStr = dict([
+    (ERROR.OK, "ok")
+])
 
 # ---------------------------------------------------------------------
 class LCException(Exception):
@@ -286,94 +56,17 @@ class LCException(Exception):
   def __str__(self):
     return repr(self.value)
 
+# fmt: off
 # ---------------------------------------------------------------------
 class CMD_FORMAT_LIST:
   SOURCE_SEL         = [ 0x1A, 0x00, 0x01, 0]   # SOURCE_SEL
-  PIXEL_FORMAT       = [ 0x1A, 0x02, 0x01, 0]   # PIXEL_FORMAT
-  CLK_SEL            = [ 0x1A, 0x03, 0x01, 0]   # CLK_SEL
-  CHANNEL_SWAP       = [ 0x1A, 0x37, 0x01, 0]   # CHANNEL_SWAP
-  FPD_MODE           = [ 0x1A, 0x04, 0x01, 0]   # FPD_MODE
-  #CURTAIN_COLOR     = [ 0, 0, 0]               # CURTAIN_COLOR
-  POWER_CONTROL      = [ 0x02, 0x00, 0x01, 0]   # POWER_CONTROL,
-  FLIP_LONG          = [ 0x10, 0x08, 0x01, 0]   # FLIP_LONG,
-  FLIP_SHORT         = [ 0x10, 0x09, 0x01, 0]   # FLIP_SHORT,
-  TPG_SEL            = [ 0x12, 0x03, 0x01, 0]   # TPG_SEL,
-  PWM_INVERT         = [ 0x1A, 0x05, 0x01, 0]   # PWM_INVERT,
-  LED_ENABLE         = [ 0x1A, 0x07, 0x01, 0]   # LED_ENABLE,
-  GET_VERSION        = [ 0x02, 0x05, 0x00, 0]   # GET_VERSION,
-  SW_RESET           = [ 0x08, 0x02, 0x00, 0]   # SW_RESET,
-  #DMD_PARK          = [ 0, 0, 0]               # DMD_PARK,
-  #BUFFER_FREEZE     = [ 0, 0, 0]               # BUFFER_FREEZE,
-  VIDEO_SIG_DETECT   = [ 0x07, 0x1C, 0x1C, 0]   # VIDEO_SIG_DETECT
+  # ...
 
-  STATUS_HW          = [ 0x1A, 0x0A, 0x00, 0]   # STATUS_HW,
-  STATUS_SYS         = [ 0x1A, 0x0B, 0x00, 0]   # STATUS_SYS,
-  STATUS_MAIN        = [ 0x1A, 0x0C, 0x00, 0]   # STATUS_MAIN,
-  #CSC_DATA          = [ 0, 0, 0],              # CSC_DATA,
-  GAMMA_CTL          = [ 0x1A, 0x0E, 0x01, 0]   # GAMMA_CTL,
-  #BC_CTL            = [ 0, 0, 0],              # BC_CTL,
-  PWM_ENABLE         = [ 0x1A, 0x10, 0x01, 0]   # PWM_ENABLE,
-  PWM_SETUP          = [ 0x1A, 0x11, 0x06, 0]   # PWM_SETUP,
-  PWM_CAPTURE_CONFIG = [ 0x1A, 0x12, 0x05, 0]   # PWM_CAPTURE_CONFIG,
-  GPIO_CONFIG        = [ 0x1A, 0x38, 0x02, 0]   # GPIO_CONFIG,
-  LED_CURRENT        = [ 0x0B, 0x01, 0x03, 0]   # LED_CURRENT,
-  DISP_CONFIG        = [ 0x10, 0x00, 0x10, 0]   # DISP_CONFIG,
-  #TEMP_CONFIG       = [ 0, 0, 0],              # TEMP_CONFIG,
-  #TEMP_READ         = [ 0, 0, 0],              # TEMP_READ,
-  """
-  xxx                = [ 0x1A, 0x16, 0x09, 0]   # MEM_CONTROL,
-  xxx                = [ 0, 0, 0],              # I2C_CONTROL,
-  """
-  LUT_VALID          = [ 0x1A, 0x1A, 0x01, 0]   # LUT_VALID,
-  DISP_MODE          = [ 0x1A, 0x1B, 0x01, 0]   # DISP_MODE,
-  """
-  xxx                = [ 0x1A, 0x1D, 0x03, 0]   # TRIG_OUT1_CTL,
-  xxx                = [ 0x1A, 0x1E, 0x03, 0]   # TRIG_OUT2_CTL,
-  xxx                = [ 0x1A, 0x1F, 0x02, 0]   # RED_STROBE_DLY,
-  xxx                = [ 0x1A, 0x20, 0x02, 0]   # GRN_STROBE_DLY,
-  xxx                = [ 0x1A, 0x21, 0x02, 0]   # BLU_STROBE_DLY,
-  """
-  PAT_DISP_MODE      = [ 0x1A, 0x22, 0x01, 0]   # PAT_DISP_MODE,
-  PAT_TRIG_MODE      = [ 0x1A, 0x23, 0x01, 0]   # PAT_TRIG_MODE,
-  PAT_START_STOP     = [ 0x1A, 0x24, 0x01, 0]   # PAT_START_STOP,
-  """
-  xxx                = [ 0, 0, 0],              # BUFFER_SWAP,
-  xxx                = [ 0, 0, 0],              # BUFFER_WR_DISABLE,
-  xxx                = [ 0, 0, 0],              # CURRENT_RD_BUFFER,
-  """
-  PAT_EXPO_PRD       = [ 0x1A, 0x29, 0x08, 0]   # PAT_EXPO_PRD,
-  #xxx               = [ 0x1A, 0x30, 0x01, 0]   # INVERT_DATA,
-  PAT_CONFIG         = [ 0x1A, 0x31, 0x04, 0]   # PAT_CONFIG,
-  MBOX_ADDRESS       = [ 0x1A, 0x32, 0x01, 0]   # MBOX_ADDRESS,
-  MBOX_CONTROL       = [ 0x1A, 0x33, 0x01, 0]   # MBOX_CONTROL,
-  MBOX_DATA          = [ 0x1A, 0x34, 0x00, 0]   # MBOX_DATA,
-  """
-  xxx                = [ 0x1A, 0x35, 0x04, 0]   # TRIG_IN1_DELAY,
-  xxx                = [ 0, 0, 0],              # TRIG_IN2_CONTROL,
-  xxx                = [ 0x1A, 0x39, 0x01, 0]   # SPLASH_LOAD,
-  xxx                = [ 0x1A, 0x3A, 0x02, 0]   # SPLASH_LOAD_TIMING,
-  xxx                = [ 0x08, 0x07, 0x03, 0]   # GPCLK_CONFIG,
-  xxx                = [ 0, 0, 0],              # PULSE_GPIO_23,
-  xxx                = [ 0, 0, 0],              # ENABLE_LCR_DEBUG,
-  xxx                = [ 0x12, 0x04, 0x0C, 0]   # TPG_COLOR,
-  xxx                = [ 0x1A, 0x13, 0x05, 0]   # PWM_CAPTURE_READ,
-  xxx                = [ 0x30, 0x01, 0x00, 0]   # PROG_MODE,
-  xxx                = [ 0x00, 0x00, 0x00, 0]   # BL_STATUS
-  xxx                = [ 0x00, 0x23, 0x01, 0]   # BL_SPL_MODE
-  xxx                = [ 0x00, 0x15, 0x01, 0]   # BL_GET_MANID,
-  xxx                = [ 0x00, 0x15, 0x01, 0]   # BL_GET_DEVID,
-  xxx                = [ 0x00, 0x15, 0x01, 0]   # BL_GET_CHKSUM,
-  xxx                = [ 0x00, 0x29, 0x04, 0]   # BL_SETSECTADDR,
-  xxx                = [ 0x00, 0x28, 0x00, 0]   # BL_SECT_ERASE,
-  xxx                = [ 0x00, 0x2C, 0x04, 0]   # BL_SET_DNLDSIZE,
-  xxx                = [ 0x00, 0x25, 0x00, 0]   # BL_DNLD_DATA,
-  xxx                = [ 0x00, 0x2F, 0x01, 0]   # BL_FLASH_TYPE,
-  xxx                = [ 0x00, 0x26, 0x00, 0]   # BL_CALC_CHKSUM,
-  xxx                = [ 0x00, 0x30, 0x01, 0]   # BL_PROG_MODE,
-  """
+# fmt: on
 # ---------------------------------------------------------------------
 LCrDeviceList: List[Any] = []
 
+'''
 # ---------------------------------------------------------------------
 def enumerateLightcrafters(_funcLog=None):
   """
@@ -391,7 +84,9 @@ def enumerateLightcrafters(_funcLog=None):
       LCrList.append((iDev, dev["path"]))
       nLCrFound += 1
   return LCrList
+'''
 
+'''
 # ---------------------------------------------------------------------
 # Class representing a lightcrafter device
 # ---------------------------------------------------------------------
@@ -1296,104 +991,6 @@ class Lightcrafter:
       self.log("ERROR", LC_logStrMaskErr.format(s0, ErrorStr[errC]), 2)
       raise LCException(errC)
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  """
-  2.4.3.4.10 Pattern Display Variable Exposure LUT Offset Pointer
-  (I2C: 0x5C)
-  (USB: CMD2: 0x1A, CMD3: 0x3F)
-  The Pattern Display Variable Exposure LUT Offset Pointer defines the location of the Variable Exposure
-  LUT entries in the DLPC350 memory
-  """
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  """
-  2.4.3.4.11 Pattern Display Variable Exposure LUT Control
-  (I2C: 0x5B)
-  (USB: CMD2: 0x1A, CMD3: 0x40)
-  The Pattern Display Variable Exposure LUT Control Command controls the execution of patterns stored in
-  the lookup table. Before executing this command, stop the current pattern sequence. After executing this
-  command, send the Validation command (I2C: 0x7D or USB: 0x1A1A) once before starting the pattern
-  sequence.
-  """
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  """
-  2.4.3.4.12 Pattern Display Variable Exposure LUT Data
-  (I2C: 0x5D)
-  (USB: CMD2: 0x1A, CMD3: 0x3E)
-  The following parameters: Display Pattern mode, Display Data Input Source, Variable Exposure
-  Trigger mode, Variable Exposure Access Control, Variable Exposure LUT Control, and Variable
-  Exposure Offset Pointer Control must be set-up before sending any mailbox data. For each LUT
-  entry that is sent, the Variable Exposure Offset Pointer must be incremented. See Figure 2-12 for
-  an example of sending a Variable Exposure Pattern Sequence. If the Pattern Display Data Input
-  Source is set to streaming, the image indexes do not need to be set. Regardless of the input source,
-  the pattern definition must be set.
-  If the mailbox was opened to define the flash image indexes, list the index numbers in the mailbox. For
-  example, if image indexes 0 through 3 are desired, write 0x0 0x1 0x2 0x3 to the mailbox. Similarly, if the
-  desired image index sequence is 0, 1, 2, 1, then write 0x0 0x1 0x2 0x1 to the mailbox.
-  """
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  '''
-  def setVideoGamma(self, _mode, _enabled):
-    """ TODO - To be implemented
-    """
-    if not(_mode in range(0,4)):
-      return [ERROR.INVALID_PARAMS]
-
-    if self.isCheckOnly:
-      return [ERROR.OK]
-
-    self.log(" ", "setVideoGamma", 2)
-    data  = (_mode & (_enabled << 7))
-    #data = abs(data -255)
-    res   = self.writeData(CMD_FORMAT_LIST.GAMMA_CTL, [data])
-    if res[0] == ERROR.OK:
-      return [ERROR.OK]
-    else:
-      raise LCException(res[0])
-  '''
-  # -------------------------------------------------------------------
-  # Internal test pattern-related
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  def setTestPattern(self, _pattern):
-    """
-    Set test pattern (video mode).
-
-    =============== ==================================================
-    Parameters:
-    =============== ==================================================
-    _pattern        | 0x0 = Solid field
-                    | 0x1 = Horizontal ramp
-                    | 0x2 = Vertical ramp
-                    | 0x3 = Horizontal lines
-                    | 0x4 = Diagonal lines
-                    | 0x5 = Vertical lines
-                    | 0x6 = Grid
-                    | 0x7 = Checkerboard
-                    | 0x8 = RGB ramp
-                    | 0x9 = Color bars
-                    | 0xA = Step bars
-    =============== ==================================================
-    """
-    errC = ERROR.OK
-    s0   = self.setTestPattern.__name__
-
-    if _pattern not in TestPattern:
-      errC = ERROR.INVALID_PARAMS
-    elif not self.isCheckOnly:
-      data = int(_pattern.value)
-      res  = self.writeData(CMD_FORMAT_LIST.TPG_SEL, [data])
-      errC = res[0]
-
-    if errC == ERROR.OK:
-      self.log(" ", (LC_logStrMaskL +"pattern #{1}")
-                    .format(s0, _pattern.value), 2)
-      return [errC]
-    else:
-      self.log("ERROR", LC_logStrMaskErr.format(s0, ErrorStr[errC]), 2)
-      raise LCException(errC)
-
   # -------------------------------------------------------------------
   # LED-related
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1602,5 +1199,5 @@ class Lightcrafter:
         else:
           devStr = " unknown"
         self.funcLog(_sHeader, LC_IDStr +devStr +"|" +_sMsg)
-
+'''
 # ---------------------------------------------------------------------

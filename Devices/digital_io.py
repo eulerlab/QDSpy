@@ -26,6 +26,7 @@ import serial
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:
     import gpiozero as gpio
+    WindowsError = FileNotFoundError
 
 
 # ---------------------------------------------------------------------

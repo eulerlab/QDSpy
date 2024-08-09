@@ -11,6 +11,9 @@ QDSpy module - to manage all projection device-related parameters
 
 Copyright (c) 2013-2024 Thomas Euler
 All rights reserved.
+
+2024-08-10 - More lightcrafter types allowed; `lcr`import went to the
+             end of the module
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -21,24 +24,22 @@ import Libraries.log_helper as _log
 import QDSpy_gamma as gma
 import Graphics.renderer_opengl as rdr
 
-if glo.QDSpy_use_Lightcrafter:
-    import Devices.lightcrafter as lcr
-
-
 # ---------------------------------------------------------------------
 class ScrDevType:
     generic = 0
-    DLPLCR4500EVM = 1
+    DLPLCR4500 = 1
+    DLPLCR230NP = 2
 
 ScrDevStr = dict(
-    [(ScrDevType.generic, "generic"), (ScrDevType.DLPLCR4500EVM, "DLPLCR4500EVM")]
+    [(ScrDevType.generic, "generic"), 
+     (ScrDevType.DLPLCR4500, "DLPLCR4500"),
+     (ScrDevType.DLPLCR230NP, "DLPLCR230NP")]
 )
-
 
 # ---------------------------------------------------------------------
 # Stimulus stage class
 # ---------------------------------------------------------------------
-class Stage:
+class Stage(object):
     def __init__(self, _d, _isNew=False):
         '''Initialize stage object from parameters in dictionary (_d)
         '''
@@ -91,7 +92,7 @@ class Stage:
 
             ver = self.getLCrFirmwareVer(0)
             if len(ver) > 0:
-                self.scrDevType = ScrDevType.DLPLCR4500EVM
+                self.scrDevType = self.getLCrDeviceType(0)
                 self.LCrDevices = lcr.enumerateLightcrafters()
                 self.LCrStatus[0] = self.getLCrStatus(0)
                 self.isLEDSeqEnabled = [True] * len(lcr.LCrDeviceList)
@@ -339,6 +340,18 @@ class Stage:
             return _Conf.useLCr
 
     @staticmethod
+    def getLCrDeviceType(_devIndex):
+        """Return device type
+        """
+        if glo.QDSpy_use_Lightcrafter:
+            if glo.QDSpy_LCrDevTypeName == ScrDevStr[ScrDevType.DLPLCR4500]:
+                return ScrDevType.DLPLCR4500
+            elif glo.QDSpy_LCrDevTypeName == ScrDevStr[ScrDevType.DLPLCR230NP]:
+                return ScrDevType.DLPLCR230NP
+            else:
+                return ScrDevType.generic
+
+    @staticmethod
     def getLCrFirmwareVer(_devIndex):
         """Return firmware version of connected lightcrafter as list
         (e.g. [3,0,0]) or an empty list, if lightcrafter use is not
@@ -384,5 +397,12 @@ class Stage:
 
         return status
 
+# ---------------------------------------------------------------------
+if glo.QDSpy_use_Lightcrafter:
+    dev = Stage.getLCrDeviceType(0)
+    if dev == ScrDevType.DLPLCR4500:
+        import Devices.lightcrafter_4500 as lcr
+    elif dev == ScrDevType.DLPLCR230NP:
+        import Devices.lightcrafter_230np as lcr
 
 # ---------------------------------------------------------------------

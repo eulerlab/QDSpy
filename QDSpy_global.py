@@ -139,6 +139,7 @@ QDSpy_hFlipScr2             = False
 
 QDSpy_MaxLightcrafterDev    = 2
 QDSpy_use_Lightcrafter      = True
+QDSpy_LCrDevTypeName        = "DLPLCR4500" # "DLPLCR230NP"
 QDSpy_LEDNames_default      = "red, green, blue"
 QDSpy_LEDPeakWLs_default    = "650, 510, 450"
 QDSpy_LEDDevIndex_default   = "0, 0, 0"

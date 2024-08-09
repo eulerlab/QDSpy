@@ -42,11 +42,16 @@ import Libraries.log_helper as _log
 import QDSpy_gamma as gma
 import QDSpy_probeCenter as pce
 import Devices.digital_io as dio
+from QDSpy_stage import Stage, ScrDevType
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 
 if glo.QDSpy_use_Lightcrafter:
-    import Devices.lightcrafter as lcr
+    dev = Stage.getLCrDeviceType(0)
+    if dev == ScrDevType.DLPLCR4500:
+        import Devices.lightcrafter_4500 as lcr
+    elif dev == ScrDevType.DLPLCR230NP:
+        import Devices.lightcrafter_230np as lcr
 
 # ---------------------------------------------------------------------
 # Convenience functions

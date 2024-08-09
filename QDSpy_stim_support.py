@@ -28,7 +28,6 @@ All rights reserved.
 __author__ 	= "code@eulerlab.de"
 
 import platform
-import hashlib
 import numpy as  np
 import QDSpy_stim as stm
 
@@ -131,6 +130,7 @@ def scaleRGBShader(_Stim, _inRGBA):
   RGBA     = tuple(np.clip((r,g,b,a), 0.0, 1.0))
   return RGBA
 
+'''
 # ---------------------------------------------------------------------
 def getHashStr(_str):
   #
@@ -151,6 +151,6 @@ def getHashStrForFile(_sFName):
         break
       m.update(data)
   return m.hexdigest()
-
+'''
 
 # ---------------------------------------------------------------------

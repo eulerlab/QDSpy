@@ -12,6 +12,7 @@ All rights reserved.
 
 2024-06-15 - Small fixes for PEP violations
            - Reformatted (using Ruff)
+2024-08-10 - More lightcrafter types allowed
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -20,18 +21,25 @@ import pickle
 import numpy as np
 import QDSpy_global as glo
 import QDSpy_stim_support as ssp
+import QDSpy_file_support as fsp
 import Libraries.log_helper as _log
 import QDSpy_stim_draw as drw
 import QDSpy_stim_movie as mov
 import QDSpy_stim_video as vid
 import QDSpy_core_shader as csh
+from QDSpy_stage import Stage, ScrDevType
 
+_LCr = None
 if glo.QDSpy_use_Lightcrafter:
-    import Devices.lightcrafter as lcr
-    _LCr = lcr.Lightcrafter(_isCheckOnly=True, _funcLog=_log.Log.write)
-else:
-    _LCr = None
-
+    dev = Stage.getLCrDeviceType(0)
+    if dev == ScrDevType.DLPLCR4500:
+        import Devices.lightcrafter_4500 as lcr
+    elif dev == ScrDevType.DLPLCR230NP:
+        import Devices.lightcrafter_230np as lcr
+    if not dev == ScrDevType.generic:    
+        _LCr = lcr.Lightcrafter(
+            _isCheckOnly=True, _funcLog=_log.Log.write
+        )
 
 # ---------------------------------------------------------------------
 # fmt: off
@@ -1409,7 +1417,7 @@ class Stim:
 
         # Get hash for pickle file
         if not (_onlyInfo):
-            self.md5Str = ssp.getHashStrForFile(sFileName + glo.QDSpy_cPickleFileExt)
+            self.md5Str = fsp.getHashStrForFile(sFileName + glo.QDSpy_cPickleFileExt)
 
         # Log some information
         if not (_onlyInfo):

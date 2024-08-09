@@ -15,6 +15,7 @@ __author__ = "code@eulerlab.de"
 
 import numpy as np
 import QDSpy_stim as stm
+import QDSpy_file_support as fsp
 import QDSpy_stim_support as spp
 import Graphics.renderer_opengl as rdr
 
@@ -55,7 +56,7 @@ def box2vert(_ob, _iob, _sc, _Stage, _stim, _nextiV):
         newRGBA2 = len(newVert) // 2 * spp.scaleRGB(_stim, tmpRGBA)
 
     hList = [stm.StimObjType.box, dy, dy, mx, my, rot_deg, pxy]
-    hStr = spp.getHashStr(hList.__str__())
+    hStr = fsp.getHashStr(hList.__str__())
 
     return (newVert, newiVTr, newRGBA, newRGBA2, hStr, pxy, rot_deg)
 
@@ -120,7 +121,7 @@ def ell2vert(_ob, _iob, _sc, _Stage, _stim, _nextiV):
         newRGBA2 = len(newVert) // 2 * spp.scaleRGB(_stim, tmpRGBA)
 
     hList = [stm.StimObjType.ellipse, dy, dy, mx, my, rot_deg, pxy]
-    hStr = spp.getHashStr(hList.__str__())
+    hStr = fsp.getHashStr(hList.__str__())
 
     return (newVert, newiVTr, newRGBA, newRGBA2, hStr, pxy, rot_deg)
 
@@ -243,7 +244,7 @@ def sct2vert(_ob, _iob, _sc, _Stage, _stim, _nextiV):
         rot_deg,
         pxy,
     ]
-    hStr = spp.getHashStr(hList.__str__())
+    hStr = fsp.getHashStr(hList.__str__())
 
     return (newVert, newiVTr, newRGBA, newRGBA2, hStr, pxy, rot_deg)
 

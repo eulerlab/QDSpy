@@ -16,6 +16,7 @@ All rights reserved.
            - Fix for breaking change in `configparser`; now using 
              `ConfigParser` instead of `RawConfigParser`
            - Small fixes for PEP violations  
+2024-08-10 - LCr type added           
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -73,6 +74,7 @@ class Config:
         self.maxDtTr_ms = glo.QDSpy_FrDurThreshold_ms
         self.disGC = glo.QDSpy_disableGarbageCollect
         self.useLCr = glo.QDSpy_use_Lightcrafter
+        self.LCrDevTypeName = glo.QDSpy_LCrDevTypeName
         self.LEDNames = glo.QDSpy_LEDNames_default
         self.LEDPeakWLs = glo.QDSpy_LEDPeakWLs_default
         self.LEDDevIndices = glo.QDSpy_LEDDevIndex_default
@@ -170,6 +172,9 @@ class Config:
             self.useLCr = self.getParam(
                 "Display", "bool_use_lightcrafter", glo.QDSpy_use_Lightcrafter
             )
+            self.LCrDevTypeName = self.getParam(
+                "Display", "str_lcr_device_type", glo.QDSpy_LCrDevTypeName
+            ).upper()
             temp = self.getParam("Display", "str_LED_names", glo.QDSpy_LEDNames_default)
             self.LEDNames = temp.split(",")
             temp = self.getParam(
@@ -355,6 +360,9 @@ class Config:
             self.conf.add_section("Display")
             self.setParam(
                 "Display", "bool_use_lightcrafter", glo.QDSpy_use_Lightcrafter
+            )
+            self.setParam(
+                "Display", "str_lcr_device_type", glo.QDSpy_LCrDevTypeName
             )
             self.setParam("Display", "str_LED_names", glo.QDSpy_LEDNames_default)
             self.setParam(
