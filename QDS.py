@@ -863,10 +863,11 @@ def AwaitTTL():
   .. attention:: There is no time-out, as this would defeat
                  the purpose.
 
-  .. attention:: Only for an Arduino board as digital I/O
-                 device. Specifically, waits for the Arduino to signal
-                 an event via serial USB. In the default Arduino code,
-                 pin 2 waits for a **rising** signal edge.
+  .. attention:: Only for ``Arduino`` or ``RaspberryPi`` as digital 
+                 I/O device. Specifically, waits for the Arduino to 
+                 signal an event via serial USB. In the default Arduino 
+                 code, pin 2 waits for a **rising** signal edge. For 
+                 the Raspberry Pi, the pin is GPIO26. 
   """
   try:
     _Stim.awaitTTL()

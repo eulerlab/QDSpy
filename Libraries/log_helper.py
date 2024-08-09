@@ -26,7 +26,6 @@ import QDSpy_global as glo
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
-    # from ctypes import windll
     import Libraries.color_console as con
 else:
     import Libraries.color_console_linux as con

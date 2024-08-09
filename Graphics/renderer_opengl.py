@@ -63,12 +63,15 @@ class Renderer:
         """ Initialize graphics API
         """
         # Determine some system properties
+        '''
         self.pygletVer = float(pyglet.version[0:3])
         if PYGLET_VER < 1.4:
             platform = pyglet.window.get_platform()
             display = platform.get_default_display()
         else:
             display = pyglet.canvas.get_display()
+        '''    
+        display = pyglet.canvas.get_display()
         self.Screens = display.get_screens()
         self.winList = []
         self.View = _View
@@ -219,25 +222,27 @@ class Renderer:
             win.clear(_RGB)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def present(self):
+    def present(self, flip=True):
         """ Swap display buffers to display new frame in multiple windows
         """
         pyglet.clock.tick(poll=True)
         for win in pyglet.app.windows:
             win.switch_to()
-
             if len(pyglet.app.windows) == 1:
                 ''' TE: Why needed?
                 win.dispatch_event("on_draw")
                 '''
                 win.dispatch_events()
-            win.flip()
+            if flip:    
+                win.flip()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    """
+    '''
     def dispatch_events(self):
-        pass
-    """
+        print(pyglet.app.windows)
+        #pyglet.app.windows[0].dispatch_events()
+        print("dispatch")
+    '''    
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def start_main_loop(self, _Pre):

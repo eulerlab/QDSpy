@@ -125,6 +125,7 @@ class Presenter:
         self.IO_maskMark = 0
         self.IO_isMarkSet = False
 
+        self.ignoreFr = False   # if waited for trigger
         self.nFrTotal = 0       # # of frames rendered
         self.tFrRel_s = 0.0     # current stimulus time (relative to stimulus start)
         self.tFrRelOff_s = 0.0
@@ -179,20 +180,28 @@ class Presenter:
         if self.Conf.isTrackTime:
             t0 = Clock.getTime_s()
         sc = self.Stim.SceList[_iSc]
+        self._waitedForTrigger = False
         drawn = True
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         if sc[stm.SC_field_type] == stm.StimSceType.awaitTTL:
-            _log.Log.write("INFO", "Waiting for trigger ...")
-            while True:
-                res = self.IO.readDPort(self.IO_portIn)
-                if res > 0:
+            _log.Log.write("INFO", "Waiting for trigger ...", _isProgress=True)
+            self.ignoreFr = True
+            while not self.isUserAbort:
+                # Continue if trigger pin is HIGH ...
+                if self.IO.readDPort(self.IO_portIn) > 0:
                     break
-                if self.Sync.Request.value in [mpr.CANCELING, mpr.TERMINATING]:
-                    self.Sync.setStateSafe(mpr.CANCELING)
-                    self.isUserAbort = True
-                    break
-                time.sleep(0.01)
+                    
+                # Allow pyglect event to be processed to detect `q`
+                # in command line mode
+                self.View.Renderer.present(flip=False)    
+                self.isUserAbort = self.isEnd
+                
+                if self.Sync:
+                    # Check if chanceling request arrived from the GUI                    
+                    if self.Sync.Request.value in [mpr.CANCELING, mpr.TERMINATING]:
+                        self.Sync.setStateSafe(mpr.CANCELING)
+                        self.isUserAbort = True
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         elif sc[stm.SC_field_type] == stm.StimSceType.beginLoop:
@@ -521,8 +530,13 @@ class Presenter:
             else:
                 self.Batch.add_rect_data(self.antiMarkerVert)
 
-        # Track rendering timing, if requested
+        # Track rendering timing, if requested and not waited for trigger
         if self.Conf.isTrackTime:
+            '''
+            if self.ignoreFr:
+                self.rendDur_s = self.avRendDur_s
+            else:
+            '''
             self.rendDur_s = Clock.getTime_s() - t0
             self.avRendDur_s += self.rendDur_s
         self.nRendTotal += 1
@@ -619,7 +633,7 @@ class Presenter:
                 self.Sync.pipeSrv.send(
                     [mpr.PipeValType.toCli_playEndInfo, isDone]
                 )
-            _log.Log.write("ok", "Done" if isDone else "Aborted by user xxx")
+            _log.Log.write("ok", "Done" if isDone else "Aborted by user")
             _log.Log.write(
                 "DATA",
                 {
@@ -678,7 +692,14 @@ class Presenter:
                 self.tFr = Clock.getTime_s()
             else:
                 t0 = Clock.getTime_s()
-                dt = t0 - self.tFr
+                if self.ignoreFr:
+                    # Ignore frame duration because the program waited
+                    # for a trigger
+                    # TODO: Correct calculation of rendering duration
+                    self.ignoreFr = False
+                    dt = 0
+                else:    
+                    dt = t0 - self.tFr
                 self.avFrDur_s += dt
                 self.tFr = t0
                 self.dataDtFr[self.dataDtFrLen] = dt
@@ -770,14 +791,16 @@ class Presenter:
             self.avRendDur_s = self.avRendDur_s / self.nRendTotal
             self.avPresDur_s = self.avPresDur_s / self.nRendTotal
             self.avFrDur_s = self.avFrDur_s / self.nFrTotal
+            if self.avFrDur_s > 0:
+                sFreq = f"{1 /self.avFrDur_s:.3f}"
+            else:
+                sFreq = "n/a"
             _log.Log.write(
                 "INFO",
-                "{0:.3f} ms/frame ({1:.3f} Hz), rendering: "
+                "{0:.3f} ms/frame ({1} Hz), rendering: "
                 "{2:.3f} ms/frame ({3} frames in total)".format(
-                    self.avFrDur_s * 1000.0,
-                    1 / self.avFrDur_s,
-                    self.avRendDur_s * 1000.0,
-                    self.nFrTotal,
+                    self.avFrDur_s * 1000.0, sFreq,
+                    self.avRendDur_s * 1000.0, self.nFrTotal
                 ),
             )
             _log.Log.write(
