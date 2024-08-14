@@ -333,7 +333,7 @@ class QDSpyApp(object):
             self.state = State.ready
 
         self.processPipe()
-        print(StateStr[self.state])
+        #print(StateStr[self.state])
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setState(self, _newState, _doUpdateGUI=False):

@@ -1382,22 +1382,14 @@ class Stim:
             _log.Log.write(" ", "Loading compiled stimulus...", True)
 
         sPath = fsp.repairPath(_sFileName)
-        print("load", sPath + glo.QDSpy_cPickleFileExt)
-
         try:
             with open(sPath + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
                 '''
                 self.fileName = sFileName.replace("\\\\", "\\")
                 '''
                 self.fileName = sPath 
-                
-                print("load", sPath)
-
                 stimPick = pickle.Unpickler(stimFile)
                 ID = stimPick.load()
-                
-                print("load", 1)
-
                 if ID != glo.QDSpy_fileVersionID:
                     self.LastErrC = StimErrC.wrongStimFileFormat
                     _log.Log.write("ERROR", self.getLastErrStr())
