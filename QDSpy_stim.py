@@ -1374,23 +1374,28 @@ class Stim:
         self.LastErrC = StimErrC.ok
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def load(self, sFileName, _onlyInfo=False):
+    def load(self, _sFileName: str, _onlyInfo: bool = False):
         """ Load the compiled stimulus
         """
         self.clear()
         if not (_onlyInfo):
             _log.Log.write(" ", "Loading compiled stimulus...", True)
 
-        print("load", sFileName + glo.QDSpy_cPickleFileExt)
+        sPath = fsp.repairPath(_sFileName)
+        print("load", sPath + glo.QDSpy_cPickleFileExt)
 
         try:
-            with open(sFileName + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
+            with open(sPath + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
                 '''
                 self.fileName = sFileName.replace("\\\\", "\\")
                 '''
-                print("load", sFileName)
+                self.fileName = sPath 
+                
+                print("load", sPath)
+
                 stimPick = pickle.Unpickler(stimFile)
                 ID = stimPick.load()
+                
                 print("load", 1)
 
                 if ID != glo.QDSpy_fileVersionID:
@@ -1431,13 +1436,13 @@ class Stim:
 
         # Get hash for pickle file
         if not (_onlyInfo):
-            self.md5Str = fsp.getHashStrForFile(sFileName + glo.QDSpy_cPickleFileExt)
+            self.md5Str = fsp.getHashStrForFile(sPath + glo.QDSpy_cPickleFileExt)
 
         # Log some information
         if not (_onlyInfo):
             _log.Log.write(
                 "ok",
-                "Stimulus '{0}' loaded".format(sFileName + glo.QDSpy_cPickleFileExt),
+                "Stimulus '{0}' loaded".format(sPath + glo.QDSpy_cPickleFileExt),
             )
             _log.Log.write(" ", "Name       : {0}".format(self.nameStr))
             _log.Log.write(" ", "Description: {0}".format(self.descrStr))
