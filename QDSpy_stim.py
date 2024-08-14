@@ -1388,6 +1388,9 @@ class Stim:
                 self.fileName = sFileName.replace("\\\\", "\\")
                 '''
                 self.fileName = sPath 
+
+                print("load", stimFile)
+
                 stimPick = pickle.Unpickler(stimFile)
                 ID = stimPick.load()
                 if ID != glo.QDSpy_fileVersionID:
