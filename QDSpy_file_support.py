@@ -69,9 +69,30 @@ def getStimCompileState(_fName):
 def getStimExists(_fName):
     """ Check if stimulus file (.py) exists
     """
-    print(_fName + glo.QDSpy_stimFileExt)
-    return os.path.isfile(_fName + glo.QDSpy_stimFileExt)
+    fPath = repairPath(_fName + glo.QDSpy_stimFileExt)
+    print(fPath)
+    return os.path.isfile(fPath)
 
+# ---------------------------------------------------------------------
+def getQDSpyPath() -> str:
+    """Get QDSpy path from `PYTHONPATH`
+    """
+    _pathQDSpy = ""
+    pList = os.environ['PYTHONPATH'].split(";")
+    for p in pList:
+        pParts = os.path.split(p)
+        if pParts[-1].lower() == "qdspy":
+            _pathQDSpy = p
+    return _pathQDSpy        
+
+# ---------------------------------------------------------------------
+def repairPath(_path: str) -> str:
+    """Repair path if necessary
+    """
+    if platform.system() == "Linux":
+        _path = _path.replace("\\", "/").replace(".", "")
+        _path = _path[1:] if _path[0] == ":" else _path
+    return _path
 
 # ---------------------------------------------------------------------
 '''

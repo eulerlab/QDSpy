@@ -29,6 +29,7 @@ import QDSpy_stim_movie as mov
 import QDSpy_stim_video as vid
 import QDSpy_stim_draw as drw
 import QDSpy_core_support as csp
+import QDSpy_file_support as fsu
 import QDSpy_core_shader as csh
 from Libraries.log_helper import Log
 import Libraries.multiprocess_helper as mpr
@@ -67,7 +68,7 @@ class Presenter:
         self.Conf = _Conf
         self.View = _View
         self.LCr = _LCr
-        self.pathQDSpy = glo.getQDSpyPath()
+        self.pathQDSpy = fsu.getQDSpyPath()
         self.ShManager = csh.ShaderManager(self.Conf, self.pathQDSpy)
         self.useSound = glo.QDSpy_isUseSound
         self.reset()

@@ -22,6 +22,7 @@ import os
 import platform
 import QDSpy_stim as stm
 import QDSpy_global as glo
+import QDSpy_file_support as fsu
 import Libraries.log_helper as _log
 import moviepy.editor as mpe
 import Graphics.renderer_opengl as rdr
@@ -93,7 +94,7 @@ class Video:
             self.fNameVideo = _fName
         else:
             tempDir = os.getcwd()
-            self.fNameVideo = glo.repairPath(tempDir + tempStr) + self.fExtVideo
+            self.fNameVideo = fsu.repairPath(tempDir + tempStr) + self.fExtVideo
 
         if self.fExtVideo in glo.QDSpy_vidAllowedVideoExts:
             return self.__loadVideo()

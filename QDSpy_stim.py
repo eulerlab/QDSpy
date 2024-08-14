@@ -452,7 +452,7 @@ class Stim:
         shader type exists
         """
         if self.ShManager is None:
-            _path = glo.getQDSpyPath()
+            _path = fsp.getQDSpyPath()
             self.ShManager = csh.ShaderManager(self.Conf, _path)
         if _shType not in self.ShManager.getShaderTypes():
             self.LastErrC = StimErrC.invalidShaderType

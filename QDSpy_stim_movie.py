@@ -25,6 +25,7 @@ import platform
 import configparser
 import QDSpy_stim as stm
 import QDSpy_global as glo
+import QDSpy_file_support as fsu
 import Libraries.log_helper as _log
 import Graphics.renderer_opengl as rdr
 
@@ -167,8 +168,8 @@ class Movie:
             self.fNameImg = _fName
         else:
             tempDir = os.getcwd()
-            self.fNameDesc = glo.repairPath(tempDir + tempStr) + glo.QDSpy_movDescFileExt
-            self.fNameImg = glo.repairPath(tempDir + tempStr) + self.fExtImg
+            self.fNameDesc = fsu.repairPath(tempDir + tempStr) + glo.QDSpy_movDescFileExt
+            self.fNameImg = fsu.repairPath(tempDir + tempStr) + self.fExtImg
 
         if self.fExtImg in glo.QDSpy_movAllowedMovieExts:
             return self.__loadMontage()
