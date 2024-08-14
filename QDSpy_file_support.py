@@ -54,7 +54,7 @@ def getStimCompileState(_fName: str) -> bool:
     """
     _fName = os.path.splitext(_fName)[0]
     fPath = repairPath(_fName)
-    print(fPath)
+    print("getStimCompileState", fPath)
     try:
         tStamp = os.path.getmtime(fPath + glo.QDSpy_stimFileExt)
         tPy = datetime.fromtimestamp(tStamp)
@@ -72,7 +72,7 @@ def getStimExists(_fName):
     """ Check if stimulus file (.py) exists
     """
     fPath = repairPath(_fName) + glo.QDSpy_stimFileExt
-    print(fPath)
+    print("getStimExists", fPath)
     return os.path.isfile(fPath)
 
 # ---------------------------------------------------------------------
