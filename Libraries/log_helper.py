@@ -68,7 +68,7 @@ class Log:
         if (_headerStr.upper() == "DEBUG") and not glo.QDSpy_isDebug:
             return
 
-        _msgStr = f"{'|' if _isWorker else " "} {_msgStr}"
+        _msgStr = f"{'|' if _isWorker else ' '} {_msgStr}"
         if glo.QDSpy_doLogTimeStamps:
             # Generate a time stamp
             tStr = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
