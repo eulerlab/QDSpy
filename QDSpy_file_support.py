@@ -48,22 +48,23 @@ def getFNameNoExt(_fName):
     """
     return (os.path.splitext(os.path.basename(_fName)))[0]
 
-
 # ---------------------------------------------------------------------
-def getStimCompileState(_fName):
+def getStimCompileState(_fName: str) -> bool:
     """ Check if pickle-file is current
     """
-    fName = os.path.splitext(_fName)[0]
+    _fName = os.path.splitext(_fName)[0]
+    fPath = repairPath(_fName)
     try:
-        tStamp = os.path.getmtime(fName + glo.QDSpy_stimFileExt)
+        tStamp = os.path.getmtime(fPath + glo.QDSpy_stimFileExt)
         tPy = datetime.fromtimestamp(tStamp)
-        tStamp = os.path.getmtime(fName + glo.QDSpy_cPickleFileExt)
+        tStamp = os.path.getmtime(fPath + glo.QDSpy_cPickleFileExt)
         tPck = datetime.fromtimestamp(tStamp)
         return tPck > tPy
+    
     except WindowsError:
         pass
-    return False
 
+    return False
 
 # ---------------------------------------------------------------------
 def getStimExists(_fName):
