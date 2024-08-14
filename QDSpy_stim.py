@@ -1381,6 +1381,8 @@ class Stim:
         if not (_onlyInfo):
             _log.Log.write(" ", "Loading compiled stimulus...", True)
 
+        print("load", sFileName + glo.QDSpy_cPickleFileExt)
+
         try:
             with open(sFileName + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
                 '''
