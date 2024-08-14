@@ -69,6 +69,7 @@ def getStimCompileState(_fName):
 def getStimExists(_fName):
     """ Check if stimulus file (.py) exists
     """
+    print(_fName + glo.QDSpy_stimFileExt)
     return os.path.isfile(_fName + glo.QDSpy_stimFileExt)
 
 
