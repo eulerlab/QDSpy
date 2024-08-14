@@ -26,6 +26,7 @@ QDSpy_isDebug               = True
 QDSpy_isGUIQuitWithDialog   = False
 QDSpy_workerMsgsToStdOut    = True
 QDSpy_noStimArg             = False
+QDSpy_loop_sleep_s          = 0.01
 
 QDSpy_isUseSound            = True
 QDSpy_pathSounds            = ".\\Sounds\\"

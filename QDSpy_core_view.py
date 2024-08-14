@@ -39,7 +39,6 @@ elif QDSpy_graphicsAPI == 2:
 """
 '''
 
-
 # =====================================================================
 #
 # ---------------------------------------------------------------------
@@ -194,6 +193,8 @@ class View:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def onKeyboard(self, _key, _x, _y):
+        """Handle key strokes when running in command line mode
+        """
         if self.onKeyboardProc is not None:
             self.onKeyboardProc(_key, _x, _y)
 
@@ -212,7 +213,6 @@ class View:
         """
         if self.isWinAvailable:
             # Exit main loop, which kills the window(s)
-            #
             self.Renderer.end_main_loop()
             self.__reset()
 

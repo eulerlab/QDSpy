@@ -32,7 +32,7 @@ from PyQt6.QtGui import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor, 
 from PyQt6.QtCore import Qt, QRect, QSize  
 from multiprocessing import Process
 import QDSpy_stim as stm
-import Libraries.log_helper as _log
+from Libraries.log_helper import Log
 import QDSpy_config as cfg
 import QDSpy_file_support as fsu
 from QDSpy_GUI_cam import CamWinClass
@@ -110,6 +110,12 @@ class MainWinClass(QMainWindow, form_class):
         # GUI style-related
         cs = QDSApp.styleHints().colorScheme() 
         self.isDarkSchemeGUI = cs == Qt.ColorScheme.Dark 
+
+        # Identify 
+        self.logWrite(
+            "***", 
+            f"{glo.QDSpy_versionStr} GUI - {glo.QDSpy_copyrightStr}"
+        )
 
         self.logWrite("DEBUG", "Initializing GUI")
         QMainWindow.__init__(self, parent)
@@ -238,7 +244,7 @@ class MainWinClass(QMainWindow, form_class):
         self.logWrite("DEBUG", "Creating sync object ...")
         self.state = State.undefined
         self.Sync = mpr.Sync()
-        _log.Log.setGUISync(self.Sync, noStdOut=self.noMsgToStdOut)
+        Log.setGUISync(self.Sync, noStdOut=self.noMsgToStdOut)
         self.logWrite("DEBUG", "... done")
 
         # Create process that opens a view (an OpenGL window) and waits for
@@ -342,55 +348,7 @@ class MainWinClass(QMainWindow, form_class):
         self.logWrite("DEBUG", "... done")
 
         # Check if autorun stimulus file present and if so run it
-        try:
-            self.isStimCurr = False
-            self.currStimFName = os.path.join(
-                self.currStimPath, glo.QDSpy_autorunStimFileName
-            )
-            isAutoRunExists = fsu.getStimExists(self.currStimFName)
-            if isAutoRunExists:
-                # Check if a current compiled version of the autorun file
-                # exists
-                self.isStimCurr = fsu.getStimCompileState(self.currStimFName)
-
-            if not isAutoRunExists or not self.isStimCurr:
-                # No current compiled auto-run file present, so use default file
-                self.currStimFName = os.path.join(
-                    self.currQDSPath, glo.QDSpy_autorunDefFileName
-                )
-                self.logWrite(
-                    "ERROR",
-                    "No compiled `{0}` in current stimulus "
-                    "folder, using `{1}` in `{2}`.".format(
-                        glo.QDSpy_autorunStimFileName,
-                        glo.QDSpy_autorunDefFileName,
-                        self.currQDSPath,
-                    ),
-                )
-
-            # Run either autorun file ...
-            self.logWrite("DEBUG", "Running {0} ...".format(self.currStimFName))
-            self.Stim.load(self.currStimFName, _onlyInfo=True)
-            self.setState(State.ready)
-            self.isStimReady = True
-            self.runStim()
-
-        except:  # noqa: E722
-            # Failed ...
-            if self.Stim.getLastErrC() != stm.StimErrC.ok:
-                self.updateStatusBar(self.Stim.getLastErrStr(), True)
-                _log.Log.isRunFromGUI = False
-                _log.Log.write(
-                    "ERROR",
-                    "No compiled `{0}` in current stimulus folder,"
-                    " and `{1}.pickle` is not in `{2}`. Program is"
-                    " aborted.".format(
-                        glo.QDSpy_autorunStimFileName,
-                        glo.QDSpy_autorunDefFileName,
-                        self.currQDSPath,
-                    ),
-                )
-                sys.exit(0)
+        self.handleAutorun()
 
         # Update GUI
         self.Stim_soundVol = glo.QDSpy_volume
@@ -408,6 +366,47 @@ class MainWinClass(QMainWindow, form_class):
         if e.key() in glo.QDSpy_KEY_KillPresent:
             if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING, mpr.PROBING]:
                 self.OnClick_btnStimAbort()
+
+    # -----------------------------------------------------------------
+    def handleAutorun(self):
+        '''Check if autorun stimulus file present and if so run it
+        '''
+        try:
+            self.isStimCurr = False
+            sf = glo.QDSpy_autorunStimFileName
+            sd = glo.QDSpy_autorunDefFileName
+            self.currStimFName = os.path.join(self.currStimPath, sf)
+            isAutoRunExists = fsu.getStimExists(self.currStimFName)
+            if isAutoRunExists:
+                # Check if a  compiled version of the autorun file exists
+                self.isStimCurr = fsu.getStimCompileState(self.currStimFName)
+
+            if not isAutoRunExists or not self.isStimCurr:
+                # Use default file as no compiled auto-run file is present
+                self.currStimFName = os.path.join(self.currQDSPath, sd)
+                self.logWrite(
+                    "ERROR", 
+                    f"No compiled `{sf}` in current stimulus folder"
+                )
+                self.logWrite("INFO", f"Using `{sd}` in `{self.currQDSPath}`.")
+
+            # Run either autorun file ...
+            self.logWrite("DEBUG", "Running {0} ...".format(self.currStimFName))
+            self.Stim.load(self.currStimFName, _onlyInfo=True)
+            self.setState(State.ready)
+            self.isStimReady = True
+            self.runStim()
+
+        except:  # noqa: E722
+            # Failed ...
+            if self.Stim.getLastErrC() != stm.StimErrC.ok:
+                self.logWrite(
+                    "ERROR",
+                    f"No compiled `{sf}` in current stimulus folder, "
+                    f"and `{sd}.pickle` is not in `{self.currQDSPath}`. "
+                )
+                self.logWrite("ERROR", "Program is aborted.")                
+                sys.exit(0)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def closeEvent(self, event):
@@ -556,7 +555,7 @@ class MainWinClass(QMainWindow, form_class):
         self.btnRefreshDisplayInfo.setEnabled(self.isLCrUsed)
         if self.Stage:
             for iLED, LED in enumerate(self.Stage.LEDs):
-                [spinBoxLED, labelLED, btnLED] = self.getLEDGUIObjects(self, LED)
+                [spinBoxLED, labelLED, btnLED] = self.getLEDGUIObjects(LED)
                 spinBoxLED.setEnabled(self.isLCrUsed)
                 spinBoxLED.setMaximum(LED["max_current"])
                 btnLED.setEnabled(self.isLCrUsed and not (enabledSeq))
@@ -691,7 +690,7 @@ class MainWinClass(QMainWindow, form_class):
                     sTemp += "{0}={1} ".format(LED["name"], LED["current"])
                     pal.setColor(QPalette.ColorRole.Window, QColor(LED["Qt_color"]))
                     pal.setColor(QPalette.ColorRole.WindowText, QColor("white"))
-                    [spinBoxLED, labelLED, btnLED] = self.getLEDGUIObjects(self, LED)
+                    [spinBoxLED, labelLED, btnLED] = self.getLEDGUIObjects(LED)
                     spinBoxLED.setValue(LED["current"])
                     spinBoxLED.setEnabled(LEDsEnabled)
                     labelLED.setPalette(pal)
@@ -834,7 +833,7 @@ class MainWinClass(QMainWindow, form_class):
         LEDsEnabled = not (self.btnToggleLEDEnable.isChecked())
 
         for iLED, LED in enumerate(self.Stage.LEDs):
-            (spinBoxLED, labelLED, btnLED) = self.getLEDGUIObjects(self, LED)
+            (spinBoxLED, labelLED, btnLED) = self.getLEDGUIObjects(LED)
             btnLED.setEnabled(LEDsEnabled)
             val = btnLED.isChecked()
             enabled.append(val)
@@ -960,7 +959,7 @@ class MainWinClass(QMainWindow, form_class):
 
         curr = []
         for iLED, LED in enumerate(self.Stage.LEDs):
-            (spinBoxLED, labelLED, btnLED) = self.getLEDGUIObjects(self, LED)
+            (spinBoxLED, labelLED, btnLED) = self.getLEDGUIObjects(LED)
             val = spinBoxLED.value()
             curr.append(val)
             self.Stage.setLEDCurrent(iLED, val)
@@ -1228,10 +1227,10 @@ class MainWinClass(QMainWindow, form_class):
     # -------------------------------------------------------------------
     # Logging-related
     # -------------------------------------------------------------------
-    def logWrite(self, _headerStr, _msgStr):
+    def logWrite(self, _hdr, _msg):
         """ Log a message to the appropriate output
         """
-        data = _log.Log.write(_headerStr, _msgStr, _getStr=True)
+        data = Log.write(_hdr, _msg, _getStr=True, _isWorker=False)
         if data is not None:
             self.log(data)
 

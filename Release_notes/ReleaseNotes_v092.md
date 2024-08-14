@@ -7,6 +7,8 @@
 ### Fixed issues
 
 ### Changes:
+- Use `colorama` for console colors
+- Messages from the worker thread (the one that presents the stimuli) and the host thread (the GUI or the MQTT client) can now be distinguished; worker thread messages start with a `|` character.
 - `QDSpy_stim_movie.py` and `QDSpy_stim_video.py` are not anymore directly dependent on `pyglet` by adding helper functions to `renderer_opengl.py`.
 - Log instance (`Log`) moved into own module `Libraries\log.helper.py`
 - Multiprocessing support now in `Libraries\multiprocess_helper.py`

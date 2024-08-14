@@ -207,6 +207,8 @@ class StimLCrCmd:
 class StimErrC:
     ok                  = 0
     notYetImplemented   = -1
+    dummy               = -2
+    shouldNotHappen     = -3
 
     invalidDimensions   = -10
     invalidDuration     = -11
@@ -245,6 +247,8 @@ class StimErrC:
 StimErrStr	= dict([
     (StimErrC.ok,                 "ok"),
     (StimErrC.notYetImplemented,  "Not yet implemented"),
+    (StimErrC.dummy,              "Dummy error code"),
+    (StimErrC.shouldNotHappen,    "Should-not-happen condition"),
     (StimErrC.invalidDimensions,  "Invalid dimensions"),
     (StimErrC.invalidDuration,    "Invalid duration"),
     (StimErrC.invalidParamType,   "Invalid parameter type"),
@@ -334,8 +338,12 @@ class Stim:
     def getLastErrC(self):
         return self.LastErrC
 
-    def getLastErrStr(self):
-        return StimErrStr[self.LastErrC]
+    def getLastErrStr(self, _errC: StimErrC = StimErrC.dummy):
+        if _errC is StimErrC.dummy:
+            return StimErrStr[self.LastErrC]
+        else:
+            return StimErrStr[_errC]
+
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def defObj_box(self, _ID, _dx_um, _dy_um, _enShader):

@@ -13,8 +13,9 @@ __author__ 	= "code@eulerlab.de"
 
 import platform
 from types import FunctionType
+from enum import Enum
 import paho.mqtt.client as mqtt
-import Libraries.log_helper as _log
+from Libraries.log_helper import Log
 import Libraries.mqtt_globals as mgl
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
@@ -27,23 +28,36 @@ class QDS_MQTTClient(object):
     Use only instance of this class created in this module
     '''
     def __init__(self):
+        # Initialize 
+        self._debug = True
+        self._is_running = False
+        self._isServer = False
+        self._topic = f"{mgl.topic_root}/{mgl.UUID}/"
+
         # Create MQTT client instance 
         self._client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
-        # Initialize and set callback functions
-        self._debug = True
-        self._is_running = False
+        # Set callback functions and other stuff
+        self._unacked_publish = set()
+        self._client.user_data_set(self._unacked_publish)
         self._on_msg_handler = None
+        self._client.on_publish = _on_publish
         self._client.on_connect = _on_connect
         self._client.on_message = _on_message
 
-    def connect(self, ID: str):
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def connect(self, ID: str, _isServ: bool):
         self._UUID = ID
-        self.log("DEBUG", "MQTT|Connecting ...", _isProgress=True)
-        self._client.connect(
-            mgl.broker_address, mgl.broker_port, 
-            mgl.broker_timeout_s
-        )
+        self._isServ = _isServ
+        self.log("DEBUG", "MQTT|Connecting ...")
+        try:
+            self._client.connect(
+                mgl.broker_address, mgl.broker_port, 
+                mgl.broker_timeout_s
+            )
+        except TimeoutError:
+            self.log("ERROR", "MQTT|Timeout on connecting")
+            #raise TimeoutError("MQTT timed-out")
 
     def start(self) -> None:
         if not self._is_running:
@@ -58,6 +72,18 @@ class QDS_MQTTClient(object):
             self._is_running = False
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def publish(self, _msg: str, _doWait: bool = True) -> None:
+        """Publish string `_msg` under the predefined topic
+        (see `mqtt_globals.py`)
+        """
+        topic = self._topic +f"{mgl.topic_serv[not self._isServ]}"
+        msg_info = self._client.publish(topic, _msg, qos=1)
+        self._unacked_publish.add(msg_info.mid)
+        if _doWait:
+            msg_info.wait_for_publish()
+        self.log("INFO", f"MQTT|<- `{topic} {_msg}`")
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @property
     def is_connected(self):
         self._client.is_connected()
@@ -68,13 +94,17 @@ class QDS_MQTTClient(object):
     handler = property(None, handler)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def log(self, header: str, msg: str, _isProgress: bool = False):
+    def checkCmd(self, _cmd: Enum):
+        return _cmd not in [c.value for c in mgl.Command]
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def log(self, _hdr: str, _msg: str, _isProg: bool = False):
         if self._debug:
-            _log.Log.write(header, msg, _isProgress=_isProgress)        
+            Log.write(_hdr, _msg, _isProgress=_isProg, _isWorker=False)        
 
 # ---------------------------------------------------------------------
 # Callback functions
-def _on_connect(client, userdata, flags, reason_code, properties):
+def _on_connect(_client, userdata, flags, reason_code, properties):
     # Note: Subscribing in on_connect() means that if we lose the 
     # connection and reconnect then subscriptions will be renewed.
     if reason_code.is_failure:
@@ -84,10 +114,10 @@ def _on_connect(client, userdata, flags, reason_code, properties):
         )
     else:
         Client.log(
-            "OK", 
+            "ok", 
             f"MQTT|Connected to `{mgl.broker_address}`")
-        sTopic = f"{mgl.topic_root}/{Client._UUID}"
-        Client._client.subscribe(sTopic)
+        topic = Client._topic +f"{mgl.topic_serv[Client._isServ]}"
+        Client._client.subscribe(topic)
 
 
 def _on_message(_client, userdata, msg):
@@ -95,9 +125,21 @@ def _on_message(_client, userdata, msg):
     # server.
     if Client._debug:
         data = msg.payload.decode("UTF8")
-        Client.log("DEBUG", f"Message `{msg.topic}`, `{data}`")
+        Client.log("INFO", f"MQTT|-> `{msg.topic} {data}`")
     if Client._on_msg_handler:
         Client._on_msg_handler(msg)
+
+
+def _on_publish(_client, userdata, mid, reason_code, properties):
+    # Note: `Reason_code` and `properties`` will only be present in
+    #  MQTTv5. It's always unset in MQTTv3
+    try:
+        userdata.remove(mid)
+    except KeyError:
+        Client.log(
+            "ERROR", 
+            "`mid` not present in `unacked_publish`"
+        )
 
 # ---------------------------------------------------------------------
 Client = QDS_MQTTClient()

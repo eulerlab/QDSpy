@@ -30,7 +30,7 @@ import QDSpy_stim_video as vid
 import QDSpy_stim_draw as drw
 import QDSpy_core_support as csp
 import QDSpy_core_shader as csh
-import Libraries.log_helper as _log
+from Libraries.log_helper import Log
 import Libraries.multiprocess_helper as mpr
 import Devices.digital_io as dio
 if glo.QDSpy_isUseSound:
@@ -56,11 +56,11 @@ if QDSpy_verbose:
 #
 # ---------------------------------------------------------------------
 class Presenter:
-    """ Presenter class
+    """Presenter class
     """
 
     def __init__(self, _Stage, _IO, _Conf, _View, _LCr=[]):
-        """ Initializing
+        """Initializing
         """
         self.Stage = _Stage
         self.IO = _IO
@@ -81,14 +81,14 @@ class Presenter:
 
         # Load sounds, if requested
         if self.useSound:
-            _log.Log.write("DEBUG", "Loading sounds ...")
+            Log.write("DEBUG", "Loading sounds ...")
             self.SoundPlayer = SoundPlayer()    
             p = self.pathQDSpy +glo.QDSpy_pathSounds
             self.SoundPlayer.add(Sounds.OK, p +glo.QDSpy_soundOk)
             self.SoundPlayer.add(Sounds.ERROR, p +glo.QDSpy_soundError)
             self.SoundPlayer.add(Sounds.STIM_START, p +glo.QDSpy_soundStimStart)
             self.SoundPlayer.add(Sounds.STIM_END, p +glo.QDSpy_soundStimEnd)
-            _log.Log.write("DEBUG", "... done")
+            Log.write("DEBUG", "... done")
         else:
             self.SoundPlayer = None    
 
@@ -98,7 +98,7 @@ class Presenter:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def reset(self):
-        """ Reset presenter
+        """Reset presenter
         """
         self.Stim = None
         self.isReady = False
@@ -162,6 +162,8 @@ class Presenter:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def onKeyboard(self, _key, _x, _y):
+        """Handle key strokes when running in command line mode
+        """
         if not (self.isRunFromGUI) and _key in glo.QDSpy_KEY_KillPresent:
             self.isUserAbort = True
             self.stop()
@@ -170,7 +172,7 @@ class Presenter:
     # Scene rendering function
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def renderSce(self, _iSc, _nSc):
-        """ Renders the indexed scene
+        """Renders the indexed scene
         """
         if self.Conf.isTrackTime:
             t0 = Clock.getTime_s()
@@ -180,7 +182,7 @@ class Presenter:
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         if sc[stm.SC_field_type] == stm.StimSceType.awaitTTL and self.IO:
-            _log.Log.write("INFO", "Waiting for trigger ...", _isProgress=True)
+            Log.write("INFO", "Waiting for trigger ...", _isProgress=True)
             self.ignoreFr = True
             while not self.isUserAbort:
                 # Continue if trigger pin is HIGH ...
@@ -250,7 +252,7 @@ class Presenter:
             #       lists or data structures) to the log directory
             # **************************************
             # **************************************
-            _log.Log.write("DATA", _userParams.__str__())
+            Log.write("DATA", _userParams.__str__())
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         elif sc[stm.SC_field_type] == stm.StimSceType.changeShParams:
@@ -540,7 +542,7 @@ class Presenter:
     # Frame refresh handler
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def onDraw(self):
-        """ Frame refresh handler
+        """Frame refresh handler
         """
         # Check if stimulus is defined
         if self.Stim is None:
@@ -549,7 +551,7 @@ class Presenter:
 
             if self.isIdle:
                 # Stimulus has already ended; nothing to do ...
-                _log.Log.write("DEBUG", "Presenter.onDraw(), isIdle=True")
+                Log.write("DEBUG", "Presenter.onDraw(), isIdle=True")
                 self.finish()
                 return
 
@@ -628,8 +630,8 @@ class Presenter:
                 self.Sync.pipeSrv.send(
                     [mpr.PipeValType.toCli_playEndInfo, isDone]
                 )
-            _log.Log.write("ok", "Done" if isDone else "Aborted by user")
-            _log.Log.write(
+            Log.write("ok", "Done" if isDone else "Aborted by user")
+            Log.write(
                 "DATA",
                 {
                     "stimFileName": self.Stim.fileName,
@@ -704,11 +706,10 @@ class Presenter:
                     self.dataDtFrLen = 0
                 if self.Conf.isWarnFrDrop and (dt > self.dtFr_thres_s):
                     self.nDroppedFr += 1
-                    _log.Log.write(
+                    Log.write(
                         "WARNING",
-                        "dt of frame #{0} was {1:.3f} ms".format(
-                            self.nFrTotal, dt * 1000.0
-                        ),
+                        f"dt of frame #{self.nFrTotal} was "
+                        f"{dt * 1000.0:.3f} ms"
                     )
 
         self.nFrTotal += 1
@@ -716,13 +717,13 @@ class Presenter:
 
     # --------------------------------------------------------------------
     def run(self):
-        """ Runs the OpenGL/pyglet event loop, thereby any loaded stimulus
+        """Runs the OpenGL/pyglet event loop, thereby any loaded stimulus
         """
         if not self.isReady:
             return
 
         if self.Stim is None:
-            _log.Log.write("ok", "Ready.")
+            Log.write("ok", "Ready.")
             return
 
         # Signal start of presentation
@@ -731,8 +732,8 @@ class Presenter:
 
         # Start stimulus ...
         self.isEnd = False
-        _log.Log.write("ok", "Running...")
-        _log.Log.write(
+        Log.write("ok", "Running...")
+        Log.write(
             "DATA",
             {
                 "stimFileName": self.Stim.fileName,
@@ -760,14 +761,14 @@ class Presenter:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def stop(self):
-        """ Signals event loop to stop
+        """Signals event loop to stop
         """
         self.isEnd = True
-        _log.Log.write("DEBUG", "Presenter.stop()")
+        Log.write("DEBUG", "Presenter.stop()")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def finish(self):
-        """ Finish presentation
+        """Finish presentation
         """
         if not self.isReady:
             return
@@ -776,10 +777,10 @@ class Presenter:
             # Clear screen
             self.View.clear()
             self.View.present()
-            _log.Log.write("ABORT", "User aborted program")
+            Log.write("ABORT", "User aborted program")
 
         else:
-            _log.Log.write("ok", "Program finished")
+            Log.write("ok", "Program finished")
 
         # Log timing information
         if self.Conf.isTrackTime:
@@ -790,17 +791,15 @@ class Presenter:
                 sFreq = f"{1 /self.avFrDur_s:.3f}"
             else:
                 sFreq = "n/a"
-            _log.Log.write(
+            Log.write(
                 "INFO",
-                "{0:.3f} ms/frame ({1} Hz), rendering: "
-                "{2:.3f} ms/frame ({3} frames in total)".format(
-                    self.avFrDur_s * 1000.0, sFreq,
-                    self.avRendDur_s * 1000.0, self.nFrTotal
-                ),
+                f"{self.avFrDur_s * 1000.0:.3f} ms/frame ({sFreq} Hz), "
+                f"rendering: {self.avRendDur_s * 1000.0:.3f} ms/frame "
+                f"({self.nFrTotal} frames in total)"
             )
-            _log.Log.write(
-                "INFO", "presenting: {0:.3f} ms/frame".format(
-                    self.avPresDur_s * 1000.0)
+            Log.write(
+                "INFO", 
+                f"presenting: {self.avPresDur_s * 1000.0:.3f} ms/frame"
             )
 
             if glo.QDSpy_frRateStatsBufferLen > 0:
@@ -812,22 +811,23 @@ class Presenter:
                 data = np.array(self.dataDtFr)
             av = data.mean() * 1000.0
             std = data.std() * 1000.0
-            _log.Log.write(
+            Log.write(
                 "INFO",
-                "{0:.3f} +/- {1:.3f} ms/frame (over the last {2}"
-                " frames) = {3:.3} Hz".format(av, std, len(data), 1000.0 / av),
+                f"{av:.3f} +/- {std:.3f} ms/frame (over the last "
+                f"{len(data)} frames) = {1000.0 / av:.3} Hz"
             )
             if self.nDroppedFr > 0:
                 pcDrFr = 100.0 * self.nDroppedFr / self.nFrTotal
-                _log.Log.write(
+                Log.write(
                     "WARNING",
-                    "{0} frames dropped (={1:.3f} %)".format(self.nDroppedFr, pcDrFr),
+                    f"{self.nDroppedFr} frames dropped "
+                    f"(={pcDrFr:.3f} %)"
                 )
 
-            _log.Log.write(
+            Log.write(
                 "DATA",
                 {
-                    "avgFreq_Hz": 1 / self.avFrDur_s,
+                    "avgFreq_Hz": 0 if self.avFrDur_s == 0 else 1 / self.avFrDur_s,
                     "nFrames": self.nFrTotal,
                     "nDroppedFrames": self.nDroppedFr,
                 }.__str__(),
@@ -836,46 +836,13 @@ class Presenter:
             if self.useSound:
                 self.SoundPlayer.play(Sounds.STIM_END)
 
-            '''
-            if QDSpy_verbose:
-                # Generate a plot ...
-                _log.Log.write("WARNING", "Code needs to be updated")
-                # ***************************
-                # ***************************
-                # TODO: Update code to return some statistics
-                """
-                pylab.title("Timing")
-                pylab.subplot(2,1,1)
-                pylab.plot(list(range(len(data))), data*1000, "-")
-                xArr    = [0, len(data)-1]
-                dtFr_ms = self.dtFr_meas_s*1000
-                yMin    = dtFr_ms +self.Conf.maxDtTr_ms
-                yMax    = dtFr_ms -self.Conf.maxDtTr_ms
-                pylab.plot(xArr, [yMin, yMin], "k--")
-                pylab.plot(xArr, [yMax, yMax], "k--")
-                pylab.ylabel("frame duration [ms]")
-                pylab.xlabel("frame #")
-                pylab.xlim([10,len(data)])
-                pylab.ylim([dtFr_ms-10,dtFr_ms+10])
-                pylab.subplot(2,1,2)
-                n, bins, pat = pylab.hist(data*1000, 100, histtype="bar", rwidth=0.9)
-                pylab.setp(pat, 'facecolor', 'b', 'alpha', 0.75)
-                #pylab.xlim([dtFr_ms-5,dtFr_ms+5])
-                #pylab.ylabel("# frames")
-                pylab.xlabel("frame duration [ms]")
-                pylab.tight_layout()
-                pylab.show()
-                """
-                # ***************************
-                # ***************************
-            '''    
-
+ 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @staticmethod
     def stim_to_pil_image(
         image, f_downsample: int = 1
     ) -> PIL.Image.Image:
-        """ Converts a stimulus frame into a PIL image
+        """Convert a stimulus frame into a PIL image
         """
         img_data = image.get_data()
 
@@ -895,7 +862,8 @@ class Presenter:
     def adapt_stimulus_recording_to_setup(
         stimulus_stack: np.array, setup_id: int
     ) -> np.array:
-        """ Tweak stimulus according to https://cin-10.medizin.uni-tuebingen.de/eulerwiki/index.php/Orientation
+        """Tweak stimulus according to 
+        https://cin-10.medizin.uni-tuebingen.de/eulerwiki/index.php/Orientation
         stimulus_stack.shape: frame, y, x, color
         """
         # For both setups the x and y plane is swapped
@@ -912,9 +880,9 @@ class Presenter:
         return stimulus_stack
 
     def save_stim_to_file(self) -> None:
-        """ Save (downsampled) stimulus to file 
+        """Save (downsampled) stimulus to file 
         """
-        _log.Log.write(
+        Log.write(
             "DEBUG", f"Prepare saving {len(self.recordedStim)} stimulus frames"
         )
         stim_folder = "RecordedStimuli"
@@ -935,12 +903,11 @@ class Presenter:
         with open(file_name, "wb") as file:
             pickle.dump(recorded_stimulus_stack, file, protocol=pickle.HIGHEST_PROTOCOL)
 
-        _log.Log.write("DEBUG", f"Successfully saved stimulus recording to {file_name}")
-
+        Log.write("DEBUG", f"Successfully saved stimulus recording to {file_name}")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def prepare(self, _Stim, _Sync=None, _vol=0):
-        """ Prepare a stimulus, to be started with the run() function
+        """Prepare a stimulus, to be started with the run() function
         """
         self.reset()
         self.Stim = _Stim
@@ -978,18 +945,18 @@ class Presenter:
                             self.ShProgList.append(shader)
                         else:
                             self.isReady = False
-                            _log.Log.write(
+                            Log.write(
                                 "ERROR",
-                                "Stimulus '{0}' uses shader '{1}' that "
-                                "could not be compiled".format(_Stim.nameStr, shType),
+                                f"Stimulus '{_Stim.nameStr}' uses shader "
+                                f"'{shType}' that could not be compiled"
                             )
                     else:
                         # A shaders that is not in the shader folder is required
                         self.isReady = False
-                        _log.Log.write(
+                        Log.write(
                             "ERROR",
-                            "Stimulus '{0}' uses shader '{1}' that "
-                            "cannot be found".format(_Stim.nameStr, shType),
+                            f"Stimulus '{_Stim.nameStr}' uses shader "
+                            f"'{shType}' that cannot be found"
                         )
 
             # Load movie files, if any
@@ -1005,14 +972,11 @@ class Presenter:
                     else:
                         # The movie file(s) could not be loaded
                         self.isReady = False
-                        _log.Log.write(
+                        Log.write(
                             "ERROR",
-                            "Attempting to load stimulus '{0}' (w/ '{1}') "
-                            "resulted in `{2}`".format(
-                                _Stim.nameStr,
-                                Mov[stm.SM_field_movieFName],
-                                stm.StimErrStr[res],
-                            ),
+                            f"Attempting to load stimulus '{_Stim.nameStr}' "
+                            f"(w/ '{Mov[stm.SM_field_movieFName]}') "
+                            f"resulted in `{stm.StimErrStr[res]}`"
                         )
 
             # Load videos, if any
@@ -1028,12 +992,11 @@ class Presenter:
                     else:
                         # The video file(s) could not be loaded
                         self.isReady = False
-                        _log.Log.write(
+                        Log.write(
                             "ERROR",
-                            "Stimulus '{0}' uses video '{1}' that "
-                            "cannot be found".format(
-                                _Stim.nameStr, Vid[stm.SV_field_videoFName]
-                            ),
+                            f"Stimulus '{_Stim.nameStr}' uses video "
+                            f"'{Vid[stm.SV_field_videoFName]}' that "
+                            "cannot be found"
                         )
 
             # Create batch object for rendering objects
@@ -1041,7 +1004,10 @@ class Presenter:
             self.Batch.set_shader_manager(self.ShManager)
 
             if self.isReady:
-                _log.Log.write("ok", "Stimulus '{0}' prepared".format(_Stim.nameStr))
+                Log.write(
+                    "ok", 
+                    f"Stimulus '{_Stim.nameStr}' prepared"
+                )
 
 
 # ---------------------------------------------------------------------

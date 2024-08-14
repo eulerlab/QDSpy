@@ -38,13 +38,15 @@ import QDSpy_core_presenter as cpr
 import QDSpy_core_view as cvw
 import QDSpy_core_support as csp
 import Libraries.multiprocess_helper as mpr
-import Libraries.log_helper as _log
+from Libraries.log_helper import Log
 import QDSpy_gamma as gma
 import QDSpy_probeCenter as pce
 import Devices.digital_io as dio
 from QDSpy_stage import Stage, ScrDevType
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
+if PLATFORM_WINDOWS:
+    from distutils.spawn import find_executable # type: ignore
 
 if glo.QDSpy_use_Lightcrafter:
     dev = Stage.getLCrDeviceType(0)
@@ -61,12 +63,11 @@ def logGraphModuleInfo():
         import pyglet
         import moviepy.version as mpv
 
-        _log.Log.write("INFO", "{0:11}: v{1}".format("pyglet", pyglet.version))
-        _log.Log.write("INFO", "{0:11}: v{1}".format("moviepy", mpv.__version__))
+        Log.write("INFO", "{0:11}: v{1}".format("pyglet", pyglet.version))
+        Log.write("INFO", "{0:11}: v{1}".format("moviepy", mpv.__version__))
 
     except ModuleNotFoundError:
-        _log.Log.write("WARNING", "pyglet and/or moviepy not present")
-
+        Log.write("WARNING", "pyglet and/or moviepy not present")
 
 # ---------------------------------------------------------------------
 def setPerformanceHigh(_Conf):
@@ -75,18 +76,16 @@ def setPerformanceHigh(_Conf):
     if _Conf.incPP:
         csp.setHighProcessPrior()
 
-
 def setPerformanceNormal(_Conf):
     if _Conf.incPP:
         csp.setNormalProcessPrior()
     if _Conf.disGC:
         gc.enable()
 
-
 # ---------------------------------------------------------------------
 def loadStimulus(_fNameStim, _Stim):
     if len(_fNameStim) == 0:
-        _log.Log.write("FATAL", "No stimulus file name provided")
+        Log.write("FATAL", "No stimulus file name provided")
         return False
     try:
         _Stim.load(_fNameStim)
@@ -94,9 +93,8 @@ def loadStimulus(_fNameStim, _Stim):
     except:  # noqa: E722
         if _Stim.getLastErrC() != stm.StimErrC.ok:
             _sErr = _Stim.getLastErrStr()
-            _log.Log.write("FATAL", "Aborted ({0})".format(_sErr))
+            Log.write("FATAL", "Aborted ({0})".format(_sErr))
             return False
-
 
 # ---------------------------------------------------------------------
 def connectLCrs(_Conf=None, _Stim=None):
@@ -115,8 +113,7 @@ def connectLCrs(_Conf=None, _Stim=None):
         LCrs.append(
             lcr.Lightcrafter(
                 _isCheckOnly=False,
-                _funcLog=_log.Log.write,
-                _logLevel=glo.QDSpy_LCr_LogLevel,
+                _funcLog=Log.write, _logLevel=glo.QDSpy_LCr_LogLevel,
             )
         )
         result = LCrs[iLCr].connect(iLCr)
@@ -125,7 +122,7 @@ def connectLCrs(_Conf=None, _Stim=None):
         else:
             nLCrOk += 1
     if nLCrOk == 0:
-        _log.Log.write("WARNING", "This script requires a lightcrafter")
+        Log.write("WARNING", "This script requires a lightcrafter")
     return LCrs
 
 
@@ -135,29 +132,26 @@ def disconnectLCrs(_LCrs):
             LCr.disconnect()
     return []
 
-
 # ---------------------------------------------------------------------
 def switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim):
     if _Conf.allowGammaLUT:
         if _Stim is not None:
             _modes = [stm.ColorMode.range0_1, stm.ColorMode.range0_255]
             if _Stim.colorMode in _modes:
-                _log.Log.write(" ", "Trying to set user-defined gamma LUT ...")
+                Log.write(" ", "Trying to set user-defined gamma LUT ...")
                 gma.setGammaLUT(_View.winPre._dc, _Stage.LUT_userDefined)
             else:
-                _log.Log.write(
+                Log.write(
                     " ",
-                    "Special color mode (#{0}), setting linear "
-                    " gamma LUT ...".format(_Stim.colorMode),
+                    f"Special color mode (#{_Stim.colorMode}), "
+                    "setting linear gamma LUT ..."
                 )
                 gma.setGammaLUT(_View.winPre._dc, _Stage.LUT_linDefault)
 
-
 def restoreGammaLUT(_Conf, _View):
     if _Conf.allowGammaLUT:
-        _log.Log.write(" ", "Restoring linear gamma LUT ...")
+        Log.write(" ", "Restoring linear gamma LUT ...")
         gma.restoreGammaLUT(_View.winPre._dc)
-
 
 # ---------------------------------------------------------------------
 # MAIN
@@ -166,41 +160,35 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     """ Run a stimulus file.
     """
     if _isParentGUI:
-        _log.Log.setGUISync(_Sync, noStdOut=cfg.getParsedArgv().gui)
+        Log.setGUISync(_Sync, noStdOut=cfg.getParsedArgv().gui)
     
     # Load configuration ...
     _Conf = cfg.Config()
     
     # Display startup message
-    _log.Log.write(
-        "***", glo.QDSpy_versionStr + " Presenter - " + glo.QDSpy_copyrightStr
+    Log.write(
+        "***", 
+        glo.QDSpy_versionStr + " Presenter - " + glo.QDSpy_copyrightStr
     )
-    _log.Log.write("ok", "Initializing ...")
-    _log.Log.write(
-        " ",
-        "{0:11}: high process priority during presentation".format(
-            "ENABLED" if _Conf.incPP else "disabled"
-        ),
-    )
-    _log.Log.write(
-        " ",
-        "{0:11}: automatic garbage collection".format(
-            "DISABLED" if _Conf.disGC else "enabled"
-        ),
-    )
+    Log.write("ok", "Initializing ...")
+    s = 'ENABLED' if _Conf.incPP else 'disabled'
+    Log.write(" ", f"{s:11}: high process priority during presentation")
+    s = 'DISABLED' if _Conf.disGC else 'enabled'
+    Log.write(" ", f"{s:11}: automatic garbage collection")
 
     # Log info about the relevant software packages
     v = sys.version_info
-    txt = "{0}.{1}.{2}".format(v[0], v[1], v[2])
-    _log.Log.write("INFO", "{0:11}: v{1}".format("Python", txt))
+    txt = f"{v[0]}.{v[2]}.{v[2]}"
+    Log.write("INFO", f"{'Python':11}: v{txt}")
     if PLATFORM_WINDOWS:
-        from distutils.spawn import find_executable  # type: ignore
-
         if find_executable("conda") is not None:
             txt = subprocess.Popen(
                 "conda -V", shell=True, stdout=subprocess.PIPE
             ).stdout.read()
-            _log.Log.write("INFO", "{0:11}: v{1}".format("Conda", txt.decode()[6:12]))
+            Log.write(
+                "INFO", 
+                f"{'Conda':11}: v{txt.decode()[6:12]}"
+            )
     logGraphModuleInfo()
 
     # Generate stage and stimulus instances, as well as a view instance
@@ -219,17 +207,17 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     if _Conf.useDIO:
         if _Conf.DIObrdType.lower() == "arduino":
             _IO = dio.devIO_Arduino(
-                _Conf.DIObrd, glo.QDSpy_Arduino_baud, _funcLog=_log.Log.write
+                _Conf.DIObrd, glo.QDSpy_Arduino_baud, _funcLog=Log.write
             )
-            _log.Log.write(
+            Log.write(
                 "WARNING",
-                "Ensure that Arduino BAUD rate is {0}".format(glo.QDSpy_Arduino_baud),
+                f"Ensure that Arduino BAUD rate is {glo.QDSpy_Arduino_baud}"
             )
         elif _Conf.DIObrdType.lower() == "raspberrypi":    
             # Note: Currently works only with the default pins 
             # (GPIO26 for trigger-in and GPIO27 for marker-out)
-            _IO = dio.devIO_RPi(_funcLog=_log.Log.write)
-            _log.Log.write(
+            _IO = dio.devIO_RPi(_funcLog=Log.write)
+            Log.write(
                 "INFO", 
                 "Raspberry Pi: GPIO26 for trigger-in and GPIO27 for marker-out"
             )
@@ -237,16 +225,16 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             try:
                 ULID = dio.dictULDevices[_Conf.DIObrdType.upper()]
                 _IO = dio.devIO_UL(
-                    ULID, _Conf.DIObrd, _Conf.DIOdev, _funcLog=_log.Log.write
+                    ULID, _Conf.DIObrd, _Conf.DIOdev, _funcLog=Log.write
                 )
             except KeyError:
                 _IO = None
 
         if not (_IO):
-            _log.Log.write("ERROR", "I/O hardware device name not recognized.")
+            Log.write("ERROR", "I/O hardware device name not recognized.")
 
         elif not _IO.isReady:
-            _log.Log.write(
+            Log.write(
                 "ERROR",
                 "I/O hardware could not be initialized. Set "
                 + "`bool_use_digitalio` in `QDSpy.ini` to False.",
@@ -294,7 +282,6 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     
     if not _isParentGUI:
         # Called from the command line - - - -- - - - - - - - - - - - - - -
-        #
         # Load stimulus
         if not loadStimulus(_fNameStim, _Stim):
             sys.exit(0)
@@ -310,7 +297,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
             try:
                 _Presenter.run()
             except KeyboardInterrupt:
-                _log.Log.write(" ", "Aborted by user.")
+                Log.write(" ", "Aborted by user.")
 
         finally:
             _Presenter.finish()
@@ -318,157 +305,159 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
 
     else:
         # Called from the GUI  - - - - - - - - - - -- - - - - - - - - - - -
-        #
         # Notify GUI of display parameters
-        _Sync.pipeSrv.send([mpr.PipeValType.toCli_displayInfo, pickle.dumps(_Stage)])
+        _Sync.pipeSrv.send(
+            [mpr.PipeValType.toCli_displayInfo, pickle.dumps(_Stage)]
+        )
 
         # Start loop to process GUI (=client) requests
-        #
         while _Sync.Request.value is not mpr.TERMINATING:
             try:
-                # Check if new data is in the pipe
-                data = [mpr.PipeValType.toSrv_None]
-                if _Sync.pipeSrv.poll():
-                    data = _Sync.pipeSrv.recv()
+                try:
+                    # Check if new data is in the pipe
+                    data = [mpr.PipeValType.toSrv_None]
+                    if _Sync.pipeSrv.poll():
+                        data = _Sync.pipeSrv.recv()
 
-                    if data[0] == mpr.PipeValType.toSrv_changedStage:
-                        # Stage parameter have changes, update immediately
-                        _Stage.scalX_umPerPix = data[1]["scalX_umPerPix"]
-                        _Stage.scalY_umPerPix = data[1]["scalY_umPerPix"]
-                        _Stage.centOffX_pix = data[1]["centOffX_pix"]
-                        _Stage.centOffY_pix = data[1]["centOffY_pix"]
-                        _Stage.rot_angle = data[1]["rot_angle"]
-                        _Stage.dxScr12 = data[1]["dxScr12"]
-                        _Stage.dyScr12 = data[1]["dyScr12"]
-                        _Stage.offXScr1_pix = data[1]["offXScr1_pix"]
-                        _Stage.offYScr1_pix = data[1]["offYScr1_pix"]
-                        _Stage.offXScr2_pix = data[1]["offXScr2_pix"]
-                        _Stage.offYScr2_pix = data[1]["offYScr2_pix"]
-                        data = [mpr.PipeValType.toSrv_None]
-
-                    if data[0] == mpr.PipeValType.toSrv_changedLEDs:
-                        # LED currents and/or enabled state have changes, update
-                        # immediately
-                        _Stage.LEDs = data[1][0]
-                        _Stage.isLEDSeqEnabled = data[1][1]
-                        _Stage.sendLEDChangesToLCr(_Conf)
-                        data = [mpr.PipeValType.toSrv_None]
-
-                    if data[0] == mpr.PipeValType.toSrv_checkIODev:
-                        # Return readiness of IO device
-                        _Sync.pipeSrv.send(
-                            [
-                                mpr.PipeValType.toCli_IODevInfo,
-                                [_IO and _IO.isReady, dio.devConst.NONE, 0],
-                            ]
-                        )
-                        data = [mpr.PipeValType.toSrv_None]
-
-                    if data[0] == mpr.PipeValType.toSrv_setIODevPins:
-                        # Change IO device pins
-                        csp.setIODevicePin(_IO, *data[1][0:4])
-                        _Sync.pipeSrv.send(
-                            [
-                                mpr.PipeValType.toCli_IODevInfo,
-                                [_IO and _IO.isReady, data],
-                            ]
-                        )
-                        data = [mpr.PipeValType.toSrv_None]
-
-                # Parse client's request
-                if _Sync.Request.value == mpr.PRESENTING:
-                    if data[0] == mpr.PipeValType.toSrv_fileName:
-                        # Retrieve stimulus file name from pipe and load stimulus
-                        _fNameStim = os.path.normpath(data[1])
-                        _vol = data[3]
-                        data = [mpr.PipeValType.toSrv_None]
-                        loadStimulus(_fNameStim, _Stim)
-                        _Sync.setStateSafe(mpr.PRESENTING)
-
-                        # Run stimulus ...
-                        try:
-                            switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim)
-                            _Presenter.LCr = connectLCrs(_Conf, _Stim)
-                            _Presenter.prepare(_Stim, _Sync, _vol)
-                            setPerformanceHigh(_Conf)
-                            _Presenter.run()
-
-                        finally:
-                            _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
-                            _Presenter.finish()
-                            setPerformanceNormal(_Conf)
-
-                    else:
-                        _log.Log.write("DEBUG", "mpr.PRESENTING, unexpected client data")
-
-                    _Sync.setStateSafe(mpr.IDLE)
-
-                elif _Sync.Request.value == mpr.COMPILING:
-                    if data[0] == mpr.PipeValType.toSrv_fileName:
-                        # Retrieve stimulus file name from pipe and compile stimulus
-                        _fNameStim = os.path.abspath(data[1]) + ".py"
-                        data = [mpr.PipeValType.toSrv_None]
-                        _Sync.setStateSafe(mpr.COMPILING)
-                        try:
-                            subprocess.check_call(["python", _fNameStim])
-                            _log.Log.write("ok", "... done")
-
-                        except subprocess.CalledProcessError:
-                            _log.Log.write("ERROR", "... failed.")
-
-                    else:
-                        _log.Log.write("DEBUG", "mpr.COMPILING, unexpected client data")
-
-                    _Sync.setStateSafe(mpr.IDLE)
-
-                elif _Sync.Request.value == mpr.PROBING:
-                    if data[0] == mpr.PipeValType.toSrv_probeParams:
-                        # Change into interactive probing mode ...
-                        _Sync.setStateSafe(mpr.PROBING)
-                        try:
-                            switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim)
-                            _Presenter.LCr = connectLCrs(_Conf, _Stim)
-                            setPerformanceHigh(_Conf)
-                            if data[1] == glo.QDSpy_probing_center:
-                                # Currently only interactive center-probing is implemented
-                                pce.probe_main(data[2], _Sync, _View, _Stage)
-
-                        finally:
+                        if data[0] == mpr.PipeValType.toSrv_changedStage:
+                            # Stage parameter have changes, update immediately
+                            _Stage.scalX_umPerPix = data[1]["scalX_umPerPix"]
+                            _Stage.scalY_umPerPix = data[1]["scalY_umPerPix"]
+                            _Stage.centOffX_pix = data[1]["centOffX_pix"]
+                            _Stage.centOffY_pix = data[1]["centOffY_pix"]
+                            _Stage.rot_angle = data[1]["rot_angle"]
+                            _Stage.dxScr12 = data[1]["dxScr12"]
+                            _Stage.dyScr12 = data[1]["dyScr12"]
+                            _Stage.offXScr1_pix = data[1]["offXScr1_pix"]
+                            _Stage.offYScr1_pix = data[1]["offYScr1_pix"]
+                            _Stage.offXScr2_pix = data[1]["offXScr2_pix"]
+                            _Stage.offYScr2_pix = data[1]["offYScr2_pix"]
                             data = [mpr.PipeValType.toSrv_None]
-                            _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
-                            _Presenter.finish()
-                            setPerformanceNormal(_Conf)
 
-                    else:
-                        _log.Log.write(
-                            "DEBUG", "mpr.PROBE_CENTER, unexpected client data"
+                        if data[0] == mpr.PipeValType.toSrv_changedLEDs:
+                            # LED currents and/or enabled state have changes, 
+                            # update immediately
+                            _Stage.LEDs = data[1][0]
+                            _Stage.isLEDSeqEnabled = data[1][1]
+                            _Stage.sendLEDChangesToLCr(_Conf)
+                            data = [mpr.PipeValType.toSrv_None]
+
+                        if data[0] == mpr.PipeValType.toSrv_checkIODev:
+                            # Return readiness of IO device
+                            _Sync.pipeSrv.send(
+                                [mpr.PipeValType.toCli_IODevInfo,
+                                [_IO and _IO.isReady, dio.devConst.NONE, 0],]
+                            )
+                            data = [mpr.PipeValType.toSrv_None]
+
+                        if data[0] == mpr.PipeValType.toSrv_setIODevPins:
+                            # Change IO device pins
+                            csp.setIODevicePin(_IO, *data[1][0:4])
+                            _Sync.pipeSrv.send(
+                                [mpr.PipeValType.toCli_IODevInfo,
+                                [_IO and _IO.isReady, data],]
+                            )
+                            data = [mpr.PipeValType.toSrv_None]
+
+                    # Parse client's request
+                    if _Sync.Request.value == mpr.PRESENTING:
+                        if data[0] == mpr.PipeValType.toSrv_fileName:
+                            # Retrieve stimulus file name from pipe and load 
+                            # stimulus
+                            _fNameStim = os.path.normpath(data[1])
+                            _vol = data[3]
+                            data = [mpr.PipeValType.toSrv_None]
+                            loadStimulus(_fNameStim, _Stim)
+                            _Sync.setStateSafe(mpr.PRESENTING)
+
+                            # Run stimulus ...
+                            try:
+                                switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim)
+                                _Presenter.LCr = connectLCrs(_Conf, _Stim)
+                                _Presenter.prepare(_Stim, _Sync, _vol)
+                                setPerformanceHigh(_Conf)
+                                _Presenter.run()
+
+                            finally:
+                                _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
+                                _Presenter.finish()
+                                setPerformanceNormal(_Conf)
+
+                        else:
+                            # Should not happen ...
+                            Log.write(
+                                "DEBUG", 
+                                "mpr.PRESENTING, unexpected client data"
+                            )
+                        _Sync.setStateSafe(mpr.IDLE)
+
+                    elif _Sync.Request.value == mpr.COMPILING:
+                        if data[0] == mpr.PipeValType.toSrv_fileName:
+                            # Retrieve stimulus file name from pipe and compile 
+                            # stimulus
+                            _fNameStim = os.path.abspath(data[1]) + ".py"
+                            data = [mpr.PipeValType.toSrv_None]
+                            _Sync.setStateSafe(mpr.COMPILING)
+                            try:
+                                subprocess.check_call(["python", _fNameStim])
+                                Log.write("ok", "... done")
+
+                            except subprocess.CalledProcessError:
+                                Log.write("ERROR", "... failed.")
+
+                        else:
+                            Log.write(
+                                "DEBUG", 
+                                "mpr.COMPILING, unexpected client data"
+                            )
+                        _Sync.setStateSafe(mpr.IDLE)
+
+                    elif _Sync.Request.value == mpr.PROBING:
+                        if data[0] == mpr.PipeValType.toSrv_probeParams:
+                            # Change into interactive probing mode ...
+                            _Sync.setStateSafe(mpr.PROBING)
+                            try:
+                                switchGammaLUTByColorMode(_Conf, _View, _Stage, _Stim)
+                                _Presenter.LCr = connectLCrs(_Conf, _Stim)
+                                setPerformanceHigh(_Conf)
+                                if data[1] == glo.QDSpy_probing_center:
+                                    # Currently only interactive center-probing is 
+                                    # implemented
+                                    pce.probe_main(data[2], _Sync, _View, _Stage)
+
+                            finally:
+                                data = [mpr.PipeValType.toSrv_None]
+                                _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
+                                _Presenter.finish()
+                                setPerformanceNormal(_Conf)
+
+                        else:
+                            Log.write(
+                                "DEBUG", 
+                                "mpr.PROBE_CENTER, unexpected client data"
+                            )
+                        _Sync.setStateSafe(mpr.IDLE)
+
+                    elif _Sync.Request.value not in [mpr.CANCELING, mpr.UNDEFINED, mpr.IDLE]:
+                        # Unknown request
+                        Log.write(
+                            "DEBUG", 
+                            f"Request {_Sync.Request.value} unknown"
                         )
 
-                    _Sync.setStateSafe(mpr.IDLE)
+                    if data[0] != mpr.PipeValType.toSrv_None:
+                        Log.write("DEBUG", "unexpected client data left after loop")
+                
+                finally:
+                    # Clear request
+                    _Sync.setRequestSafe(mpr.UNDEFINED)
 
-                elif _Sync.Request.value not in [
-                    mpr.CANCELING,
-                    mpr.UNDEFINED,
-                    mpr.IDLE,
-                ]:
-                    # Unknown request
-                    _log.Log.write(
-                        "DEBUG", "Request {0} unknown".format(_Sync.Request.value)
-                    )
+                # Sleep for a bit
+                time.sleep(glo.QDSpy_loop_sleep_s)  
 
-                if data[0] != mpr.PipeValType.toSrv_None:
-                    _log.Log.write("DEBUG", "unexpected client data left after loop")
-
-            finally:
-                # Clear request
-                _Sync.setRequestSafe(mpr.UNDEFINED)
-
-            # Dispatch events for the OpenGL window and sleep for a bit
-            #
-            """
-            _View.dispatch_events()
-            """
-            time.sleep(0.02)  
+            except KeyboardInterrupt:
+                # Ignore here, wait for `mpr.TERMINATING` request
+                pass
 
     # Restore gamma LUT, if necessary
     restoreGammaLUT(_Conf, _View)
@@ -477,7 +466,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     _View.killWindows()
     _Presenter.LCr = disconnectLCrs(_Presenter.LCr)
 
-    _log.Log.write("ok", "... done")
+    Log.write("ok", "... done")
 
 
 # ---------------------------------------------------------------------
