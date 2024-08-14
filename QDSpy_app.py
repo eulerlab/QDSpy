@@ -252,6 +252,7 @@ class QDSpyApp(object):
         """Send stimulus file name via pipe and signal worker thread to
         start presenting the stimulus; wait for the stimulus to end ...
         """
+        #print("runStim", self.currStimFName, self.currStimPath)
         self.Sync.pipeCli.send(
             [mpr.PipeValType.toSrv_fileName, self.currStimFName, self.currStimPath,
              self.Stim_soundVol]
@@ -380,9 +381,7 @@ class QDSpyApp(object):
 
             else:
                 # ***************************
-                # ***************************
                 # TODO: Other types of data need to be processed
-                # ***************************
                 # ***************************
                 pass
 
@@ -414,6 +413,8 @@ class QDSpyApp(object):
     def openLogFile(_fPath) -> TextIO:
         """Open a log file
         """
+        _fPath = fsu.repairPath(fsu.getQDSpyPath() +_fPath)
+        #print("openLogFile", _fPath)
         os.makedirs(_fPath, exist_ok=True)
         fName = time.strftime("%Y%m%d_%H%M%S")
         j = 0

@@ -52,9 +52,8 @@ def getFNameNoExt(_fName):
 def getStimCompileState(_fName: str) -> bool:
     """ Check if pickle-file is current
     """
-    _fName = os.path.splitext(_fName)[0]
-    fPath = repairPath(_fName)
-    #print("getStimCompileState", fPath)
+    fPath = os.path.splitext(repairPath(_fName))[0]
+    #print("getStimCompileState2", _fName, fPath)
     try:
         tStamp = os.path.getmtime(fPath + glo.QDSpy_stimFileExt)
         tPy = datetime.fromtimestamp(tStamp)
