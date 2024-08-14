@@ -12,9 +12,6 @@ All rights reserved.
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-import os
-import platform
-
 # fmt: off
 # ---------------------------------------------------------------------
 QDSpy_versionStr            = "QDSpy v0.92 beta"
@@ -160,26 +157,5 @@ QDSpy_camWinGeometry        = "20,30,300,200"
 QDSpy_probing_center        = 1
 
 # fmt: on
-# ---------------------------------------------------------------------
-def getQDSpyPath() -> str:
-    """Get QDSpy path from `PYTHONPATH`
-    """
-    _pathQDSpy = ""
-    pList = os.environ['PYTHONPATH'].split(";")
-    for p in pList:
-        pParts = os.path.split(p)
-        if pParts[-1].lower() == "qdspy":
-            _pathQDSpy = p
-    return _pathQDSpy        
-
-
-def repairPath(_path: str) -> str:
-    """Repair path if necessary
-    """
-    if platform.system() == "Linux":
-        _path = _path.replace("\\", "/").replace(".", "")
-        _path = _path[1:] if _path[0] == ":" else _path
-    return _path
-
 
 # ---------------------------------------------------------------------
