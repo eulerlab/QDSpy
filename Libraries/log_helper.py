@@ -109,9 +109,10 @@ class Log:
         if not self.noMsgToStdOut:
             # ... to stdout ...
             if len(_headerStr) == 0:
-                txt = f"\r{tStr}{_msgStr:70}{'' if _isProgress else '\n'}"
+                txt = f"\r{tStr}{_msgStr:70}"
             else:
-                txt = f"\r{tStr}{_headerStr:>8} {_msgStr}{'' if _isProgress else '\n'}"
+                txt = f"\r{tStr}{_headerStr:>8} {_msgStr}"
+            txt += "" if _isProgress else "\n"    
             sys.stdout.write(msgAttr +txt +Style.RESET_ALL)
             sys.stdout.flush()
 
