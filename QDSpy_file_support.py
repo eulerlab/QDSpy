@@ -54,6 +54,7 @@ def getStimCompileState(_fName: str) -> bool:
     """
     _fName = os.path.splitext(_fName)[0]
     fPath = repairPath(_fName)
+    print(fPath)
     try:
         tStamp = os.path.getmtime(fPath + glo.QDSpy_stimFileExt)
         tPy = datetime.fromtimestamp(tStamp)
