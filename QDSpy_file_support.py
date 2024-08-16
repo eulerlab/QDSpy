@@ -24,7 +24,6 @@ PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:
     WindowsError = FileNotFoundError
 
-
 # ---------------------------------------------------------------------
 def getStimFileLists(_path):
     """ Make a list of the stimulus files (including path) present in the

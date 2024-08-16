@@ -25,9 +25,8 @@ import serial
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:
-    import gpiozero as gpio
+    import gpiozero as gpio # type: ignore
     WindowsError = FileNotFoundError
-
 
 # ---------------------------------------------------------------------
 # General definitions
@@ -196,7 +195,7 @@ class devIO_Arduino(devIO, object):
                 self._setIsReady()
                 return
 
-        except serial.SerialException as e:
+        except serial.SerialException:
             pass
 
         self.log("ERROR", "Could not open {0}".format(self.COM))
@@ -285,13 +284,13 @@ class devIO_UL(devIO, object):
                 self.DIGITAL_OUT = ULConst.DIGITALIN
 
                 """
-        # Get revision number of Universal Library
-        #
-        revNum    = ctypes.c_float()
-        vxDRevNum = ctypes.c_float()
-        UL.cbGetRevision(byref(revNum), byref(vxDRevNum))
-        return revNum.value, vxDRevNum.value
-        """
+                # Get revision number of Universal Library
+                #
+                revNum    = ctypes.c_float()
+                vxDRevNum = ctypes.c_float()
+                UL.cbGetRevision(byref(revNum), byref(vxDRevNum))
+                return revNum.value, vxDRevNum.value
+                """
                 # self.UL.cbFlashLED(self.brdNum)
                 self._setIsReady()
 
