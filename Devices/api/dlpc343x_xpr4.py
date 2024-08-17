@@ -1591,19 +1591,19 @@ def ReadShortStatus():
     Summary.Command = "Read Short Status"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0
     try:
         writebytes=list(struct.pack('B',208))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1
         readbytes = _readcommand(1, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
         packerinit(readdata)
-        ShortStatus.SystemInitialized = getbits(1, 0);
-        ShortStatus.CommunicationError = getbits(1, 1);
-        ShortStatus.SystemError = getbits(1, 3);
-        ShortStatus.FlashEraseComplete = getbits(1, 4);
-        ShortStatus.FlashError = getbits(1, 5);
-        ShortStatus.Application = getbits(1, 7);
+        ShortStatus.SystemInitialized = getbits(1, 0)
+        ShortStatus.CommunicationError = getbits(1, 1)
+        ShortStatus.SystemError = getbits(1, 3)
+        ShortStatus.FlashEraseComplete = getbits(1, 4)
+        ShortStatus.FlashError = getbits(1, 5)
+        ShortStatus.Application = getbits(1, 7)
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False

@@ -22,13 +22,13 @@ I2C_BUS         = 11
 # ---------------------------------------------------------------------
 class I2C(object):
 
-    def __init__(self):
+    def __init__(self, debug: bool = True):
         # Initialize
         self._i2c = None
         self._isReady = False
         self._addr = 0
         self._bus = 0
-        self._debug = True
+        self._debug = debug
 
 
     def connect(self, _addr: int = I2C_ADDRESS, _bus: int = I2C_BUS) -> None:

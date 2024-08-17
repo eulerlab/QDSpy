@@ -55,7 +55,7 @@ class LinuxI2C(object):
         self._fd = os.open(f"/dev/i2c-{self._bus:d}", os.O_RDWR)
         if self._fd < 0:
             raise IOError("Could not open I2C interface")
-        self._set_address(self._addr)
+        self._set_addr(self._addr)
 
     def close(self) -> None:
         if self._fd > 0:
@@ -66,23 +66,29 @@ class LinuxI2C(object):
         if self._fd > 0:
             if fcntl.ioctl(self._fd, self.I2C_TENBIT, 0) < 0:
                 raise IOError("Cannot set 7 bit I2C addressing")
-            if fcntl.ioctl(self._fd, self.I2C_SLAVE, _addr >> 1) < 0:
-                raise IOError("Cannot set slave address")
+            if fcntl.ioctl(self._fd, self.I2C_ADDR, _addr >> 1) < 0:
+                raise IOError("Cannot set server address")
         else:
             raise IOError("I2C interface is not open")
 
     def write(self, data: list[int]) -> None: 
         if self._fd > 0:
             wrbuff = bytearray(data)
-            if os.write(self._fd, wrbuff) < 0:
-                raise IOError("Cannot write to I2C interface")
+            try:
+                if os.write(self._fd, wrbuff) < 0:
+                    raise IOError("Cannot write to I2C interface")
+            except OSError as err:
+                raise IOError(f"OSError ({err}")
         else:
             raise IOError("I2C interface is not open")
 
     def read(self, n_bytes: int) -> None:
         if self._fd > 0:
-            rdbuff = os.read(self._fd, n_bytes)
-            return list(bytearray(rdbuff))
+            try:
+                rdbuff = os.read(self._fd, n_bytes)
+                return list(bytearray(rdbuff))
+            except OSError as err:
+                raise IOError(f"OSError occurred ({err})")
         else:
             raise IOError("I2C interface is not open")
 
