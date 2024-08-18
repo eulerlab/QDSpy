@@ -78,7 +78,7 @@ class LinuxI2C(object):
                 if os.write(self._fd, wrbuff) < 0:
                     raise IOError("Cannot write to I2C interface")
             except OSError as err:
-                raise IOError(f"OSError ({err}")
+                raise IOError(f"OSError ({err})")
         else:
             raise IOError("I2C interface is not open")
 

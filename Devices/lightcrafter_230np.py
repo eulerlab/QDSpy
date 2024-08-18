@@ -15,6 +15,7 @@ import time
 #import platform
 #import sys
 #import os.path
+import numpy as np
 from enum import Enum
 from typing import List, Any
 from types import FunctionType
@@ -40,7 +41,15 @@ LC_height        = 1080
 
 LC_IDStr         = "LCr"
 
-# fmt: on
+LC_logStrMaskL   = "{0:<32}: "
+LC_logStrMaskR   = "{0:>32}: "
+
+# Maximal LED driver currents (from manual)
+LC_MAX_R         = 810
+LC_MAX_G         = 810
+LC_MAX_B         = 810
+
+# fmt: off
 # ---------------------------------------------------------------------
 # Error codes and messages
 #
@@ -49,11 +58,11 @@ class ERROR:
     OPEN_FAILED        = -1
     TIME_OUT           = -2
     NO_RESPONSE        = -3
-    NAK_ERROR          = -4
     COULD_NOT_CONNECT  = -5
     INVALID_PARAMS     = -6
     DEVICE_NOT_FOUND   = -7
     NOT_IMPLEMENTED    = -9
+    IS_NOT_CONNECTED   = -10     
 
 
 ErrorStr = dict([
@@ -61,13 +70,32 @@ ErrorStr = dict([
     (ERROR.OPEN_FAILED,       "Failed to open device"),
     (ERROR.TIME_OUT,          "Time-out"),
     (ERROR.NO_RESPONSE,       "No response from device"),
-    (ERROR.NAK_ERROR,         "Command not acknowledged"),
     (ERROR.COULD_NOT_CONNECT, "Could not connect to device"),
     (ERROR.INVALID_PARAMS,    "One or more parameters are invalid"),
     (ERROR.DEVICE_NOT_FOUND,  "Device with this index not found"),
-    (ERROR.NOT_IMPLEMENTED,   "Not yet implemented")]
+    (ERROR.NOT_IMPLEMENTED,   "Not yet implemented"),
+    (ERROR.IS_NOT_CONNECTED,  "Is not connected")]
 )
 
+# Source selection
+class SourceSel(Enum):
+    Parallel    = 0
+    FPDLink     = 3
+
+SourceSelStr = dict([
+    (SourceSel.Parallel,    "parallel GPIO interface"),
+    (SourceSel.FPDLink,     "FPD link")]
+)
+
+# Source bit width
+class SourcePar(Enum):
+    Bit18 = 6
+
+SourceParStr = dict([
+    (SourcePar.Bit18, "18 bit")]
+)
+
+# fmt: on
 # ---------------------------------------------------------------------
 class Set(Enum):
     Disabled = 0
@@ -127,7 +155,7 @@ class Lightcrafter:
         ):
         #self.LC = None
         #self.nSeq = 0
-        self.devNum = 0
+        #self.devNum = 0
         self.isCheckOnly = _isCheckOnly
         self.lastMsgStr = ""
         self.funcLog = _funcLog
@@ -149,20 +177,15 @@ class Lightcrafter:
     # Connect and disconnect the device
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def connect(
-            self, _devNum: int = -1, _addr: int = i2c.I2C_ADDRESS,
-            _bus: int = i2c.I2C_BUS
-        ):
+            self, _addr: int = i2c.I2C_ADDRESS, _bus: int = i2c.I2C_BUS
+        ) -> list:
         """
         Try connecting to a lightcrafter and return immediately with an
-        error code if it fails. A device number (`_devNum`) can be given
-        if multiple lightcrafters are connected.
-
-        .. note:: Device number is ignored for LCr type `lcr230np`
+        error code if it fails. 
 
         =============== ==================================================
         Parameters:
         =============== ==================================================
-        _devNum         | device number (0,1,...)
         _addr           | I2C address
         _bus            | I2C bus
         =============== ==================================================
@@ -190,6 +213,7 @@ class Lightcrafter:
                     return [errC]
                 else:
                     # Print short status report
+                    # TODO: Make nice
                     print("----------------------")
                     print("Short Status Register:")
                     dlp_evm.printReg(shortStatus)
@@ -197,23 +221,22 @@ class Lightcrafter:
 
         return [ERROR.OK]
 
+    '''
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def waitToConnect(
-            self, _devNum: int = -1, _timeout: int = 10.0,
+            self, _timeout: int = 10.0,
             _addr: int = i2c.I2C_ADDRESS, _bus: int = i2c.I2C_BUS
         ):
         """
         Try connecting to a lightcrafter until success or the timeout.
-        Returns an error code if it fails. A device number (`_devNum`) can
-        be given if multiple lightcrafters are connected.
-
-        .. note:: Device number is ignored for LCr type `lcr230np`
+        Returns an error code if it fails. 
 
         =============== ==================================================
         Parameters:
         =============== ==================================================
-        _devNum         | device number (0,1,...)
         _timeout        | timeout in seconds
+        _addr           | I2C address
+        _bus            | I2C bus
         =============== ==================================================
         """
         if self.isCheckOnly:
@@ -228,9 +251,9 @@ class Lightcrafter:
             res = self.connect(_devNum=0, _addr=_addr, _bus=_bus)
         self.logLevel = lgl
         return res
-
+    '''
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def disconnect(self):
+    def disconnect(self) -> list:
         """
         Disconnects the lightcrafter.
         """
@@ -243,47 +266,281 @@ class Lightcrafter:
         return [ERROR.OK]
 
     # -------------------------------------------------------------------
-    def init_parallel_mode(self):
+    # Input source and mode selection
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def setInputSource(
+            self, _source, _bitDepth = SourcePar.Bit18,
+            _width: int = LC_width, _height: int = LC_height
+        ) -> list:
         """
-        Initializes the Raspberry Pi's GPIO lines to communicate with the 
-        DLPDLCR230NPEVM, and configures the DLPDLCR230NPEVM to project 
-        RGB666 parallel video input received from the Raspberry Pi.
-        It is recommended to execute this script upon booting the Raspberry 
-        Pi.        
-        """
-        if self._isConnected:
-            self.log(
-                "INFO", 
-                "Setting DLPC3436 Input Source to RPi...", 2
-            )
-            dlp.WriteDisplayImageCurtain(1, dlp.Color.Black)
-            dlp.WriteSourceSelect(
-                dlp.Source.ExternalParallelPort, Set.Disabled
-            )
-            dlp.WriteInputImageSize(1920, 1080)
+        Defines the input source of the device. Use enum classes `SourceSel`
+        and `SourcePar` for `_source` and `_bitDepth`, respectively.
 
+        .. note:: Options are currently limited for LCr type `lcr230np`
+
+        =============== ==================================================
+        Parameters:
+        =============== ==================================================
+        _source         | 0=parallel interface,
+                        | 3=FPD-link (currently not used)
+        _bitDepth       | Parallel interface bit depth
+                        | 6=18 bits
+        =============== ==================================================
+        """
+        errC = ERROR.OK
+        name = LC_logStrMaskL.format(self.setInputSource.__name__)
+        excp = None
+
+        if self.isCheckOnly:
+            return [errC]
+        if (_source not in SourceSel) or (_bitDepth not in SourcePar):
+            errC = ERROR.INVALID_PARAMS
+        if not self._isConnected:
+            errC = ERROR.IS_NOT_CONNECTED
+        if not _source == SourceSel.Parallel:
+            errC = ERROR.NOT_IMPLEMENTED    
+        
+        if errC == ERROR.OK:
+            # Initializes the Raspberry Pi's GPIO lines to communicate 
+            # with the DLPDLCR230NPEVM, and configures it to project 
+            # RGB666 parallel video input received from the RPi.
+            try:
+                # Setting to parallel input from RPi ...
+                dlp.WriteDisplayImageCurtain(1, dlp.Color.Black)
+                dlp.WriteSourceSelect(
+                    dlp.Source.ExternalParallelPort, Set.Disabled
+                )
+                dlp.WriteInputImageSize(LC_width, LC_height)
+
+                # Configuring DLPC3436 source settings for RPi ...
+                dlp.WriteActuatorGlobalDacOutputEnable(Set.Enabled)
+                dlp.WriteExternalVideoSourceFormatSelect(
+                    dlp.ExternalVideoFormat.Rgb666
+                )
+                dlp.WriteVideoChromaChannelSwapSelect(
+                    dlp.ChromaChannelSwap.Cbcr
+                )
+                dlp.WriteParallelVideoControl(
+                    dlp.ClockSample.FallingEdge, 
+                    dlp.Polarity.ActiveHigh, 
+                    dlp.Polarity.ActiveLow, 
+                    dlp.Polarity.ActiveLow
+                )
+                dlp.WriteColorCoordinateAdjustmentControl(0)
+
+                # TODO: Make nice
+                summary, bitRate, pixelMapMode = dlp.ReadFpdLinkConfiguration()
+                print("summary, bitRate, pixelMapMode", summary, bitRate, pixelMapMode)
+                
+                dlp.WriteDelay(50)
+                time.sleep(1)
+                dlp.WriteDisplayImageCurtain(0, dlp.Color.Black)
+
+            except IOError as excp:    
+                errC = ERROR.NO_RESPONSE
+
+        if errC == ERROR.OK:
             self.log(
-                "INFO", 
-                "Configuring DLPC3436 Source Settings for RPi...", 2
+                " ",
+                f"{name} {LC_deviceName} set to {SourceSel[_source]} "
+                f"({SourceParStr[_bitDepth]}, {_width}x{_height})"
             )
-            dlp.WriteActuatorGlobalDacOutputEnable(Set.Enabled)
-            dlp.WriteExternalVideoSourceFormatSelect(
-                dlp.ExternalVideoFormat.Rgb666
+            return [errC]
+        else:
+            self.log(
+                "ERROR", 
+                f"{name} Failed with error `{ErrorStr[errC]}` "
+                f"({'n/a' if excp is None else excp})", 2
             )
-            dlp.WriteVideoChromaChannelSwapSelect(
-                dlp.ChromaChannelSwap.Cbcr
+            raise LCException(errC)
+
+    # -------------------------------------------------------------------
+    # LED-related
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def getLEDCurrents(self) -> list:
+        """
+        Get LED currents and returns these as list [code, [r,g,b]] with:
+
+        =============== ==================================================
+        Result:
+        =============== ==================================================
+        code            | 0=ok or error code
+        [r,g,b]         | LED currents as fraction of max. current (0..1)
+        =============== ==================================================
+        """
+        errC = ERROR.OK
+        name = LC_logStrMaskL.format(self.getLEDCurrents.__name__)
+        excp = None
+        r = g = b = -1
+
+        if self.isCheckOnly:
+            return [errC]
+        if not self._isConnected:
+            errC = ERROR.IS_NOT_CONNECTED
+
+        if errC == ERROR.OK:
+            try:
+                summary, r,g,b = dlp.ReadRgbLedCurrent()
+                rgb = (r /LC_MAX_R, g /LC_MAX_G, b /LC_MAX_B)
+                print(summary, r,g,b, rgb)
+
+            except IOError as excp:    
+                errC = ERROR.NO_RESPONSE
+
+        if errC == ERROR.OK:
+            self.log(
+                " ", 
+                f"{name} LED currents, RGB = {r},{g},{b}"
+                f" ({rgb[0]:.2f},{rgb[1]:.2f},{rgb[2]:.2f} " 
+                " % max. current)", 2
             )
-            dlp.WriteParallelVideoControl(
-                dlp.ClockSample.FallingEdge, 
-                dlp.Polarity.ActiveHigh, dlp.Polarity.ActiveLow, 
-                dlp.Polarity.ActiveLow
+            return [errC, rgb]
+        else:
+            self.log(
+                "ERROR", 
+                f"{name} Failed with error `{ErrorStr[errC]}` "
+                f"({'n/a' if excp is None else excp})", 2
             )
-            dlp.WriteColorCoordinateAdjustmentControl(0)
-            summary, bitRate, pixelMapMode = dlp.ReadFpdLinkConfiguration()
-            print("summary, bitRate, pixelMapMode", summary, bitRate, pixelMapMode)
-            dlp.WriteDelay(50)
-            time.sleep(1)
-            dlp.WriteDisplayImageCurtain(0, dlp.Color.Black)
+            raise LCException(errC)
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def setLEDCurrents(self, _rgb: list[float]) -> list:
+        """
+        Set LED currents. Values inreasing the maximal LED current (as 
+        defined above) aree clipped for safety reasons.
+
+        =============== ==================================================
+        Parameters:
+        =============== ==================================================
+        _rgb            | [r,g,b] with LED currents as fraction of max.
+                        | current (0..1)
+        =============== ==================================================
+        """
+        errC = ERROR.OK
+        name = LC_logStrMaskL.format(self.setLEDCurrents.__name__)
+        excp = None
+
+        if self.isCheckOnly:
+            return [errC]
+        if not self._isConnected:
+            errC = ERROR.IS_NOT_CONNECTED
+
+        if errC == ERROR.OK:
+            try:
+                max_curr = np.array([LC_MAX_R, LC_MAX_G, LC_MAX_B])
+                newRGB = np.array(_rgb) *max_curr
+                newRGB = np.array(np.clip(newRGB, 0, max_curr), dtype=int)
+                summary, locm = dlp.ReadLedOutputControlMethod()
+                dlp.WriteLedOutputControlMethod(dlp.LedControlMethod.Manual)
+                dlp.WriteRgbLedMaxCurrent(LC_MAX_R, LC_MAX_G, LC_MAX_B)
+                dlp.WriteRgbLedCurrent(newRGB[0], newRGB[1], newRGB[2])
+                dlp.WriteLedOutputControlMethod(locm)
+
+            except IOError as excp:    
+                errC = ERROR.NO_RESPONSE
+
+        if errC == ERROR.OK:
+            self.log(
+                " ", 
+                f"{name} New LED currents, RGB = "
+                f"{newRGB[0]},{newRGB[1]},{newRGB[2]}", 2
+            )
+            return [errC]
+        else:
+            self.log(
+                "ERROR", 
+                f"{name} Failed with error `{ErrorStr[errC]}` "
+                f"({'n/a' if excp is None else excp})", 2
+            )
+            raise LCException(errC)
+
+      # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def getLEDEnabled(self) -> list:
+        """
+        Returns state of LED pins (enabled/disabled) as list 
+        [code, [isR,isG,isB]] with:
+        
+        =============== ==================================================
+        Result:
+        =============== ==================================================
+        code            | 0=ok or error code
+        [isR,isG,isB]   | list of boolean values, one for each LED
+        =============== ==================================================
+        """
+        errC = ERROR.OK
+        name = LC_logStrMaskL.format(self.getLEDEnabled.__name__)
+        excp = None
+        rgb = [-1] *3
+
+        if self.isCheckOnly:
+            return [errC]
+        if not self._isConnected:
+            errC = ERROR.IS_NOT_CONNECTED
+
+        if errC == ERROR.OK:
+            try:
+                summary, r, g, b = dlp.ReadRgbLedEnable()
+                rgb = [r,g,b]
+
+            except IOError as excp:    
+                errC = ERROR.NO_RESPONSE
+
+        if errC == ERROR.OK:
+            self.log(
+                " ", 
+                f"{name} LEDs enabled, RGB = "
+                f"{rgb[0]},{rgb[1]},{rgb[2]}", 2
+            )
+            return [errC, rgb]
+        else:
+            self.log(
+                "ERROR", 
+                f"{name} Failed with error `{ErrorStr[errC]}` "
+                f"({'n/a' if excp is None else excp})", 2
+            )
+            raise LCException(errC)
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def setLEDEnabled(self, _rgb: list[bool]) -> list:
+        """
+        Enable or disable LEDs 
+
+        =============== ==================================================
+        Parameters:
+        =============== ==================================================
+        _rgb            | list of boolean values, one for each LED
+        =============== ==================================================
+        """
+        errC = ERROR.OK
+        name = LC_logStrMaskL.format(self.setLEDEnabled.__name__)
+        excp = None
+
+        if self.isCheckOnly:
+            return [errC]
+        if not self._isConnected:
+            errC = ERROR.IS_NOT_CONNECTED
+
+        if errC == ERROR.OK:
+            try:
+                dlp.WriteRgbLedEnable(_rgb[0], _rgb[1], _rgb[2])
+
+            except IOError as excp:    
+                errC = ERROR.NO_RESPONSE
+
+        if errC == ERROR.OK:
+            self.log(
+                " ", 
+                f"{name} New LEDs enabled, RGB = "
+                f"{_rgb[0]},{_rgb[1]},{_rgb[2]}", 2
+            )
+            return [errC]
+        else:
+            self.log(
+                "ERROR", 
+                f"{name} Failed with error `{ErrorStr[errC]}` "
+                f"({'n/a' if excp is None else excp})", 2
+            )
+            raise LCException(errC)
 
     # -------------------------------------------------------------------
     # Logging
@@ -294,13 +551,9 @@ class Lightcrafter:
         self.lastMsgStr = _sMsg
         if _logLevel <= self.logLevel:
             if self.funcLog is None:
-                print(f"{_sHeader!s:>8} #{self.devNum:>2}:{_sMsg}")
+                print(f"{_sHeader!s:>8} {_sMsg}")
             else:
-                if self.devNum >= 0:
-                    devStr = f" #{self.devNum}"
-                else:
-                    devStr = " unknown"
-                self.funcLog(_sHeader, LC_IDStr +devStr +"|" +_sMsg)
+                self.funcLog(_sHeader, LC_IDStr +"|" +_sMsg)
 
 
     # =======================================================================
@@ -315,7 +568,6 @@ class Lightcrafter:
         commands are used, it is recommended to provide appropriate command 
         delay to prevent I2C bus hangups.
         """
-        #print("Write Command writebytes ", [hex(x) for x in writebytes])
         if self._delay_s > 0: 
             time.sleep(self._delay_s)
         try:            
@@ -332,7 +584,6 @@ class Lightcrafter:
         onboard flash memory. If such commands are used, it is recommended 
         to provide appropriate command delay to prevent I2C bus hangups.
         """
-        #print("Read Command writebytes ", [hex(x) for x in writebytes])
         if self._i2c.is_connected:
             if self._delay_s > 0: 
                 time.sleep(self._delay_s)  
@@ -342,7 +593,6 @@ class Lightcrafter:
                 return readbytes
             except IOError as err:
                 raise ValueError(err)    
-            
         else:
             return None       
 
