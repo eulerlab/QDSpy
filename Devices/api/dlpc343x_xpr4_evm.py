@@ -60,8 +60,13 @@ def initGPIO():
     NOTE: Do NOT attempt to enable RGB666 buffers and access ASIC/FPGA 
     flash devices simultaneously. Damage to flash devices may occur.
     """
-    os.system("pinctrl set 0 op pn")
+    ''' TE 2024-08-20
+        pins 26 and 27 have to be excluded, as they serve as QDSpy's 
+        digital I/O
     os.system("pinctrl set 1-27 ip pn")
+    '''
+    os.system("pinctrl set 1-25 ip pn")
+    os.system("pinctrl set 0 op pn")
     time.sleep(1)
     ''' TE 2024-07-25
         Not sure how that ever worked; wrong command? 

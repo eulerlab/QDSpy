@@ -202,11 +202,8 @@ class Lightcrafter:
 
                 # Initialize GPIOs, if requested
                 if self._initGPIO: 
-                    pass
-                    """
                     dlp_evm.initGPIO()
-                    """
-                    
+
                 if self._i2c.is_connected:
                     # Make a test read
                     summary, shortStatus = dlp.ReadShortStatus()
