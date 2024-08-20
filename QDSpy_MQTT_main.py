@@ -144,8 +144,9 @@ class AppMQTT(QDSpyApp):
 
         elif msg[0] == mgl.Command.EXIT:
             # Exit programm
+            if self.state == State.playing:
+                self.abortStim()  
             self._isExitCmd = True
-            isAnswered = True
 
         elif msg[0] == mgl.Command.OPEN_LCR:
             # Open I2C connection to LCr
