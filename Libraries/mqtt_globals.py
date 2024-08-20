@@ -29,6 +29,7 @@ class Command(Enum):
     PLAY      = "play"
     STOP      = "stop"
     STATE     = "state"
+    EXIT      = "exit"
     OPEN_LCR  = "open_lcr"
     CLOSE_LCR = "close_lcr"
     GET_LEDS  = "get_leds"

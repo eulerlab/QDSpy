@@ -41,6 +41,7 @@ class AppMQTT(QDSpyApp):
 
         # Initialize
         super().__init__("MQTT client")
+        self._isExitCmd = False
 
         # Lightcrafter instance
         self.LCr = _lcr.Lightcrafter(_initGPIO=False)
@@ -141,6 +142,11 @@ class AppMQTT(QDSpyApp):
             )
             isAnswered = True
 
+        elif msg[0] == mgl.Command.EXIT:
+            # Exit programm
+            self._isExitCmd = True
+            isAnswered = True
+
         elif msg[0] == mgl.Command.OPEN_LCR:
             # Open I2C connection to LCr
             if self.state not in [State.undefined, State.idle, State.canceling]:
@@ -179,10 +185,12 @@ class AppMQTT(QDSpyApp):
             mqtt.Client.start()
 
             # Run main loop
-            while True:
+            isRunning = True
+            while isRunning:
                 try:
                     # Process any items in MQTT message queue
                     self.processMsg()
+                    isRunning = not(self._isExitCmd)
 
                     # Process messages in the pipe to the worker and
                     # sleep for a bit    
@@ -196,10 +204,12 @@ class AppMQTT(QDSpyApp):
                     
                 except KeyboardInterrupt:
                     self.logWrite("INFO", "User abort")
-                    self.closeEvent()
                     break
 
         finally:
+            # Clean up
+            self.closeEvent()
+            
             # Stop MQTT client and close log file
             mqtt.Client.stop()                
             self.closeLogFile(self._logFile)
