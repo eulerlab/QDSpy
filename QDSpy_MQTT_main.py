@@ -22,6 +22,7 @@ import QDSpy_file_support as fsu
 from QDSpy_app import QDSpyApp, State, StateStr
 import Libraries.mqtt_client as mqtt
 import Libraries.mqtt_globals as mgl
+import Devices.lightcrafter_230np as _lcr
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
@@ -40,6 +41,9 @@ class AppMQTT(QDSpyApp):
 
         # Initialize
         super().__init__("MQTT client")
+
+        # Lightcrafter instance
+        self.LCr = _lcr.Lightcrafter(_initGPIO=True)
 
         # Connect to MQTT broker 
         self.logWrite("DEBUG", "Initiating MQTT ...")
@@ -136,6 +140,23 @@ class AppMQTT(QDSpyApp):
                 f"{StateStr[self.state]}"
             )
             isAnswered = True
+
+        elif msg[0] == mgl.Command.OPEN_LCR:
+            # Open I2C connection to LCr
+            if not self.state in [State.undefined, State.idle, State.canceling]:
+                res = self.LCr.connect()
+                if res[0] is not _lcr.ERROR.OK:        
+                    errC = stm.StimErrC.DeviceError_LCr
+
+        elif msg[0] == mgl.Command.CLOSE_LCR:
+            # Close I2C connection to LCr
+            if not self.state in [State.undefined, State.idle]:
+                res = self.LCr.disconnect()
+            """
+        elif msg[0] == mgl.Command.GET_LEDS:
+            # Retrieve LED enabled/currents
+            if not self.state in [State.undefined, State.idle, State.canceling]:
+            """
 
         else:
             # Should not happen ...

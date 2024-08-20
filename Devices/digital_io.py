@@ -144,6 +144,11 @@ class devIO_RPi(devIO, object):
         self._DOut.value = 0
         self._setIsReady()
 
+    def __del__(self):
+        self._DIn.close()
+        self._DOut.close()    
+        self.isReady = False
+
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def configDPort(self, _port, _dir):
         # ...

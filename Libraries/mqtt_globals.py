@@ -25,12 +25,16 @@ topic_serv       = ["cli", "srv"]
 UUID             = 'd6d09beb68a3448a'
 
 class Command(Enum):
-    LOAD  = "load"
-    PLAY  = "play"
-    STOP  = "stop"
-    STATE = "state"
-    ERROR = "error"
-    OK    = "ok"
+    LOAD      = "load"
+    PLAY      = "play"
+    STOP      = "stop"
+    STATE     = "state"
+    OPEN_LCR  = "open_lcr"
+    CLOSE_LCR = "close_lcr"
+    GET_LEDS  = "get_leds"
+    SET_LEDS  = "set_leds"
+    ERROR     = "error"
+    OK        = "ok"
 
 # fmt: on
 # ---------------------------------------------------------------------
