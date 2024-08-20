@@ -148,7 +148,7 @@ class QDSpyApp(object):
         self.logWrite("DEBUG", "... done")
 
         # Check if autorun stimulus file present and if so run it
-        self.handleAutorun()
+        #self.handleAutorun()
 
     # -----------------------------------------------------------------
     def handleAutorun(self):
