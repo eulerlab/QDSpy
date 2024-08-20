@@ -71,6 +71,7 @@ class AppMQTT(QDSpyApp):
     def handleMsg(self, _msg) -> None:
         """Handle incoming MQTT messages
         """
+        print("hm")
         self._isNewMsg = False
         sMsg = _msg.payload.decode("UTF8")
         data = sMsg.split(",")
@@ -106,6 +107,7 @@ class AppMQTT(QDSpyApp):
         """Takes a message from the queue, if there are any, and process
         it. Processes only one message at a time.
         """
+        print("pm")
         if not self._msgQueue or len(self._msgQueue) == 0:
             return
 
@@ -198,6 +200,7 @@ class AppMQTT(QDSpyApp):
             isRunning = True
             while isRunning:
                 try:
+                    print("lp")
                     # Process any items in MQTT message queue
                     self.processMsg()
                     isRunning = not(self._isExitCmd)
