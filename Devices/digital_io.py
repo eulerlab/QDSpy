@@ -145,8 +145,10 @@ class devIO_RPi(devIO, object):
         self._setIsReady()
 
     def __del__(self):
-        self._DIn.close()
-        self._DOut.close()    
+        if self._DIn:
+            self._DIn.close()
+        if self._DOut:    
+            self._DOut.close()    
         self.isReady = False
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
