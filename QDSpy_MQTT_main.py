@@ -43,7 +43,7 @@ class AppMQTT(QDSpyApp):
         super().__init__("MQTT client")
 
         # Lightcrafter instance
-        self.LCr = _lcr.Lightcrafter(_initGPIO=True)
+        self.LCr = _lcr.Lightcrafter(_initGPIO=False)
 
         # Connect to MQTT broker 
         self.logWrite("DEBUG", "Initiating MQTT ...")
