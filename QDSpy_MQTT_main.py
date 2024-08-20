@@ -44,7 +44,7 @@ class AppMQTT(QDSpyApp):
         self._isExitCmd = False
 
         # Lightcrafter instance
-        self.LCr = _lcr.Lightcrafter(_initGPIO=False)
+        #self.LCr = _lcr.Lightcrafter(_initGPIO=False)
 
         # Connect to MQTT broker 
         self.logWrite("DEBUG", "Initiating MQTT ...")
