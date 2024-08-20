@@ -25,7 +25,7 @@ QDSpy_workerMsgsToStdOut    = True
 QDSpy_noStimArg             = False
 QDSpy_loop_sleep_s          = 0.01
 
-QDSpy_isUseSound            = True
+QDSpy_isUseSound            = False
 QDSpy_pathSounds            = ".\\Sounds\\"
 QDSpy_soundStimStart        = "stim_start.mp3"
 QDSpy_soundStimEnd          = "stim_end.mp3"

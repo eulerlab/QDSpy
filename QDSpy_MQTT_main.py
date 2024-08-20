@@ -22,9 +22,8 @@ import QDSpy_file_support as fsu
 from QDSpy_app import QDSpyApp, State, StateStr
 import Libraries.mqtt_client as mqtt
 import Libraries.mqtt_globals as mgl
-"""
 import Devices.lightcrafter_230np as _lcr
-"""
+
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
@@ -45,9 +44,7 @@ class AppMQTT(QDSpyApp):
         self._isExitCmd = False
 
         # Lightcrafter instance
-        '''
-        self.LCr = _lcr.Lightcrafter(_initGPIO=False)
-        '''
+        self.LCr = _lcr.Lightcrafter(_initGPIO=True)
 
         # Connect to MQTT broker 
         self.logWrite("DEBUG", "Initiating MQTT ...")

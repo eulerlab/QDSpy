@@ -240,39 +240,40 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
                 + "`bool_use_digitalio` in `QDSpy.ini` to False.",
             )
         else:
-            # Measurement Computing hardware is used, and needs to be 
-            # configured ...
-            port = _IO.getPortFromStr(_Conf.DIOportOut)
-            _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
-            _IO.writeDPort(port, 0)
-            port = _IO.getPortFromStr(_Conf.DIOportIn)
-            _IO.configDPort(port, dio.devConst.DIGITAL_IN)
-            port = _IO.getPortFromStr(_Conf.DIOportOut_User)
-            _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
-            _IO.writeDPort(port, 0)
+            if not _Conf.DIObrdType.lower() in ["arduino", "raspberrypi"]:
+                # Measurement Computing hardware is used, and needs to be 
+                # configured ...
+                port = _IO.getPortFromStr(_Conf.DIOportOut)
+                _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
+                _IO.writeDPort(port, 0)
+                port = _IO.getPortFromStr(_Conf.DIOportIn)
+                _IO.configDPort(port, dio.devConst.DIGITAL_IN)
+                port = _IO.getPortFromStr(_Conf.DIOportOut_User)
+                _IO.configDPort(port, dio.devConst.DIGITAL_OUT)
+                _IO.writeDPort(port, 0)
 
-            # Set user pins to the resting state
-            # TODO: Change to correct log message
-            print(
-                _IO,
-                _Conf.DIOportOut_User,
-                int(_Conf.DIOpinUserOut1[0]),
-                int(_Conf.DIOpinUserOut1[2]),
-            )
-            csp.setIODevicePin(
-                _IO,
-                _Conf.DIOportOut_User,
-                int(_Conf.DIOpinUserOut1[0]),
-                int(_Conf.DIOpinUserOut1[2]) != 0,
-                False,
-            )
-            csp.setIODevicePin(
-                _IO,
-                _Conf.DIOportOut_User,
-                int(_Conf.DIOpinUserOut2[0]),
-                int(_Conf.DIOpinUserOut2[2]) != 0,
-                False,
-            )
+                # Set user pins to the resting state
+                # TODO: Change to correct log message
+                print(
+                    _IO,
+                    _Conf.DIOportOut_User,
+                    int(_Conf.DIOpinUserOut1[0]),
+                    int(_Conf.DIOpinUserOut1[2]),
+                )
+                csp.setIODevicePin(
+                    _IO,
+                    _Conf.DIOportOut_User,
+                    int(_Conf.DIOpinUserOut1[0]),
+                    int(_Conf.DIOpinUserOut1[2]) != 0,
+                    False,
+                )
+                csp.setIODevicePin(
+                    _IO,
+                    _Conf.DIOportOut_User,
+                    int(_Conf.DIOpinUserOut2[0]),
+                    int(_Conf.DIOpinUserOut2[2]) != 0,
+                    False,
+                )
 
     else:
         _IO = None
