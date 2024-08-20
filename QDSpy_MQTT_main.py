@@ -143,14 +143,14 @@ class AppMQTT(QDSpyApp):
 
         elif msg[0] == mgl.Command.OPEN_LCR:
             # Open I2C connection to LCr
-            if not self.state in [State.undefined, State.idle, State.canceling]:
+            if self.state not in [State.undefined, State.idle, State.canceling]:
                 res = self.LCr.connect()
                 if res[0] is not _lcr.ERROR.OK:        
                     errC = stm.StimErrC.DeviceError_LCr
 
         elif msg[0] == mgl.Command.CLOSE_LCR:
             # Close I2C connection to LCr
-            if not self.state in [State.undefined, State.idle]:
+            if self.state not in [State.undefined, State.idle]:
                 res = self.LCr.disconnect()
             """
         elif msg[0] == mgl.Command.GET_LEDS:
