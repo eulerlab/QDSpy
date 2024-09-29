@@ -29,7 +29,7 @@ def getI2CDevices():
     devices = []
     for dev in os.listdir("/dev"):
         if dev.startswith("i2c-"):
-            devices.append(dev[3:])
+            devices.append(dev[4:])
     return devices        
     
 # ---------------------------------------------------------------------
