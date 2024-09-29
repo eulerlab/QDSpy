@@ -213,7 +213,7 @@ class Lightcrafter:
 
                 for bus in busses:
                     print("bus=", bus)
-                    self._i2c.connect(_addr=_addr, _bus=_bus)
+                    self._i2c.connect(_addr=_addr, _bus=bus)
                     if self._i2c.is_connected:
                         # Make a test read
                         summary, shortStatus = dlp.ReadShortStatus()
