@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "QDSpy — (Remote)",
+			"uri": "sftp://dev/"
+		}
+	],
+	"settings": {
+		"github.experimental.multipleAccounts": false
+	}
+}
