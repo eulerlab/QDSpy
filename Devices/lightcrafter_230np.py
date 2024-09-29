@@ -216,10 +216,7 @@ class Lightcrafter:
                     return [errC]
                 else:
                     # Print short status report
-                    # TODO: Make nice
-                    print("----------------------")
-                    print("Short Status Register:")
-                    dlp_evm.printReg(shortStatus)
+                    self.logStatus(dlp_evm.reg2Dict(shortStatus))
                     self.log("ok", f"Connected to {LC_deviceName}", 2)
 
         return [ERROR.OK]
@@ -330,10 +327,12 @@ class Lightcrafter:
                     dlp.Polarity.ActiveLow
                 )
                 dlp.WriteColorCoordinateAdjustmentControl(0)
+                # --> TE: Does not make any sense, as just entered parallel config?!
+                '''
                 summary, bitRate, pixelMapMode = dlp.ReadFpdLinkConfiguration()
                 if bitRate == 0:
                     errC = ERROR.SET_MODE_FAILED
-                
+                '''
                 dlp.WriteDelay(50)
                 time.sleep(1)
                 dlp.WriteDisplayImageCurtain(0, dlp.Color.Black)
@@ -346,7 +345,7 @@ class Lightcrafter:
                 " ",
                 f"{name} {LC_deviceName} set to {SourceSelStr[_source]} "
                 f"({SourceParStr[_bitDepth]}, {_width}x{_height},"
-                f" {bitRate}, {pixelMapMode})", 2
+                f" {'n/a'}, {'n/a'})", 2
             )
             return [errC]
         else:
@@ -549,8 +548,8 @@ class Lightcrafter:
     # Logging
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def log(self, _sHeader, _sMsg, _logLevel):
-        # Write message to log
-        #
+        ''' Write message to log
+        '''
         self.lastMsgStr = _sMsg
         if _logLevel <= self.logLevel:
             if self.funcLog is None:
@@ -558,6 +557,15 @@ class Lightcrafter:
             else:
                 self.funcLog(_sHeader, LC_IDStr +"|" +_sMsg)
 
+
+    def logStatus(self, _status):
+        ''' Log status
+        '''
+        self.log(" ", "--- Status ---", 2)
+        pairs = list(_status)
+        for keyval in pairs:
+            name = LC_logStrMaskL.format(keyval[0])
+            self.log(" ", f"{name} {keyval[1]}", 2)
 
     # =======================================================================
     # Read/write routines
