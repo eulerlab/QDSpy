@@ -4,7 +4,7 @@ import Devices.lightcrafter_230np as _lcr
 lcr = _lcr.Lightcrafter(_initGPIO=True)
 
 # Connect ...
-res = lcr.connect()
+res = lcr.connect(_bus=None)
 
 if res[0] == _lcr.ERROR.OK:
     try:

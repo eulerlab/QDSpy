@@ -166,8 +166,8 @@ class Lightcrafter:
         self._initGPIO = _initGPIO
         self._delay_s = _i2c_delay_s
         self._isConnected = False
-
-        print(i2c.getI2CDevices())
+        self._i2c_busses = i2c.get_I2C_busses()
+        self._i2CBus = None
 
         # Create I2C instance and register the read/write Command in 
         # the library
@@ -200,23 +200,40 @@ class Lightcrafter:
                 # Try opening I2C connection 
                 errC = ERROR.OK
                 self.log(" ", "Trying to connect ...", 2)
-                self._i2c.connect(_addr=_addr, _bus=_bus)
 
-                # Initialize GPIOs, if requested
-                if self._initGPIO: 
-                    dlp_evm.initGPIO()
+                if self._i2CBus is not None:
+                    # Use the bus that has already been found
+                    busses = [self._i2CBus]
+                elif _bus is not None:
+                    # Use the bus that was given
+                    busses = [_bus]
+                else:
+                    # No bus was given; try all existing
+                    busses = self._i2c_busses
 
-                if self._i2c.is_connected:
-                    # Make a test read
-                    summary, shortStatus = dlp.ReadShortStatus()
-                    self._isConnected = summary.Successful
-                    
+                for bus in busses:
+                    print("bus=", bus)
+                    self._i2c.connect(_addr=_addr, _bus=_bus)
+                    if self._i2c.is_connected:
+                        # Make a test read
+                        summary, shortStatus = dlp.ReadShortStatus()
+                        self._isConnected = summary.Successful
+                        if self._isConnected:
+                            break
+
                 if not self._isConnected:
                     # Report error
                     errC = ERROR.COULD_NOT_CONNECT
                     self.log("ERROR", f"{ErrorStr[errC]} ({errC})", 0)
                     return [errC]
                 else:
+                    # Remember I2C bus
+                    self._i2CBus = bus
+
+                    # Initialize GPIOs, if requested
+                    if self._initGPIO: 
+                        dlp_evm.initGPIO()
+
                     # Print short status report
                     self.logStatus(dlp_evm.reg2Dict(shortStatus))
                     self.log("ok", f"Connected to {LC_deviceName}", 2)
