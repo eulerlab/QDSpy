@@ -36,8 +36,13 @@ class Set(Enum):
 # fmt: off
 # ---------------------------------------------------------------------
 LC_deviceName    = "lcr230np"
+'''
 LC_width         = 1920
 LC_height        = 1080
+'''
+LC_width         = 800
+LC_height        = 680
+
 
 LC_IDStr         = "LCr"
 
