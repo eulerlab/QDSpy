@@ -18,7 +18,7 @@ import time
 from enum import Enum
 from typing import List, Any
 from types import FunctionType
-import numpy as np
+import numpy as np # type: ignore
 import Devices.api.dlpc343x_xpr4 as dlp
 import Devices.api.dlpc343x_xpr4_evm as dlp_evm
 import Libraries.i2c as i2c
