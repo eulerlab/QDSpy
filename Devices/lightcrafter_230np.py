@@ -166,6 +166,8 @@ class Lightcrafter:
         self._delay_s = _i2c_delay_s
         self._isConnected = False
 
+        print(i2c.getI2CDevices())
+
         # Create I2C instance and register the read/write Command in 
         # the library
         self._i2c = i2c.I2C(debug=False)
