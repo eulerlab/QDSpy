@@ -212,7 +212,7 @@ class Lightcrafter:
                     busses = self._i2c_busses
 
                 for bus in busses:
-                    print("bus=", bus)
+                    self.log(" ", f"Testing I2C bus {bus} ...", 2)
                     self._i2c.connect(_addr=_addr, _bus=bus)
                     if self._i2c.is_connected:
                         # Make a test read
