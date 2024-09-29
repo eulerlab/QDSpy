@@ -12,6 +12,7 @@ All rights reserved.
 __author__ 	= "code@eulerlab.de"
 
 import platform
+import os
 
 # ---------------------------------------------------------------------
 # fmt: off
@@ -19,6 +20,18 @@ I2C_ADDRESS     = 0x36  # 8-bit I2C slave address
 I2C_BUS         = 22    # 11  
 
 # fmt: on
+
+# ---------------------------------------------------------------------
+def getI2CDevices():
+    if not platform.system() == "Linux":
+        return []
+    
+    devices = []
+    for dev in os.listdir("/dev"):
+        if dev.startswith("i2c-"):
+            devices.append(dev[3:])
+    return devices        
+    
 # ---------------------------------------------------------------------
 class I2C(object):
 
