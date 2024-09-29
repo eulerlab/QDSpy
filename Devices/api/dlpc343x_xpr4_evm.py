@@ -30,14 +30,21 @@ gpio_drive_strength = 5
 '''
 
 # ---------------------------------------------------------------------
+def reg2Dict(data):
+    """Helper function; converts the contents of a register data block 
+    into a dictionary.
+    """
+    return [ 
+        (key, value) for key, value in vars(data).items() 
+        if not (key.startswith("__") and key.endswith("__"))
+    ]
+
+
 def printReg(data):
     """Helper function; prints the contents of a register data block 
     read via I2C.
     """
-    fdict = [ 
-        (key, value) for key, value in vars(data).items() 
-        if not (key.startswith("__") and key.endswith("__"))
-    ]
+    fdict = reg2Dict(data) 
     print(
         "{" + "\n".join("{!r}: {!r},".format(k, v) for k, v in fdict) + "}"
     )

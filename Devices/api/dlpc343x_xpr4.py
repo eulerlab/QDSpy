@@ -647,12 +647,16 @@ def ReadFpdLinkConfiguration():
         writebytes=list(struct.pack('B',76))
         ProtocolData.OpcodeLength = 1;
         readbytes = _readcommand(3, writebytes, ProtocolData)
+        print(readbytes)
         BitRate = struct.unpack_from ('H', bytearray(readbytes), 0)[0]
         PixelMapMode = struct.unpack_from ('B', bytearray(readbytes), 2)[0]
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
     finally:
+        
+        print(Summary.Successful)
+
         return Summary, BitRate, PixelMapMode
 
 # ---------------------------------------------------------------------
