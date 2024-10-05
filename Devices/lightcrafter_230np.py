@@ -36,13 +36,12 @@ class Set(Enum):
 # fmt: off
 # ---------------------------------------------------------------------
 LC_deviceName    = "lcr230np"
-'''
+
+# Default config
 LC_width         = 1920
 LC_height        = 1080
-'''
-LC_width         = 800
-LC_height        = 680
-
+LC_hsync_pol     = dlp.Polarity.ActiveLow
+LC_vsync_pol     = dlp.Polarity.ActiveLow
 
 LC_IDStr         = "LCr"
 
@@ -294,7 +293,8 @@ class Lightcrafter:
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setInputSource(
             self, _source, _bitDepth = SourcePar.Bit18,
-            _width: int = LC_width, _height: int = LC_height
+            _width: int = LC_width, _height: int = LC_height,
+            _hsyn: Enum = LC_hsync_pol, _vsync: Enum = LC_vsync_pol
         ) -> list:
         """
         Defines the input source of the device. Use enum classes `SourceSel`
@@ -309,6 +309,8 @@ class Lightcrafter:
                         | 3=FPD-link (currently not used)
         _bitDepth       | Parallel interface bit depth
                         | 6=18 bits
+        _width, _height | Screen size in pixels
+        _hsync, _vsync  | Sync polarity                       
         =============== ==================================================
         """
         errC = ERROR.OK
@@ -347,8 +349,9 @@ class Lightcrafter:
                 dlp.WriteParallelVideoControl(
                     dlp.ClockSample.FallingEdge, 
                     dlp.Polarity.ActiveHigh, 
-                    dlp.Polarity.ActiveLow, 
-                    dlp.Polarity.ActiveLow
+                    # dlp.Polarity.ActiveLow, # 1920 x 1020 
+                    # dlp.Polarity.ActiveLow
+                    _hsyn, _vsync
                 )
                 dlp.WriteColorCoordinateAdjustmentControl(0)
                 # --> TE: Does not make any sense, as just entered parallel config?!
