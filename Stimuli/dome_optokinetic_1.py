@@ -75,7 +75,7 @@ QDS.StartScript()
 QDS.Scene_Clear(1.0, 0)
 
 # Wait for trigger
-QDS.AwaitTTL()
+#QDS.AwaitTTL()
 
 # Repeat stimulus `nTrials` times
 for iT in range(p["nTrials"]):
