@@ -22,7 +22,7 @@ if res[0] == _lcr.ERROR.OK:
         # Setting input source to parallel from RPi ...
         res = lcr.setInputSource(
             _lcr.SourceSel.Parallel,
-            _width=800, _height=600, 
+            _width=1280, _height=720, 
             _hsync=dlp.Polarity.ActiveHigh,
             _vsync=dlp.Polarity.ActiveHigh
         )
