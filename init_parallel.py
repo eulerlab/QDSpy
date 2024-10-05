@@ -25,12 +25,15 @@ if res[0] == _lcr.ERROR.OK:
             _width=1920, _height=1080, 
             _hsync=dlp.Polarity.ActiveLow,
             _vsync=dlp.Polarity.ActiveLow
-            '''
+        )
+        ''' 
+        res = lcr.setInputSource(
+            _lcr.SourceSel.Parallel,
             _width=1280, _height=720, 
             _hsync=dlp.Polarity.ActiveHigh,
             _vsync=dlp.Polarity.ActiveHigh
-            '''
         )
+        '''
         time.sleep(1.0)
 
     except _lcr.LCException as excp:
