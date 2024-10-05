@@ -294,7 +294,7 @@ class Lightcrafter:
     def setInputSource(
             self, _source, _bitDepth = SourcePar.Bit18,
             _width: int = LC_width, _height: int = LC_height,
-            _hsyn: Enum = LC_hsync_pol, _vsync: Enum = LC_vsync_pol
+            _hsync: Enum = LC_hsync_pol, _vsync: Enum = LC_vsync_pol
         ) -> list:
         """
         Defines the input source of the device. Use enum classes `SourceSel`
@@ -351,7 +351,7 @@ class Lightcrafter:
                     dlp.Polarity.ActiveHigh, 
                     # dlp.Polarity.ActiveLow, # 1920 x 1020 
                     # dlp.Polarity.ActiveLow
-                    _hsyn, _vsync
+                    _hsync, _vsync
                 )
                 dlp.WriteColorCoordinateAdjustmentControl(0)
                 # --> TE: Does not make any sense, as just entered parallel config?!
