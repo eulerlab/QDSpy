@@ -20,6 +20,7 @@ if res[0] == _lcr.ERROR.OK:
         time.sleep(1.0)
 
         # Setting input source to parallel from RPi ...
+        '''
         res = lcr.setInputSource(
             _lcr.SourceSel.Parallel,
             _width=1920, _height=1080, 
@@ -33,7 +34,7 @@ if res[0] == _lcr.ERROR.OK:
             _hsync=dlp.Polarity.ActiveHigh,
             _vsync=dlp.Polarity.ActiveHigh
         )
-        '''
+
         time.sleep(1.0)
 
     except _lcr.LCException as excp:
