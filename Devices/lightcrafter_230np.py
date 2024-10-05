@@ -351,7 +351,9 @@ class Lightcrafter:
                     dlp.Polarity.ActiveHigh, 
                     # dlp.Polarity.ActiveLow, # 1920 x 1020 
                     # dlp.Polarity.ActiveLow
-                    _hsync, _vsync
+                    dlp.Polarity.ActiveHigh,
+                    dlp.Polarity.ActiveHigh
+                    #_hsync, _vsync
                 )
                 dlp.WriteColorCoordinateAdjustmentControl(0)
                 # --> TE: Does not make any sense, as just entered parallel config?!
