@@ -13,7 +13,7 @@ QDS.Initialize("Optokinetic1", "Moving vertical bar gratings")
 # (as a dictionary, to be able to write it easily to the log)
 p = {}
 p["nTrials"]   = 1
-p["dxy"]       = (1200, 600)          # Stimulus size in um
+p["dxy"]       = (600, 1200)          # Stimulus size in um
 p["pxy"]       = (0, 0)               # Stimulus centre position in um 
 p["mxy"]       = (1.0, 1.0)           # Magnification factor
 p["rot_deg"]   = 90                   # Rotation angle of grating in degrees
