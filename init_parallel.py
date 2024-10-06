@@ -39,7 +39,7 @@ if res[0] == _lcr.ERROR.OK:
             _lcr.SourceSel.Parallel,
             _width=960, _height=540, 
             _hsync=dlp.Polarity.ActiveHigh,
-            _vsync=dlp.Polarity.ActiveHigh            
+            _vsync=dlp.Polarity.ActiveLow            
         )
         
 
