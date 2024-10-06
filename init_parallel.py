@@ -37,7 +37,7 @@ if res[0] == _lcr.ERROR.OK:
         '''    
         res = lcr.setInputSource(
             _lcr.SourceSel.Parallel,
-            _width=800, _height=600, 
+            _width=960, _height=540, 
             _hsync=dlp.Polarity.ActiveHigh,
             _vsync=dlp.Polarity.ActiveHigh            
         )
