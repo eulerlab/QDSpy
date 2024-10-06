@@ -341,7 +341,7 @@ class Lightcrafter:
                 # Configuring DLPC3436 source settings for RPi ...
                 dlp.WriteActuatorGlobalDacOutputEnable(Set.Enabled)
                 dlp.WriteExternalVideoSourceFormatSelect(
-                    dlp.ExternalVideoFormat.Rgb565 #Rgb666
+                    dlp.ExternalVideoFormat.Rgb666
                 )
                 dlp.WriteVideoChromaChannelSwapSelect(
                     dlp.ChromaChannelSwap.Cbcr
