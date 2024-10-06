@@ -72,7 +72,7 @@ def initGPIO():
         digital I/O
     os.system("pinctrl set 1-27 ip pn")
     '''
-    cmd = "gpio" if True else "pinctrl"
+    cmd = "gpio" if False else "pinctrl"
 
     os.system(f"{cmd} set 1-25 ip pn")
     os.system(f"{cmd} set 0 op pn")
