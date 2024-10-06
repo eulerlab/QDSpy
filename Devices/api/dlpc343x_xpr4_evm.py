@@ -73,7 +73,6 @@ def initGPIO():
     os.system("pinctrl set 1-27 ip pn")
     '''
     cmd = "gpio" if False else "pinctrl"
-
     os.system(f"{cmd} set 1-25 ip pn")
     os.system(f"{cmd} set 0 op pn")
     time.sleep(1)
