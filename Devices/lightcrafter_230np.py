@@ -341,7 +341,7 @@ class Lightcrafter:
                 # Configuring DLPC3436 source settings for RPi ...
                 dlp.WriteActuatorGlobalDacOutputEnable(Set.Enabled)
                 dlp.WriteExternalVideoSourceFormatSelect(
-                    dlp.ExternalVideoFormat.Rgb666
+                    dlp.ExternalVideoFormat.Rgb565 #Rgb666
                 )
                 dlp.WriteVideoChromaChannelSwapSelect(
                     dlp.ChromaChannelSwap.Cbcr
@@ -351,9 +351,7 @@ class Lightcrafter:
                     dlp.Polarity.ActiveHigh, 
                     # dlp.Polarity.ActiveLow, # 1920 x 1020 
                     # dlp.Polarity.ActiveLow
-                    dlp.Polarity.ActiveHigh,
-                    dlp.Polarity.ActiveHigh
-                    #_hsync, _vsync
+                    _hsync, _vsync
                 )
                 dlp.WriteColorCoordinateAdjustmentControl(0)
                 # --> TE: Does not make any sense, as just entered parallel config?!
