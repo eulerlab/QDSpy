@@ -27,12 +27,19 @@ if res[0] == _lcr.ERROR.OK:
             _hsync=dlp.Polarity.ActiveLow,
             _vsync=dlp.Polarity.ActiveLow
         )
+        '''
         ''' 
         res = lcr.setInputSource(
             _lcr.SourceSel.Parallel,
             _width=1280, _height=720, 
             _hsync=dlp.Polarity.ActiveHigh,
             _vsync=dlp.Polarity.ActiveHigh
+        '''    
+        res = lcr.setInputSource(
+            _lcr.SourceSel.Parallel,
+            _width=800, _height=600, 
+            _hsync=dlp.Polarity.ActiveHigh,
+            _vsync=dlp.Polarity.ActiveHigh            
         )
         
 
