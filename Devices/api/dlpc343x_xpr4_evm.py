@@ -72,18 +72,20 @@ def initGPIO():
         digital I/O
     os.system("pinctrl set 1-27 ip pn")
     '''
-    os.system("pinctrl set 1-25 ip pn")
-    os.system("pinctrl set 0 op pn")
+    cmd = "gpio" if True else "pinctrl"
+
+    os.system(f"{cmd} set 1-25 ip pn")
+    os.system(f"{cmd} set 0 op pn")
     time.sleep(1)
     ''' TE 2024-07-25
         Not sure how that ever worked; wrong command? 
         In any case, the drive strength seems not to be critical here
     os.system("gpio drive 0 {0}".format(gpio_drive_strength))
     '''
-    os.system("pinctrl set 22 op pn")
-    os.system("pinctrl set 23 op pn")
-    os.system("pinctrl set 0-21 a2 pn")
-    os.system("pinctrl set 25 op dh")
+    os.system(f"{cmd} set 22 op pn")
+    os.system(f"{cmd} set 23 op pn")
+    os.system(f"{cmd} set 0-21 a2 pn")
+    os.system(f"{cmd} set 25 op dh")
     time.sleep(1)
 
 # ---------------------------------------------------------------------
