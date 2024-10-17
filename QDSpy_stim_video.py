@@ -86,9 +86,6 @@ class Video:
     """ Reads a movie file (e.g. AVI); a description file is not needed
         Returns an error of the QDSpy_stim.StimErrC class
     """   
-    tempDir = os.path.dirname(_fName)
-    if len(tempDir) > 0:
-      tempDir += "\\"
     self.fNameVideo = _fName
     self.fExtVideo  = os.path.splitext(_fName)[1].lower()
     self.isTestOnly = _testOnly

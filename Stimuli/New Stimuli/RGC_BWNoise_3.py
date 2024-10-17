@@ -3,6 +3,7 @@
 # ---------------------------------------------------------------------
 import collections
 from functools import partial
+import os.path
 import QDS
 
 # Define global stimulus parameters
@@ -23,7 +24,7 @@ def buildStimulus(p):
     
     '''Read file with M sequence'''
     try:
-      f         = open(p['fPath'] +'\\' +p['fNameNoise'] +'.txt', 'r')
+      f         = open(p['fPath'] + os.path.sep +p['fNameNoise'] +'.txt', 'r')
       iLn       = 0 
       p['Frames']    = []
         

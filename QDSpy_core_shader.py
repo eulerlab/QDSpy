@@ -51,7 +51,7 @@ class ShaderManager:
       break
     for fName in f:
       if (os.path.splitext(fName)[1]).lower() == glo.QDSpy_shaderFileExt:
-        self.ShFileList.append(self.Conf.pathShader +"\\" +fName)
+        self.ShFileList.append(os.path.join(self.Conf.pathShader, fName))
     
     # Parse each shader file ...
     #    

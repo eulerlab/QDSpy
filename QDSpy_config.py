@@ -46,8 +46,7 @@ class Config:
         #
         self.isWindows = PLATFORM_WINDOWS
         self.pyVersion = sys.version_info[0] + sys.version_info[1] / 10
-        _sep = "\\" if PLATFORM_WINDOWS else "/"
-        self.iniPath = os.getcwd() + _sep + glo.QDSpy_iniFileName
+        self.iniPath = os.getcwd() + os.path.sep + glo.QDSpy_iniFileName
 
         # Set configuration default values
         #

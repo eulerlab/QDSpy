@@ -151,9 +151,7 @@ class Movie:
         """
         tempStr = (os.path.splitext(os.path.basename(_fName)))[0]
         tempDir = os.path.dirname(_fName)
-        if len(tempDir) > 0:
-            tempDir += "\\"
-        self.fNameDesc = tempDir + tempStr + glo.QDSpy_movDescFileExt
+        self.fNameDesc = os.path.join(tempDir, tempStr + glo.QDSpy_movDescFileExt)
         self.fNameImg = _fName
         self.fExtImg = os.path.splitext(_fName)[1].lower()
         self.isTestOnly = _testOnly

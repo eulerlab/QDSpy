@@ -5,7 +5,7 @@ QDSpy module - stimulus script API
 
 This is a simple Python software for scripting and presenting stimuli
 for visual neuroscience. It is based on QDS, currently uses OpenGL via
-pyglet for graphics. It primarly targets Windows, but may also run on
+pyglet for graphics. It primarily targets Windows, but may also run on
 other operating systems
 
 Copyright (c) 2013-2024 Thomas Euler
@@ -88,7 +88,7 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
     if tLastUpt_pick > tLastUpt_py and not args.compile:
       pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[0]
       if len(pythonPath) > 0:
-        pythonPath += "\\" if PLATFORM_WINDOWS else "/"
+        pythonPath += os.path.sep
       ssp.Log.write("INFO", "Script has not changed, running stimulus now ...")
       s = "python {0}QDSpy_core.py -t={1} {2} {3}"
       os.system(s.format(

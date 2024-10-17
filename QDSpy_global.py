@@ -9,6 +9,8 @@ All rights reserved.
 2024-06-15 - Fix for breaking change in `configparser`; now using
              `ConfigParser` instead of `RawConfigParser`
 """
+
+import os.path
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
@@ -62,7 +64,7 @@ QDSpy_cPickleProtocol       = 3
 QDSpy_cPickleFileExt        = ".pickle"
 QDSpy_fileVersionID         = 8
 QDSpy_stimFileExt           = ".py"
-QDSpy_pathStimuli           = ".\\Stimuli\\"
+QDSpy_pathStimuli           = "." + os.path.sep + "Stimuli" + os.path.sep
 QDSpy_autorunStimFileName   = "__autorun"
 QDSpy_autorunDefFileName    = "__autorun_default_DO_NOT_DELETE"
 
@@ -77,14 +79,14 @@ QDSpy_movAllowedMovieExts   = [".png", ".jpg"]
 
 QDSpy_vidAllowedVideoExts   = [".avi"]
 
-QDSpy_pathApplication       = ".\\"
+QDSpy_pathApplication       = "." + os.path.sep
 QDSpy_iniFileName           = "QDSpy.ini"
 
-QDSpy_pathLogFiles          = ".\\Logs\\"
+QDSpy_pathLogFiles          = "." + os.path.sep + "Logs" + os.path.sep
 QDSpy_logFileExtension      = ".log"
 QDSpy_doLogTimeStamps       = True
 
-QDSpy_pathShader            = ".\\Shader\\"
+QDSpy_pathShader            = "." + os.path.sep + "Shader" + os.path.sep
 QDSpy_shaderFileExt         = ".cl"
 QDSpy_shaderFileCmdTok      = "#qds"
 QDSpy_loadShadersOnce       = True
