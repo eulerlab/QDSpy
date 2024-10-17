@@ -452,8 +452,7 @@ class Stim:
         shader type exists
         """
         if self.ShManager is None:
-            _path = fsp.getQDSpyPath()
-            self.ShManager = csh.ShaderManager(self.Conf, _path)
+            self.ShManager = csh.ShaderManager(self.Conf)
         if _shType not in self.ShManager.getShaderTypes():
             self.LastErrC = StimErrC.invalidShaderType
             raise StimException(StimErrC.invalidShaderType)
@@ -1381,13 +1380,13 @@ class Stim:
         if not (_onlyInfo):
             _log.Log.write(" ", "Loading compiled stimulus...", True)
 
-        sPath = fsp.repairPath(_sFileName)
+        sPath = _sFileName
         try:
-            with open(sPath + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
+            with open(_sFileName + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
                 '''
                 self.fileName = sFileName.replace("\\\\", "\\")
                 '''
-                self.fileName = sPath 
+                self.fileName = sPath
                 #print("load", sPath)
                 stimPick = pickle.Unpickler(stimFile)
                 ID = stimPick.load()

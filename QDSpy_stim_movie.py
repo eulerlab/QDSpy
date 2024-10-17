@@ -21,15 +21,11 @@ All rights reserved.
 __author__ = "code@eulerlab.de"
 
 import os.path
-import platform
 import configparser
 import QDSpy_stim as stm
 import QDSpy_global as glo
-import QDSpy_file_support as fsu
 import Libraries.log_helper as _log
 import Graphics.renderer_opengl as rdr
-
-PLATFORM_WINDOWS = platform.system() == "Windows"
 
 # ---------------------------------------------------------------------
 # Movie object class
@@ -159,17 +155,9 @@ class Movie:
         tempStr = (os.path.splitext(os.path.basename(_fName)))[0]
         self.fExtImg = os.path.splitext(_fName)[1].lower()
         self.isTestOnly = _testOnly
-
-        if PLATFORM_WINDOWS:
-            tempDir = os.path.dirname(_fName)
-            if len(tempDir) > 0:
-                tempDir += "\\"
-            self.fNameDesc = tempDir + tempStr + glo.QDSpy_movDescFileExt
-            self.fNameImg = _fName
-        else:
-            tempDir = os.getcwd()
-            self.fNameDesc = fsu.repairPath(tempDir + tempStr) + glo.QDSpy_movDescFileExt
-            self.fNameImg = fsu.repairPath(tempDir + tempStr) + self.fExtImg
+        tempDir = os.path.dirname(_fName)
+        self.fNameDesc = os.path.join(tempDir, tempStr) + glo.QDSpy_movDescFileExt
+        self.fNameImg = _fName
 
         if self.fExtImg in glo.QDSpy_movAllowedMovieExts:
             return self.__loadMontage()

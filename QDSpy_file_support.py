@@ -51,12 +51,12 @@ def getFNameNoExt(_fName):
 def getStimCompileState(_fName: str) -> bool:
     """ Check if pickle-file is current
     """
-    fPath = os.path.splitext(repairPath(_fName))[0]
+    dirPath = os.path.splitext(_fName)[0]
     #print("getStimCompileState2", _fName, fPath)
     try:
-        tStamp = os.path.getmtime(fPath + glo.QDSpy_stimFileExt)
+        tStamp = os.path.getmtime(os.path.join(dirPath, glo.QDSpy_stimFileExt))
         tPy = datetime.fromtimestamp(tStamp)
-        tStamp = os.path.getmtime(fPath + glo.QDSpy_cPickleFileExt)
+        tStamp = os.path.getmtime(os.path.join(dirPath, glo.QDSpy_cPickleFileExt))
         tPck = datetime.fromtimestamp(tStamp)
         return tPck > tPy
     
@@ -69,7 +69,7 @@ def getStimCompileState(_fName: str) -> bool:
 def getStimExists(_fName):
     """ Check if stimulus file (.py) exists
     """
-    fPath = repairPath(_fName) + glo.QDSpy_stimFileExt
+    fPath = _fName + glo.QDSpy_stimFileExt
     #print("getStimExists", fPath, os.path.isfile(fPath))
     return os.path.isfile(fPath)
 

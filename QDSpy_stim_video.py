@@ -22,7 +22,6 @@ import os
 import platform
 import QDSpy_stim as stm
 import QDSpy_global as glo
-import QDSpy_file_support as fsu
 import Libraries.log_helper as _log
 import moviepy.editor as mpe
 import Graphics.renderer_opengl as rdr
@@ -83,18 +82,9 @@ class Video:
         """Reads a movie file (e.g. AVI); a description file is not needed
         Returns an error of the QDSpy_stim.StimErrC class
         """
-        tempStr = (os.path.splitext(os.path.basename(_fName)))[0]
         self.fExtVideo = os.path.splitext(_fName)[1].lower()
         self.isTestOnly = _testOnly
-
-        if PLATFORM_WINDOWS:
-            tempDir = os.path.dirname(_fName)
-            if len(tempDir) > 0:
-                tempDir += "\\"
-            self.fNameVideo = _fName
-        else:
-            tempDir = os.getcwd()
-            self.fNameVideo = fsu.repairPath(tempDir + tempStr) + self.fExtVideo
+        self.fNameVideo = _fName
 
         if self.fExtVideo in glo.QDSpy_vidAllowedVideoExts:
             return self.__loadVideo()

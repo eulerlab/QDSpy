@@ -9,11 +9,14 @@ All rights reserved.
 2024-06-15 - Fix for breaking change in `configparser`; now using
              `ConfigParser` instead of `RawConfigParser`
 """
+import os.path
+
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
 # fmt: off
 # ---------------------------------------------------------------------
+QDSpy_path                  = os.path.dirname(__file__)
 QDSpy_versionStr            = "QDSpy v0.92 beta"
 QDSpy_copyrightStr          = "(c) 2013-24 Thomas Euler"
 QDSpy_appID                 = u"QDSpy3.v090beta.thomas_euler.eulerlab.de"
@@ -26,7 +29,7 @@ QDSpy_noStimArg             = False
 QDSpy_loop_sleep_s          = 0.01
 
 QDSpy_isUseSound            = False
-QDSpy_pathSounds            = ".\\Sounds\\"
+QDSpy_pathSounds            = os.path.join(QDSpy_path, "Sounds") + os.path.sep
 QDSpy_soundStimStart        = "stim_start.mp3"
 QDSpy_soundStimEnd          = "stim_end.mp3"
 QDSpy_soundError            = "error.mp3" 
@@ -72,7 +75,7 @@ QDSpy_cPickleProtocol       = 3
 QDSpy_cPickleFileExt        = ".pickle"
 QDSpy_fileVersionID         = 8
 QDSpy_stimFileExt           = ".py"
-QDSpy_pathStimuli           = ".\\Stimuli\\"
+QDSpy_pathStimuli           = os.path.join(QDSpy_path, "Stimuli") + os.path.sep
 QDSpy_autorunStimFileName   = "__autorun"
 QDSpy_autorunDefFileName    = "__autorun_default_DO_NOT_DELETE"
 
@@ -90,7 +93,7 @@ QDSpy_vidAllowedVideoExts   = [".avi"]
 QDSpy_pathApplication       = ".\\"
 QDSpy_iniFileName           = "QDSpy.ini"
 
-QDSpy_pathLogFiles          = ".\\Logs\\"
+QDSpy_pathLogFiles          = os.path.join(QDSpy_path, "Logs") + os.path.sep
 QDSpy_logFileExtension      = ".log"
 QDSpy_doLogTimeStamps       = True
 

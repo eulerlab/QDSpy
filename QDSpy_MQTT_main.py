@@ -18,7 +18,6 @@ import os
 from collections import deque
 import QDSpy_global as glo
 import QDSpy_stim as stm
-import QDSpy_file_support as fsu
 from QDSpy_app import QDSpyApp, State, StateStr
 import Libraries.mqtt_client as mqtt
 import Libraries.mqtt_globals as mgl
@@ -115,7 +114,7 @@ class AppMQTT(QDSpyApp):
             if self.state in [State.idle, State.ready]:  
                 # Try loading the stimulus
                 # "load,<msg index>,<stimulus file name>"
-                fName = fsu.getQDSpyPath() +self.Conf.pathStim +msg[1][1]
+                fName = os.path.join(self.Conf.pathStim, msg[1][1])
                 errC = self.loadStim(fName)
 
         elif msg[0] == mgl.Command.PLAY:
