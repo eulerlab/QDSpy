@@ -17,7 +17,6 @@ __author__ = "code@eulerlab.de"
 
 import os
 import QDSpy_global as glo
-import QDSpy_file_support as fsu
 import Libraries.log_helper as _log
 from Graphics.shader_opengl import Shader
 
@@ -37,7 +36,7 @@ class ShaderFileCmd:
 # Shader manager class
 # ---------------------------------------------------------------------
 class ShaderManager:
-    def __init__(self, _Conf, _path: str):
+    def __init__(self, _Conf):
         # Initializing
         self.Conf = _Conf
         self.ShFileList = []
@@ -45,16 +44,15 @@ class ShaderManager:
         self.ShTypes = []
         self.ShVertCode = []
         self.ShFragCode = []
-        pshader = fsu.repairPath(_path +self.Conf.pathShader)
 
         # Make a list of the available shader files ...
         f = []
-        for dirpath, dirnames, filenames in os.walk(pshader):
+        for dirpath, dirnames, filenames in os.walk(self.Conf.pathShader):
             f.extend(filenames)
             break
         for fName in f:
             if (os.path.splitext(fName)[1]).lower() == glo.QDSpy_shaderFileExt:
-                self.ShFileList.append(pshader + fName)
+                self.ShFileList.append(self.Conf.pathShader + fName)
 
         # Parse each shader file ...
         isInVert = False

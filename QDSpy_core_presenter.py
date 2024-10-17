@@ -29,7 +29,6 @@ import QDSpy_stim_movie as mov
 import QDSpy_stim_video as vid
 import QDSpy_stim_draw as drw
 import QDSpy_core_support as csp
-import QDSpy_file_support as fsu
 import QDSpy_core_shader as csh
 from Libraries.log_helper import Log
 import Libraries.multiprocess_helper as mpr
@@ -68,8 +67,7 @@ class Presenter:
         self.Conf = _Conf
         self.View = _View
         self.LCr = _LCr
-        self.pathQDSpy = fsu.getQDSpyPath()
-        self.ShManager = csh.ShaderManager(self.Conf, self.pathQDSpy)
+        self.ShManager = csh.ShaderManager(self.Conf)
         self.useSound = glo.QDSpy_isUseSound
         self.reset()
         
@@ -84,11 +82,10 @@ class Presenter:
         if self.useSound:
             Log.write("DEBUG", "Loading sounds ...")
             self.SoundPlayer = SoundPlayer()    
-            p = self.pathQDSpy +glo.QDSpy_pathSounds
-            self.SoundPlayer.add(Sounds.OK, p +glo.QDSpy_soundOk)
-            self.SoundPlayer.add(Sounds.ERROR, p +glo.QDSpy_soundError)
-            self.SoundPlayer.add(Sounds.STIM_START, p +glo.QDSpy_soundStimStart)
-            self.SoundPlayer.add(Sounds.STIM_END, p +glo.QDSpy_soundStimEnd)
+            self.SoundPlayer.add(Sounds.OK, os.path.join(glo.QDSpy_pathSounds, glo.QDSpy_soundOk))
+            self.SoundPlayer.add(Sounds.ERROR, os.path.join(glo.QDSpy_pathSounds, glo.QDSpy_soundError))
+            self.SoundPlayer.add(Sounds.STIM_START, os.path.join(glo.QDSpy_pathSounds, glo.QDSpy_soundStimStart))
+            self.SoundPlayer.add(Sounds.STIM_END, os.path.join(glo.QDSpy_pathSounds, glo.QDSpy_soundStimEnd))
             Log.write("DEBUG", "... done")
         else:
             self.SoundPlayer = None    

@@ -24,7 +24,6 @@ import sys
 import platform
 from   datetime import datetime
 import QDSpy_checks  # noqa: F401
-import QDSpy_file_support as fsu
 import QDSpy_global as glo
 import QDSpy_stim as stm
 import QDSpy_config as cfg
@@ -87,17 +86,12 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
     if os.path.isfile(fNameDir_pk):
       tLastUpt_pick = datetime.fromtimestamp(os.path.getmtime(fNameDir_pk))
       if tLastUpt_pick > tLastUpt_py and not args.compile:
-        pythonPath = fsu.getQDSpyPath()
-        if len(pythonPath) > 0:
-          pythonPath += "\\" if PLATFORM_WINDOWS else "/"
-        
         _log.Log.write("INFO", "Script has not changed, running stimulus now ...")
-        s = "python {0}QDSpy_core.py -t={1} {2} {3}"
-        os.system(s.format(
-            pythonPath if PLATFORM_WINDOWS else "",
-            args.timing, "-v" if args.verbose else "",
-            _Stim.fNameDir)
-          )
+        command = "python {0} -t={1} {2} {3}".format(
+          os.path.join(glo.QDSpy_path, "QDSpy_core.py"),
+          args.timing, "-v" if args.verbose else "",
+          _Stim.fNameDir)
+        os.system(command)
         '''
         os.system(s.format(
             pythonPath if PLATFORM_WINDOWS else "",

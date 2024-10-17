@@ -413,7 +413,6 @@ class QDSpyApp(object):
     def openLogFile(_fPath) -> TextIO:
         """Open a log file
         """
-        _fPath = fsu.repairPath(fsu.getQDSpyPath() +_fPath)
         #print("openLogFile", _fPath)
         os.makedirs(_fPath, exist_ok=True)
         fName = time.strftime("%Y%m%d_%H%M%S")
