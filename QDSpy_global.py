@@ -90,8 +90,8 @@ QDSpy_movAllowedMovieExts   = [".png", ".jpg"]
 
 QDSpy_vidAllowedVideoExts   = [".avi"]
 
-QDSpy_pathApplication       = ".\\"
-QDSpy_iniFileName           = "QDSpy.ini"
+QDSpy_pathApplication       = QDSpy_path
+QDSpy_iniFileName           = os.path.join(QDSpy_path, "QDSpy.ini")
 
 QDSpy_pathLogFiles          = os.path.join(QDSpy_path, "Logs") + os.path.sep
 QDSpy_logFileExtension      = ".log"
