@@ -45,7 +45,10 @@ class ShaderManager:
         self.ShTypes = []
         self.ShVertCode = []
         self.ShFragCode = []
+        '''
         pshader = fsu.repairPath(_path +self.Conf.pathShader)
+        '''
+        pshader = self.Conf.pathShader
 
         # Make a list of the available shader files ...
         f = []

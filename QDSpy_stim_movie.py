@@ -10,7 +10,7 @@ QDSpy module - defines movie-related classes
   The movie control class manages the presentation of a movie according to
   the presentation parameters
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2024-06-15 - Fix for breaking change in `configparser`; now using
@@ -156,6 +156,7 @@ class Movie:
            file (same name but .txt extension)
            Returns an error of the QDSpy_stim.StimErrC class
         """
+        '''
         tempStr = (os.path.splitext(os.path.basename(_fName)))[0]
         self.fExtImg = os.path.splitext(_fName)[1].lower()
         self.isTestOnly = _testOnly
@@ -171,6 +172,17 @@ class Movie:
             self.fNameDesc = fsu.repairPath(tempDir + tempStr) + glo.QDSpy_movDescFileExt
             self.fNameImg = fsu.repairPath(tempDir + tempStr) + self.fExtImg
 
+        if self.fExtImg in glo.QDSpy_movAllowedMovieExts:
+            return self.__loadMontage()
+        else:
+            return stm.StimErrC.invalidMovieFormat
+        '''    
+        self.fExtImg = fsu.getFileExt(_fName)
+        self.isTestOnly = _testOnly
+        path = fsu.getCurrentPath() 
+        fname_desc = fsu.getPathReplacedExt(_fName, glo.QDSpy_movDescFileExt)
+        self.fNameDesc = fsu.getJoinedPath(path, fname_desc)
+        self.fNameImg = fsu.getJoinedPath(path, _fName)
         if self.fExtImg in glo.QDSpy_movAllowedMovieExts:
             return self.__loadMontage()
         else:

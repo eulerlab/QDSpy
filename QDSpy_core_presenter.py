@@ -84,11 +84,23 @@ class Presenter:
         if self.useSound:
             Log.write("DEBUG", "Loading sounds ...")
             self.SoundPlayer = SoundPlayer()    
-            p = self.pathQDSpy +glo.QDSpy_pathSounds
-            self.SoundPlayer.add(Sounds.OK, p +glo.QDSpy_soundOk)
-            self.SoundPlayer.add(Sounds.ERROR, p +glo.QDSpy_soundError)
-            self.SoundPlayer.add(Sounds.STIM_START, p +glo.QDSpy_soundStimStart)
-            self.SoundPlayer.add(Sounds.STIM_END, p +glo.QDSpy_soundStimEnd)
+            path = glo.QDSpy_pathSounds
+            self.SoundPlayer.add(
+                Sounds.OK, 
+                fsu.getJoinedPath(path, glo.QDSpy_soundOk)
+            )
+            self.SoundPlayer.add(
+                Sounds.ERROR, 
+                fsu.getJoinedPath(path, glo.QDSpy_soundError)
+            )
+            self.SoundPlayer.add(
+                Sounds.STIM_START, 
+                fsu.getJoinedPath(path, glo.QDSpy_soundStimStart)
+            )
+            self.SoundPlayer.add(
+                Sounds.STIM_END, 
+                fsu.getJoinedPath(path, glo.QDSpy_soundStimEnd)
+            )
             Log.write("DEBUG", "... done")
         else:
             self.SoundPlayer = None    

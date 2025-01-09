@@ -7,7 +7,7 @@ The 'Config' class manages the external configuration file 'QDSpy.ini'
 using the configparser library. Use 'getParsedArg()' to parse arguments
 for the command line version of QDSpy
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2022-08-03 - Adapt to LINUX
@@ -48,8 +48,11 @@ class Config:
         #
         self.isWindows = PLATFORM_WINDOWS
         self.pyVersion = sys.version_info[0] + sys.version_info[1] / 10
+        '''
         _sep = "\\" if PLATFORM_WINDOWS else "/"
         self.iniPath = os.getcwd() + _sep + glo.QDSpy_iniFileName
+        '''
+        self.iniPath = glo.QDSpy_iniFileName        
 
         # Set configuration default values
         #

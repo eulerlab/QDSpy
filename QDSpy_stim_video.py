@@ -9,7 +9,7 @@ QDSpy module - defines video-related classes (ALPHA)
 'VideoCtrl'
   The movie control class manages the streaming of the video
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2024-08-04 - `pyglet` calls encapsulated in `renderer_opengl.py`             
@@ -83,6 +83,7 @@ class Video:
         """Reads a movie file (e.g. AVI); a description file is not needed
         Returns an error of the QDSpy_stim.StimErrC class
         """
+        '''
         tempStr = (os.path.splitext(os.path.basename(_fName)))[0]
         self.fExtVideo = os.path.splitext(_fName)[1].lower()
         self.isTestOnly = _testOnly
@@ -100,7 +101,16 @@ class Video:
             return self.__loadVideo()
         else:
             return stm.StimErrC.invalidVideoFormat
-
+        '''
+        self.fExtVideo = fsu.getFileExt(_fName)
+        self.isTestOnly = _testOnly
+        self.fNameVideo = fsu.getJoinedPath(
+            fsu.getCurrentPath(), _fName
+        )
+        if self.fExtVideo in glo.QDSpy_vidAllowedVideoExts:
+            return self.__loadVideo()
+        else:
+            return stm.StimErrC.invalidVideoFormat
 
 # ---------------------------------------------------------------------
 # Video control class object

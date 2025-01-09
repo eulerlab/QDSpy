@@ -3,7 +3,7 @@
 """
 QDSpy module - Application class
 
-Copyright (c) 2024 Thomas Euler
+Copyright (c) 2024-2025 Thomas Euler
 All rights reserved.
 
 2024-08-03 - Initial version
@@ -409,6 +409,7 @@ class QDSpyApp(object):
             self.writeToLogFile(self._logFile, _data[2])
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    '''
     @staticmethod
     def openLogFile(_fPath) -> TextIO:
         """Open a log file
@@ -438,5 +439,6 @@ class QDSpyApp(object):
         """
         if _file:
             _file.close()
+    '''            
     
 # ---------------------------------------------------------------------

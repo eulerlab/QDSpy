@@ -8,12 +8,13 @@ for visual neuroscience. It is based on QDS, currently uses OpenGL via
 pyglet for graphics. It primarly targets Windows, but may also run on
 other operating systems
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2022-08-03 - Adapt to LINUX
 2024-06-15 - Small fixes for PEP violations  
 2024-07-12 - Detect user abort by Ctrl-C 
+2025-01-09 - Reworked path handling
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -22,7 +23,6 @@ import os
 import time
 import sys
 import platform
-from   datetime import datetime
 import QDSpy_checks  # noqa: F401
 import QDSpy_file_support as fsu
 import QDSpy_global as glo
@@ -61,11 +61,10 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   _Stim.Conf = cfg.Config()
 
   # Parse command-line arguments
-  fName = (os.path.splitext(os.path.basename(sys.argv[0])))[0]
-  fNameOnlyDir = os.path.dirname(sys.argv[0])
-  s = fNameOnlyDir +"/" +fName
-  s = s if len(fNameOnlyDir) > 0 or PLATFORM_WINDOWS else s[1:]
-  _Stim.fNameDir = s
+  fName = fsu.getFNameNoExt(sys.argv[0])
+  fNameOnlyDir = fsu.getPathNoFileName(sys.argv[0])
+  _Stim.fNameDir = fsu.getJoinedPath(fNameOnlyDir, fName)
+ 
   fNameDir_py = _Stim.fNameDir +".py"
   fNameDir_pk = _Stim.fNameDir +".pickle"
   args = cfg.getParsedArgv()
@@ -82,29 +81,20 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
 
   # Check if pickle-file is current, if so, run the stimulus without
   # recompiling
-  tLastUpt_py = datetime.fromtimestamp(os.path.getmtime(fNameDir_py))
+  tLastUpt_py = fsu.getFileTimeStamp(fNameDir_py)
   try:
-    if os.path.isfile(fNameDir_pk):
-      tLastUpt_pick = datetime.fromtimestamp(os.path.getmtime(fNameDir_pk))
-      if tLastUpt_pick > tLastUpt_py and not args.compile:
-        pythonPath = fsu.getQDSpyPath()
-        if len(pythonPath) > 0:
-          pythonPath += "\\" if PLATFORM_WINDOWS else "/"
-        
+    if fsu.getFileExists(fNameDir_pk):
+      # Compiled stimulus file exists ...
+      tLastUpt_pk = fsu.getFileTimeStamp(fNameDir_pk)
+      if tLastUpt_pk > tLastUpt_py and not args.compile:
+        # Stimulus unchanged, therefore run directly
         _log.Log.write("INFO", "Script has not changed, running stimulus now ...")
-        s = "python {0}QDSpy_core.py -t={1} {2} {3}"
-        os.system(s.format(
-            pythonPath if PLATFORM_WINDOWS else "",
-            args.timing, "-v" if args.verbose else "",
-            _Stim.fNameDir)
-          )
-        '''
-        os.system(s.format(
-            pythonPath if PLATFORM_WINDOWS else "",
-            args.timing, "-v" if args.verbose else "",
-            fName if PLATFORM_WINDOWS else _Stim.fNameDir)
-          )
-        '''  
+        command = "python {0} -t={1} {2} {3}".format(
+          fsu.getJoinedPath(glo.QDSpy_path, "QDSpy_core.py"),
+          args.timing, "-v" if args.verbose else "",
+          _Stim.fNameDir
+        )
+        os.system(command)
         exit()
 
   except KeyboardInterrupt:
@@ -113,8 +103,7 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   
 # ---------------------------------------------------------------------
 def GetDefaultRefreshRate():
-  """ Returns the refresh rate (in Hz) defined in the QDS configuration 
-  files.
+  """ Returns the refresh rate (in Hz) defined in `QDS.ini`
   """
   _Stage = cfg.Config().createStageFromConfig()
   return _Stage.scrReqFreq_Hz

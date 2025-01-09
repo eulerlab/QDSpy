@@ -21,7 +21,7 @@ import pickle
 import numpy as np
 import QDSpy_global as glo
 import QDSpy_stim_support as ssp
-import QDSpy_file_support as fsp
+import QDSpy_file_support as fsu
 import Libraries.log_helper as _log
 import QDSpy_stim_draw as drw
 import QDSpy_stim_movie as mov
@@ -452,7 +452,7 @@ class Stim:
         shader type exists
         """
         if self.ShManager is None:
-            _path = fsp.getQDSpyPath()
+            _path = fsu.getQDSpyPath()
             self.ShManager = csh.ShaderManager(self.Conf, _path)
         if _shType not in self.ShManager.getShaderTypes():
             self.LastErrC = StimErrC.invalidShaderType
@@ -1381,7 +1381,10 @@ class Stim:
         if not (_onlyInfo):
             _log.Log.write(" ", "Loading compiled stimulus...", True)
 
+        '''
         sPath = fsp.repairPath(_sFileName)
+        '''
+        sPath = fsu.getJoinedPath(fsu.getCurrentPath(), _sFileName)
         try:
             with open(sPath + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
                 '''
@@ -1429,7 +1432,7 @@ class Stim:
 
         # Get hash for pickle file
         if not (_onlyInfo):
-            self.md5Str = fsp.getHashStrForFile(sPath + glo.QDSpy_cPickleFileExt)
+            self.md5Str = fsu.getHashStrForFile(sPath + glo.QDSpy_cPickleFileExt)
 
         # Log some information
         if not (_onlyInfo):

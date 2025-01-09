@@ -3,13 +3,17 @@
 """
 QDSpy module - support routines for file handling
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2024-06-19 - Ported from `PyQt5` to `PyQt6`
            - Reformatted (using Ruff)
 2024-08-10 - GUI-related routines moved to `QDSpy_GUI_main`
            - Moved hash support functions here 
+2025-01-08 - removed dependency of `QDSpy_global.py` by copying the 
+             needed definitions here; not great but allows using 
+             general file-related functions from this module in 
+             `QDSpy_global.py`           
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -17,13 +21,17 @@ __author__ = "code@eulerlab.de"
 import os
 import platform
 import hashlib
+from pathlib import Path
 from datetime import datetime
-import QDSpy_global as glo
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:
     WindowsError = FileNotFoundError
 
+# fmt: off
+QDSpy_stimFileExt    = ".py"    
+QDSpy_cPickleFileExt = ".pickle"
+# fmt: on
 # ---------------------------------------------------------------------
 def getStimFileLists(_path):
     """ Make a list of the stimulus files (including path) present in the
@@ -35,48 +43,70 @@ def getStimFileLists(_path):
         f.extend(filenames)
         break
     for fName in f:
-        if (os.path.splitext(fName)[1]).lower() == glo.QDSpy_stimFileExt:
+        if (os.path.splitext(fName)[1]).lower() == QDSpy_stimFileExt:
             fName = (os.path.splitext(os.path.basename(fName)))[0]
             stimFNames.append(os.path.join(_path, fName))
     return stimFNames
 
-
 # ---------------------------------------------------------------------
-def getFNameNoExt(_fName):
+def getFNameNoExt(_fName :str) -> str:
     """ Extract just file name, no path nor extension
     """
-    return (os.path.splitext(os.path.basename(_fName)))[0]
+    return Path(_fName).with_suffix("").stem
+
+
+def getPathReplacedExt(_fName :str, _ext :str) -> str:
+    """ Replace file extension with `_ext`
+    """
+    return Path(_fName).with_suffix(_ext).__str__()
+
+
+def getPathNoFileName(_fName :str) -> str:
+    """ Extract path w/o file name
+    """
+    return Path(_fName).parents[0].__str__()
+
+
+def getFileExt(_fname :str) -> str:
+    """ Get only file extension
+    """
+    return Path(_fname).suffix.__str__()
 
 # ---------------------------------------------------------------------
+def getFileTimeStamp(_fName: str) -> float:
+    """ Get the files time stamp
+    """
+    fobj = Path(_fName).resolve()
+    tStamp = fobj.stat().st_mtime
+    return datetime.fromtimestamp(tStamp)
+
+
 def getStimCompileState(_fName: str) -> bool:
     """ Check if pickle-file is current
     """
-    fPath = os.path.splitext(repairPath(_fName))[0]
-    #print("getStimCompileState2", _fName, fPath)
-    try:
-        tStamp = os.path.getmtime(fPath + glo.QDSpy_stimFileExt)
-        tPy = datetime.fromtimestamp(tStamp)
-        tStamp = os.path.getmtime(fPath + glo.QDSpy_cPickleFileExt)
-        tPck = datetime.fromtimestamp(tStamp)
-        return tPck > tPy
-    
-    except WindowsError:
-        pass
-
-    return False
+    fname_py = Path(_fName).with_suffix(QDSpy_stimFileExt).__str__()
+    tPy = getFileTimeStamp(fname_py)
+    fname_pk = Path(_fName).with_suffix(QDSpy_cPickleFileExt).__str__()
+    tPk = getFileTimeStamp(fname_pk)
+    return tPk > tPy
 
 # ---------------------------------------------------------------------
-def getStimExists(_fName):
+def getStimExists(_fName :str) -> bool:
     """ Check if stimulus file (.py) exists
     """
-    fPath = repairPath(_fName) + glo.QDSpy_stimFileExt
-    #print("getStimExists", fPath, os.path.isfile(fPath))
-    return os.path.isfile(fPath)
+    return Path(_fName).with_suffix(QDSpy_stimFileExt).is_file()
 
+
+def getFileExists(_fName :str) -> bool:
+   """ Check if a file `_fName` exists
+   """
+   return Path(_fName).is_file()
+   
 # ---------------------------------------------------------------------
 def getQDSpyPath() -> str:
-    """Get QDSpy path from `PYTHONPATH`
+    """ Get QDSpy path 
     """
+    '''
     _pathQDSpy = ""
     pList = os.environ['PYTHONPATH'].split(";")
     for p in pList:
@@ -84,8 +114,28 @@ def getQDSpyPath() -> str:
         if pParts[-1].lower() == "qdspy":
             _pathQDSpy = p
     return _pathQDSpy        
+    '''
+    return Path(__file__).parents[0].__str__()
+
+
+def getCurrentPath() -> str:
+   """ Get working directory
+   """
+   return Path().cwd().__str__()
 
 # ---------------------------------------------------------------------
+def getCompletePath(path :str) -> str:
+   """ Complete path 
+   """
+   return Path(path).resolve().__str__()
+
+
+def getJoinedPath(path0 :str, path1 :str, path2 :str = "") ->str:
+   """ Join two paths
+   """
+   return Path(path0, path1, path2).__str__()
+
+'''
 def repairPath(_path: str) -> str:
     """Repair path if necessary
     """
@@ -93,13 +143,12 @@ def repairPath(_path: str) -> str:
         _path = _path.replace("\\", "/").replace(".", "")
         _path = _path[1:] if _path[0] == ":" else _path
     return _path
-
+'''
 # ---------------------------------------------------------------------
 '''
 def getShortText(_win, _txt, _widget):
     metrics = QtGui.QFontMetrics(_win.font())
     return metrics.elidedText(_txt, QtCore.Qt.TextElideMode.ElideRight, _widget.width())
-
 
 # ---------------------------------------------------------------------
 def getLEDGUIObjects(_this, _LED):
@@ -117,7 +166,6 @@ def getLEDGUIObjects(_this, _LED):
         return [_this.spinBoxLED6, _this.label_LED6, _this.pushButtonLED6]
     else:
         return [None] * 3
-
 
 # ---------------------------------------------------------------------
 def updateToggleButton(_btn, _txtList=["on", "off"]):

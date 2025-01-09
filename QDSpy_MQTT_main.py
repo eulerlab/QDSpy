@@ -3,7 +3,7 @@
 """
 QDSpy module - Main program of the MQTT version of QDSpy
 
-Copyright (c) 2024 Thomas Euler
+Copyright (c) 2024-2025 Thomas Euler
 All rights reserved.
 
 2024-08-03 - Initial version
@@ -66,7 +66,7 @@ class AppMQTT(QDSpyApp):
     # Handle and process incoming MQTT messages
     # -------------------------------------------------------------------
     def handleMsg(self, _msg) -> None:
-        """Handle incoming MQTT messages
+        """ Handle incoming MQTT messages
         """
         self._isNewMsg = False
         sMsg = _msg.payload.decode("UTF8")
@@ -85,7 +85,7 @@ class AppMQTT(QDSpyApp):
     def publishReply(self, _iMsg, 
                      _errC: stm.StimErrC = stm.StimErrC.ok
         ):
-        """Publish a reply. If `_errC` is ok, the just send and "ok",
+        """ Publish a reply. If `_errC` is ok, the just send and "ok",
         otherwise send "error", an error code and an error message. 
         In both cases, the index of the message to which this is the reply
         is added
@@ -100,7 +100,7 @@ class AppMQTT(QDSpyApp):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def processMsg(self) -> None:
-        """Takes a message from the queue, if there are any, and process
+        """ Takes a message from the queue, if there are any, and process
         it. Processes only one message at a time.
         """
         if not self._msgQueue or len(self._msgQueue) == 0:
@@ -115,7 +115,14 @@ class AppMQTT(QDSpyApp):
             if self.state in [State.idle, State.ready]:  
                 # Try loading the stimulus
                 # "load,<msg index>,<stimulus file name>"
+                '''
                 fName = fsu.getQDSpyPath() +self.Conf.pathStim +msg[1][1]
+                '''
+                fName = fsu.getJoinedPath(
+                    glo.QDSpy_path, 
+                    self.Conf.pathStim, 
+                    msg[1][1]
+                )
                 errC = self.loadStim(fName)
 
         elif msg[0] == mgl.Command.PLAY:
@@ -185,7 +192,7 @@ class AppMQTT(QDSpyApp):
     # Running and closing the application 
     # -------------------------------------------------------------------
     def loop(self):
-        """Main application loop
+        """ Main application loop
         """
         try:
             # Start MQTT client
