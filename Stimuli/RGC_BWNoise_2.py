@@ -26,7 +26,9 @@ QDS.LogUserParameters(p)
 fPath       = QDS.GetStimulusPath()
 durMarker_s = p["durFr_s"] *p["nFrPerMarker"]
 
+'''
 print(os.getcwd(), fPath)
+'''
 # Read file with M sequence 
 #
 try:

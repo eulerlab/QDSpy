@@ -8,11 +8,13 @@ for visual neuroscience. It is based on QDS, currently uses OpenGL via
 pyglet for graphics. It primarly targets Windows, but may also run on
 other operating systems
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2022-08-03 - Adapt to LINUX
 2024-06-15 - Small fixes for PEP violations  
+2024-07-12 - Detect user abort by Ctrl-C 
+2025-01-09 - Reworked path handling
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -20,14 +22,16 @@ __author__ 	= "code@eulerlab.de"
 import os
 import time
 import sys
-from   datetime import datetime
+import platform
+import QDSpy_checks  # noqa: F401
+import QDSpy_file_support as fsu
 import QDSpy_global as glo
 import QDSpy_stim as stm
-import QDSpy_stim_support as ssp
 import QDSpy_config as cfg
+import Libraries.log_helper as _log
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
-PLATFORM_WINDOWS = sys.platform == "win32"
+PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:
   WindowsError = FileNotFoundError
 
@@ -36,9 +40,8 @@ _Stim   = stm.Stim()
 
 # ---------------------------------------------------------------------
 def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
-  """
-  Initializes the QDS library. Needs to be called **before** any other
-  QDS command is used.
+  """ Initializes the QDS library. Needs to be called **before** any 
+  other QDS command is used.
 
   =============== ==================================================
   Parameters:
@@ -58,60 +61,56 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   _Stim.Conf = cfg.Config()
 
   # Parse command-line arguments
-  #
-  fName = (os.path.splitext(os.path.basename(sys.argv[0])))[0]
-  fNameOnlyDir = os.path.dirname(sys.argv[0])
-  s = fNameOnlyDir +"/" +fName
-  s = s if len(fNameOnlyDir) > 0 or PLATFORM_WINDOWS else s[1:]
-  _Stim.fNameDir = s
+  fName = fsu.getFNameNoExt(sys.argv[0])
+  fNameOnlyDir = fsu.getPathNoFileName(sys.argv[0])
+  _Stim.fNameDir = fsu.getJoinedPath(fNameOnlyDir, fName)
+ 
   fNameDir_py = _Stim.fNameDir +".py"
   fNameDir_pk = _Stim.fNameDir +".pickle"
   args = cfg.getParsedArgv()
   
   # Display startup message and return if running the up-to-date stimulus
   # immediately is not requested
-  #
-  ssp.Log.write(
+  _log.Log.write(
       "***", glo.QDSpy_versionStr +
       " Compiler - " +glo.QDSpy_copyrightStr
     )
-  ssp.Log.write(" ", "Initializing ...")
+  _log.Log.write(" ", "Initializing ...")
   if _runMode == 0:
     return
 
   # Check if pickle-file is current, if so, run the stimulus without
   # recompiling
-  #
-  tLastUpt_py = datetime.fromtimestamp(os.path.getmtime(fNameDir_py))
+  tLastUpt_py = fsu.getFileTimeStamp(fNameDir_py)
   try:
-    tLastUpt_pick = datetime.fromtimestamp(os.path.getmtime(fNameDir_pk))
-    if tLastUpt_pick > tLastUpt_py and not args.compile:
-      pythonPath  = os.environ.get("PYTHONPATH", "").split(";")[0]
-      if len(pythonPath) > 0:
-        pythonPath += "\\" if PLATFORM_WINDOWS else "/"
-      ssp.Log.write("INFO", "Script has not changed, running stimulus now ...")
-      s = "python {0}QDSpy_core.py -t={1} {2} {3}"
-      os.system(s.format(
-          pythonPath if PLATFORM_WINDOWS else "",
+    if fsu.getFileExists(fNameDir_pk):
+      # Compiled stimulus file exists ...
+      tLastUpt_pk = fsu.getFileTimeStamp(fNameDir_pk)
+      if tLastUpt_pk > tLastUpt_py and not args.compile:
+        # Stimulus unchanged, therefore run directly
+        _log.Log.write("INFO", "Script has not changed, running stimulus now ...")
+        command = "python {0} -t={1} {2} {3}".format(
+          fsu.getJoinedPath(glo.QDSpy_path, "QDSpy_core.py"),
           args.timing, "-v" if args.verbose else "",
-          fName if PLATFORM_WINDOWS else _Stim.fNameDir)
+          _Stim.fNameDir
         )
-      exit()
-  except WindowsError:
-    pass
+        os.system(command)
+        exit()
 
+  except KeyboardInterrupt:
+    _log.Log.write("INFO", "User abort.")
+    sys.exit()
+  
 # ---------------------------------------------------------------------
 def GetDefaultRefreshRate():
-  """
-  Returns the refresh rate (in Hz) defined in the QDS configuration files.
+  """ Returns the refresh rate (in Hz) defined in `QDS.ini`
   """
   _Stage = cfg.Config().createStageFromConfig()
   return _Stage.scrReqFreq_Hz
 
 # ---------------------------------------------------------------------
 def GetStimulusPath():
-  """
-  Returns the current path of the stimulus folder. Use this function
+  """ Returns the current path of the stimulus folder. Use this function
   to make sure that the script can locate user-provided accessory files
   (e.g. a random number series for a noise stimulus):
 
@@ -124,9 +123,8 @@ def GetStimulusPath():
 
 # ---------------------------------------------------------------------
 def GetRandom(_seed):
-  """
-  Returns a random number in the interval [0, 1) at runtime using the
-  random.random() function.
+  """ Returns a random number in the interval [0, 1) at runtime using
+  the random.random() function.
 
   =============== ==================================================
   Parameters:
@@ -139,13 +137,13 @@ def GetRandom(_seed):
     _Stim.getRandom(_seed)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "GetRandom: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "GetRandom: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def LogUserParameters(_dict):
-  """
-  Writes a user-defined set of parameters to the history and log file.
+  """ Writes a user-defined set of parameters to the history and log 
+  file.
 
   =============== ==================================================
   Parameters:
@@ -165,14 +163,13 @@ def LogUserParameters(_dict):
     _Stim.logUserParameters(_dict)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "logUserParameters: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "logUserParameters: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def SetColorLUTEntry (_index, _rgb):
-  """
-  Redefines an entry in the colour lookup table (LUT), allowing to linearize
-  the intensity range of a display.
+  """ Redefines an entry in the colour lookup table (LUT), allowing to 
+  linearize the intensity range of a display.
 
   Note that it alters the gamma LUT at **run-time**
   (see section :doc:`how_QDSpy_works`) on the operation system-side, that is
@@ -198,14 +195,13 @@ def SetColorLUTEntry (_index, _rgb):
     _Stim.setColorLUTEntry(_index, _rgb)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "LUT_changeEntry(Ex): {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "LUT_changeEntry(Ex): {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def SetColorMode(_depth_bit, _shift_bit=(0,0,0),
                  _mode=stm.ColorMode.range0_255):
-  """
-  Set color mode and bit depth as well as bit offset.
+  """ Set color mode and bit depth as well as bit offset.
 
   .. note:: Note that this conversion happens at **compile-time**
             (see section :doc:`how_QDSpy_works`). Changing the mode requires
@@ -252,22 +248,20 @@ def SetColorMode(_depth_bit, _shift_bit=(0,0,0),
 
 # ---------------------------------------------------------------------
 def StartScript():
-  """
-  Start of the stimulus run section. No definitions are allowed after
-  this command. Must be called before QDS commands that generate
-  stimulus scenes are called.
+  """ Start of the stimulus run section. No definitions are allowed after
+  this command. Must be called before QDS commands that generate stimulus 
+  scenes are called.
   """
   # ...
-  ssp.Log.write("ok", "{0} object(s) defined.".format(len(_Stim.ObjList)))
-  ssp.Log.write("ok", "{0} shader(s) defined.".format(len(_Stim.ShList)))
-  ssp.Log.write(" ",   "Generating scenes ...")
+  _log.Log.write("ok", "{0} object(s) defined.".format(len(_Stim.ObjList)))
+  _log.Log.write("ok", "{0} shader(s) defined.".format(len(_Stim.ShList)))
+  _log.Log.write(" ",   "Generating scenes ...")
   _Stim.isRunSect = True
   return
 
 # ---------------------------------------------------------------------
 def Loop(_nRepeats, _func):
-  """
-  Loops the stimulus sequence generated by the given function.
+  """ Loops the stimulus sequence generated by the given function.
 
   Note that _func is called only once and the loop is coded in the
   actual compiled stimulus; this can be used to keep compilation time
@@ -287,33 +281,29 @@ def Loop(_nRepeats, _func):
 
 # ---------------------------------------------------------------------
 def EndScript():
-  """
-  Must be called after all stimulus scenes have been created, i.e.
+  """ Must be called after all stimulus scenes have been created, i.e.
   at the end of the script.
   """
-  ssp.Log.write("ok", "{0} scene(s) defined.".format(_Stim.nSce))
+  _log.Log.write("ok", "{0} scene(s) defined.".format(_Stim.nSce))
 
   # Compile stimulus
-  #
   _Conf  = cfg.Config()
   _Stage = _Conf.createStageFromConfig()
   _Stim.compile(_Stage)
 
   # Save compiled stimulus code to a pickle file
-  #
   """
   sPath         = os.path.basename(main.__file__)
   sFName, sFExt = os.path.splitext(sPath)
   """
   _Stim.save(_Stim.fNameDir)
 
-  ssp.Log.write("ok", "... done in {0:.3f} s"
+  _log.Log.write("ok", "... done in {0:.3f} s"
                 .format(time.time() -_Stim.tStart))
 
 # ---------------------------------------------------------------------
 def DefObj_BoxEx(_iobj, _dx, _dy, _enShader=0):
-  """
-  Defines a box object and if shaders can be used for this object.
+  """ Defines a box object and if shaders can be used for this object.
 
   =============== ==================================================
   Parameters:
@@ -330,32 +320,30 @@ def DefObj_BoxEx(_iobj, _dx, _dy, _enShader=0):
       _Stim.LastErrC = stm.StimErrC.noDefsInRunSection
       raise stm
     if len(_Stim.ObjList) == 0:
-      ssp.Log.write(" ", "Defining objects ...")
+      _log.Log.write(" ", "Defining objects ...")
 
     _Stim.defObj_box(_iobj, _dx, _dy, _enShader)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "DefObj_Box(Ex): {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "DefObj_Box(Ex): {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 def DefObj_Box(_iobj, _dx, _dy, _angle=0.0):
-  """
-  See :py:func:`QDS.DefObj_BoxEx`
+  """ See :py:func:`QDS.DefObj_BoxEx`
 
   .. note:: Note that "_angle" is depreciated and ignored in QDSpy. The
             angle of an object is now set in the render command.
   """
   if _angle != 0:
-    ssp.Log.write("WARNING", "DefObj_Box: 'angle' is depreciated")
+    _log.Log.write("WARNING", "DefObj_Box: 'angle' is depreciated")
   DefObj_BoxEx(_iobj, _dx, _dy, 0)
 
 
 # ---------------------------------------------------------------------
 def DefObj_SectorEx(_iobj, _r, _offs, _angle, _awidth, _astep=None,
                     _enShader=0):
-  """
-  Defines a sector object and if shaders can be used for this object.
+  """ Defines a sector object and if shaders can be used for this object.
 
   =============== ==================================================
   Parameters:
@@ -377,28 +365,26 @@ def DefObj_SectorEx(_iobj, _r, _offs, _angle, _awidth, _astep=None,
   =============== ==================================================
   """
   if len(_Stim.ObjList) == 0:
-    ssp.Log.write(" ", "Defining objects ...")
+    _log.Log.write(" ", "Defining objects ...")
 
   try:
     _Stim.defObj_sector(_iobj, _r, _offs, _angle, _awidth, _astep,
                         _enShader)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "DefObj_Sector(Ex): {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "DefObj_Sector(Ex): {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 def DefObj_Sector(_iobj, _r, _offs, _angle, _awidth, _astep=None):
-  """
-  See :py:func:`QDS.DefObj_SectorEx`
+  """ See :py:func:`QDS.DefObj_SectorEx`
   """
   DefObj_SectorEx(_iobj, _r, _offs, _angle, _awidth, _astep, 0)
 
 
 # ---------------------------------------------------------------------
 def DefObj_EllipseEx(_iobj, _dx, _dy, _enShader=0):
-  """
-  Defines an ellipse object.
+  """ Defines an ellipse object.
 
   =============== ==================================================
   Parameters:
@@ -411,32 +397,30 @@ def DefObj_EllipseEx(_iobj, _dx, _dy, _enShader=0):
   =============== ==================================================
   """
   if len(_Stim.ObjList) == 0:
-    ssp.Log.write(" ", "Defining objects ...")
+    _log.Log.write(" ", "Defining objects ...")
 
   try:
     _Stim.defObj_ellipse(_iobj, _dx, _dy, _enShader)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "DefObj_Ellipse: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "DefObj_Ellipse: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 def DefObj_Ellipse(_iobj, _dx, _dy, _angle=0.0):
-  """
-  See :py:func:`QDS.DefObj_EllipseEx`
+  """ See :py:func:`QDS.DefObj_EllipseEx`
 
   .. note:: Note that "_angle" is depreciated and ignored in QDSpy. The
             angle of an object is now set in the render command.
   """
   if _angle != 0:
-    ssp.Log.write("WARNING", "DefObj_Ellipse: 'angle' is depreciated")
+    _log.Log.write("WARNING", "DefObj_Ellipse: 'angle' is depreciated")
   DefObj_EllipseEx(_iobj, _dx, _dy, 0)
 
 
 # ---------------------------------------------------------------------
 def DefObj_Movie(_iobj, _fName):
-  """
-  Defines and loads a movie object.
+  """ Defines and loads a movie object.
 
   A movie object consists of two files that have the same name but
   different extensions: a text file (.txt) that describes the dimensions
@@ -469,19 +453,18 @@ def DefObj_Movie(_iobj, _fName):
   =============== ==================================================
   """
   if len(_Stim.ObjList) == 0:
-    ssp.Log.write(" ", "Defining objects ...")
+    _log.Log.write(" ", "Defining objects ...")
 
   try:
     _Stim.defObj_movie(_iobj, _fName)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "DefObj_Movie: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "DefObj_Movie: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def GetMovieParameters(_iobj):
-  """
-  Returns a list with the parameters of a movie object or `None`, if
+  """ Returns a list with the parameters of a movie object or `None`, if
   an error occurs. The movie object must have been loaded.
 
   =============== ==================================================
@@ -503,14 +486,13 @@ def GetMovieParameters(_iobj):
     params = _Stim.getMovieParams(_iobj)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "getMovieParameters: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "getMovieParameters: {0}, {1}".format(e.value, e))
   return params
 
 
 # ---------------------------------------------------------------------
 def DefObj_Video(_iobj, _fName):
-  """
-  Defines and loads a video object.
+  """ Defines and loads a video object.
 
   A video object consists of a single file; currently the following
   video format(s) is/are allowed: .avi
@@ -523,19 +505,18 @@ def DefObj_Video(_iobj, _fName):
   =============== ==================================================
   """
   if len(_Stim.ObjList) == 0:
-    ssp.Log.write(" ", "Defining objects ...")
+    _log.Log.write(" ", "Defining objects ...")
 
   try:
     _Stim.defObj_video(_iobj, _fName)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "DefObj_Video: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "DefObj_Video: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def GetVideoParameters(_iobj):
-  """
-  Returns a list with the parameters of a video object. The video
+  """ Returns a list with the parameters of a video object. The video
   object must have been loaded.
 
   =============== ==================================================
@@ -557,13 +538,12 @@ def GetVideoParameters(_iobj):
     params = _Stim.getVideoParams(_iobj)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "getVideoParams: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "getVideoParams: {0}, {1}".format(e.value, e))
   return params
 
 # ---------------------------------------------------------------------
 def DefShader(_ishd, _shType):
-  """
-  Defines a shader. For details, see :doc:`shaderfiles`.
+  """ Defines a shader. For details, see :doc:`shaderfiles`.
 
   =============== ==================================================
   Parameters:
@@ -578,18 +558,17 @@ def DefShader(_ishd, _shType):
       _Stim.LastErrC = stm.StimErrC.noDefsInRunSection
       raise stm
     if len(_Stim.ObjList) == 0:
-      ssp.Log.write(" ", "Defining shaders ...")
+      _log.Log.write(" ", "Defining shaders ...")
 
     _Stim.defShader(_ishd, _shType)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "DefShader: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "DefShader: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def SetObjColorEx(_iobjs, _ocols, _alphas=[]):
-  """
-  Set color of object(s) (not defined for all object types).
+  """ Set color of object(s) (not defined for all object types).
 
   .. attention:: **Extended version**: Number of objects not anymore a
                  parameter - it is determined by the lenght of the object
@@ -620,7 +599,7 @@ def SetObjColorEx(_iobjs, _ocols, _alphas=[]):
     _Stim.setObjColor(_iobjs, _ocols, _alphas)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "SetObjColor(Ex): {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "SetObjColor(Ex): {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -630,8 +609,7 @@ def SetObjColor(_nobj, _iobjs, _ocols):
 
 # ---------------------------------------------------------------------
 def SetObjColorAlphaByVertex(_iobjs, _oRGBAs):
-  """
-  Set color and transparency (alpha) of object(s) by vertex
+  """ Set color and transparency (alpha) of object(s) by vertex
   (not defined for all object types).
 
   The number of objects is determined by the lenght of the object index list.
@@ -660,14 +638,13 @@ def SetObjColorAlphaByVertex(_iobjs, _oRGBAs):
     _Stim.setObjColorAlphaByVertex(_iobjs, _oRGBAs)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "SetObjColorAlphaByVertex: {0}, {1}"
+    _log.Log.write("ERROR", "SetObjColorAlphaByVertex: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def SetShaderParams(_ishd, _shParams):
-  """
-  Sets or changes the parameters of a shader.
+  """ Sets or changes the parameters of a shader.
 
   =============== ==================================================
   Parameters:
@@ -697,13 +674,12 @@ def SetShaderParams(_ishd, _shParams):
     _Stim.setShaderParams(_ishd, _shParams)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "SetShaderParams: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "SetShaderParams: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def SetObjShader(_iobjs, _ishds):
-  """
-  Attach shaders to the objects in the list.
+  """ Attach shaders to the objects in the list.
 
   .. attention:: Other than object color, shader assignment cannot be
                  changed during the run section, that is after
@@ -731,13 +707,12 @@ def SetObjShader(_iobjs, _ishds):
     _Stim.setObjShader(_iobjs, _ishds)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "SetObjShader: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "SetObjShader: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def SetBkgColor(_col):
-  """
-  Set color of background.
+  """ Set color of background.
 
   =============== ==================================================
   Parameters:
@@ -753,13 +728,12 @@ def SetBkgColor(_col):
     _Stim.setBkgColor(_col)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "SetBkgColor: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "SetBkgColor: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def Scene_Clear(_dur, _marker=0):
-  """
-  Clear screen and wait.
+  """ Clear screen and wait.
 
   Enabling marker causes the display of a white square in the bottom
   left corner of the screen and/or the output of a TTL pulse via the
@@ -776,14 +750,13 @@ def Scene_Clear(_dur, _marker=0):
     _Stim.clearScene(_dur, (_marker==1))
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "Scene_Clear: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "Scene_Clear: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def Scene_RenderEx(_dur, _iobjs, _opos, _omag, _oang, _marker=0,
                    _screen=0):
-  """
-  Draw objects and wait.
+  """ Draw objects and wait.
 
   Enabling marker causes the display of a white square in the bottom
   left corner of the screen and/or the output of a TTL pulse via the
@@ -811,7 +784,7 @@ def Scene_RenderEx(_dur, _iobjs, _opos, _omag, _oang, _marker=0,
     _Stim.renderScene(_dur, _iobjs, _opos, _omag, _oang, (_marker==1))
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "Scene_Render(Ex): {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "Scene_Render(Ex): {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -822,8 +795,7 @@ def Scene_Render(_dur, _nobjs, _iobjs, _opos, _marker=0):
 
 # ---------------------------------------------------------------------
 def Start_Movie(_iobj, _opos, _seq, _omag, _trans, _oang, _screen=0):
-  """
-  Start playing a movie object.
+  """ Start playing a movie object.
 
   =============== ==================================================
   Parameters:
@@ -846,13 +818,12 @@ def Start_Movie(_iobj, _opos, _seq, _omag, _trans, _oang, _screen=0):
     _Stim.startMovie(_iobj, _opos, _seq, _omag, _trans, _oang, _screen)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "Start_Movie: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "Start_Movie: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def Start_Video(_iobj, _opos, _omag, _trans, _oang, _screen=0):
-  """
-  Start playing a movie object.
+  """ Start playing a movie object.
 
   =============== ==================================================
   Parameters:
@@ -870,38 +841,36 @@ def Start_Video(_iobj, _opos, _omag, _trans, _oang, _screen=0):
     _Stim.startVideo(_iobj, _opos, _omag, _trans, _oang, _screen)
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "Start_Video: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "Start_Video: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # =====================================================================
 # Trigger-related commands
-
+# ---------------------------------------------------------------------
 def AwaitTTL():
-  """
-  Wait for TTL signal. Returns the last error code or ``StimErrC.ok``.
+  """ Wait for TTL signal. Returns the last error code or ``StimErrC.ok``.
 
   .. attention:: There is no time-out, as this would defeat
                  the purpose.
 
-  .. attention:: Only for an Arduino board as digital I/O
-                 device. Specifically, waits for the Arduino to signal
-                 an event via serial USB. In the default Arduino code,
-                 pin 2 waits for a **rising** signal edge.
+  .. attention:: Only for ``Arduino`` or ``RaspberryPi`` as digital 
+                 I/O device. Specifically, waits for the Arduino to 
+                 signal an event via serial USB. In the default Arduino 
+                 code, pin 2 waits for a **rising** signal edge. For 
+                 the Raspberry Pi, the pin is GPIO26. 
   """
   try:
     _Stim.awaitTTL()
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "AwaitTTL: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "AwaitTTL: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # =====================================================================
 # Lightcrafter-related commands
-
 # ---------------------------------------------------------------------
 def LC_softwareReset(_devIndex):
-  """
-  Signal the device (_devIndex) to do a software reset. This will take a
-  couple of seconds. After the reset the device is disconnected.
+  """ Signal the device (_devIndex) to do a software reset. This will 
+  take a couple of seconds. After the reset the device is disconnected.
 
   =============== ==================================================
   Parameters:
@@ -913,13 +882,12 @@ def LC_softwareReset(_devIndex):
     _Stim.processLCrCommand(stm.StimLCrCmd.softwareReset,
                             [_devIndex])
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "LC_softwareReset: {0}, {1}".format(e.value, e))
+    _log.Log.write("ERROR", "LC_softwareReset: {0}, {1}".format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def LC_setInputSource(_devIndex, _source, _bitDepth):
-  """
-  Defines the input source of the device.
+  """ Defines the input source of the device.
 
   =============== ==================================================
   Parameters:
@@ -937,14 +905,13 @@ def LC_setInputSource(_devIndex, _source, _bitDepth):
     _Stim.processLCrCommand(stm.StimLCrCmd.setInputSource,
                             [_devIndex, _source, _bitDepth])
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
+    _log.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def LC_setDisplayMode(_devIndex, _mode):
-  """
-  Sets the display mode of the device.
+  """ Sets the display mode of the device.
 
   =============== ==================================================
   Parameters:
@@ -971,14 +938,13 @@ def LC_setDisplayMode(_devIndex, _mode):
                             [_devIndex])
 
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
+    _log.Log.write("ERROR", "LC_setInputSource: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def LC_setLEDCurrents(_devIndex, _rgb):
-  """
-  Sets the current of the LEDs.
+  """ Sets the current of the LEDs.
 
   =============== ==================================================
   Parameters:
@@ -992,14 +958,13 @@ def LC_setLEDCurrents(_devIndex, _rgb):
     _Stim.processLCrCommand(stm.StimLCrCmd.setLEDCurrents,
                             [_devIndex, _rgb])
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "LC_setLEDCurrents: {0}, {1}"
+    _log.Log.write("ERROR", "LC_setLEDCurrents: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 
 # ---------------------------------------------------------------------
 def LC_setLEDEnabled(_devIndex, _rgb):
-  """
-  Enable or disable the LEDs.
+  """ Enable or disable the LEDs.
 
   =============== ==================================================
   Parameters:
@@ -1013,7 +978,7 @@ def LC_setLEDEnabled(_devIndex, _rgb):
     _Stim.processLCrCommand(stm.StimLCrCmd.setLEDEnabled,
                             [_devIndex, _rgb])
   except stm.StimException as e:
-    ssp.Log.write("ERROR", "LC_setLEDEnabled: {0}, {1}"
+    _log.Log.write("ERROR", "LC_setLEDEnabled: {0}, {1}"
                   .format(e.value, e))
   return _Stim.LastErrC
 

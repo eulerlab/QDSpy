@@ -13,6 +13,8 @@ All rights reserved.
 2024-06-19 - Ported from `PyQt5` to `PyQt6`
              (note that `QDSApp.setStyle("Fusion")` is needed to make
               the GUI designed for Qt5 look decent)   
+2024-08-04 - `Log` moved into its own module       
+2024-08-10 - Moved GUI-related methods from `QDSpy_GUI_support` to here
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -21,18 +23,20 @@ import os
 import sys
 import time
 import pickle
+import platform
+from datetime import timedelta
 from PyQt6 import uic  
 from PyQt6.QtWidgets import QMessageBox, QMainWindow, QLabel, QApplication  
-from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QWidget  
-from PyQt6.QtGui import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor 
-from PyQt6.QtCore import QRect, QSize  
+from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QWidget, QProgressBar  
+from PyQt6.QtGui import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor, QFontMetrics 
+from PyQt6.QtCore import Qt, QRect, QSize  
 from multiprocessing import Process
 import QDSpy_stim as stm
-import QDSpy_stim_support as ssp
+from Libraries.log_helper import Log
 import QDSpy_config as cfg
-import QDSpy_GUI_support as gsu
+import QDSpy_file_support as fsu
 from QDSpy_GUI_cam import CamWinClass
-import QDSpy_multiprocessing as mpr
+import Libraries.multiprocess_helper as mpr
 import QDSpy_stage as stg
 import QDSpy_global as glo
 import QDSpy_core
@@ -43,7 +47,7 @@ os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 if csp.module_exists("cv2"):
     import Devices.camera as cam
 
-PLATFORM_WINDOWS = sys.platform == "win32"
+PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
     from ctypes import windll
 
@@ -70,7 +74,6 @@ class State:
     probing = 7
     # ...
 
-# ---------------------------------------------------------------------
 class Canceled(Exception):
     pass
 
@@ -96,6 +99,23 @@ class MainWinClass(QMainWindow, form_class):
         self.IOCmdCount = 0
         self.Stage = None
         self.noMsgToStdOut = cfg.getParsedArgv().gui
+
+        # For reporting the stimulus status during presentation
+        self.Stim_tFrRel_s = 0
+        self.Stim_nFrTotal = 0
+        self.Stim_percent = 0
+        self.Stim_completed = False
+        self.Stim_soundVol = 0
+
+        # GUI style-related
+        cs = QDSApp.styleHints().colorScheme() 
+        self.isDarkSchemeGUI = cs == Qt.ColorScheme.Dark 
+
+        # Identify 
+        self.logWrite(
+            "***", 
+            f"{glo.QDSpy_versionStr} GUI - {glo.QDSpy_copyrightStr}"
+        )
 
         self.logWrite("DEBUG", "Initializing GUI")
         QMainWindow.__init__(self, parent)
@@ -209,8 +229,12 @@ class MainWinClass(QMainWindow, form_class):
 
         self.stbarErrMsg = QLabel()
         self.stbarStimMsg = QLabel()
+        self.prbarPresent = QProgressBar()
+        self.prbarPresent.setRange(0, 100)
+        self.prbarPresent.reset()
         self.statusbar.addWidget(self.stbarErrMsg, 2)
-        self.statusbar.addPermanentWidget(self.stbarStimMsg, 2)
+        self.statusbar.addWidget(self.stbarStimMsg, 2)
+        self.statusbar.addPermanentWidget(self.prbarPresent, 2)
         self.lblSelStimName.setText(self.currStimName)
 
         self.lineEditComment.returnPressed.connect(self.OnClick_AddComment)
@@ -220,7 +244,7 @@ class MainWinClass(QMainWindow, form_class):
         self.logWrite("DEBUG", "Creating sync object ...")
         self.state = State.undefined
         self.Sync = mpr.Sync()
-        ssp.Log.setGUISync(self.Sync)
+        Log.setGUISync(self.Sync, noStdOut=self.noMsgToStdOut)
         self.logWrite("DEBUG", "... done")
 
         # Create process that opens a view (an OpenGL window) and waits for
@@ -295,17 +319,6 @@ class MainWinClass(QMainWindow, form_class):
                     "by a factor of {1:.2f}".format(maxdpi, self.HDMagFactor),
                 )
 
-        # ************************
-        # ************************
-        # ************************
-        """
-        self.winStimView = StimViewWinClass(self, self.updateAll, self.logWrite, self.Sync)
-        self.winStimView.show()
-        """
-        # ************************
-        # ************************
-        # ************************
-
         # Check if worker process is still alive
         self.logWrite("DEBUG", "Check worker thread ...")
         time.sleep(1.0)
@@ -335,58 +348,12 @@ class MainWinClass(QMainWindow, form_class):
         self.logWrite("DEBUG", "... done")
 
         # Check if autorun stimulus file present and if so run it
-        try:
-            self.isStimCurr = False
-            self.currStimFName = os.path.join(
-                self.currStimPath, glo.QDSpy_autorunStimFileName
-            )
-            isAutoRunExists = gsu.getStimExists(self.currStimFName)
-            if isAutoRunExists:
-                # Check if a current compiled version of the autorun file
-                # exists
-                self.isStimCurr = gsu.getStimCompileState(self.currStimFName)
-
-            if not isAutoRunExists or not self.isStimCurr:
-                # No current compiled auto-run file present, so use default file
-                self.currStimFName = os.path.join(
-                    self.currQDSPath, glo.QDSpy_autorunDefFileName
-                )
-                self.logWrite(
-                    "ERROR",
-                    "No compiled `{0}` in current stimulus "
-                    "folder, using `{1}` in `{2}`.".format(
-                        glo.QDSpy_autorunStimFileName,
-                        glo.QDSpy_autorunDefFileName,
-                        self.currQDSPath,
-                    ),
-                )
-
-            # Run either autorun file ...
-            self.logWrite("DEBUG", "Running {0} ...".format(self.currStimFName))
-            self.Stim.load(self.currStimFName, _onlyInfo=True)
-            self.setState(State.ready)
-            self.isStimReady = True
-            self.runStim()
-
-        except:  # noqa: E722
-            # Failed ...
-            if self.Stim.getLastErrC() != stm.StimErrC.ok:
-                self.updateStatusBar(self.Stim.getLastErrStr(), True)
-                ssp.Log.isRunFromGUI = False
-                ssp.Log.write(
-                    "ERROR",
-                    "No compiled `{0}` in current stimulus folder,"
-                    " and `{1}.pickle` is not in `{2}`. Program is"
-                    " aborted.".format(
-                        glo.QDSpy_autorunStimFileName,
-                        glo.QDSpy_autorunDefFileName,
-                        self.currQDSPath,
-                    ),
-                )
-                sys.exit(0)
+        self.handleAutorun()
 
         # Update GUI
+        self.Stim_soundVol = glo.QDSpy_volume
         self.updateAll()
+        self.updateProgressBar(-1)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def __del__(self):
@@ -399,6 +366,47 @@ class MainWinClass(QMainWindow, form_class):
         if e.key() in glo.QDSpy_KEY_KillPresent:
             if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING, mpr.PROBING]:
                 self.OnClick_btnStimAbort()
+
+    # -----------------------------------------------------------------
+    def handleAutorun(self):
+        '''Check if autorun stimulus file present and if so run it
+        '''
+        try:
+            self.isStimCurr = False
+            sf = glo.QDSpy_autorunStimFileName
+            sd = glo.QDSpy_autorunDefFileName
+            self.currStimFName = os.path.join(self.currStimPath, sf)
+            isAutoRunExists = fsu.getStimExists(self.currStimFName)
+            if isAutoRunExists:
+                # Check if a  compiled version of the autorun file exists
+                self.isStimCurr = fsu.getStimCompileState(self.currStimFName)
+
+            if not isAutoRunExists or not self.isStimCurr:
+                # Use default file as no compiled auto-run file is present
+                self.currStimFName = os.path.join(self.currQDSPath, sd)
+                self.logWrite(
+                    "ERROR", 
+                    f"No compiled `{sf}` in current stimulus folder"
+                )
+                self.logWrite("INFO", f"Using `{sd}` in `{self.currQDSPath}`.")
+
+            # Run either autorun file ...
+            self.logWrite("DEBUG", "Running {0} ...".format(self.currStimFName))
+            self.Stim.load(self.currStimFName, _onlyInfo=True)
+            self.setState(State.ready)
+            self.isStimReady = True
+            self.runStim()
+
+        except:  # noqa: E722
+            # Failed ...
+            if self.Stim.getLastErrC() != stm.StimErrC.ok:
+                self.logWrite(
+                    "ERROR",
+                    f"No compiled `{sf}` in current stimulus folder, "
+                    f"and `{sd}.pickle` is not in `{self.currQDSPath}`. "
+                )
+                self.logWrite("ERROR", "Program is aborted.")                
+                sys.exit(0)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def closeEvent(self, event):
@@ -464,7 +472,7 @@ class MainWinClass(QMainWindow, form_class):
     def updateAll(self):
         """ Update the complete GUI
         """
-        txt = gsu.getShortText(self, self.currStimPath, self.lblCurrStimFolder)
+        txt = self.getShortText(self.currStimPath, self.lblCurrStimFolder)
         self.lblCurrStimFolder.setText(txt)
 
         stateWorker = self.Sync.State.value
@@ -540,14 +548,14 @@ class MainWinClass(QMainWindow, form_class):
         self.btnToggleSeqControl.setEnabled(self.isLCrUsed and not(enabledLEDs))
         """
         self.btnToggleSeqControl0.setChecked(enabledSeq)
-        gsu.updateToggleButton(self.btnToggleSeqControl0)
+        self.updateToggleButton(self.btnToggleSeqControl0)
         self.btnToggleSeqControl1.setChecked(enabledSeq)
-        gsu.updateToggleButton(self.btnToggleSeqControl1)
+        self.updateToggleButton(self.btnToggleSeqControl1)
 
         self.btnRefreshDisplayInfo.setEnabled(self.isLCrUsed)
         if self.Stage:
             for iLED, LED in enumerate(self.Stage.LEDs):
-                [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, LED)
+                [spinBoxLED, labelLED, btnLED] = self.getLEDGUIObjects(LED)
                 spinBoxLED.setEnabled(self.isLCrUsed)
                 spinBoxLED.setMaximum(LED["max_current"])
                 btnLED.setEnabled(self.isLCrUsed and not (enabledSeq))
@@ -555,7 +563,7 @@ class MainWinClass(QMainWindow, form_class):
                     btnLED.setChecked(LED["enabled"])
                 else:
                     btnLED.setChecked(True)
-                gsu.updateToggleButton(btnLED)
+                self.updateToggleButton(btnLED)
 
         self.processPipe()
         self.updateStatusBar(mpr.StateStr[stateWorker])
@@ -565,10 +573,10 @@ class MainWinClass(QMainWindow, form_class):
     def updateStimList(self):
         """ Update stimulus list widget
         """
-        self.currStimFNames = gsu.getStimFileLists(self.currStimPath)
+        self.currStimFNames = fsu.getStimFileLists(self.currStimPath)
         self.listStim.clear()
         for stimFName in self.currStimFNames:
-            self.listStim.addItem(gsu.getFNameNoExt(stimFName))
+            self.listStim.addItem(fsu.getFNameNoExt(stimFName))
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def updateStatusBar(self, _msg="Ready", _isErr=False):
@@ -577,12 +585,37 @@ class MainWinClass(QMainWindow, form_class):
         if _isErr:
             self.stbarErrMsg.setText(fStrPreRed + "Error: " + _msg + fStrPost)
         else:
+            if self.state == State.playing:
+                self.Stim_percent = int((self.Stim_tFrRel_s /self.Stim.lenStim_s) *100)
+                self.updateProgressBar(self.Stim_percent)
+                dt = timedelta(seconds=int(self.Stim.lenStim_s))
+                t1 = timedelta(seconds=int(self.Stim_tFrRel_s))
+                _msg += f" ({t1} of {dt})"
+            else:
+                if self.Stim_percent > 0:
+                    if self.Stim_completed:
+                        self.updateProgressBar(100, "Done")
+                    else:
+                        self.updateProgressBar(0, "Aborted", keep_val=True)
+                self.Stim_percent = 0
             self.stbarErrMsg.setText(_msg)
 
         if (len(self.currStimName) > 0) and (self.isStimReady):
             self.stbarStimMsg.setText("Stimulus: " + self.currStimName)
         else:
-            self.stbarStimMsg.setText("")
+            self.stbarStimMsg.setText("n/a")
+
+    def updateProgressBar(self, val, msg="", keep_val=False):
+        """ Update progress bar
+        """
+        if len(msg) > 0:
+            self.prbarPresent.setFormat(msg +" (%p%)")    
+        if keep_val:
+            return
+        if val < 0:
+            self.prbarPresent.reset()
+        else:    
+            self.prbarPresent.setValue(val)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def updateIOInfo(self):
@@ -657,14 +690,14 @@ class MainWinClass(QMainWindow, form_class):
                     sTemp += "{0}={1} ".format(LED["name"], LED["current"])
                     pal.setColor(QPalette.ColorRole.Window, QColor(LED["Qt_color"]))
                     pal.setColor(QPalette.ColorRole.WindowText, QColor("white"))
-                    [spinBoxLED, labelLED, btnLED] = gsu.getLEDGUIObjects(self, LED)
+                    [spinBoxLED, labelLED, btnLED] = self.getLEDGUIObjects(LED)
                     spinBoxLED.setValue(LED["current"])
                     spinBoxLED.setEnabled(LEDsEnabled)
                     labelLED.setPalette(pal)
                     labelLED.setText(LED["name"])
                     btnLED.setEnabled(not LEDsEnabled)
                     btnLED.setText("")
-                    gsu.updateToggleButton(btnLED)
+                    self.updateToggleButton(btnLED)
                 self.lblDisplDevLEDs.setText(sTemp)
 
             self.spinBoxStageCS_hOffs.setValue(self.Stage.centOffX_pix)
@@ -676,6 +709,40 @@ class MainWinClass(QMainWindow, form_class):
         except KeyError:
             pass
 
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def updateToggleButton(self, _btn, _txtList=["on", "off"]):
+        s = _btn.text().split("\n")
+        f = _btn.isChecked()
+        if len(s) == 1:
+            s = "{0}".format(_txtList[0] if f else _txtList[1])
+        else:
+            s = "{0}\n{1}".format(s[0], _txtList[0] if f else _txtList[1])
+        _btn.setText(s)
+
+    # ---------------------------------------------------------------------
+    def getLEDGUIObjects(self, _LED):
+        if (_LED["LEDIndex"] == 0) and (_LED["devIndex"] == 0):
+            return [self.spinBoxLED1, self.label_LED1, self.pushButtonLED1]
+        elif (_LED["LEDIndex"] == 1) and (_LED["devIndex"] == 0):
+            return [self.spinBoxLED2, self.label_LED2, self.pushButtonLED2]
+        elif (_LED["LEDIndex"] == 2) and (_LED["devIndex"] == 0):
+            return [self.spinBoxLED3, self.label_LED3, self.pushButtonLED3]
+        elif (_LED["LEDIndex"] == 0) and (_LED["devIndex"] == 1):
+            return [self.spinBoxLED4, self.label_LED4, self.pushButtonLED4]
+        elif (_LED["LEDIndex"] == 1) and (_LED["devIndex"] == 1):
+            return [self.spinBoxLED5, self.label_LED5, self.pushButtonLED5]
+        elif (_LED["LEDIndex"] == 2) and (_LED["devIndex"] == 1):
+            return [self.spinBoxLED6, self.label_LED6, self.pushButtonLED6]
+        else:
+            return [None] * 3
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def getShortText(self, _txt, _widget):
+        metrics = QFontMetrics(self.font())
+        return metrics.elidedText(
+            _txt, Qt.TextElideMode.ElideRight, _widget.width()
+        )
+
     # -------------------------------------------------------------------
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def OnClick_btnRefreshStimList(self):
@@ -683,11 +750,13 @@ class MainWinClass(QMainWindow, form_class):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def OnClick_btnChangeStimFolder(self):
+
         newPath = QFileDialog.getExistingDirectory(
             self,
             "Select new stimulus folder",
             self.currStimPath,
-            options=QFileDialog.ShowDirsOnly,
+            #options=QFileDialog.ShowDirsOnly,
+            options=QFileDialog.Option.ShowDirsOnly
         )
         if len(newPath) > 0:
             # Change path and update stimulus list ...
@@ -706,6 +775,7 @@ class MainWinClass(QMainWindow, form_class):
         self.isStimCurr = False
         self.currStimName = _selItem.text()
         self.setState(State.idle)
+        self.updateProgressBar(-1)
 
         iSel = self.listStim.currentRow()
         if iSel >= 0:
@@ -718,7 +788,7 @@ class MainWinClass(QMainWindow, form_class):
                 # Succeed, now get info
                 self.setState(State.ready)
                 self.isStimReady = True
-                self.isStimCurr = gsu.getStimCompileState(self.currStimFName)
+                self.isStimCurr = fsu.getStimCompileState(self.currStimFName)
                 if self.isStimCurr:
                     txtCompState = (
                         fStrPreGreen + "compiled (.pickle) is up-to-date" + fStrPost
@@ -763,7 +833,7 @@ class MainWinClass(QMainWindow, form_class):
         LEDsEnabled = not (self.btnToggleLEDEnable.isChecked())
 
         for iLED, LED in enumerate(self.Stage.LEDs):
-            (spinBoxLED, labelLED, btnLED) = gsu.getLEDGUIObjects(self, LED)
+            (spinBoxLED, labelLED, btnLED) = self.getLEDGUIObjects(LED)
             btnLED.setEnabled(LEDsEnabled)
             val = btnLED.isChecked()
             enabled.append(val)
@@ -802,19 +872,19 @@ class MainWinClass(QMainWindow, form_class):
                 [self.Stage.LEDs, self.Stage.isLEDSeqEnabled],
             ]
         )
-        gsu.updateToggleButton(self.btnToggleLEDEnable)
+        self.updateToggleButton(self.btnToggleLEDEnable)
         self.updateDisplayInfo()
         self.updateAll()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def OnClick_btnToggleSeqControl0(self):
-        gsu.updateToggleButton(self.btnToggleSeqControl0)
+        self.updateToggleButton(self.btnToggleSeqControl0)
         print("OnClick_btnToggleSeqControl0 - TO BE IMPLEMENTED")
         # *****************************
         # *****************************
 
     def OnClick_btnToggleSeqControl1(self):
-        gsu.updateToggleButton(self.btnToggleSeqControl1)
+        self.updateToggleButton(self.btnToggleSeqControl1)
         print("OnClick_btnToggleSeqControl1 - TO BE IMPLEMENTED")
         # *****************************
         # *****************************
@@ -827,13 +897,13 @@ class MainWinClass(QMainWindow, form_class):
         self.handleLCrStartStopButton(self.btnLCrStartStop1, 1)
 
     def handleLCrStartStopButton(self, _btn, _iLcr):
-        gsu.updateToggleButton(_btn, ["running", "stopped"])
+        self.updateToggleButton(_btn, ["running", "stopped"])
         checked = _btn.isChecked()
         self.Stage.togglePatternSeq(_iLcr, self.Conf, checked)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def OnClick_btnToggleWaitForTrigger(self):
-        gsu.updateToggleButton(self.btnToggleWaitForTrigger)
+        self.updateToggleButton(self.btnToggleWaitForTrigger)
         print("OnClick_btnToggleWaitForTrigger.TO BE IMPLEMENTED")
         # *****************************
         # *****************************
@@ -854,7 +924,7 @@ class MainWinClass(QMainWindow, form_class):
         )
 
     def handleIOUserButton(self, _btn, _pin, _invert):
-        gsu.updateToggleButton(_btn)
+        self.updateToggleButton(_btn)
         self.IOCmdCount += 1
         data = dict(
             [
@@ -889,7 +959,7 @@ class MainWinClass(QMainWindow, form_class):
 
         curr = []
         for iLED, LED in enumerate(self.Stage.LEDs):
-            (spinBoxLED, labelLED, btnLED) = gsu.getLEDGUIObjects(self, LED)
+            (spinBoxLED, labelLED, btnLED) = self.getLEDGUIObjects(LED)
             val = spinBoxLED.value()
             curr.append(val)
             self.Stage.setLEDCurrent(iLED, val)
@@ -1055,8 +1125,10 @@ class MainWinClass(QMainWindow, form_class):
         """ Send stimulus file name via pipe and signal worker thread to
             start presenting the stimulus
         """
+        self.updateProgressBar(0, "Presenting ...")
         self.Sync.pipeCli.send(
-            [mpr.PipeValType.toSrv_fileName, self.currStimFName, self.currStimPath]
+            [mpr.PipeValType.toSrv_fileName, self.currStimFName, self.currStimPath,
+             self.Stim_soundVol]
         )
         self.Sync.setRequestSafe(mpr.PRESENTING)
         self.logWrite(" ", "Presenting stimulus ...")
@@ -1068,6 +1140,8 @@ class MainWinClass(QMainWindow, form_class):
             # Wait for the worker to finish the presentation, while keeping the
             # GUI alive
             self.Sync.waitForState(mpr.IDLE, 0.0, self.updateAll)
+
+            # Update status                
             self.updateAll()
 
         else:
@@ -1102,6 +1176,7 @@ class MainWinClass(QMainWindow, form_class):
         """
         while self.Sync.pipeCli.poll():
             data = self.Sync.pipeCli.recv()
+            
             if data[0] == mpr.PipeValType.toCli_log:
                 # Handle log data -> write to history
                 self.log(data)
@@ -1110,17 +1185,27 @@ class MainWinClass(QMainWindow, form_class):
                 # Handle display information data -> update GUI
                 self.Stage = pickle._loads(data[1])
                 self.isLCrUsed = self.Conf.useLCr and (
-                    self.Stage.scrDevType == stg.ScrDevType.DLPLCR4500EVM
+                    self.Stage.scrDevType == stg.ScrDevType.DLPLCR4500
                 )
                 self.updateAll()
                 self.updateDisplayInfo()
 
             elif data[0] == mpr.PipeValType.toCli_IODevInfo:
+                # Receive I/O device information
                 self.isIODevReady = data[1][0]
                 if self.isIODevReady is None:
                     self.isIODevReady = False
                 self.lastIOInfo = data[1]
                 self.updateIOInfo()
+
+            elif data[0] == mpr.PipeValType.toCli_time:
+                # Receive information about stimulus presentation progress
+                self.Stim_tFrRel_s = data[1]
+                self.Stim_nFrTotal = data[2]
+
+            elif data[0] == mpr.PipeValType.toCli_playEndInfo:
+                # Receive information about stimulus presentation end
+                self.Stim_completed = data[1]
 
             else:
                 # ***************************
@@ -1142,16 +1227,18 @@ class MainWinClass(QMainWindow, form_class):
     # -------------------------------------------------------------------
     # Logging-related
     # -------------------------------------------------------------------
-    def logWrite(self, _headerStr, _msgStr):
+    def logWrite(self, _hdr, _msg):
         """ Log a message to the appropriate output
         """
-        data = ssp.Log.write(_headerStr, _msgStr, _getStr=True)
+        data = Log.write(_hdr, _msg, _getStr=True, _isWorker=False)
         if data is not None:
             self.log(data)
 
     def log(self, _data):
         msg = _data[2] + "\r"
         colStr = _data[3]
+        if self.isDarkSchemeGUI: 
+            colStr = "lightgray" if colStr == "black" else colStr
         cursor = self.textBrowserHistory.textCursor()
         form = QTextCharFormat()
         form.setForeground(QBrush(QColor(colStr)))
@@ -1172,8 +1259,8 @@ class MainWinClass(QMainWindow, form_class):
 if __name__ == "__main__":
     # Create GUI
     QDSApp = QApplication(sys.argv)
-    QDSWin = MainWinClass(None)
     QDSApp.setStyle("Fusion")
+    QDSWin = MainWinClass(None)
 
     if PLATFORM_WINDOWS:
         # Make sure that Windows uses its icon in the task bar
@@ -1182,5 +1269,6 @@ if __name__ == "__main__":
     # Show window and start GUI handler
     QDSWin.show()
     QDSApp.exec()
+
 
 # ---------------------------------------------------------------------

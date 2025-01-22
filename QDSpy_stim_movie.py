@@ -10,28 +10,26 @@ QDSpy module - defines movie-related classes
   The movie control class manages the presentation of a movie according to
   the presentation parameters
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2024-06-15 - Fix for breaking change in `configparser`; now using
              `ConfigParser` instead of `RawConfigParser`
-
-***********************************************************************
-***********************************************************************
-TODO: Still uses pyglet directly ...
-***********************************************************************
-***********************************************************************
+2024-08-04 - `pyglet` calls encapsulated in `renderer_opengl.py`             
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
 import os.path
+import platform
 import configparser
-import pyglet
 import QDSpy_stim as stm
 import QDSpy_global as glo
+import QDSpy_file_support as fsu
+import Libraries.log_helper as _log
 import Graphics.renderer_opengl as rdr
 
+PLATFORM_WINDOWS = platform.system() == "Windows"
 
 # ---------------------------------------------------------------------
 # Movie object class
@@ -68,15 +66,9 @@ class Movie:
             return stm.StimErrC.movieFileNotFound
 
         # Read description file
-        # --> TE
-        #self.Desc = configparser.RawConfigParser()
         self.Desc = configparser.ConfigParser()
-        # <--
         try:
-            # --> TE
-            # self.Desc.readfp(open(self.fNameDesc))
             self.Desc.read(self.fNameDesc)
-            # <--
             self.dxFr = self.Desc.getint(glo.QDSpy_movDescSect, glo.QDSpy_movFrWidth)
             self.dyFr = self.Desc.getint(glo.QDSpy_movDescSect, glo.QDSpy_movFrHeight)
             self.nFr = self.Desc.getint(glo.QDSpy_movDescSect, glo.QDSpy_movFrCount)
@@ -84,13 +76,24 @@ class Movie:
             self.is1FrBL = self.Desc.getboolean(
                 glo.QDSpy_movDescSect, glo.QDSpy_movIsFirstFrBottLeft
             )
+            _log.Log.write(
+                "DEBUG", 
+                f"__loadMontage: {self.nFr} frames, {self.dxFr} x {self.dyFr} pixels"
+            )
 
         except IOError:
             # Error parsing the description file
             return stm.StimErrC.invalidMovieDesc
 
         # Load and check image data
+        '''
         self.img = pyglet.image.load(self.fNameImg)
+        '''
+        self.img = rdr.imageLoad(self.fNameImg)
+        _log.Log.write(
+            "DEBUG", 
+            f"__loadMontage: image is {self.img.width} x {self.img.height} pixels"
+        )
         self.nFrX = self.img.width // self.dxFr
         self.nFrY = self.img.height // self.dyFr
         n = self.nFrX * self.nFrY
@@ -118,11 +121,15 @@ class Movie:
             pass
 
         # Create a 3D texture (basically an image sequence) from the montage
+        '''
         tmpSeq = pyglet.image.ImageGrid(self.img, self.nFrY, self.nFrX)
         if self.use3DTex:
             self.imgSeq = pyglet.image.Texture3D.create_for_image_grid(tmpSeq)
         else:
             self.imgSeq = tmpSeq.get_texture_sequence()
+        '''
+        tmpSeq = rdr.getImageGrid(self.img, self.nFrY, self.nFrX)
+        self.imgSeq = rdr.getTextureSequence(tmpSeq, use_3d=self.use3DTex)
         # *****************
         # *****************
         # TODO: Texture3D is supposed to be faster but I could not get rid of
@@ -149,15 +156,33 @@ class Movie:
            file (same name but .txt extension)
            Returns an error of the QDSpy_stim.StimErrC class
         """
+        '''
         tempStr = (os.path.splitext(os.path.basename(_fName)))[0]
-        tempDir = os.path.dirname(_fName)
-        if len(tempDir) > 0:
-            tempDir += "\\"
-        self.fNameDesc = tempDir + tempStr + glo.QDSpy_movDescFileExt
-        self.fNameImg = _fName
         self.fExtImg = os.path.splitext(_fName)[1].lower()
         self.isTestOnly = _testOnly
 
+        if PLATFORM_WINDOWS:
+            tempDir = os.path.dirname(_fName)
+            if len(tempDir) > 0:
+                tempDir += "\\"
+            self.fNameDesc = tempDir + tempStr + glo.QDSpy_movDescFileExt
+            self.fNameImg = _fName
+        else:
+            tempDir = os.getcwd()
+            self.fNameDesc = fsu.repairPath(tempDir + tempStr) + glo.QDSpy_movDescFileExt
+            self.fNameImg = fsu.repairPath(tempDir + tempStr) + self.fExtImg
+
+        if self.fExtImg in glo.QDSpy_movAllowedMovieExts:
+            return self.__loadMontage()
+        else:
+            return stm.StimErrC.invalidMovieFormat
+        '''    
+        self.fExtImg = fsu.getFileExt(_fName)
+        self.isTestOnly = _testOnly
+        path = fsu.getCurrentPath() 
+        fname_desc = fsu.getPathReplacedExt(_fName, glo.QDSpy_movDescFileExt)
+        self.fNameDesc = fsu.getJoinedPath(path, fname_desc)
+        self.fNameImg = fsu.getJoinedPath(path, _fName)
         if self.fExtImg in glo.QDSpy_movAllowedMovieExts:
             return self.__loadMontage()
         else:
@@ -202,11 +227,18 @@ class MovieCtrl:
 
         self.kill()
         if self.Movie is not None:
+            '''
             self.Group = pyglet.graphics.OrderedGroup(self.order)
             self.Sprite = pyglet.sprite.Sprite(
                 self.Movie.imgSeq[0], usage="dynamic", group=self.Group
             )
             # usage="stream", group=self.Group)
+            '''
+            self.Group = rdr.getOrderedGroup(self.order)
+            self.Sprite = rdr.getSprite(
+                self.Movie.imgSeq[0], "dynamic", self.Group
+            )
+
         self.isReady = self.check()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -240,10 +272,7 @@ class MovieCtrl:
         self.trans = _trans
 
         if self.Sprite is not None:
-            if rdr.PYGLET_VER < 1.4:
-                self.Sprite.set_position(self.posXY[0], y=self.posXY[1])
-            else:
-                self.Sprite.position = self.posXY
+            self.Sprite.position = self.posXY
             self.Sprite.scale = self.magXY[0]
             self.Sprite.rotation = self.rot
             self.Sprite.opacity = self.trans

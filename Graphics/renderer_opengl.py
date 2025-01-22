@@ -20,22 +20,23 @@ All rights reserved.
 2024-06-12 - Fixed a bug that prevented using the probe spot tool
            - Reformatted (using Ruff)
            - Fixed a bug when using `pyglet` higher than v1.5.7
+2024-08-04 - Helper functions for `QDSpy_stim_movie.py` added to remove
+             direct calls to `pyglet`  in that module           
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
-import sys
 import ctypes
+import platform
 import pyglet
 import numpy as np
+import pyglet.gl as GL  
+from pyglet.gl.gl_info import GLInfo 
 
 pyglet.options["debug_gl"] = False
-import pyglet.gl as GL  # noqa: E402
-from pyglet.gl.gl_info import GLInfo  # noqa: E402
-
 PYGLET_VER = float(pyglet.version[0:3])
 
-PLATFORM_WINDOWS = sys.platform == "win32"
+PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
     from win32api import SetCursorPos
 
@@ -52,23 +53,25 @@ MODE_POLYGON = GL.GL_POLYGON
 
 
 # =====================================================================
-#
+# Renderer class
 # ---------------------------------------------------------------------
 class Renderer:
-    """Initializes the graphics API and manages the windows
+    """ Initializes the graphics API and manages the windows
     """
 
     def __init__(self, _View=None, _KeysExit=[ord(b"Q"), ord(b"q")]):
-        # Initialize graphics API
-        #
+        """ Initialize graphics API
+        """
         # Determine some system properties
-        #
+        '''
         self.pygletVer = float(pyglet.version[0:3])
         if PYGLET_VER < 1.4:
             platform = pyglet.window.get_platform()
             display = platform.get_default_display()
         else:
             display = pyglet.canvas.get_display()
+        '''    
+        display = pyglet.canvas.get_display()
         self.Screens = display.get_screens()
         self.winList = []
         self.View = _View
@@ -138,8 +141,9 @@ class Renderer:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def force_vSync(self):
-        """Check of swap-control-extention is available and force vsync
-        if requested
+        """ Force VSync
+        Check of swap-control-extention is available and force vsync if 
+        requested
         """
         result = -1
         if self.isReady:
@@ -165,9 +169,9 @@ class Renderer:
         _iScrGUI=0,
         _offset=(0, 0),
     ):
-        """If the renderer was initialized, create a window instance and
-        store it in the internal window list. For parameters, see
-        Window class.
+        """ Create window
+        If the renderer was initialized, create a window instance and store 
+        it in the internal window list. For parameters, see Window class.
         """
         if self.isReady:
             self.winList.append(
@@ -211,40 +215,44 @@ class Renderer:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def clear_windows(self, _RGB=[]):
-        """Clear all windows
+        """ Clear all windows
         """
         for win in pyglet.app.windows:
             win.switch_to()
             win.clear(_RGB)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def present(self):
-        """Swap display buffers to display new frame in multiple windows
+    def present(self, flip=True):
+        """ Swap display buffers to display new frame in multiple windows
         """
         pyglet.clock.tick(poll=True)
         for win in pyglet.app.windows:
             win.switch_to()
-
             if len(pyglet.app.windows) == 1:
+                ''' TE: Why needed?
                 win.dispatch_event("on_draw")
+                '''
                 win.dispatch_events()
-            win.flip()
+            if flip:    
+                win.flip()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    """
+    '''
     def dispatch_events(self):
-        pass
-    """
+        print(pyglet.app.windows)
+        #pyglet.app.windows[0].dispatch_events()
+        print("dispatch")
+    '''    
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def start_main_loop(self, _Pre):
-        """Starts the main application loop
+        """ Starts the main application loop
         """
         while not _Pre.isEnd:
             _Pre.onDraw()
 
     def end_main_loop(self):
-        """End the main loop and destroy windows
+        """ End the main loop and destroy windows
         """
         for win in list(pyglet.app.windows):
             win.switch_to()
@@ -253,12 +261,12 @@ class Renderer:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def prepare_record_win(self):
-        """Prepare grabbing of window content for a recording of the stimulus
+        """ Prepare grabbing of window content for a recording of the stimulus
         """
         self.bufMan = pyglet.image.get_buffer_manager()
 
     def grab_frame(self) -> pyglet.image.ImageData:
-        """Prepare recording of window content
+        """ Grabe current stimulus frame
         """
         colBuf = self.bufMan.get_color_buffer()
         image = colBuf.get_image_data()
@@ -269,7 +277,8 @@ class Renderer:
 #
 # ---------------------------------------------------------------------
 class Window(pyglet.window.Window):
-    """Encapsulates the actual graphics API windows
+    """ Window class
+    Encapsulates the actual graphics API windows
     """
 
     def __init__(
@@ -286,7 +295,7 @@ class Window(pyglet.window.Window):
         _iScrGUI,
         _offset,
     ):
-        """Generate new window
+        """ Generate new window
         _Renderer  := reference of Renderer instance
         _iScr      := index of screen (only for full-screen)
         _title     := title string
@@ -308,15 +317,13 @@ class Window(pyglet.window.Window):
 
         # **********************
         # **********************
-        # TODO:
-        # Calculate top left positions of all screens
+        # TODO: Calculate top left positions of all screens
         # **********************
         # **********************
 
         if self.isFullScr and self.isPresent:
             if _isScrOvl:
                 # Screen overlay mode
-                #
                 super().__init__(
                     vsync=True,
                     fullscreen=False,
@@ -331,13 +338,11 @@ class Window(pyglet.window.Window):
 
                 # Define a rectangle that covers screen 2 to be able to set the
                 # background colour independently
-                #
                 rect = [-_dx // 4, -_dy // 2, _dx // 4, _dy // 2]
                 self.Scr2Vert = vertFromRect(rect, (0, 0), (0, 0, 0, 255))
 
             else:
                 # Standard full-screen mode
-                #
                 dx = self.Renderer.Screens[_iScr].width
                 dy = self.Renderer.Screens[_iScr].height
                 super().__init__(
@@ -351,13 +356,12 @@ class Window(pyglet.window.Window):
 
         else:
             # Window mode
-            #
             super().__init__(
                 vsync=True,
                 width=_dx,
                 height=_dy,
                 caption=_title,
-                style=pyglet.window.Window.WINDOW_STYLE_TOOL,
+                style=pyglet.window.Window.WINDOW_STYLE_BORDERLESS,
             )
             self.set_location(_left, _top)
 
@@ -404,7 +408,7 @@ class Window(pyglet.window.Window):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def set_mouse_visible(self, _visible):
-        """Toggle visibility of mouse cursor
+        """ Toggle visibility of mouse cursor
         """
         if self.isReady:
             self.switch_to()
@@ -417,7 +421,7 @@ class Window(pyglet.window.Window):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def clear(self, _RGB=[]):
-        """Clear window; change background color, if requested
+        """ Clear window; change background color, if requested
         """
         self.switch_to()
 
@@ -439,11 +443,11 @@ class Window(pyglet.window.Window):
 #
 # ---------------------------------------------------------------------
 class Batch:
-    """Encapsulates a batch of OpenGL drawing commands
+    """ Encapsulates a batch of OpenGL drawing commands
     """
 
     def __init__(self, _isScrOvl):
-        """Generate new batch
+        """ Generate new batch
         """
         self.isScrOvl = _isScrOvl
         self.Batch = pyglet.graphics.Batch()
@@ -478,8 +482,7 @@ class Batch:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def replace_object_data(self, _indices, _tri, _RGBA, _RGBA2):
-        """Replace the current indexed triangle vertex data in current
-           batch
+        """ Replace current indexed triangle vertex data in current batch
         """
         self.delete_object_data()
         nV = len(_tri) // 2
@@ -501,16 +504,13 @@ class Batch:
     def replace_object_data_non_indexed(
         self, _indices, _tri, _RGBA, _RGBA2, _mode=GL.GL_TRIANGLES
     ):
-        """Replace the current vertex data in current batch
+        """ Replace the current vertex data in current batch
         """
         self.delete_object_data()
         nV = len(_tri) // 2
         self.IV = self.Batch.add(
             nV, _mode, self.IVGr, ("v2i/stream", _tri), ("c4B/stream", _RGBA)
         )
-        # --> TE: Fixed, stupid mistake
-        # if not self.isScrOvl:
-        # <--    
         if self.isScrOvl:
             self.IV2 = self.Batch2.add(
                 nV, _mode, self.IVGr2, ("v2i/stream", _tri), ("c4B/stream", _RGBA2)
@@ -543,7 +543,7 @@ class Batch:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def add_shader_object_data(self, _objID, _indices, _tri, _RGBA, _RGBA2):
-        """Add vertex triangle data for shader objects to current batch
+        """ Add vertex triangle data for shader objects to current batch
         """
         self.IVShObj.append(
             self.Batch.add_indexed(
@@ -621,8 +621,8 @@ class Batch:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def draw(self, _Stage, _View, _isClear=False):
-        """Draw current batch of triangle vertices, acknowledging the
-           scaling and rotation of the current display (stage settings)
+        """ Draw current batch of triangle vertices, acknowledging the
+        scaling and rotation of the current display (stage settings)
         """
         for iWin, win in enumerate(pyglet.app.windows):
             win.switch_to()
@@ -651,7 +651,6 @@ class Batch:
             else:
                 if _Stage.useScrOvl:
                     # Draw on first (left) screen
-                    #
                     GL.glViewport(0, 0, win.width // 2, win.height)
                     GL.glMatrixMode(GL.GL_PROJECTION)
                     GL.glLoadIdentity()
@@ -677,7 +676,6 @@ class Batch:
                     GL.glPopMatrix()
 
                     # Draw on second (right) screen
-                    #
                     GL.glViewport(win.width // 2, 0, win.width // 2, win.height)
                     GL.glMatrixMode(GL.GL_PROJECTION)
                     GL.glLoadIdentity()
@@ -722,7 +720,7 @@ class Batch:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def add_rect_data(self, _Vert):
-        """Add rectangle described by _Vert to lined up rendering commands
+        """ Add rectangle described by _Vert to lined up rendering commands
         """
         pyglet.graphics.draw_indexed(
             _Vert[VERT_COUNT],
@@ -737,7 +735,7 @@ class Batch:
 #
 # ---------------------------------------------------------------------
 class CommonParentGroup(pyglet.graphics.OrderedGroup):
-    """Parent class for all groups, based on a pyglet group
+    """ Parent class for all groups, based on a pyglet group
     """
     def __init__(self):
         super(CommonParentGroup, self).__init__(order=0, parent=None)
@@ -745,7 +743,7 @@ class CommonParentGroup(pyglet.graphics.OrderedGroup):
 
 
 class CommonShaderParentGroup(pyglet.graphics.OrderedGroup):
-    """Parent class for a shader object group
+    """ Parent class for a shader object group
     """
     def __init__(self):
         super(CommonShaderParentGroup, self).__init__(order=1, parent=CommonParent)
@@ -760,7 +758,7 @@ CommonShaderParent = CommonShaderParentGroup()
 # Shader bind/unbind class
 # ---------------------------------------------------------------------
 class ShaderBindGroup(pyglet.graphics.Group):
-    """Pyglet group to bind/unbind shader objects
+    """ Pyglet group to bind/unbind shader objects
     """
     def __init__(self, _shader, _shType, _iObj, _ShMan):
         super(ShaderBindGroup, self).__init__(parent=CommonShaderParent)
@@ -827,7 +825,7 @@ class ShaderBindGroup(pyglet.graphics.Group):
 
 # ---------------------------------------------------------------------
 class NoneGroup(pyglet.graphics.OrderedGroup):
-    """Pyglet group for non-shader objects
+    """ Pyglet group for non-shader objects
     """
 
     def __init__(self):
@@ -847,7 +845,7 @@ class NoneGroup(pyglet.graphics.OrderedGroup):
 # Support functions
 # ---------------------------------------------------------------------
 def vertFromRect(_rect, _pos, _RGBA, _angle=0):
-    """Generates vertex data for a rectangle
+    """ Generates vertex data for a rectangle
     """
     newVert = [
         _rect[0],
@@ -869,9 +867,9 @@ def vertFromRect(_rect, _pos, _RGBA, _angle=0):
 
 # ---------------------------------------------------------------------
 def rotateTranslate(_c, _rot_deg, _pxy):
-    """Rotate the coordinates in the list ([x1,y1,x2,y2, ...]) by the
-    given angle and then translates the coordinates to the given
-    position
+    """ Rotate and translate
+    Rotate the coordinates in the list ([x1,y1,x2,y2, ...]) by the given 
+    angle and then translates the coordinates to the given position
     """
     nc = []
     a_rad = np.radians(_rot_deg)
@@ -881,5 +879,30 @@ def rotateTranslate(_c, _rot_deg, _pxy):
         nc += [x, y]
     return nc
 
+# ---------------------------------------------------------------------
+# Support functions related to QDSpy "movies"
+# ---------------------------------------------------------------------
+def imageLoad(fName):
+    return pyglet.image.load(fName)
+
+def getImageData(dx, dy, img_format, data_as_str, pitch):
+    return pyglet.image.ImageData(
+        dx, dy, img_format, data_as_str, pitch
+    )
+
+def getImageGrid(img, nx, ny):
+    return pyglet.image.ImageGrid(img, nx, ny)
+
+def getTextureSequence(img, use_3d=False):
+    if use_3d:
+        return pyglet.image.Texture3D.create_for_image_grid(img)
+    else:
+        return img.get_texture_sequence()
+
+def getOrderedGroup(order):
+    return pyglet.graphics.OrderedGroup(order)
+
+def getSprite(img, usage, group):
+    return pyglet.sprite.Sprite(img, usage=usage, group=group)
 
 # ---------------------------------------------------------------------

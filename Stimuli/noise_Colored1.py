@@ -3,7 +3,7 @@
 #
 # ---------------------------------------------------------------------
 import  random
-import  QDS
+import  QDS  
 
 QDS.Initialize("noise_Colored1", "Example for random-colored boxes flickering")
 
@@ -28,7 +28,7 @@ p['dRot_step'] = 0       # angle by which boxes are rotated
 #
 nB        = p['nRows']*p['nCols']
 for iB in range(1, nB+1):
-  QDS.DefObj_Box(iB, p['boxDx'], p['boxDy'])
+  QDS.DefObj_Box(iB, p['boxDx'], p['boxDy'])  
 
 # Fill list with parameters for every box object
 #

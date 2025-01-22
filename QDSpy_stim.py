@@ -12,6 +12,7 @@ All rights reserved.
 
 2024-06-15 - Small fixes for PEP violations
            - Reformatted (using Ruff)
+2024-08-10 - More lightcrafter types allowed
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -20,25 +21,33 @@ import pickle
 import numpy as np
 import QDSpy_global as glo
 import QDSpy_stim_support as ssp
+import QDSpy_file_support as fsu
+import Libraries.log_helper as _log
 import QDSpy_stim_draw as drw
 import QDSpy_stim_movie as mov
 import QDSpy_stim_video as vid
 import QDSpy_core_shader as csh
+from QDSpy_stage import Stage, ScrDevType
 
+_LCr = None
 if glo.QDSpy_use_Lightcrafter:
-    import Devices.lightcrafter as lcr
-    _LCr = lcr.Lightcrafter(_isCheckOnly=True, _funcLog=ssp.Log.write)
-else:
-    _LCr = None
-
+    dev = Stage.getLCrDeviceType(0)
+    if dev == ScrDevType.DLPLCR4500:
+        import Devices.lightcrafter_4500 as lcr
+    elif dev == ScrDevType.DLPLCR230NP:
+        import Devices.lightcrafter_230np as lcr
+    if not dev == ScrDevType.generic:    
+        _LCr = lcr.Lightcrafter(
+            _isCheckOnly=True, _funcLog=_log.Log.write
+        )
 
 # ---------------------------------------------------------------------
 # fmt: off
 class ColorMode:
-  range0_255          = 0
-  range0_1            = 1
-  LC_first            = 2
-  LC_G9B9             = 2
+    range0_255        = 0
+    range0_1          = 1
+    LC_first          = 2
+    LC_G9B9           = 2
 
 COL_bitDepthRGB_888   = (8,8,8)
 COL_bitShiftRGB_000   = (0,0,0)
@@ -48,15 +57,15 @@ RGBA_MAX              = 8
 
 # ---------------------------------------------------------------------
 class StimObjType:
-  box                 = 101
-  ellipse             = 102
-  sector              = 103
-  movie               = 104
-  video               = 105
-  shader              = 201
-  # ...
+    box               = 101
+    ellipse           = 102
+    sector            = 103
+    movie             = 104
+    video             = 105
+    shader            = 201
+    # ...
 
-Ellipse_maxTr         = 72
+Ellipse_maxTr         = 180 # 72
 Sector_maxTr          = 360
 Sector_maxStep        = 10
 
@@ -98,24 +107,24 @@ SO_default_useShader  = 0
 
 # ---------------------------------------------------------------------
 class StimSceType:
-  changeObjCol        = 201
-  changeBkgCol        = 202
-  changeShParams      = 203
-  changeObjShader     = 204
-  # ...
-  clearSce            = 211
-  renderSce           = 212
-  startMovie          = 213
-  startVideo          = 214
-  awaitTTL            = 215
-  beginLoop           = 220
-  endLoop             = 221
-  # ...
-  sendCommandToLCr    = 300
-  #
-  logUserParams       = 400
-  # ...
-  getRandom           = 500
+    changeObjCol      = 201
+    changeBkgCol      = 202
+    changeShParams    = 203
+    changeObjShader   = 204
+    # ...
+    clearSce          = 211
+    renderSce         = 212
+    startMovie        = 213
+    startVideo        = 214
+    awaitTTL          = 215
+    beginLoop         = 220
+    endLoop           = 221
+    # ...
+    sendCommandToLCr  = 300
+    #
+    logUserParams     = 400
+    # ...
+    getRandom         = 500
 
 
 SC_field_type         = 0
@@ -171,90 +180,100 @@ SC_ObjNewNone         = 0x00
 
 # ---------------------------------------------------------------------
 class StimLCrCmd:
-  #connect            = 0
-  #disconnect         = 1
-  #getHardwareStatus  = 2
-  #getSystemStatus    = 3
-  #getMainStatus      = 4
-  #getVideoSigStatus  = 5
-  softwareReset       = 6
-  setInputSource      = 7
-  setDisplayMode      = 8
-  #setVideoGamma      = 9
-  setTestPattern      = 10
-  #getLEDCurrents     = 11
-  setLEDCurrents      = 12
-  setLEDEnabled       = 13
-  getLEDEnabled       = 14
-  # ...
+    """
+    connect           = 0
+    disconnect        = 1
+    getHardwareStatus = 2
+    getSystemStatus   = 3
+    getMainStatus     = 4
+    getVideoSigStatus = 5
+    """
+    softwareReset     = 6
+    setInputSource    = 7
+    setDisplayMode    = 8
+    """
+    setVideoGamma     = 9
+    """
+    setTestPattern    = 10
+    """
+    getLEDCurrents    = 11
+    """
+    setLEDCurrents    = 12
+    setLEDEnabled     = 13
+    getLEDEnabled     = 14
+    # ...
 
 # ---------------------------------------------------------------------
 class StimErrC:
-  ok                  = 0
-  notYetImplemented   = -1
+    ok                  = 0
+    notYetImplemented   = -1
+    dummy               = -2
+    shouldNotHappen     = -3
 
-  invalidDimensions   = -10
-  invalidDuration     = -11
-  invalidParamType    = -12
-  inconsistentParams  = -13
-  invalidAngles       = -14
+    invalidDimensions   = -10
+    invalidDuration     = -11
+    invalidParamType    = -12
+    inconsistentParams  = -13
+    invalidAngles       = -14
 
-  existingID          = -20
-  noMatchingID        = -21
+    existingID          = -20
+    noMatchingID        = -21
 
-  nothingToCompile    = -50
-  noStimOrNotCompiled = -51
-  wrongStimFileFormat = -52
-  invalidFileNamePath = -53
-  noDefsInRunSection  = -54
-  noShadersInRunSect  = -55
-  invalidShaderType   = -56
-  notShaderObject     = -57
-  noCompiledStim      = -58
+    nothingToCompile    = -50
+    noStimOrNotCompiled = -51
+    wrongStimFileFormat = -52
+    invalidFileNamePath = -53
+    noDefsInRunSection  = -54
+    noShadersInRunSect  = -55
+    invalidShaderType   = -56
+    notShaderObject     = -57
+    noCompiledStim      = -58
 
-  movieFileNotFound   = -60
-  notMovieObject      = -61
-  invalidMovieDesc    = -62
-  inconsMovieDesc     = -63
-  invalidMovieSeq     = -64
-  invalidMovieFormat  = -65
+    movieFileNotFound   = -60
+    notMovieObject      = -61
+    invalidMovieDesc    = -62
+    inconsMovieDesc     = -63
+    invalidMovieSeq     = -64
+    invalidMovieFormat  = -65
 
-  videoFileNotFound   = -70
-  invalidVideoFormat  = -71
+    videoFileNotFound   = -70
+    invalidVideoFormat  = -71
 
-  DeviceError_LCr     = -99
+    DeviceError_LCr     = -99
 
-  SetGammaLUTFailed   = -200
-  # ...
+    SetGammaLUTFailed   = -200
+    # ...
 
 StimErrStr	= dict([
-  (StimErrC.ok,                 "ok"),
-  (StimErrC.notYetImplemented,  "Not yet implemented"),
-  (StimErrC.invalidDimensions,  "Invalid dimensions"),
-  (StimErrC.invalidDuration,    "Invalid duration"),
-  (StimErrC.invalidParamType,   "Invalid parameter type"),
-  (StimErrC.inconsistentParams, "Inconsistent parameters"),
-  (StimErrC.invalidAngles,      "Angle(s) <0 or >360"),
-  (StimErrC.existingID,         "Object ID(s) already exist(s)"),
-  (StimErrC.noMatchingID,       "Object ID(s) not found"),
-  (StimErrC.nothingToCompile,   "No objects and/or scenes to compile"),
-  (StimErrC.noStimOrNotCompiled,"No stimulus defined or not yet compiled"),
-  (StimErrC.wrongStimFileFormat,"Wrong stimulus file format"),
-  (StimErrC.invalidFileNamePath,"Invalid file name or path"),
-  (StimErrC.noCompiledStim,     "Stimulus needs to be compiled"),
-  (StimErrC.noDefsInRunSection, "No object definitions allowed in run section"),
-  (StimErrC.noShadersInRunSect, "Shader must be assigned to objects before run section"),
-  (StimErrC.invalidShaderType,  "Invalid shader type"),
-  (StimErrC.notShaderObject,    "Object(s) in list not shader-enabled"),
-  (StimErrC.movieFileNotFound,  "Movie file(s) not found"),
-  (StimErrC.notMovieObject,     "Object is not a movie"),
-  (StimErrC.invalidMovieDesc,   "Invalid movie description"),
-  (StimErrC.inconsMovieDesc,    "Movie description does not match image"),
-  (StimErrC.invalidMovieSeq,    "Invalid movie sequence"),
-  (StimErrC.invalidMovieFormat, "Invalid movie format"),
-  (StimErrC.DeviceError_LCr,    "Device error (Lightcrafter), code={0}"),
-  (StimErrC.SetGammaLUTFailed,  "Failed to set gamma LUT")
-  ])
+    (StimErrC.ok,                 "ok"),
+    (StimErrC.notYetImplemented,  "Not yet implemented"),
+    (StimErrC.dummy,              "Dummy error code"),
+    (StimErrC.shouldNotHappen,    "Should-not-happen condition"),
+    (StimErrC.invalidDimensions,  "Invalid dimensions"),
+    (StimErrC.invalidDuration,    "Invalid duration"),
+    (StimErrC.invalidParamType,   "Invalid parameter type"),
+    (StimErrC.inconsistentParams, "Inconsistent parameters"),
+    (StimErrC.invalidAngles,      "Angle(s) <0 or >360"),
+    (StimErrC.existingID,         "Object ID(s) already exist(s)"),
+    (StimErrC.noMatchingID,       "Object ID(s) not found"),
+    (StimErrC.nothingToCompile,   "No objects and/or scenes to compile"),
+    (StimErrC.noStimOrNotCompiled,"No stimulus defined or not yet compiled"),
+    (StimErrC.wrongStimFileFormat,"Wrong stimulus file format"),
+    (StimErrC.invalidFileNamePath,"Invalid file name or path"),
+    (StimErrC.noCompiledStim,     "Stimulus needs to be compiled"),
+    (StimErrC.noDefsInRunSection, "No object definitions allowed in run section"),
+    (StimErrC.noShadersInRunSect, "Shader must be assigned to objects before run section"),
+    (StimErrC.invalidShaderType,  "Invalid shader type"),
+    (StimErrC.notShaderObject,    "Object(s) in list not shader-enabled"),
+    (StimErrC.movieFileNotFound,  "Movie file(s) not found"),
+    (StimErrC.notMovieObject,     "Object is not a movie"),
+    (StimErrC.invalidMovieDesc,   "Invalid movie description"),
+    (StimErrC.inconsMovieDesc,    "Movie description does not match image"),
+    (StimErrC.invalidMovieSeq,    "Invalid movie sequence"),
+    (StimErrC.invalidMovieFormat, "Invalid movie format"),
+    (StimErrC.DeviceError_LCr,    "Device error (Lightcrafter), code={0}"),
+    (StimErrC.SetGammaLUTFailed,  "Failed to set gamma LUT")
+    ])
 # fmt: on
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -275,13 +294,13 @@ class StimException(Exception):
 # ---------------------------------------------------------------------
 class Stim:
     def __init__(self):
-        """Initializing
+        """ Initializing
         """
         self.clear()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def clear(self):
-        """Pseudo code representation of the stimulus
+        """ Pseudo code representation of the stimulus
         (with seconds and µms as units)
         """
         self.nameStr = "n/a"
@@ -319,12 +338,16 @@ class Stim:
     def getLastErrC(self):
         return self.LastErrC
 
-    def getLastErrStr(self):
-        return StimErrStr[self.LastErrC]
+    def getLastErrStr(self, _errC: StimErrC = StimErrC.dummy):
+        if _errC is StimErrC.dummy:
+            return StimErrStr[self.LastErrC]
+        else:
+            return StimErrStr[_errC]
+
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def defObj_box(self, _ID, _dx_um, _dy_um, _enShader):
-        """Define a box object and add it to the stimulus object list
+        """ Define a box object and add it to the stimulus object list
         (For parameters, see QDS.py)
         """
         if (_dx_um <= 0) or (_dy_um <= 0):
@@ -354,7 +377,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def defObj_ellipse(self, _ID, _dx_um, _dy_um, _enShader):
-        """Define an ellipse object and add it to the stimulus object list
+        """ Define an ellipse object and add it to the stimulus object list
         (For parameters, see QDS.py)
         """
         if (_dx_um <= 0) or (_dy_um <= 0):
@@ -384,7 +407,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def defObj_sector(self, _ID, _r, _offs, _angle, _awidth, _astep, _enShader):
-        """Define a sector object and add it to the stimulus object list
+        """ Define a sector object and add it to the stimulus object list
         (For parameters, see QDS.py)
         """
         if (_r <= _offs) or (_r <= 0) or (_offs < 0):
@@ -422,14 +445,15 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def defShader(self, _shID, _shType):
-        """Define a shader
+        """ Define a shader
         (For parameters, see QDS.py)
 
         Create shader manager, if not already existent, and check if
         shader type exists
         """
         if self.ShManager is None:
-            self.ShManager = csh.ShaderManager(self.Conf)
+            _path = fsu.getQDSpyPath()
+            self.ShManager = csh.ShaderManager(self.Conf, _path)
         if _shType not in self.ShManager.getShaderTypes():
             self.LastErrC = StimErrC.invalidShaderType
             raise StimException(StimErrC.invalidShaderType)
@@ -454,7 +478,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def defObj_movie(self, _ID, _fName):
-        """Define a movie object and add it to the movie object list
+        """ Define a movie object and add it to the movie object list
         (For parameters, see QDS.py)
         """
         tempMovie = mov.Movie(self.Conf)
@@ -484,7 +508,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def getMovieParams(self, _ID):
-        """Get movie object parameters
+        """ Get movie object parameters
         (For parameters, see QDS.py)
         """
         try:
@@ -502,7 +526,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def defObj_video(self, _ID, _fName):
-        """Define a video object and add it to the video object list
+        """ Define a video object and add it to the video object list
         (For parameters, see QDS.py)
         """
         tempVideo = vid.Video(self.Conf)
@@ -533,7 +557,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def getVideoParams(self, _ID):
-        """Get video object parameters
+        """ Get video object parameters
         (For parameters, see QDS.py)
         """
         try:
@@ -541,7 +565,7 @@ class Stim:
             VdOb = self.VidList[iVdOb]
         except KeyError:
             self.LastErrC = StimErrC.noMatchingID
-            raise StimException
+            raise StimException(self.LastErrC)
 
         d = dict()
         d["dxFr"] = VdOb[SV_field_dxFr]
@@ -552,7 +576,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setObjColor(self, _IDs, _newRGBs, _newAlphas):
-        """Changes the color and the alpha values of one or more objects
+        """ Changes the color and the alpha values of one or more objects
         by creating a scene w/o duration
         Parameters:
         _IDs            := list of IDs
@@ -570,14 +594,14 @@ class Stim:
             or (len(_IDs) != len(_newAlphas))
         ):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         for ID in _IDs:
             try:
                 self.ObjDict[ID]
             except KeyError:
                 self.LastErrC = StimErrC.noMatchingID
-                raise StimException
+                raise StimException(self.LastErrC)
 
         RGBEx = ssp.completeRGBList(_newRGBs)
         newSce = [
@@ -596,7 +620,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setObjColorAlphaByVertex(self, _IDs, _newRGBAs):
-        """Change the color(s) of the given object(s)
+        """ Change the color(s) of the given object(s)
         (For parameters, see QDS.py)
         """
         if (
@@ -607,14 +631,14 @@ class Stim:
             or (len(_IDs) != len(_newRGBAs))
         ):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         for ID in _IDs:
             try:
                 self.ObjDict[ID]
             except KeyError:
                 self.LastErrC = StimErrC.noMatchingID
-                raise StimException
+                raise StimException(self.LastErrC)
 
         RGBAEx = ssp.completeRGBAList(_newRGBAs)
         newSce = [
@@ -633,7 +657,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setColorLUTEntry(self, _index, _rgb):
-        """Change a color LUT entry
+        """ Change a color LUT entry
         (For parameters, see QDS.py)
         """
         if (
@@ -643,7 +667,7 @@ class Stim:
             or len(_rgb) not in [3, 6]
         ):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
     # *********************
     # *********************
@@ -655,18 +679,18 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setShaderParams(self, _shID, _shParams):
-        """Set or change the parameters of an existing shader
+        """ Set or change the parameters of an existing shader
         (For parameters, see QDS.py)
         """
         if not (isinstance(_shID, int)) or not (isinstance(_shParams, list)):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         try:
             iSh = self.ShDict[_shID]
         except KeyError:
             self.LastErrC = StimErrC.noMatchingID
-            raise StimException
+            raise StimException(self.LastErrC)
 
         shP = _shParams
         shType = self.ShList[iSh][SH_field_shaderType]
@@ -675,7 +699,7 @@ class Stim:
             ShD = self.ShManager.ShDesc[iShD]
         except ValueError:
             self.LastErrC = StimErrC.invalidShaderType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         # Convert RBG values for each shader parameter (uniform) that
         # contains the substring "rgb"
@@ -690,22 +714,22 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setObjShader(self, _IDs, _shIDs):
-        """Link object(s) with existing shader(s)
+        """ Link object(s) with existing shader(s)
         (For parameters, see QDS.py)
         """
         if not (isinstance(_IDs, list)) or not (isinstance(_shIDs, list)):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         for ID in _IDs:
             try:
                 # self.ObjDict[ID]
                 if self.ObjList[self.ObjDict[ID]][SO_field_useShader] == 0:
                     self.LastErrC = StimErrC.notShaderObject
-                    raise StimException
+                    raise StimException(self.LastErrC)
             except KeyError:
                 self.LastErrC = StimErrC.noMatchingID
-                raise StimException
+                raise StimException(self.LastErrC)
 
         for ID in _shIDs:
             if ID < 0:
@@ -714,7 +738,7 @@ class Stim:
                 self.ShDict[ID]
             except KeyError:
                 self.LastErrC = StimErrC.noMatchingID
-                raise StimException
+                raise StimException(self.LastErrC)
 
         newSce = [StimSceType.changeObjShader, -1, self.nSce, False, _IDs, _shIDs]
         self.SceList.append(newSce)
@@ -723,7 +747,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setBkgColor(self, _newRGB):
-        """Changes the background color by creating a scene w/o duration
+        """ Changes the background color by creating a scene w/o duration
         Parameters:
         _newRGB         := RGB tuple (bytes)
         e.g.
@@ -731,7 +755,7 @@ class Stim:
         """
         if not (isinstance(_newRGB, tuple)):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         RGBEx = ssp.completeRGBList([_newRGB])
         newSce = [StimSceType.changeBkgCol, -1, self.nSce, False, RGBEx[0]]
@@ -757,12 +781,12 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def logUserParameters(self, _dict):
-        """Writes a user-defined set of parameters to the log file
+        """ Writes a user-defined set of parameters to the log file
         (For parameters, see QDS.py)
         """
         if not (isinstance(_dict, dict)):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         # **************************************
         # **************************************
@@ -780,7 +804,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def clearScene(self, _dur_s, _isMarker=False):
-        """Clear the scene (the screen) using the current background color
+        """ Clear the scene (the screen) using the current background color
         and present that scene for the given duration (if _dur_s > 0)
         
         NOTE that all special objects, like moving bars movies etc. that
@@ -788,7 +812,7 @@ class Stim:
         """
         if _dur_s < 0:
             self.LastErrC = StimErrC.invalidDuration
-            raise StimException
+            raise StimException(self.LastErrC)
         elif _dur_s == 0:
             dur = -1
         else:
@@ -860,7 +884,7 @@ class Stim:
 
         if res[0] != lcr.ERROR.OK:
             self.LastErrC = StimErrC.DeviceError_LCr
-            raise StimException
+            raise StimException(self.LastErrC)
 
         newSce = [StimSceType.sendCommandToLCr, -1, self.nSce, False, [_cmd] + _p]
         self.SceList.append(newSce)
@@ -870,7 +894,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def renderScene(self, _dur_s, _IDs, _posXY, _magXY, _rot, _isMarker=False):
-        """Render objects and present that scene for the given duration.
+        """ Render objects and present that scene for the given duration.
 
         NOTE that all special objects, like moving bars movies etc. that
         have not finished, are continued to be updated
@@ -896,18 +920,18 @@ class Stim:
             or (len(_IDs) != len(_rot))
         ):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         if _dur_s <= 0:
             self.LastErrC = StimErrC.invalidDuration
-            raise StimException
+            raise StimException(self.LastErrC)
 
         for ID in _IDs:
             try:
                 self.ObjDict[ID]
             except KeyError:
                 self.LastErrC = StimErrC.noMatchingID
-                raise StimException
+                raise StimException(self.LastErrC)
 
         newSce = [
             StimSceType.renderSce,
@@ -925,7 +949,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def startMovie(self, _ID, _posXY, _seq, _magXY, _trans, _rot, _screen=0):
-        """Start playing a movie object
+        """ Start playing a movie object
         (For parameters, see QDS.py)
         """
         if (
@@ -939,7 +963,7 @@ class Stim:
             or (_screen >= glo.QDSpy_maxNumberOfScreens)
         ):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         try:
             iMvOb = self.MovDict[_ID]
@@ -948,12 +972,12 @@ class Stim:
             # raise(StimException(self.LastErrC))
         except KeyError:
             self.LastErrC = StimErrC.noMatchingID
-            raise StimException
+            raise StimException(self.LastErrC)
 
         tmpMCtr = mov.MovieCtrl(_seq, _ID, _nFr=self.MovList[iMvOb][SM_field_nFr])
         if not (tmpMCtr.check()):
             self.LastErrC = StimErrC.invalidMovieSeq
-            raise StimException
+            raise StimException(self.LastErrC)
 
         newSce = [
             StimSceType.startMovie,
@@ -974,7 +998,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def startVideo(self, _ID, _posXY, _magXY, _trans, _rot, _screen=0):
-        """Start playing a video object
+        """ Start playing a video object
         (For parameters, see QDS.py)
         """
         if (
@@ -985,13 +1009,13 @@ class Stim:
             or _screen not in [0, 1]
         ):
             self.LastErrC = StimErrC.invalidParamType
-            raise StimException
+            raise StimException(self.LastErrC)
 
         try:
             _ = self.VidDict[_ID]
         except KeyError:
             self.LastErrC = StimErrC.noMatchingID
-            raise StimException
+            raise StimException(self.LastErrC)
 
         newSce = [
             StimSceType.startVideo,
@@ -1011,7 +1035,7 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def compile(self, _Stage):
-        """Compile the current stimulus for the given stage settings
+        """ Compile the current stimulus for the given stage settings
         Parameters:
         _Pr  := an instance of the Present class
         """
@@ -1021,7 +1045,7 @@ class Stim:
             and (len(self.VidList) == 0)
         ) or (len(self.SceList) == 0):
             self.LastErrC = StimErrC.nothingToCompile
-            raise StimException
+            raise StimException(self.LastErrC)
 
         # Clear compiled scene data
         # First, lists corresponding to SceList, then lists with entries
@@ -1069,7 +1093,7 @@ class Stim:
         for sc in self.SceList:
             # Progress message to user
             percent = sc[SC_field_index] * 100.0 / len(self.SceList)
-            ssp.Log.write(
+            _log.Log.write(
                 "ok",
                 "Scene {0} of {1}; {2:.0f}% compiled...".format(
                     sc[SC_field_index], len(self.SceList), percent
@@ -1082,7 +1106,7 @@ class Stim:
             self.cScDurList.append(dur)
 
             if not (isIntNumFrames):
-                ssp.Log.write(
+                _log.Log.write(
                     "WARNING",
                     "Scene #{0} duration unequals integer number" " of frames".format(
                         sc[SC_field_index]
@@ -1293,7 +1317,7 @@ class Stim:
             self.cScOList.append([icODrEntry, ObjNewMask, ObjIDs, ObjPosXY, ObjRot])
 
         # Finished compiling
-        ssp.Log.write(
+        _log.Log.write(
             "ok",
             "Stimulus '{0}' compiled for {1} Hz refresh".format(
                 self.nameStr, self.cFreq_Hz
@@ -1304,14 +1328,14 @@ class Stim:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def save(self, sFileName):
-        """Save the compiled stimulus
+        """ Save the compiled stimulus
         """
         if not (self.isComp):
-            ssp.Log.write("WARNING", "No stimulus defined or not yet compiled")
+            _log.Log.write("WARNING", "No stimulus defined or not yet compiled")
             self.LastErrC = StimErrC.noStimOrNotCompiled
             return
 
-        ssp.Log.write(" ", "Saving stimulus...", True)
+        _log.Log.write(" ", "Saving stimulus...", True)
         with open(sFileName + glo.QDSpy_cPickleFileExt, "wb") as stimFile:
             stimPick = pickle.Pickler(stimFile, glo.QDSpy_cPickleProtocol)
 
@@ -1341,7 +1365,7 @@ class Stim:
             stimPick.dump(self.cODr_tr_vertRGBA)
             stimPick.dump(self.cODr_tr_vertRGBA2)
 
-        ssp.Log.write(
+        _log.Log.write(
             "ok",
             "Stimulus '{0}' saved to '{1}'".format(
                 self.nameStr, sFileName + glo.QDSpy_cPickleFileExt
@@ -1350,22 +1374,29 @@ class Stim:
         self.LastErrC = StimErrC.ok
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def load(self, sFileName, _onlyInfo=False):
-        """Load the compiled stimulus
+    def load(self, _sFileName: str, _onlyInfo: bool = False):
+        """ Load the compiled stimulus
         """
         self.clear()
         if not (_onlyInfo):
-            ssp.Log.write(" ", "Loading compiled stimulus...", True)
+            _log.Log.write(" ", "Loading compiled stimulus...", True)
 
+        '''
+        sPath = fsp.repairPath(_sFileName)
+        '''
+        sPath = fsu.getJoinedPath(fsu.getCurrentPath(), _sFileName)
         try:
-            with open(sFileName + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
+            with open(sPath + glo.QDSpy_cPickleFileExt, "rb") as stimFile:
+                '''
                 self.fileName = sFileName.replace("\\\\", "\\")
+                '''
+                self.fileName = sPath 
+                #print("load", sPath)
                 stimPick = pickle.Unpickler(stimFile)
                 ID = stimPick.load()
-
                 if ID != glo.QDSpy_fileVersionID:
                     self.LastErrC = StimErrC.wrongStimFileFormat
-                    ssp.Log.write("ERROR", self.getLastErrStr())
+                    _log.Log.write("ERROR", self.getLastErrStr())
                     raise StimException(self.LastErrC)
 
                 self.nameStr = stimPick.load()
@@ -1396,22 +1427,22 @@ class Stim:
 
         except IOError:
             self.LastErrC = StimErrC.noCompiledStim
-            ssp.Log.write("ERROR", self.getLastErrStr())
+            _log.Log.write("ERROR", self.getLastErrStr())
             raise StimException(self.LastErrC)
 
         # Get hash for pickle file
         if not (_onlyInfo):
-            self.md5Str = ssp.getHashStrForFile(sFileName + glo.QDSpy_cPickleFileExt)
+            self.md5Str = fsu.getHashStrForFile(sPath + glo.QDSpy_cPickleFileExt)
 
         # Log some information
         if not (_onlyInfo):
-            ssp.Log.write(
+            _log.Log.write(
                 "ok",
-                "Stimulus '{0}' loaded".format(sFileName + glo.QDSpy_cPickleFileExt),
+                "Stimulus '{0}' loaded".format(sPath + glo.QDSpy_cPickleFileExt),
             )
-            ssp.Log.write(" ", "Name       : {0}".format(self.nameStr))
-            ssp.Log.write(" ", "Description: {0}".format(self.descrStr))
-            ssp.Log.write(" ", "Frequency  : {0} Hz".format(self.cFreq_Hz))
+            _log.Log.write(" ", "Name       : {0}".format(self.nameStr))
+            _log.Log.write(" ", "Description: {0}".format(self.descrStr))
+            _log.Log.write(" ", "Frequency  : {0} Hz".format(self.cFreq_Hz))
 
         self.isComp = True
         self.LastErrC = StimErrC.ok
@@ -1421,7 +1452,7 @@ class Stim:
     def adjust(self, _Stage):
       # Adjust compiled stimulus to current stage parameters
       #
-      ssp.Log.write(" ", "Adjusting stimulus to stage parameters...", True)
+      _log.Log.write(" ", "Adjusting stimulus to stage parameters...", True)
 
       for iVC in range(len(self.cODr_tr_vertCoord)):
         if self.cODr_tr_vertCoord[iVC][0] > 0:
@@ -1433,7 +1464,7 @@ class Stim:
           # Convert back to integer?
           # ************
 
-      ssp.Log.write("ok", "Stimulus '{0}' adjusted to stage parameters"
+      _log.Log.write("ok", "Stimulus '{0}' adjusted to stage parameters"
                 .format(self.nameStr))
       self.LastErrC = StimErrC.ok
     """

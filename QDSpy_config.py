@@ -7,7 +7,7 @@ The 'Config' class manages the external configuration file 'QDSpy.ini'
 using the configparser library. Use 'getParsedArg()' to parse arguments
 for the command line version of QDSpy
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2022-08-03 - Adapt to LINUX
@@ -16,20 +16,22 @@ All rights reserved.
            - Fix for breaking change in `configparser`; now using 
              `ConfigParser` instead of `RawConfigParser`
            - Small fixes for PEP violations  
+2024-08-10 - LCr type added           
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
 import sys
 import os
+import platform
 import argparse
 import configparser
 import QDSpy_stage as stg
 import QDSpy_gamma as gma
-import QDSpy_stim_support as ssp
+import Libraries.log_helper as _log
 import QDSpy_global as glo
 
-PLATFORM_WINDOWS = sys.platform == "win32"
+PLATFORM_WINDOWS = platform.system() == "Windows"
 
 # ---------------------------------------------------------------------
 # Configuration file class
@@ -46,8 +48,11 @@ class Config:
         #
         self.isWindows = PLATFORM_WINDOWS
         self.pyVersion = sys.version_info[0] + sys.version_info[1] / 10
+        '''
         _sep = "\\" if PLATFORM_WINDOWS else "/"
         self.iniPath = os.getcwd() + _sep + glo.QDSpy_iniFileName
+        '''
+        self.iniPath = glo.QDSpy_iniFileName        
 
         # Set configuration default values
         #
@@ -72,6 +77,7 @@ class Config:
         self.maxDtTr_ms = glo.QDSpy_FrDurThreshold_ms
         self.disGC = glo.QDSpy_disableGarbageCollect
         self.useLCr = glo.QDSpy_use_Lightcrafter
+        self.LCrDevTypeName = glo.QDSpy_LCrDevTypeName
         self.LEDNames = glo.QDSpy_LEDNames_default
         self.LEDPeakWLs = glo.QDSpy_LEDPeakWLs_default
         self.LEDDevIndices = glo.QDSpy_LEDDevIndex_default
@@ -169,6 +175,9 @@ class Config:
             self.useLCr = self.getParam(
                 "Display", "bool_use_lightcrafter", glo.QDSpy_use_Lightcrafter
             )
+            self.LCrDevTypeName = self.getParam(
+                "Display", "str_lcr_device_type", glo.QDSpy_LCrDevTypeName
+            ).upper()
             temp = self.getParam("Display", "str_LED_names", glo.QDSpy_LEDNames_default)
             self.LEDNames = temp.split(",")
             temp = self.getParam(
@@ -255,7 +264,7 @@ class Config:
         else:
             # Initialization file does not exist, recreate
             #
-            ssp.Log.write(
+            _log.Log.write(
                 "WARNING",
                 "`QDSpy.ini`not found, generating new "
                 "configuration file from default values",
@@ -354,6 +363,9 @@ class Config:
             self.conf.add_section("Display")
             self.setParam(
                 "Display", "bool_use_lightcrafter", glo.QDSpy_use_Lightcrafter
+            )
+            self.setParam(
+                "Display", "str_lcr_device_type", glo.QDSpy_LCrDevTypeName
             )
             self.setParam("Display", "str_LED_names", glo.QDSpy_LEDNames_default)
             self.setParam(
@@ -520,8 +532,8 @@ class Config:
 #
 # ---------------------------------------------------------------------
 def getParsedArgv():
-    # Return the parsed command-line arguments
-    #
+    '''Return the parsed command-line arguments
+    '''
     parser = argparse.ArgumentParser(description="Present a stimulus.")
     parser.add_argument(
         "-t",
