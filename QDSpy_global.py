@@ -8,6 +8,7 @@ All rights reserved.
 
 2024-06-15 - Fix for breaking change in `configparser`; now using
              `ConfigParser` instead of `RawConfigParser`
+2025-01-28 - Sensor data via a serial port to log            
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -16,9 +17,9 @@ from QDSpy_file_support import getQDSpyPath, getCompletePath
 
 # fmt: off
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.93 beta"
+QDSpy_versionStr            = "QDSpy v0.94 beta"
 QDSpy_copyrightStr          = "(c) 2013-25 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v093beta.thomas_euler.eulerlab.de"
+QDSpy_appID                 = u"QDSpy3.v094beta.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 QDSpy_path                  = getQDSpyPath()
 
@@ -118,6 +119,13 @@ QDSpy_UL_pinTriggerIn       = 0
 QDSpy_UL_pinUserOut1        = "3, USER1, 0"
 QDSpy_UL_pinUserOut2        = "4, USER2, 0"
 QDSpy_Arduino_baud          = 230400
+
+# Pico-view - Logging data received via a serial port
+QDSpy_usePV                 = True
+QDSpy_PV_serialPort         = "COM9"
+QDSpy_PV_baud               = 230400
+QDSpy_PV_rate_s             = 1.0
+QDSpy_PV_startCh            = ">"
 
 QDSpy_markerRGBA            = "255,127,127,255"
 QDSpy_antiMarkerRGBA        = "0,0,0,255"

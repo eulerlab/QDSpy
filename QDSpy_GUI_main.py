@@ -3,7 +3,7 @@
 """
 QDSpy module - main program of the GUI version of QDSpy
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2021-10-15 - Adapt to LINUX
@@ -15,6 +15,7 @@ All rights reserved.
               the GUI designed for Qt5 look decent)   
 2024-08-04 - `Log` moved into its own module       
 2024-08-10 - Moved GUI-related methods from `QDSpy_GUI_support` to here
+2025-01-28 - Sensor data via a serial port to log    
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -23,13 +24,14 @@ import os
 import sys
 import time
 import pickle
+import json
 import platform
 from datetime import timedelta
 from PyQt6 import uic  
 from PyQt6.QtWidgets import QMessageBox, QMainWindow, QLabel, QApplication  
 from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QWidget, QProgressBar  
 from PyQt6.QtGui import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor, QFontMetrics 
-from PyQt6.QtCore import Qt, QRect, QSize  
+from PyQt6.QtCore import Qt, QRect, QSize, QTimer  
 from multiprocessing import Process
 import QDSpy_stim as stm
 from Libraries.log_helper import Log
@@ -41,6 +43,7 @@ import QDSpy_stage as stg
 import QDSpy_global as glo
 import QDSpy_core
 import QDSpy_core_support as csp
+import serial
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
@@ -239,6 +242,26 @@ class MainWinClass(QMainWindow, form_class):
 
         self.lineEditComment.returnPressed.connect(self.OnClick_AddComment)
 
+
+        # Initialize Pico-view, if defined
+        if glo.QDSpy_usePV:
+            port = glo.QDSpy_PV_serialPort
+            baud = glo.QDSpy_PV_baud
+            self._isPVReady = False
+            self.logWrite("", f"Initialize pico-view via `{port}` ...")
+            try:
+                self._pvSerial = serial.Serial(port=port, baudrate=baud)
+                self._PVTimer = QTimer()
+                self._PVTimer.timeout.connect(self._logPVEvents)
+                dt_ms = int(max(glo.QDSpy_PV_rate_s, 0.1) *1_000)
+                self._PVTimer.start(dt_ms)
+                #self._isPVReady = self._pvSerial.is_open                
+                self.logWrite("", "... done")                
+
+            except serial.serialutil.SerialException as err:
+                self.logWrite("WARNING", err)    
+
+
         # Create status objects and a pipe for communicating with the
         # presentation process (see below)
         self.logWrite("DEBUG", "Creating sync object ...")
@@ -368,9 +391,21 @@ class MainWinClass(QMainWindow, form_class):
                 self.OnClick_btnStimAbort()
 
     # -----------------------------------------------------------------
+    def _logPVEvents(self):
+        """ Check if new data arrived at the PV serial and if so, write 
+        it to the log file
+        """
+        if self._pvSerial.is_open and self._pvSerial.in_waiting > 0:
+            msg = self._pvSerial.readline()
+            if len(msg) > 0 and msg[0] == ord(glo.QDSpy_PV_startCh):
+                # Valid message
+                data = json.loads(msg[1:].decode())
+                self.logWrite("SENSOR", data)
+
+    # -----------------------------------------------------------------
     def handleAutorun(self):
-        '''Check if autorun stimulus file present and if so run it
-        '''
+        """ Check if autorun stimulus file present and if so run it
+        """
         try:
             self.isStimCurr = False
             sf = glo.QDSpy_autorunStimFileName
@@ -436,6 +471,11 @@ class MainWinClass(QMainWindow, form_class):
         # Closing is immanent, stop stimulus, if running ...
         if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING]:
             self.OnClick_btnStimAbort()
+
+       # Close Pico-view link
+        if glo.QDSpy_usePV and self._pvSerial.is_open:
+            self._PVTimer.stop()
+            self._pvSerial.close()
 
         # Save log
         os.makedirs(self.Conf.pathLogs, exist_ok=True)
