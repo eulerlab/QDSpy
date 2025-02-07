@@ -400,7 +400,9 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
                             data = [mpr.PipeValType.toSrv_None]
                             _Sync.setStateSafe(mpr.COMPILING)
                             try:
-                                subprocess.check_call(["python", _fNameStim])
+                                print("_fNameStim", _fNameStim)
+                                #subprocess.check_call(["python", _fNameStim])
+                                subprocess.check_call([sys.executable, _fNameStim])
                                 Log.write("ok", "... done")
 
                             except subprocess.CalledProcessError:

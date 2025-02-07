@@ -68,7 +68,7 @@ class Presenter:
         self.Conf = _Conf
         self.View = _View
         self.LCr = _LCr
-        self.pathQDSpy = fsu.getQDSpyPath()
+        self.pathQDSpy = fsu.getQDSpyPath()        
         self.ShManager = csh.ShaderManager(self.Conf, self.pathQDSpy)
         self.useSound = glo.QDSpy_isUseSound
         self.reset()

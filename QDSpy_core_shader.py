@@ -45,9 +45,6 @@ class ShaderManager:
         self.ShTypes = []
         self.ShVertCode = []
         self.ShFragCode = []
-        '''
-        pshader = fsu.repairPath(_path +self.Conf.pathShader)
-        '''
         pshader = self.Conf.pathShader
 
         # Make a list of the available shader files ...
@@ -57,7 +54,8 @@ class ShaderManager:
             break
         for fName in f:
             if (os.path.splitext(fName)[1]).lower() == glo.QDSpy_shaderFileExt:
-                self.ShFileList.append(pshader + fName)
+                #self.ShFileList.append(pshader + fName)
+                self.ShFileList.append(fsu.getJoinedPath(pshader, fName))
 
         # Parse each shader file ...
         isInVert = False

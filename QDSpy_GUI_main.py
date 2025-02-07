@@ -248,6 +248,7 @@ class MainWinClass(QMainWindow, form_class):
             port = glo.QDSpy_PV_serialPort
             baud = glo.QDSpy_PV_baud
             self._isPVReady = False
+            self._pvSerial = None
             self.logWrite("", f"Initialize pico-view via `{port}` ...")
             try:
                 self._pvSerial = serial.Serial(port=port, baudrate=baud)
@@ -473,19 +474,21 @@ class MainWinClass(QMainWindow, form_class):
             self.OnClick_btnStimAbort()
 
        # Close Pico-view link
-        if glo.QDSpy_usePV and self._pvSerial.is_open:
+        if glo.QDSpy_usePV and self._pvSerial and self._pvSerial.is_open:
             self._PVTimer.stop()
             self._pvSerial.close()
 
         # Save log
         os.makedirs(self.Conf.pathLogs, exist_ok=True)
         fName = time.strftime("%Y%m%d_%H%M%S")
+        fPath = fsu.getJoinedPath(self.Conf.pathLogs, fName)
         j = 0
-        while os.path.exists(self.Conf.pathLogs + fName):
+        while os.path.exists(fPath):
             fName = "{0}_{1:04d}".format(fName, j)
             j += 1
 
-        fPath = self.Conf.pathLogs + fName + glo.QDSpy_logFileExtension
+        #fPath = self.Conf.pathLogs + fName + glo.QDSpy_logFileExtension
+        fPath += glo.QDSpy_logFileExtension
         self.logWrite(" ", "Saving log file to '{0}' ...".format(fPath))
 
         with open(fPath, "w") as logFile:

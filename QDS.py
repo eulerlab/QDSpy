@@ -23,7 +23,9 @@ import os
 import time
 import sys
 import platform
+'''
 import QDSpy_checks  # noqa: F401
+'''
 import QDSpy_file_support as fsu
 import QDSpy_global as glo
 import QDSpy_stim as stm
