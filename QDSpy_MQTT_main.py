@@ -115,9 +115,6 @@ class AppMQTT(QDSpyApp):
             if self.state in [State.idle, State.ready]:  
                 # Try loading the stimulus
                 # "load,<msg index>,<stimulus file name>"
-                '''
-                fName = fsu.getQDSpyPath() +self.Conf.pathStim +msg[1][1]
-                '''
                 fName = fsu.getJoinedPath(
                     glo.QDSpy_path, 
                     self.Conf.pathStim, 

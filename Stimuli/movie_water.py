@@ -40,6 +40,7 @@ QDS.LogUserParameters(p)
 #
 QDS.DefObj_Movie(1, p["movName"])   
 movparams         = QDS.GetMovieParameters(1)
+print(movparams)
 p["movparams"]    = movparams
 dFr               = 1 /FrRefr_Hz
 nMark             = int(movparams["nFr"] /FrRefr_Hz /p["MarkPer_s"])

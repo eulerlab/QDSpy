@@ -977,7 +977,7 @@ class Presenter:
             if len(self.Stim.MovList) > 0:
                 for Mov in self.Stim.MovList:
                     movOb = mov.Movie(self.Conf)
-                    res = movOb.load(self.Conf.pathStim + Mov[stm.SM_field_movieFName])
+                    res = movOb.load(fsu.getJoinedPath(self.Conf.pathStim, Mov[stm.SM_field_movieFName]))
                     if res == stm.StimErrC.ok:
                         # Add movie class object to list
                         self.MovieList.append(movOb)
@@ -997,7 +997,7 @@ class Presenter:
             if len(self.Stim.VidList) > 0:
                 for Vid in self.Stim.VidList:
                     vidOb = vid.Video(self.Conf)
-                    res = vidOb.load(self.Conf.pathStim + Vid[stm.SV_field_videoFName])
+                    res = vidOb.load(fsu.getJoinedPath(self.Conf.pathStim, Vid[stm.SV_field_videoFName]))
                     if res == stm.StimErrC.ok:
                         # Add video class object to list
                         self.VideoList.append(vidOb)
