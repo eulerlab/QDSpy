@@ -18,6 +18,8 @@ All rights reserved.
 2025-01-28 - Sensor data via a serial port to log (pico-view support)  
 2025-02-11 - Make sure that QDSpy detects if the pico-view device was
              unplugged and reconnect automatically
+           - Write log file continuously such that it is not lost if
+             QDSpy crashes  
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -104,10 +106,13 @@ class MainWinClass(QMainWindow, form_class):
         self.lastIOInfo = []
         self.IOCmdCount = 0
         self.Stage = None
+        self.logFile = None
         self.noMsgToStdOut = cfg.getParsedArgv().gui
 
         self.fNameLog = self._getNewLogFileName()
-        self.logFile = open(self.fNameLog, "w")
+        if not glo.QDSpy_saveLogInTheEnd:
+            self.logWrite(" ", "Saving log continuosly to '{0}' ...".format(self.fNameLog))
+            self.logFile = open(self.fNameLog, "w")
 
         # For reporting the stimulus status during presentation
         self.Stim_tFrRel_s = 0
@@ -251,7 +256,7 @@ class MainWinClass(QMainWindow, form_class):
         # Initialize Pico-view, if defined
         if glo.QDSpy_usePV:
             self._connectPVDevice()
-            if self._pvSerial.is_open:
+            if self._pvSerial and self._pvSerial.is_open:
                 # Set up timer for reading the pico-view data
                 self._PVTimer = QTimer()
                 self._PVTimer.timeout.connect(self._logPVEvents)
@@ -403,16 +408,21 @@ class MainWinClass(QMainWindow, form_class):
             j += 1
 
         return fPath + glo.QDSpy_logFileExtension
-    
 
-    def writeLogFile(self):
+
+    def writeLogFileLine(self, msg :str):
         """ Save log file
         """    
-        pass
-        '''
+        if self.logFile:
+            self.logFile.write(msg +"\n")
+            self.logFile.flush()
+
+
+    def saveLogFile(self):
+        """ Save log file
+        """    
         with open(self.fNameLog, "w") as logFile:
             logFile.write(str(self.textBrowserHistory.toPlainText()))
-        '''    
 
     # -----------------------------------------------------------------
     # Functions related to PV device
@@ -456,12 +466,13 @@ class MainWinClass(QMainWindow, form_class):
             # (Re)connect to the pico-view device
             self._connectPVDevice()
 
-        if self._pvSerial.is_open and self._pvSerial.in_waiting > 0:
-            msg = self._pvSerial.readline()
-            if len(msg) > 0 and msg[0] == ord(glo.QDSpy_PV_startCh):
-                # Valid message
-                data = json.loads(msg[1:].decode())
-                self.logWrite("SENSOR", data)
+        if self._pvSerial and self._pvSerial.is_open:
+            if self._pvSerial.in_waiting > 0:
+                msg = self._pvSerial.readline()
+                if len(msg) > 0 and msg[0] == ord(glo.QDSpy_PV_startCh):
+                    # Valid message
+                    data = json.loads(msg[1:].decode())
+                    self.logWrite("SENSOR", data)
 
     # -----------------------------------------------------------------
     def handleAutorun(self):
@@ -539,8 +550,9 @@ class MainWinClass(QMainWindow, form_class):
             self._disconnectPVDevice()
 
         # Save log
-        self.logWrite(" ", "Saving log file to '{0}' ...".format(self.fNameLog))
-        self.writeLogFile()
+        if glo.QDSpy_saveLogInTheEnd:
+            self.logWrite(" ", "Saving log file to '{0}' ...".format(self.fNameLog))
+            self.writeLogFile()
 
         # ... and clean up
         self.logWrite("DEBUG", "Kill worker thread ...")
@@ -1271,6 +1283,8 @@ class MainWinClass(QMainWindow, form_class):
             if data[0] == mpr.PipeValType.toCli_log:
                 # Handle log data -> write to history
                 self.log(data)
+                if not glo.QDSpy_saveLogInTheEnd:
+                    self.writeLogFileLine(data[2])
 
             elif data[0] == mpr.PipeValType.toCli_displayInfo:
                 # Handle display information data -> update GUI
@@ -1324,8 +1338,8 @@ class MainWinClass(QMainWindow, form_class):
         data = Log.write(_hdr, _msg, _getStr=True, _isWorker=False)
         if data is not None:
             self.log(data)
-            self.logFile.write(data[2] +"\n")
-            self.logFile.flush()
+            if not glo.QDSpy_saveLogInTheEnd:
+                self.writeLogFileLine(data[2])
 
 
     def log(self, _data):
