@@ -17,9 +17,9 @@ from QDSpy_file_support import getQDSpyPath, getCompletePath
 
 # fmt: off
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.94 beta"
+QDSpy_versionStr            = "QDSpy v0.95 beta"
 QDSpy_copyrightStr          = "(c) 2013-25 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v094beta.thomas_euler.eulerlab.de"
+QDSpy_appID                 = u"QDSpy3.v095beta.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 QDSpy_path                  = getQDSpyPath()
 
@@ -29,7 +29,7 @@ QDSpy_workerMsgsToStdOut    = True
 QDSpy_noStimArg             = False
 QDSpy_loop_sleep_s          = 0.01
 
-QDSpy_isUseSound            = True
+QDSpy_isUseSound            = False
 QDSpy_pathSounds            = getCompletePath("Sounds")
 QDSpy_soundStimStart        = "stim_start.mp3"
 QDSpy_soundStimEnd          = "stim_end.mp3"

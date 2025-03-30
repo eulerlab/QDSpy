@@ -453,38 +453,5 @@ class QDSpyApp(object):
         if self.logFile:
             self.logFile.close()
             self.logFile = None            
-
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    '''
-    @staticmethod
-    def openLogFile(_fPath) -> TextIO:
-        """Open a log file
-        """
-        _fPath = fsu.repairPath(fsu.getQDSpyPath() +_fPath)
-        #print("openLogFile", _fPath)
-        os.makedirs(_fPath, exist_ok=True)
-        fName = time.strftime("%Y%m%d_%H%M%S")
-        j = 0
-        while os.path.exists(_fPath + fName):
-            fName = f"{fName}_{j:04d}"
-            j += 1
-
-        sf = _fPath + fName + glo.QDSpy_logFileExtension
-        return open(sf, "w"), sf
-
-    @staticmethod
-    def writeToLogFile(_file, _line):
-        """Write text in `_line` to file `_file`
-        """
-        if _file:
-            _file.write(_line +"\r")
-
-    @staticmethod
-    def closeLogFile(_file: TextIO):
-        """Close the log file
-        """
-        if _file:
-            _file.close()
-    '''            
     
 # ---------------------------------------------------------------------

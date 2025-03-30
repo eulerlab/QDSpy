@@ -218,7 +218,7 @@ class AppMQTT(QDSpyApp):
             
             # Stop MQTT client and close log file
             mqtt.Client.stop()                
-            self.closeLogFile(self._logFile)
+            self.closeLogFile()
 
 # ---------------------------------------------------------------------
 # _____________________________________________________________________
