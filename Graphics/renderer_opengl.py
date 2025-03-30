@@ -32,6 +32,14 @@ import pyglet
 import numpy as np
 import pyglet.gl as GL  
 from pyglet.gl.gl_info import GLInfo 
+from pyglet.image import ImageData
+
+# $$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$
+import QDSpy_global as glo
+import QDSpy_file_support as fsu
+# $$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$
 
 pyglet.options["debug_gl"] = False
 PYGLET_VER = float(pyglet.version[0:3])
@@ -58,19 +66,13 @@ MODE_POLYGON = GL.GL_POLYGON
 class Renderer:
     """ Initializes the graphics API and manages the windows
     """
-
-    def __init__(self, _View=None, _KeysExit=[ord(b"Q"), ord(b"q")]):
+    def __init__(
+        self, _View :object =None, 
+        _KeysExit :list =[ord(b"Q"), ord(b"q")]
+    ):
         """ Initialize graphics API
         """
         # Determine some system properties
-        '''
-        self.pygletVer = float(pyglet.version[0:3])
-        if PYGLET_VER < 1.4:
-            platform = pyglet.window.get_platform()
-            display = platform.get_default_display()
-        else:
-            display = pyglet.canvas.get_display()
-        '''    
         display = pyglet.canvas.get_display()
         self.Screens = display.get_screens()
         self.winList = []
@@ -79,7 +81,6 @@ class Renderer:
         self.bufMan = None
         self.isReady = True
         self.keysExit = _KeysExit
-
         self.isFirst = True
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -265,22 +266,20 @@ class Renderer:
         """
         self.bufMan = pyglet.image.get_buffer_manager()
 
-    def grab_frame(self) -> pyglet.image.ImageData:
+    def grab_frame(self) -> ImageData:
         """ Grabe current stimulus frame
         """
         colBuf = self.bufMan.get_color_buffer()
         image = colBuf.get_image_data()
         return image
 
-
 # =====================================================================
 #
 # ---------------------------------------------------------------------
 class Window(pyglet.window.Window):
     """ Window class
-    Encapsulates the actual graphics API windows
+        Encapsulates the actual graphics API windows
     """
-
     def __init__(
         self,
         _Renderer,
@@ -407,7 +406,7 @@ class Window(pyglet.window.Window):
     """
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def set_mouse_visible(self, _visible):
+    def set_mouse_visible(self, _visible :bool):
         """ Toggle visibility of mouse cursor
         """
         if self.isReady:
@@ -420,7 +419,7 @@ class Window(pyglet.window.Window):
                     SetCursorPos((0, 0))
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def clear(self, _RGB=[]):
+    def clear(self, _RGB :list =[]):
         """ Clear window; change background color, if requested
         """
         self.switch_to()
@@ -438,15 +437,13 @@ class Window(pyglet.window.Window):
                 RGBA2 = (_RGB[3], _RGB[4], _RGB[5], 255)
                 self.Scr2Vert[VERT_RGBA] = RGBA2 * self.Scr2Vert[VERT_COUNT]
 
-
 # =====================================================================
 #
 # ---------------------------------------------------------------------
 class Batch:
     """ Encapsulates a batch of OpenGL drawing commands
     """
-
-    def __init__(self, _isScrOvl):
+    def __init__(self, _isScrOvl :bool):
         """ Generate new batch
         """
         self.isScrOvl = _isScrOvl
@@ -473,15 +470,31 @@ class Batch:
         self.IVShObjGr = {}  
         self.IVShObjGr2 = {}
 
+        # Reset shader manager
         self.shaderManager = None
         self.sprite = None
 
+        # $$$$$$$$$$$$$$$$$$
+        # $$$$$$$$$$$$$$$$$$
+        """
+        fPath = fsu.getJoinedPath(fsu.getCurrentPath(), "Graphics")
+        self.shader_program = self.load_shader(
+            fsu.getJoinedPath(fPath, "vertex_shader.glsl"), 
+            fsu.getJoinedPath(fPath, "sphere_distortion.frag")
+        )
+        """
+        # $$$$$$$$$$$$$$$$$$
+        # $$$$$$$$$$$$$$$$$$
+
+
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def set_shader_manager(self, _shMan):
+    def set_shader_manager(self, _shMan :object):
         self.shaderManager = _shMan
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def replace_object_data(self, _indices, _tri, _RGBA, _RGBA2):
+    def replace_object_data(
+        self, _indices, _tri, _RGBA, _RGBA2
+    ):
         """ Replace current indexed triangle vertex data in current batch
         """
         self.delete_object_data()
@@ -526,7 +539,7 @@ class Batch:
                 self.IV2.delete()
                 self.IV2 = None
 
-    def replace_object_data_indices(self, _iVertTr):
+    def replace_object_data_indices(self, _iVertTr :int):
         self.IV.indices = _iVertTr
         if self.isScrOvl:
             self.IV2.indices = _iVertTr
@@ -542,7 +555,9 @@ class Batch:
             self.IV2.colors = _vRGBATr2
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def add_shader_object_data(self, _objID, _indices, _tri, _RGBA, _RGBA2):
+    def add_shader_object_data(
+        self, _objID, _indices, _tri, _RGBA, _RGBA2
+    ):
         """ Add vertex triangle data for shader objects to current batch
         """
         self.IVShObj.append(
@@ -579,7 +594,9 @@ class Batch:
         if self.isScrOvl:
             self.IVShObjGr2 = {}
 
-    def add_shader_handle(self, _objID, _shader=None, _shType=""):
+    def add_shader_handle(
+        self, _objID :int, _shader :object =None, _shType :str =""
+    ):
         if _shader is None:
             shOGr = NoneGroup()
         else:
@@ -588,13 +605,13 @@ class Batch:
         if self.isScrOvl:
             self.IVShObjGr2[_objID] = shOGr
 
-    def set_shader_time(self, _objID, _t_s):
+    def set_shader_time(self, _objID :int, _t_s :float):
         if _objID in self.IVShObjGr:
             self.IVShObjGr[_objID].set_time(_t_s)
             if self.isScrOvl:
                 self.IVShObjGr2[_objID].set_time(_t_s)
 
-    def set_shader_time_all(self, _t_s):
+    def set_shader_time_all(self, _t_s :float):
         for key in self.IVShObjGr:
             shOGr = self.IVShObjGr[key]
             if self.isScrOvl:
@@ -611,7 +628,9 @@ class Batch:
                 self.IVShObjGr2[_objID].set_params(_pos, _a_rad, _param)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def winCoordToStageCoord(self, _Win, _Stage, _pos):
+    def winCoordToStageCoord(
+        self, _Win :object, _Stage :object, _pos :list
+    ) -> list:
         xScale = _Stage.scalX_umPerPix * _Stage.winXCorrFact * _Win.scale
         yScale = _Stage.scalY_umPerPix * _Stage.winXCorrFact * _Win.scale
         return (
@@ -619,10 +638,55 @@ class Batch:
             int((_pos[1] - _Win.height / 2) / yScale),
         )
 
+    
+    # $$$$$$$$$$$$$$$$$$
+    # $$$$$$$$$$$$$$$$$$
+    def load_shader(self, vertex_path :str, fragment_path :str) -> object:
+        with open(vertex_path, 'r') as f:
+            vertex_src = f.read()
+        with open(fragment_path, 'r') as f:
+            fragment_src = f.read()
+
+        vertex_shader = GL.glCreateShader(GL.GL_VERTEX_SHADER)
+        vertex_src_buffer = ctypes.create_string_buffer(vertex_src.encode())
+        vertex_src_ptr = ctypes.cast(ctypes.pointer(ctypes.pointer(vertex_src_buffer)), ctypes.POINTER(ctypes.POINTER(ctypes.c_char)))
+        GL.glShaderSource(vertex_shader, 1, vertex_src_ptr, None)
+        GL.glCompileShader(vertex_shader)
+        compile_status = ctypes.c_int()
+        GL.glGetShaderiv(vertex_shader, GL.GL_COMPILE_STATUS, ctypes.byref(compile_status))
+        if not compile_status:
+            raise RuntimeError(GL.glGetShaderInfoLog(vertex_shader).decode())
+
+        fragment_shader = GL.glCreateShader(GL.GL_FRAGMENT_SHADER)
+        fragment_src_buffer = ctypes.create_string_buffer(fragment_src.encode())
+        fragment_src_ptr = ctypes.cast(ctypes.pointer(ctypes.pointer(fragment_src_buffer)), ctypes.POINTER(ctypes.POINTER(ctypes.c_char)))
+        GL.glShaderSource(fragment_shader, 1, fragment_src_ptr, None)
+        GL.glCompileShader(fragment_shader)
+        GL.glGetShaderiv(fragment_shader, GL.GL_COMPILE_STATUS, ctypes.byref(compile_status))
+        if not compile_status:
+            raise RuntimeError(GL.glGetShaderInfoLog(fragment_shader).decode())
+
+        shader_program = GL.glCreateProgram()
+        GL.glAttachShader(shader_program, vertex_shader)
+        GL.glAttachShader(shader_program, fragment_shader)
+        GL.glLinkProgram(shader_program)
+        link_status = ctypes.c_int()
+        GL.glGetProgramiv(shader_program, GL.GL_LINK_STATUS, ctypes.byref(link_status))
+        if not link_status:
+            raise RuntimeError(GL.glGetProgramInfoLog(shader_program).decode())
+
+        GL.glDeleteShader(vertex_shader)
+        GL.glDeleteShader(fragment_shader)
+
+        return shader_program
+    # $$$$$$$$$$$$$$$$$$
+    # $$$$$$$$$$$$$$$$$$
+    
+    
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def draw(self, _Stage, _View, _isClear=False):
+    def draw(self, _Stage :object, _View :object, _isClear :bool =False):
         """ Draw current batch of triangle vertices, acknowledging the
-        scaling and rotation of the current display (stage settings)
+            scaling and rotation of the current display (stage settings)
         """
         for iWin, win in enumerate(pyglet.app.windows):
             win.switch_to()
@@ -633,7 +697,100 @@ class Batch:
             xWin_5 = win.width // 2
             xWin_25 = win.width // 4
 
+            # $$$$$$$$$$$$$$$$$$
+            # $$$$$$$$$$$$$$$$$$
+            '''
+            GL.glUseProgram(self.shader_program)
+            resolution_location = GL.glGetUniformLocation(
+                self.shader_program, ctypes.c_char_p(b"resolution")
+            )
+            GL.glUniform2f(resolution_location, win.width, win.height)
+            '''
+            # $$$$$$$$$$$$$$$$$$
+            # $$$$$$$$$$$$$$$$$$
+
+            assert len(win.caption) > 0, "Report to TE"
+            '''
             if len(win.caption) == 0:
+                # - - - - - - - - - - - - - - - - - - - - - - - - - -                    
+                # ??
+                # - - - - - - - - - - - - - - - - - - - - - - - - - -                    
+                GL.glMatrixMode(GL.GL_PROJECTION)
+                GL.glLoadIdentity()
+                GL.glMatrixMode(GL.GL_MODELVIEW)
+                GL.glLoadIdentity()
+                GL.glPushMatrix()
+                GL.glTranslatef(_Stage.centOffX_pix, _Stage.centOffY_pix, 0)
+                GL.glScalef(xScale, yScale, 0.0)
+                GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
+                if not _isClear:
+                    self.Batch.draw()
+                self.BatchSpr.draw()
+                GL.glPopMatrix()
+
+            else:
+            '''
+            if _Stage.useScrOvl:
+                # - - - - - - - - - - - - - - - - - - - - - - - -                    
+                # Screen overlay mode
+                # - - - - - - - - - - - - - - - - - - - - - - - -                    
+                # Draw on first (left) screen
+                GL.glViewport(0, 0, win.width // 2, win.height)
+                GL.glMatrixMode(GL.GL_PROJECTION)
+                GL.glLoadIdentity()
+                GL.glOrtho(
+                    -xWin_25 * _Stage.hFlipScr1,
+                    xWin_25 * _Stage.hFlipScr1,
+                    -yWin_5 * _Stage.vFlipScr1,
+                    yWin_5 * _Stage.vFlipScr1,
+                    -1,
+                    1,
+                )
+                GL.glMatrixMode(GL.GL_MODELVIEW)
+                GL.glLoadIdentity()
+                GL.glPushMatrix()
+                x = _Stage.centOffX_pix
+                y = _Stage.centOffY_pix
+                GL.glTranslatef(x, y, 0)
+                GL.glScalef(xScale, yScale, 0.0)
+                GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
+                if not _isClear:
+                    self.Batch.draw()
+                self.BatchSpr.draw()
+                GL.glPopMatrix()
+
+                # Draw on second (right) screen
+                GL.glViewport(win.width // 2, 0, win.width // 2, win.height)
+                GL.glMatrixMode(GL.GL_PROJECTION)
+                GL.glLoadIdentity()
+                GL.glOrtho(
+                    -xWin_25 * _Stage.hFlipScr2,
+                    xWin_25 * _Stage.hFlipScr2,
+                    -yWin_5 * _Stage.vFlipScr2,
+                    yWin_5 * _Stage.vFlipScr2,
+                    -1,
+                    1,
+                )
+                GL.glMatrixMode(GL.GL_MODELVIEW)
+                GL.glLoadIdentity()
+                GL.glPushMatrix()
+
+                self.add_rect_data(win.Scr2Vert)
+
+                x = _Stage.centOffX_pix + _Stage.offXScr2_pix
+                y = _Stage.centOffY_pix + _Stage.offYScr2_pix
+                GL.glTranslatef(x, y, 0)
+                GL.glScalef(xScale, yScale, 0.0)
+                GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
+                if not _isClear:
+                    self.Batch2.draw()
+                self.Batch2Spr.draw()
+                GL.glPopMatrix()
+
+            else:
+                # - - - - - - - - - - - - - - - - - - - - - - - -                    
+                # Single-screen / window mode
+                # - - - - - - - - - - - - - - - - - - - - - - - -                
                 GL.glMatrixMode(GL.GL_PROJECTION)
                 GL.glLoadIdentity()
                 GL.glOrtho(-xWin_5, xWin_5, -yWin_5, yWin_5, -1, 1)
@@ -648,79 +805,13 @@ class Batch:
                 self.BatchSpr.draw()
                 GL.glPopMatrix()
 
-            else:
-                if _Stage.useScrOvl:
-                    # Draw on first (left) screen
-                    GL.glViewport(0, 0, win.width // 2, win.height)
-                    GL.glMatrixMode(GL.GL_PROJECTION)
-                    GL.glLoadIdentity()
-                    GL.glOrtho(
-                        -xWin_25 * _Stage.hFlipScr1,
-                        xWin_25 * _Stage.hFlipScr1,
-                        -yWin_5 * _Stage.vFlipScr1,
-                        yWin_5 * _Stage.vFlipScr1,
-                        -1,
-                        1,
-                    )
-                    GL.glMatrixMode(GL.GL_MODELVIEW)
-                    GL.glLoadIdentity()
-                    GL.glPushMatrix()
-                    x = _Stage.centOffX_pix
-                    y = _Stage.centOffY_pix
-                    GL.glTranslatef(x, y, 0)
-                    GL.glScalef(xScale, yScale, 0.0)
-                    GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
-                    if not _isClear:
-                        self.Batch.draw()
-                    self.BatchSpr.draw()
-                    GL.glPopMatrix()
-
-                    # Draw on second (right) screen
-                    GL.glViewport(win.width // 2, 0, win.width // 2, win.height)
-                    GL.glMatrixMode(GL.GL_PROJECTION)
-                    GL.glLoadIdentity()
-                    GL.glOrtho(
-                        -xWin_25 * _Stage.hFlipScr2,
-                        xWin_25 * _Stage.hFlipScr2,
-                        -yWin_5 * _Stage.vFlipScr2,
-                        yWin_5 * _Stage.vFlipScr2,
-                        -1,
-                        1,
-                    )
-                    GL.glMatrixMode(GL.GL_MODELVIEW)
-                    GL.glLoadIdentity()
-                    GL.glPushMatrix()
-
-                    self.add_rect_data(win.Scr2Vert)
-
-                    x = _Stage.centOffX_pix + _Stage.offXScr2_pix
-                    y = _Stage.centOffY_pix + _Stage.offYScr2_pix
-                    GL.glTranslatef(x, y, 0)
-                    GL.glScalef(xScale, yScale, 0.0)
-                    GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
-                    if not _isClear:
-                        self.Batch2.draw()
-                    self.Batch2Spr.draw()
-                    GL.glPopMatrix()
-
-                else:
-                    GL.glMatrixMode(GL.GL_PROJECTION)
-                    GL.glLoadIdentity()
-                    GL.glOrtho(-xWin_5, xWin_5, -yWin_5, yWin_5, -1, 1)
-                    GL.glMatrixMode(GL.GL_MODELVIEW)
-                    GL.glLoadIdentity()
-                    GL.glPushMatrix()
-                    GL.glTranslatef(_Stage.centOffX_pix, _Stage.centOffY_pix, 0)
-                    GL.glScalef(xScale, yScale, 0.0)
-                    GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
-                    if not _isClear:
-                        self.Batch.draw()
-                    self.BatchSpr.draw()
-                    GL.glPopMatrix()
+            '''
+            GL.glUseProgram(0)
+            '''
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def add_rect_data(self, _Vert):
-        """ Add rectangle described by _Vert to lined up rendering commands
+    def add_rect_data(self, _Vert :list):
+        """ Add rectangle described by _Vert to line up rendering commands
         """
         pyglet.graphics.draw_indexed(
             _Vert[VERT_COUNT],
@@ -729,7 +820,6 @@ class Batch:
             ("v2i/stream", _Vert[VERT_VERT]),
             ("c4B/stream", _Vert[VERT_RGBA]),
         )
-
 
 # =====================================================================
 #
@@ -748,11 +838,9 @@ class CommonShaderParentGroup(pyglet.graphics.OrderedGroup):
     def __init__(self):
         super(CommonShaderParentGroup, self).__init__(order=1, parent=CommonParent)
 
-
 # ---------------------------------------------------------------------
 CommonParent = CommonParentGroup()
 CommonShaderParent = CommonShaderParentGroup()
-
 
 # ---------------------------------------------------------------------
 # Shader bind/unbind class
@@ -822,7 +910,6 @@ class ShaderBindGroup(pyglet.graphics.Group):
         else:
             return 1
 
-
 # ---------------------------------------------------------------------
 class NoneGroup(pyglet.graphics.OrderedGroup):
     """ Pyglet group for non-shader objects
@@ -839,7 +926,6 @@ class NoneGroup(pyglet.graphics.OrderedGroup):
             return 0
         else:
             return 1
-
 
 # ---------------------------------------------------------------------
 # Support functions
@@ -863,7 +949,6 @@ def vertFromRect(_rect, _pos, _RGBA, _angle=0):
     nVert = len(newVert) // 2
     newRGBA = _RGBA * nVert
     return [newVert, newiVTr, newRGBA, nVert]
-
 
 # ---------------------------------------------------------------------
 def rotateTranslate(_c, _rot_deg, _pxy):

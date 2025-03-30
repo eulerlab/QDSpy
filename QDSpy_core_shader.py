@@ -32,7 +32,6 @@ class ShaderFileCmd:
     ShaderFragmentStart = "shaderfragmentstart"
     ShaderFragmentEnd = "shaderfragmentend"
 
-
 # ---------------------------------------------------------------------
 # Shader manager class
 # ---------------------------------------------------------------------
