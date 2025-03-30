@@ -47,9 +47,11 @@ class AppMQTT(QDSpyApp):
         self.LCr = _lcr.Lightcrafter(_initGPIO=True)
 
         # Connect to MQTT broker 
+        mqtt.UUID = self.Conf.UUID
+        mqtt.broker = self.Conf.broker_address
         self.logWrite("DEBUG", "Initiating MQTT ...")
         mqtt.Client.handler = self.handleMsg
-        mqtt.Client.connect(ID=mgl.UUID, _isServ=True)
+        mqtt.Client.connect(_broker=mqtt.broker, _ID=mqtt.UUID)
         self.logWrite("DEBUG", "... done")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

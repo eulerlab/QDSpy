@@ -18,6 +18,8 @@ All rights reserved.
            - Small fixes for PEP violations  
 2024-08-10 - LCr type added     
 2025-03-30 - Sound and MQTT parameters added      
+           - Import `Stage` only when needed, to make compative with
+             using `QDSpy.ini` settings in the MQTT version
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -27,7 +29,6 @@ import os
 import platform
 import argparse
 import configparser
-import QDSpy_stage as stg
 import QDSpy_gamma as gma
 import Libraries.log_helper as _log
 import Libraries.mqtt_globals as mqtt_glo
@@ -41,19 +42,12 @@ PLATFORM_WINDOWS = platform.system() == "Windows"
 class Config:
     def __init__(self):
         # Initialization
-        #
         self.isLoaded = False
         self.conf = configparser.ConfigParser()
-        # self.conf = configparser.RawConfigParser()
 
         # Get some information on the platform
-        #
         self.isWindows = PLATFORM_WINDOWS
-        self.pyVersion = sys.version_info[0] + sys.version_info[1] / 10
-        '''
-        _sep = "\\" if PLATFORM_WINDOWS else "/"
-        self.iniPath = os.getcwd() + _sep + glo.QDSpy_iniFileName
-        '''
+        self.pyVersion = sys.version_info[0] +sys.version_info[1] /10
         self.iniPath = glo.QDSpy_iniFileName        
 
         # Set configuration default values
@@ -499,17 +493,19 @@ class Config:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def save(self):
-        # Safe configuration file
-        #
+        """ Safe configuration file"
+        """
         with open(self.iniPath, "w") as confFile:
             self.conf.write(confFile)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def createStageFromConfig(self):
-        # Generates a Stage instance from the current configuration
-        # parameters
-        #
+        """ Generates a Stage instance from the current configuration
+            parameters"
+        """
         if self.isLoaded:
+            import QDSpy_stage as stg
+
             d = {}
             d["scrReqFreq_Hz"] = self.conf.getfloat(
                 "Stage", "float_refresh_frequency_Hz"
@@ -541,7 +537,6 @@ class Config:
             Stage = stg.Stage(d, _isNew=True)
 
             # Read user-define gamma LUT, if one is defined
-            #
             if self.allowGammaLUT and len(self.userLUTFName) > 0:
                 Stage.LUT_userDefined = gma.loadGammaLUT(
                     self.pathApp + self.userLUTFName
@@ -550,9 +545,9 @@ class Config:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def saveStageToConfig(self, _Stage):
-        # Save the screen calibration parameters (center, offset, scaling,
-        # rotation) from the Stage object to the ini file
-        #
+        """ Save the screen calibration parameters (center, offset, scaling,
+            rotation) from the Stage object to the ini file
+        """
         if self.isLoaded and _Stage is not None:
             self.setParam("Stage", "int_center_offs_x_pix", _Stage.centOffX_pix)
             self.setParam("Stage", "int_center_offs_y_pix", _Stage.centOffY_pix)
@@ -569,8 +564,8 @@ class Config:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def saveWinPosToConfig(self):
-        # Save window positions to the ini file
-        #
+        """ Save window positions to the ini file
+        """
         if self.isLoaded:
             self.setParam(
                 "Tweaking", "str_window_geometry_cam", 
@@ -580,14 +575,14 @@ class Config:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setParam(self, _section, _key, _default):
-        # Wrapper for self.conf.set
+        """ Wrapper for self.conf.set """
         self.conf.set(_section, _key, str(_default))
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def getParam(self, _section, _key, _default):
-        # Return value of key in given section; if it does not exist, add
-        # this key and set it to the default value
-        #
+        """ Return value of key in given section; if it does not exist, add
+            this key and set it to the default value
+        """
         if self.conf.has_option(_section, _key):
             typeStr = _key.split("_")[0].lower()
             if typeStr == "bool":
@@ -608,8 +603,8 @@ class Config:
 #
 # ---------------------------------------------------------------------
 def getParsedArgv():
-    '''Return the parsed command-line arguments
-    '''
+    """ Return the parsed command-line arguments
+    """
     parser = argparse.ArgumentParser(description="Present a stimulus.")
     parser.add_argument(
         "-t",
