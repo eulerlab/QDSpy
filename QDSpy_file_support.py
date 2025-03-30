@@ -85,10 +85,13 @@ def getStimCompileState(_fName: str) -> bool:
     """ Check if pickle-file is current
     """
     fname_py = Path(_fName).with_suffix(QDSpy_stimFileExt).__str__()
-    tPy = getFileTimeStamp(fname_py)
     fname_pk = Path(_fName).with_suffix(QDSpy_cPickleFileExt).__str__()
-    tPk = getFileTimeStamp(fname_pk)
-    return tPk > tPy
+    if getFileExists(fname_py) and getFileExists(fname_pk):
+        tPy = getFileTimeStamp(fname_py)
+        tPk = getFileTimeStamp(fname_pk)
+        return tPk > tPy
+    else:
+        False
 
 # ---------------------------------------------------------------------
 def getStimExists(_fName :str) -> bool:

@@ -8,6 +8,7 @@ All rights reserved.
 
 2024-08-03 - Initial version
 2025-03-30 - Log file handing update (similar to GUI version)
+           - Compile non-current stimuli after loading 
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -202,10 +203,11 @@ class QDSpyApp(object):
     # Loading, compiling, running, and aborting stimuli
     # -------------------------------------------------------------------
     def loadStim(self, _fName: str) -> int:
-        """Load stimulus from file `_fName`, returns an error code if the
-        stimulus was not found or needs to be compiled
+        """ Load stimulus from file `_fName`, returns an error code if 
+            the stimulus was not found or needs to be compiled
         """
         self.isStimReady = False
+        self.isStimCurr = False
         errC = stm.StimErrC.ok
 
         if not fsu.getStimExists(_fName):
@@ -215,10 +217,10 @@ class QDSpyApp(object):
         else:
             try:
                 # Try loading compiled stimulus file ...
-                self.Stim.load(_fName, _onlyInfo=True)
-                self.setState(State.ready)
+                self.Stim.load(_fName, _onlyInfo=False)
                 self.isStimCurr = fsu.getStimCompileState(_fName)
                 self.currStimFName = _fName
+                self.setState(State.ready)
                 self.isStimReady = True
                 
             except stm.StimException:
@@ -229,12 +231,15 @@ class QDSpyApp(object):
         return errC
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def compileStim(self) -> None:
-        """Send stimulus file name via pipe and signal worker thread to
-        compile the stimulus
+    def compileStim(self, _fName :str ="", _doRun :bool =True) -> None:
+        """ Send stimulus file name via pipe and signal worker thread to
+            compile the stimulus
         """
+        errC = stm.StimErrC.ok
+        fName = _fName if len(_fName) > 0 else self.currStimFName
+
         self.Sync.pipeCli.send(
-            [mpr.PipeValType.toSrv_fileName, self.currStimFName, self.currStimPath]
+            [mpr.PipeValType.toSrv_fileName, fName, self.currStimPath]
         )
         self.Sync.setRequestSafe(mpr.COMPILING)
         self.logWrite(" ", "Compiling stimulus script ...")
@@ -242,22 +247,25 @@ class QDSpyApp(object):
         # Wait for the worker to start ...
         if self.Sync.waitForState(mpr.COMPILING, self.Conf.guiTimeOut, self.updateAll):
             self.setState(State.compiling, True)
-
+            
             # Wait for the worker to finish the compilation, while keeping the
             # GUI alive
             self.Sync.waitForState(mpr.IDLE, 0.0, self.updateAll)
-            self.updateAll()
 
         else:
             self.logWrite(
                 "DEBUG", 
                 "compileStim, timeout waiting for COMPILING"
             )
+            errC = stm.StimErrC.noCompiledStim
+
+        self.updateAll()
+        return errC
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def runStim(self) -> None:
-        """Send stimulus file name via pipe and signal worker thread to
-        start presenting the stimulus; wait for the stimulus to end ...
+        """ Send stimulus file name via pipe and signal worker thread to
+            start presenting the stimulus; wait for the stimulus to end ...
         """
         #print("runStim", self.currStimFName, self.currStimPath)
         self.Sync.pipeCli.send(
@@ -284,7 +292,7 @@ class QDSpyApp(object):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def abortStim(self):
-        """Send a request to the worker to cancel the presentation
+        """ Send a request to the worker to cancel the presentation
         """
         self.setState(State.canceling)
         self.Sync.setRequestSafe(mpr.CANCELING)
@@ -306,7 +314,7 @@ class QDSpyApp(object):
     # Application control-related
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def closeEvent(self):
-        """User requested to close the application
+        """ User requested to close the application
         """
         # Save config
         self.Conf.saveWinPosToConfig()
@@ -405,7 +413,7 @@ class QDSpyApp(object):
     # Logging- and log file-related
     # -------------------------------------------------------------------
     def logWrite(self, _hdr: str, _msg: str, _isProg: bool = False):
-        """Log a message to the appropriate output
+        """ Log a message to the appropriate output
         """
         data = Log.write(_hdr, _msg, _isProg, _getStr=True, _isWorker=False)
         if data is not None:

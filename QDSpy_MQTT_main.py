@@ -124,6 +124,19 @@ class AppMQTT(QDSpyApp):
                 )
                 errC = self.loadStim(fName)
 
+        elif msg[0] == mgl.Command.COMPILE:
+            if self.state in [State.idle, State.ready]:     
+                # "compile,<msg index>,<stimulus file name>"
+                fName = fsu.getJoinedPath(
+                    glo.QDSpy_path, 
+                    self.Conf.pathStim, 
+                    msg[1][1]
+                )
+                if not fsu.getStimCompileState(fName):  
+                    errC = self.compileStim(fName)
+                else:
+                    errC = stm.StimErrC.nothingToCompile    
+
         elif msg[0] == mgl.Command.PLAY:
             # Play the currently loaded stimulus
             # "play,<msg index>"

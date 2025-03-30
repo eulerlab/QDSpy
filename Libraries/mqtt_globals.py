@@ -26,6 +26,7 @@ UUID             = 'd6d09beb68a3448a'
 
 class Command(Enum):
     LOAD      = "load"
+    COMPILE   = "compile"
     PLAY      = "play"
     STOP      = "stop"
     STATE     = "state"
