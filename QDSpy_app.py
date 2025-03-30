@@ -7,6 +7,7 @@ Copyright (c) 2024-2025 Thomas Euler
 All rights reserved.
 
 2024-08-03 - Initial version
+2025-03-30 - Log file handing update (similar to GUI version)
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -86,8 +87,14 @@ class QDSpyApp(object):
         self.Stim_soundVol = 0
 
         # Open log file
+        self.fNameLog = self._getNewLogFileName()
+        if not glo.QDSpy_saveLogInTheEnd:
+            self.logWrite(" ", "Saving log continuosly to '{0}' ...".format(self.fNameLog))
+            self.logFile = open(self.fNameLog, "w")
+        '''
         self._logFile, fn = self.openLogFile(self.Conf.pathLogs)
         self.logWrite(" ", f"Saving log file to `{fn}` ...")
+        '''
                 
         # Identify 
         self.logWrite(
@@ -401,12 +408,51 @@ class QDSpyApp(object):
         """Log a message to the appropriate output
         """
         data = Log.write(_hdr, _msg, _isProg, _getStr=True, _isWorker=False)
-        if data:
+        if data is not None:
             self.log(data)
 
     def log(self, _data):
-        if len(_data) > 2:
-            self.writeToLogFile(self._logFile, _data[2])
+        if len(_data) > 2 and not glo.QDSpy_saveLogInTheEnd:
+            self.writeLogFileLine(_data[2])        
+
+    # -----------------------------------------------------------------
+    # Functions related to the log file
+    # -----------------------------------------------------------------
+    def _getNewLogFileName(self) -> str:
+        """ Return a valid log file name
+        """
+        os.makedirs(self.Conf.pathLogs, exist_ok=True)
+        fName = time.strftime("%Y%m%d_%H%M%S")
+        fPath = fsu.getJoinedPath(self.Conf.pathLogs, fName)
+        j = 0
+        while os.path.exists(fPath +glo.QDSpy_logFileExtension):
+            fPath = "{0}_{1:04d}".format(fPath, j)
+            j += 1
+
+        return fPath + glo.QDSpy_logFileExtension
+
+
+    def writeLogFileLine(self, msg :str):
+        """ Write line to log file
+        """    
+        if self.logFile:
+            self.logFile.write(msg +"\n")
+            self.logFile.flush()
+
+
+    def saveLogFile(self):
+        """ Save log file
+        """    
+        with open(self.fNameLog, "w") as logFile:
+            logFile.write(str(self.textBrowserHistory.toPlainText()))
+
+
+    def closeLogFile(self):
+        """ Close log file
+        """        
+        if self.logFile:
+            self.logFile.close()
+            self.logFile = None            
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     '''

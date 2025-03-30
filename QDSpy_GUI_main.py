@@ -20,6 +20,7 @@ All rights reserved.
              unplugged and reconnect automatically
            - Write log file continuously such that it is not lost if
              QDSpy crashes  
+2025-03-30 - Log file related changes (consistent w/ MQTT version)             
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -109,6 +110,7 @@ class MainWinClass(QMainWindow, form_class):
         self.logFile = None
         self.noMsgToStdOut = cfg.getParsedArgv().gui
 
+        # Open log file
         self.fNameLog = self._getNewLogFileName()
         if not glo.QDSpy_saveLogInTheEnd:
             self.logWrite(" ", "Saving log continuosly to '{0}' ...".format(self.fNameLog))
@@ -411,7 +413,7 @@ class MainWinClass(QMainWindow, form_class):
 
 
     def writeLogFileLine(self, msg :str):
-        """ Save log file
+        """ Write line to log file
         """    
         if self.logFile:
             self.logFile.write(msg +"\n")
@@ -423,6 +425,14 @@ class MainWinClass(QMainWindow, form_class):
         """    
         with open(self.fNameLog, "w") as logFile:
             logFile.write(str(self.textBrowserHistory.toPlainText()))
+
+
+    def closeLogFile(self):
+        """ Close log file
+        """        
+        if self.logFile:
+            self.logFile.close()
+            self.logFile = None
 
     # -----------------------------------------------------------------
     # Functions related to PV device
@@ -552,7 +562,9 @@ class MainWinClass(QMainWindow, form_class):
         # Save log
         if glo.QDSpy_saveLogInTheEnd:
             self.logWrite(" ", "Saving log file to '{0}' ...".format(self.fNameLog))
-            self.writeLogFile()
+            self.saveLogFile()
+        else:
+            self.closeLogFile()    
 
         # ... and clean up
         self.logWrite("DEBUG", "Kill worker thread ...")
