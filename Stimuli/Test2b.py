@@ -16,8 +16,8 @@ p['nTrials']    = 120
 p['dt_s']       = 1.0/60.0
 p['dxScr']      = 580
 p['dyScr']      = 580
-p['useStripes'] = 0
-p['isShadStr']  = 0
+p['useStripes'] = 1
+p['isShadStr']  = 1
 
 random.seed(1)
 
