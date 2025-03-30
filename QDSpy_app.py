@@ -84,7 +84,7 @@ class QDSpyApp(object):
         self.Stim_nFrTotal = 0
         self.Stim_percent = 0
         self.Stim_completed = False
-        self.Stim_soundVol = 0
+        self.Stim_soundVol = self.Conf.volume
 
         # Open log file
         self.fNameLog = self._getNewLogFileName()

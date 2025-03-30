@@ -92,7 +92,6 @@ QDSpy_movAllowedMovieExts   = [".png", ".jpg"]
 
 QDSpy_vidAllowedVideoExts   = [".avi"]
 
-#QDSpy_pathApplication      = ".\\"
 QDSpy_pathApplication       = getQDSpyPath()
 QDSpy_iniFileName           = "QDSpy.ini"
 
@@ -122,7 +121,7 @@ QDSpy_UL_pinUserOut2        = "4, USER2, 0"
 QDSpy_Arduino_baud          = 230400
 
 # Pico-view - Logging data received via a serial port
-QDSpy_usePV                 = True
+QDSpy_usePV                 = False
 QDSpy_PV_serialPort         = "COM9"
 QDSpy_PV_baud               = 230400
 QDSpy_PV_rate_s             = 1.0

@@ -121,7 +121,7 @@ class MainWinClass(QMainWindow, form_class):
         self.Stim_nFrTotal = 0
         self.Stim_percent = 0
         self.Stim_completed = False
-        self.Stim_soundVol = 0
+        self.Stim_soundVol = self.Conf.volume
 
         # GUI style-related
         cs = QDSApp.styleHints().colorScheme() 
@@ -379,7 +379,7 @@ class MainWinClass(QMainWindow, form_class):
         self.handleAutorun()
 
         # Update GUI
-        self.Stim_soundVol = glo.QDSpy_volume
+        self.Stim_soundVol = self.Conf.volume
         self.updateAll()
         self.updateProgressBar(-1)
 
