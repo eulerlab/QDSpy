@@ -16,6 +16,7 @@ All rights reserved.
 2024-06-15 - Fix for breaking change in `configparser`; now using
              `ConfigParser` instead of `RawConfigParser`
 2024-08-04 - `pyglet` calls encapsulated in `renderer_opengl.py`             
+2025-04-05 - Cleaning up
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -36,7 +37,7 @@ PLATFORM_WINDOWS = platform.system() == "Windows"
 # ---------------------------------------------------------------------
 class Movie:
     def __init__(self, _Config):
-        """Initializing
+        """ Initializing
         """
         self.isReady = False
         self.dxFr = 0
@@ -54,7 +55,7 @@ class Movie:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def __loadMontage(self):
-        """Check if image montage and description files exist ...
+        """ Check if image montage and description files exist ...
         """
         # *****************
         # *****************
@@ -86,9 +87,6 @@ class Movie:
             return stm.StimErrC.invalidMovieDesc
 
         # Load and check image data
-        '''
-        self.img = pyglet.image.load(self.fNameImg)
-        '''
         self.img = rdr.imageLoad(self.fNameImg)
         _log.Log.write(
             "DEBUG", 
@@ -121,13 +119,6 @@ class Movie:
             pass
 
         # Create a 3D texture (basically an image sequence) from the montage
-        '''
-        tmpSeq = pyglet.image.ImageGrid(self.img, self.nFrY, self.nFrX)
-        if self.use3DTex:
-            self.imgSeq = pyglet.image.Texture3D.create_for_image_grid(tmpSeq)
-        else:
-            self.imgSeq = tmpSeq.get_texture_sequence()
-        '''
         tmpSeq = rdr.getImageGrid(self.img, self.nFrY, self.nFrX)
         self.imgSeq = rdr.getTextureSequence(tmpSeq, use_3d=self.use3DTex)
         # *****************
@@ -152,31 +143,10 @@ class Movie:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def load(self, _fName, _testOnly=False):
-        """Reads an image file (a montage of frames) and the description
-           file (same name but .txt extension)
-           Returns an error of the QDSpy_stim.StimErrC class
+        """ Reads an image file (a montage of frames) and the 
+            description file (same name but .txt extension)
+            Returns an error of the QDSpy_stim.StimErrC class
         """
-        '''
-        tempStr = (os.path.splitext(os.path.basename(_fName)))[0]
-        self.fExtImg = os.path.splitext(_fName)[1].lower()
-        self.isTestOnly = _testOnly
-
-        if PLATFORM_WINDOWS:
-            tempDir = os.path.dirname(_fName)
-            if len(tempDir) > 0:
-                tempDir += "\\"
-            self.fNameDesc = tempDir + tempStr + glo.QDSpy_movDescFileExt
-            self.fNameImg = _fName
-        else:
-            tempDir = os.getcwd()
-            self.fNameDesc = fsu.repairPath(tempDir + tempStr) + glo.QDSpy_movDescFileExt
-            self.fNameImg = fsu.repairPath(tempDir + tempStr) + self.fExtImg
-
-        if self.fExtImg in glo.QDSpy_movAllowedMovieExts:
-            return self.__loadMontage()
-        else:
-            return stm.StimErrC.invalidMovieFormat
-        '''    
         self.fExtImg = fsu.getFileExt(_fName)
         self.isTestOnly = _testOnly
         path = fsu.getCurrentPath() 
@@ -188,13 +158,12 @@ class Movie:
         else:
             return stm.StimErrC.invalidMovieFormat
 
-
 # ---------------------------------------------------------------------
 # Movie control class object
 # ---------------------------------------------------------------------
 class MovieCtrl:
     def __init__(self, _seq, _ID, _Movie=None, _nFr=0, _order=2):
-        """Initializing
+        """ Initializing
         """
         self.Movie = _Movie
         self.fr0 = _seq[0]     # first frame
@@ -215,8 +184,8 @@ class MovieCtrl:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def reset(self):
-        """Reset parameters, delete sprite and recreate it (this way it
-           looses its membership to a pyglet drawing batch)
+        """ Reset parameters, delete sprite and recreate it (this way it
+            looses its membership to a pyglet drawing batch)
         """
         self.posXY = (0, 0)
         self.magXY = (1.0, 1.0)
@@ -227,13 +196,6 @@ class MovieCtrl:
 
         self.kill()
         if self.Movie is not None:
-            '''
-            self.Group = pyglet.graphics.OrderedGroup(self.order)
-            self.Sprite = pyglet.sprite.Sprite(
-                self.Movie.imgSeq[0], usage="dynamic", group=self.Group
-            )
-            # usage="stream", group=self.Group)
-            '''
             self.Group = rdr.getOrderedGroup(self.order)
             self.Sprite = rdr.getSprite(
                 self.Movie.imgSeq[0], "dynamic", self.Group
@@ -252,7 +214,7 @@ class MovieCtrl:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def check(self):
-        """Returns True if the sequence is valid
+        """ Returns True if the sequence is valid
         """
         return (
             (self.fr0 >= 0)
@@ -264,7 +226,7 @@ class MovieCtrl:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setSpriteProperties(self, _posXY, _magXY, _rot, _trans):
-        """Set sprite properties
+        """ Set sprite properties
         """
         self.posXY = _posXY
         self.magXY = _magXY
@@ -279,7 +241,7 @@ class MovieCtrl:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setSpriteBatch(self, _batch):
-        """Set sprite batch
+        """ Set sprite batch
         """
         if self.Sprite is not None:
             if _batch.isScrOvl:
@@ -339,6 +301,5 @@ class MovieCtrl:
             # *****************
 
         return self.iCurrFr
-
 
 # ---------------------------------------------------------------------

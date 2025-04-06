@@ -9,19 +9,21 @@ QDSpy module - creates and manages the presentation window
   user to follow stimulus presentation in full-screen multi-monitor
   mode. This class is a graphics API independent.
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2022-08-06 - Some reformatting
 2024-06-29 - Reformatted (using Ruff)
+2025-04-03 - Account for the new option to apply a "distortion" 
+             fragment shader to the whole stimulus    
 """
-
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
 import QDSpy_global as glo
 import Libraries.log_helper as _log
 import Graphics.renderer_opengl as rdr
+import QDSpy_file_support as fsu
 
 # ---------------------------------------------------------------------
 # Adjust global parameters depending on command line arguments
@@ -45,9 +47,9 @@ elif QDSpy_graphicsAPI == 2:
 class View:
     """ Creates and manages the stimulus presentation window(s)
     """
-
     def __init__(self, _Stage, _Conf):
-        # Initializing
+        """ Initializing
+        """
         self.Stage = _Stage
         self.Conf = _Conf
         self.Renderer = rdr.Renderer(self, glo.QDSpy_KEY_KillPresent)
@@ -55,15 +57,16 @@ class View:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def __reset(self):
-        # Resets internal states; don't use
+        """ Resets internal states; don't use
+        """
         self.onKeyboardProc = None
         self.onDrawProc = None
         self.isWinAvailable = False
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def createStimulusWindow(self):
-        # Create window(s) ...
-        #
+        """ Create window(s) ...
+        """
         # Log some information about OpenGL on this machine
         _log.Log.write("INFO", self.Renderer.get_info_GL_str())
         _log.Log.write("INFO", self.Renderer.get_info_GLSL_str())
@@ -179,8 +182,13 @@ class View:
         self.Renderer.dispatch_events()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def createBatch(self, _isScrOvl=False):
-        return rdr.Batch(_isScrOvl)
+    def createBatch(self, _isScrOvl :bool =False):
+        """ Create a Batch object 
+        """
+        fPath = fsu.getJoinedPath(fsu.getCurrentPath(), "Graphics")
+        pv = fsu.getJoinedPath(fPath, "distort_vertex_shader.glsl")
+        pf = fsu.getJoinedPath(fPath, "distort_barrel.frag")
+        return rdr.Batch(_isScrOvl, _distort_frag=pf, distort_vert=pv)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setOnKeyboardHandler(self, _onKeybProc):
@@ -193,7 +201,7 @@ class View:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def onKeyboard(self, _key, _x, _y):
-        """Handle key strokes when running in command line mode
+        """ Handle key strokes when running in command line mode
         """
         if self.onKeyboardProc is not None:
             self.onKeyboardProc(_key, _x, _y)
