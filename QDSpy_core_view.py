@@ -185,10 +185,15 @@ class View:
     def createBatch(self, _isScrOvl :bool =False):
         """ Create a Batch object 
         """
-        fPath = fsu.getJoinedPath(fsu.getCurrentPath(), "Graphics")
-        pv = fsu.getJoinedPath(fPath, "distort_vertex_shader.glsl")
-        pf = fsu.getJoinedPath(fPath, "distort_barrel.frag")
-        return rdr.Batch(_isScrOvl, _distort_frag=pf, distort_vert=pv)
+        if glo.QDSpy_useDistort:
+            fPath = fsu.getJoinedPath(fsu.getCurrentPath(), "Graphics")
+            pv = fsu.getJoinedPath(fPath, glo.QDSpy_distort_vertex)
+            pf = fsu.getJoinedPath(fPath, glo.QDSpy_distort_fragment)
+        else:
+            pv = pf = ""    
+        print(pv, pf)            
+        #return rdr.Batch(_isScrOvl, _distort_frag=pf, distort_vert=pv)
+        return rdr.Batch(_isScrOvl, _distort_frag="", distort_vert="")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setOnKeyboardHandler(self, _onKeybProc):

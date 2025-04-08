@@ -8,7 +8,8 @@ All rights reserved.
 
 2024-06-15 - Fix for breaking change in `configparser`; now using
              `ConfigParser` instead of `RawConfigParser`
-2025-01-28 - Sensor data via a serial port to log            
+2025-01-28 - Sensor data via a serial port to log           
+2025-04-08 - Distortion shader parameters added 
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -126,6 +127,11 @@ QDSpy_PV_serialPort         = "COM9"
 QDSpy_PV_baud               = 230400
 QDSpy_PV_rate_s             = 1.0
 QDSpy_PV_startCh            = ">"
+
+# Distortion shader
+QDSpy_useDistort            = True
+QDSpy_distort_vertex        = "distort_vertex_shader_rp5.glsl"
+QDSpy_distort_fragment      = "distort_barrel_rp5.frag"
 
 QDSpy_markerRGBA            = "255,127,127,255"
 QDSpy_antiMarkerRGBA        = "0,0,0,255"
