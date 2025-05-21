@@ -91,11 +91,12 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
       if tLastUpt_pk > tLastUpt_py and not args.compile:
         # Stimulus unchanged, therefore run directly
         _log.Log.write("INFO", "Script has not changed, running stimulus now ...")
-        command = "python {0} -t={1} {2} {3}".format(
+        command = 'python "{0}" -t={1} {2} "{3}"'.format(
           fsu.getJoinedPath(glo.QDSpy_path, "QDSpy_core.py"),
           args.timing, "-v" if args.verbose else "",
           _Stim.fNameDir
         )
+        _log.Log.write("INFO", "Executing the following command: {0}".format(command))
         os.system(command)
         exit()
 
