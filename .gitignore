@@ -7,4 +7,6 @@ Stimuli/Challenge
 Other/
 qdspy/
 .idea/*
-RecordedStimuli/
+.vscode/*
+RecordedStimuli/*
+Stimuli/StimChallenge/*
