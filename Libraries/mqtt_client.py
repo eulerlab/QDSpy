@@ -3,10 +3,11 @@
 """
 QDSpy module - MQTT-related functions
 
-Copyright (c) 2024 Thomas Euler
+Copyright (c) 2024-2025 Thomas Euler
 All rights reserved.
 
 2024-08-03 - Initial version
+2025-03-30 - Use `QDSpy.ini`
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -24,8 +25,8 @@ if not PLATFORM_WINDOWS:
 
 # ---------------------------------------------------------------------
 class QDS_MQTTClient(object):
-    '''MQTT client class for QDSpy
-    Use only instance of this class created in this module
+    ''' MQTT client class for QDSpy
+        Use only instance of this class created in this module
     '''
     def __init__(self):
         # Initialize 
@@ -46,10 +47,15 @@ class QDS_MQTTClient(object):
         self._client.on_message = _on_message
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def connect(self, ID: str, _isServ: bool):
-        self._UUID = ID
+    def connect(self, _broker :str, _ID: str, _isServ: bool =True):
+        """ Connect to broker
+        """
+        mgl.UUID = _ID
+        mgl.broker_address = _broker
         self._isServ = _isServ
-        self.log("DEBUG", "MQTT|Connecting ...")
+        self._topic = f"{mgl.topic_root}/{mgl.UUID}/"
+
+        self.log("DEBUG", f"MQTT|Connecting to `{_broker}` ...")
         try:
             self._client.connect(
                 mgl.broker_address, mgl.broker_port, 

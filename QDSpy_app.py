@@ -7,6 +7,8 @@ Copyright (c) 2024-2025 Thomas Euler
 All rights reserved.
 
 2024-08-03 - Initial version
+2025-03-30 - Log file handing update (similar to GUI version)
+           - Compile non-current stimuli after loading 
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -83,11 +85,17 @@ class QDSpyApp(object):
         self.Stim_nFrTotal = 0
         self.Stim_percent = 0
         self.Stim_completed = False
-        self.Stim_soundVol = 0
+        self.Stim_soundVol = self.Conf.volume
 
         # Open log file
+        self.fNameLog = self._getNewLogFileName()
+        if not glo.QDSpy_saveLogInTheEnd:
+            self.logWrite(" ", "Saving log continuosly to '{0}' ...".format(self.fNameLog))
+            self.logFile = open(self.fNameLog, "w")
+        '''
         self._logFile, fn = self.openLogFile(self.Conf.pathLogs)
         self.logWrite(" ", f"Saving log file to `{fn}` ...")
+        '''
                 
         # Identify 
         self.logWrite(
@@ -195,10 +203,11 @@ class QDSpyApp(object):
     # Loading, compiling, running, and aborting stimuli
     # -------------------------------------------------------------------
     def loadStim(self, _fName: str) -> int:
-        """Load stimulus from file `_fName`, returns an error code if the
-        stimulus was not found or needs to be compiled
+        """ Load stimulus from file `_fName`, returns an error code if 
+            the stimulus was not found or needs to be compiled
         """
         self.isStimReady = False
+        self.isStimCurr = False
         errC = stm.StimErrC.ok
 
         if not fsu.getStimExists(_fName):
@@ -208,10 +217,10 @@ class QDSpyApp(object):
         else:
             try:
                 # Try loading compiled stimulus file ...
-                self.Stim.load(_fName, _onlyInfo=True)
-                self.setState(State.ready)
+                self.Stim.load(_fName, _onlyInfo=False)
                 self.isStimCurr = fsu.getStimCompileState(_fName)
                 self.currStimFName = _fName
+                self.setState(State.ready)
                 self.isStimReady = True
                 
             except stm.StimException:
@@ -222,12 +231,15 @@ class QDSpyApp(object):
         return errC
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def compileStim(self) -> None:
-        """Send stimulus file name via pipe and signal worker thread to
-        compile the stimulus
+    def compileStim(self, _fName :str ="", _doRun :bool =True) -> None:
+        """ Send stimulus file name via pipe and signal worker thread to
+            compile the stimulus
         """
+        errC = stm.StimErrC.ok
+        fName = _fName if len(_fName) > 0 else self.currStimFName
+
         self.Sync.pipeCli.send(
-            [mpr.PipeValType.toSrv_fileName, self.currStimFName, self.currStimPath]
+            [mpr.PipeValType.toSrv_fileName, fName, self.currStimPath]
         )
         self.Sync.setRequestSafe(mpr.COMPILING)
         self.logWrite(" ", "Compiling stimulus script ...")
@@ -235,22 +247,25 @@ class QDSpyApp(object):
         # Wait for the worker to start ...
         if self.Sync.waitForState(mpr.COMPILING, self.Conf.guiTimeOut, self.updateAll):
             self.setState(State.compiling, True)
-
+            
             # Wait for the worker to finish the compilation, while keeping the
             # GUI alive
             self.Sync.waitForState(mpr.IDLE, 0.0, self.updateAll)
-            self.updateAll()
 
         else:
             self.logWrite(
                 "DEBUG", 
                 "compileStim, timeout waiting for COMPILING"
             )
+            errC = stm.StimErrC.noCompiledStim
+
+        self.updateAll()
+        return errC
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def runStim(self) -> None:
-        """Send stimulus file name via pipe and signal worker thread to
-        start presenting the stimulus; wait for the stimulus to end ...
+        """ Send stimulus file name via pipe and signal worker thread to
+            start presenting the stimulus; wait for the stimulus to end ...
         """
         #print("runStim", self.currStimFName, self.currStimPath)
         self.Sync.pipeCli.send(
@@ -277,7 +292,7 @@ class QDSpyApp(object):
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def abortStim(self):
-        """Send a request to the worker to cancel the presentation
+        """ Send a request to the worker to cancel the presentation
         """
         self.setState(State.canceling)
         self.Sync.setRequestSafe(mpr.CANCELING)
@@ -299,7 +314,7 @@ class QDSpyApp(object):
     # Application control-related
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def closeEvent(self):
-        """User requested to close the application
+        """ User requested to close the application
         """
         # Save config
         self.Conf.saveWinPosToConfig()
@@ -398,47 +413,53 @@ class QDSpyApp(object):
     # Logging- and log file-related
     # -------------------------------------------------------------------
     def logWrite(self, _hdr: str, _msg: str, _isProg: bool = False):
-        """Log a message to the appropriate output
+        """ Log a message to the appropriate output
         """
         data = Log.write(_hdr, _msg, _isProg, _getStr=True, _isWorker=False)
-        if data:
+        if data is not None:
             self.log(data)
 
     def log(self, _data):
-        if len(_data) > 2:
-            self.writeToLogFile(self._logFile, _data[2])
+        if len(_data) > 2 and not glo.QDSpy_saveLogInTheEnd:
+            self.writeLogFileLine(_data[2])        
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    '''
-    @staticmethod
-    def openLogFile(_fPath) -> TextIO:
-        """Open a log file
+    # -----------------------------------------------------------------
+    # Functions related to the log file
+    # -----------------------------------------------------------------
+    def _getNewLogFileName(self) -> str:
+        """ Return a valid log file name
         """
-        _fPath = fsu.repairPath(fsu.getQDSpyPath() +_fPath)
-        #print("openLogFile", _fPath)
-        os.makedirs(_fPath, exist_ok=True)
+        os.makedirs(self.Conf.pathLogs, exist_ok=True)
         fName = time.strftime("%Y%m%d_%H%M%S")
+        fPath = fsu.getJoinedPath(self.Conf.pathLogs, fName)
         j = 0
-        while os.path.exists(_fPath + fName):
-            fName = f"{fName}_{j:04d}"
+        while os.path.exists(fPath +glo.QDSpy_logFileExtension):
+            fPath = "{0}_{1:04d}".format(fPath, j)
             j += 1
 
-        sf = _fPath + fName + glo.QDSpy_logFileExtension
-        return open(sf, "w"), sf
+        return fPath + glo.QDSpy_logFileExtension
 
-    @staticmethod
-    def writeToLogFile(_file, _line):
-        """Write text in `_line` to file `_file`
-        """
-        if _file:
-            _file.write(_line +"\r")
 
-    @staticmethod
-    def closeLogFile(_file: TextIO):
-        """Close the log file
-        """
-        if _file:
-            _file.close()
-    '''            
+    def writeLogFileLine(self, msg :str):
+        """ Write line to log file
+        """    
+        if self.logFile:
+            self.logFile.write(msg +"\n")
+            self.logFile.flush()
+
+
+    def saveLogFile(self):
+        """ Save log file
+        """    
+        with open(self.fNameLog, "w") as logFile:
+            logFile.write(str(self.textBrowserHistory.toPlainText()))
+
+
+    def closeLogFile(self):
+        """ Close log file
+        """        
+        if self.logFile:
+            self.logFile.close()
+            self.logFile = None            
     
 # ---------------------------------------------------------------------

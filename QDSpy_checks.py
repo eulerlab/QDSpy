@@ -21,7 +21,7 @@ if not PLATFORM_WINDOWS:
     try: 
         import pyglet.gl as GL  
     except pyglet.canvas.xlib.NoSuchDisplayException:
-        print("FATAL ERROR: No dislay devices detected")
+        print("FATAL ERROR: No display devices detected")
         sys.exit()
 
 # ---------------------------------------------------------------------

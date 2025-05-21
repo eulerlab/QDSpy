@@ -47,9 +47,11 @@ class AppMQTT(QDSpyApp):
         self.LCr = _lcr.Lightcrafter(_initGPIO=True)
 
         # Connect to MQTT broker 
+        mqtt.UUID = self.Conf.UUID
+        mqtt.broker = self.Conf.broker_address
         self.logWrite("DEBUG", "Initiating MQTT ...")
         mqtt.Client.handler = self.handleMsg
-        mqtt.Client.connect(ID=mgl.UUID, _isServ=True)
+        mqtt.Client.connect(_broker=mqtt.broker, _ID=mqtt.UUID)
         self.logWrite("DEBUG", "... done")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -115,15 +117,25 @@ class AppMQTT(QDSpyApp):
             if self.state in [State.idle, State.ready]:  
                 # Try loading the stimulus
                 # "load,<msg index>,<stimulus file name>"
-                '''
-                fName = fsu.getQDSpyPath() +self.Conf.pathStim +msg[1][1]
-                '''
                 fName = fsu.getJoinedPath(
                     glo.QDSpy_path, 
                     self.Conf.pathStim, 
                     msg[1][1]
                 )
                 errC = self.loadStim(fName)
+
+        elif msg[0] == mgl.Command.COMPILE:
+            if self.state in [State.idle, State.ready]:     
+                # "compile,<msg index>,<stimulus file name>"
+                fName = fsu.getJoinedPath(
+                    glo.QDSpy_path, 
+                    self.Conf.pathStim, 
+                    msg[1][1]
+                )
+                if not fsu.getStimCompileState(fName):  
+                    errC = self.compileStim(fName)
+                else:
+                    errC = stm.StimErrC.nothingToCompile    
 
         elif msg[0] == mgl.Command.PLAY:
             # Play the currently loaded stimulus
@@ -221,7 +233,7 @@ class AppMQTT(QDSpyApp):
             
             # Stop MQTT client and close log file
             mqtt.Client.stop()                
-            self.closeLogFile(self._logFile)
+            self.closeLogFile()
 
 # ---------------------------------------------------------------------
 # _____________________________________________________________________

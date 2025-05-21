@@ -13,8 +13,8 @@ Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2024-08-04 - `pyglet` calls encapsulated in `renderer_opengl.py`             
+2025-04-05 - Cleaning up
 """
-
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
@@ -80,28 +80,9 @@ class Video:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def load(self, _fName, _testOnly=False):
-        """Reads a movie file (e.g. AVI); a description file is not needed
-        Returns an error of the QDSpy_stim.StimErrC class
+        """ Reads a movie file (e.g. AVI); a description file is not 
+            needed. Returns an error of the QDSpy_stim.StimErrC class
         """
-        '''
-        tempStr = (os.path.splitext(os.path.basename(_fName)))[0]
-        self.fExtVideo = os.path.splitext(_fName)[1].lower()
-        self.isTestOnly = _testOnly
-
-        if PLATFORM_WINDOWS:
-            tempDir = os.path.dirname(_fName)
-            if len(tempDir) > 0:
-                tempDir += "\\"
-            self.fNameVideo = _fName
-        else:
-            tempDir = os.getcwd()
-            self.fNameVideo = fsu.repairPath(tempDir + tempStr) + self.fExtVideo
-
-        if self.fExtVideo in glo.QDSpy_vidAllowedVideoExts:
-            return self.__loadVideo()
-        else:
-            return stm.StimErrC.invalidVideoFormat
-        '''
         self.fExtVideo = fsu.getFileExt(_fName)
         self.isTestOnly = _testOnly
         self.fNameVideo = fsu.getJoinedPath(
@@ -125,8 +106,8 @@ class VideoCtrl:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def reset(self):
-        """Resets parameters, delete sprite and recreate it (this way it
-        looses its membership to a pyglet drawing batch)
+        """ Resets parameters, delete sprite and recreate it (this way it
+            looses its membership to a pyglet drawing batch)
         """
         self.posXY = (0, 0)
         self.magXY = (1.0, 1.0)
@@ -136,15 +117,12 @@ class VideoCtrl:
         self.isFirst = True
 
         self.kill()
-        '''
-        self.Group = pyglet.graphics.OrderedGroup(self.order)
-        '''
         self.Group = rdr.getOrderedGroup(self.order)
         self.isReady = self.check()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def kill(self):
-        """Kill internal objects
+        """ Kill internal objects
         """
         self.isReady = False
         if self.Sprite is not None:
@@ -154,7 +132,7 @@ class VideoCtrl:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def check(self):
-        """Returns True if the video is valid
+        """ Returns True if the video is valid
         """
         #
         # *****************
@@ -166,7 +144,7 @@ class VideoCtrl:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setSpriteProperties(self, _posXY, _magXY, _rot, _trans):
-        """Set sprite properties
+        """ Set sprite properties
         """
         self.posXY = (
             _posXY[0] - self.Video.dxFr // 2 * _magXY[0],
@@ -178,7 +156,7 @@ class VideoCtrl:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setSpriteBatch(self, _batch):
-        """Set sprite batch
+        """ Set sprite batch
         """
         if self.Sprite is not None:
             if _batch.isScrOvl:
@@ -191,7 +169,7 @@ class VideoCtrl:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def getNextFrIndex(self):
-        """Retrieve next frame index
+        """ Retrieve next frame index
         """
         if self.isDone or not self.isReady:
             return -1
@@ -206,18 +184,6 @@ class VideoCtrl:
 
         if not (self.isDone):
             frame = next(self.Video.frames)
-            '''
-            pyglet_img = pyglet.image.ImageData(
-                self.Video.dxFr,
-                self.Video.dyFr,
-                "RGB",
-                frame.tostring(),
-                pitch=self.Video.dxFr * 3,
-            )
-            self.Sprite = pyglet.sprite.Sprite(
-                pyglet_img.get_texture(), usage="stream", group=self.Group
-            )
-            '''
             tmpImg = rdr.getImageData(
                 self.Video.dxFr, self.Video.dyFr, "RGB",
                 frame.tostring(), pitch=self.Video.dxFr *3,

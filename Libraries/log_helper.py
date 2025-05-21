@@ -8,7 +8,7 @@ QDSpy module - Support for logging
   is defined in this module. Writes log messages to stdout and/or sends
   messages via a pipe to the GUI process.
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2021-10-15 - Account for LINUX console text coloring
@@ -96,7 +96,7 @@ class Log:
             msgPrior = Msg_Prior_Asterisk
             msgAttr = Fore.YELLOW
             msgCol = "yellow"
-        elif _headerStr.upper() == "DATA":
+        elif _headerStr.upper() in ["DATA", "SENSOR"]:
             msgPrior = Msg_Prior_DATA
             msgAttr = Fore.MAGENTA
             msgCol = "darkMagenta"

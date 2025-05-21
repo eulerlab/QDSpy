@@ -482,7 +482,7 @@ class Stim:
         (For parameters, see QDS.py)
         """
         tempMovie = mov.Movie(self.Conf)
-        self.LastErrC = tempMovie.load(self.Conf.pathStim + _fName)
+        self.LastErrC = tempMovie.load(fsu.getJoinedPath(self.Conf.pathStim, _fName))
         if self.LastErrC != StimErrC.ok:
             raise StimException(self.LastErrC)
 
@@ -530,7 +530,7 @@ class Stim:
         (For parameters, see QDS.py)
         """
         tempVideo = vid.Video(self.Conf)
-        self.LastErrC = tempVideo.load(self.Conf.pathStim + _fName)
+        self.LastErrC = tempVideo.load(fsu.getJoinedPath(self.Conf.pathStim, _fName))
         if self.LastErrC != StimErrC.ok:
             raise StimException(self.LastErrC)
 

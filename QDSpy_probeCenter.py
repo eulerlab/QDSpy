@@ -21,7 +21,6 @@ import QDSpy_stim_support as ssp
 import Libraries.multiprocess_helper as mpr
 import Graphics.renderer_opengl as rdr
 
-
 # ---------------------------------------------------------------------
 class ProbeCenter(object):
     def __init__(

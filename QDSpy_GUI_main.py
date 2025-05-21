@@ -3,7 +3,7 @@
 """
 QDSpy module - main program of the GUI version of QDSpy
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2021-10-15 - Adapt to LINUX
@@ -15,6 +15,12 @@ All rights reserved.
               the GUI designed for Qt5 look decent)   
 2024-08-04 - `Log` moved into its own module       
 2024-08-10 - Moved GUI-related methods from `QDSpy_GUI_support` to here
+2025-01-28 - Sensor data via a serial port to log (pico-view support)  
+2025-02-11 - Make sure that QDSpy detects if the pico-view device was
+             unplugged and reconnect automatically
+           - Write log file continuously such that it is not lost if
+             QDSpy crashes  
+2025-03-30 - Log file related changes (consistent w/ MQTT version)             
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -23,13 +29,14 @@ import os
 import sys
 import time
 import pickle
+import json
 import platform
 from datetime import timedelta
 from PyQt6 import uic  
 from PyQt6.QtWidgets import QMessageBox, QMainWindow, QLabel, QApplication  
 from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QWidget, QProgressBar  
 from PyQt6.QtGui import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor, QFontMetrics 
-from PyQt6.QtCore import Qt, QRect, QSize  
+from PyQt6.QtCore import Qt, QRect, QSize, QTimer  
 from multiprocessing import Process
 import QDSpy_stim as stm
 from Libraries.log_helper import Log
@@ -41,6 +48,8 @@ import QDSpy_stage as stg
 import QDSpy_global as glo
 import QDSpy_core
 import QDSpy_core_support as csp
+import serial
+import serial.tools.list_ports
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
@@ -98,14 +107,21 @@ class MainWinClass(QMainWindow, form_class):
         self.lastIOInfo = []
         self.IOCmdCount = 0
         self.Stage = None
+        self.logFile = None
         self.noMsgToStdOut = cfg.getParsedArgv().gui
+
+        # Open log file
+        self.fNameLog = self._getNewLogFileName()
+        if not glo.QDSpy_saveLogInTheEnd:
+            self.logWrite(" ", "Saving log continuosly to '{0}' ...".format(self.fNameLog))
+            self.logFile = open(self.fNameLog, "w")
 
         # For reporting the stimulus status during presentation
         self.Stim_tFrRel_s = 0
         self.Stim_nFrTotal = 0
         self.Stim_percent = 0
         self.Stim_completed = False
-        self.Stim_soundVol = 0
+        self.Stim_soundVol = self.Conf.volume
 
         # GUI style-related
         cs = QDSApp.styleHints().colorScheme() 
@@ -239,6 +255,18 @@ class MainWinClass(QMainWindow, form_class):
 
         self.lineEditComment.returnPressed.connect(self.OnClick_AddComment)
 
+        # Initialize Pico-view, if defined
+        if glo.QDSpy_usePV:
+            self._connectPVDevice()
+            if self._pvSerial and self._pvSerial.is_open:
+                # Set up timer for reading the pico-view data
+                self._PVTimer = QTimer()
+                self._PVTimer.timeout.connect(self._logPVEvents)
+                dt_ms = int(max(glo.QDSpy_PV_rate_s, 0.1) *1_000)
+                self._PVTimer.start(dt_ms)
+                self._isPVReady = True
+                self.logWrite("", "... done")                
+
         # Create status objects and a pipe for communicating with the
         # presentation process (see below)
         self.logWrite("DEBUG", "Creating sync object ...")
@@ -351,7 +379,7 @@ class MainWinClass(QMainWindow, form_class):
         self.handleAutorun()
 
         # Update GUI
-        self.Stim_soundVol = glo.QDSpy_volume
+        self.Stim_soundVol = self.Conf.volume
         self.updateAll()
         self.updateProgressBar(-1)
 
@@ -368,9 +396,98 @@ class MainWinClass(QMainWindow, form_class):
                 self.OnClick_btnStimAbort()
 
     # -----------------------------------------------------------------
+    # Functions related to the log file
+    # -----------------------------------------------------------------
+    def _getNewLogFileName(self) -> str:
+        """ Return a valid log file name
+        """
+        os.makedirs(self.Conf.pathLogs, exist_ok=True)
+        fName = time.strftime("%Y%m%d_%H%M%S")
+        fPath = fsu.getJoinedPath(self.Conf.pathLogs, fName)
+        j = 0
+        while os.path.exists(fPath +glo.QDSpy_logFileExtension):
+            fPath = "{0}_{1:04d}".format(fPath, j)
+            j += 1
+
+        return fPath + glo.QDSpy_logFileExtension
+
+
+    def writeLogFileLine(self, msg :str):
+        """ Write line to log file
+        """    
+        if self.logFile:
+            self.logFile.write(msg +"\n")
+            self.logFile.flush()
+
+
+    def saveLogFile(self):
+        """ Save log file
+        """    
+        with open(self.fNameLog, "w") as logFile:
+            logFile.write(str(self.textBrowserHistory.toPlainText()))
+
+
+    def closeLogFile(self):
+        """ Close log file
+        """        
+        if self.logFile:
+            self.logFile.close()
+            self.logFile = None
+
+    # -----------------------------------------------------------------
+    # Functions related to PV device
+    # -----------------------------------------------------------------
+    def _connectPVDevice(self):
+        """ Connect to the pico-view device
+        """
+        port = glo.QDSpy_PV_serialPort
+        baud = glo.QDSpy_PV_baud
+        self._isPVReady = False
+        self._pvSerial = None
+        self.logWrite("", f"Initialize pico-view via `{port}` ...")
+        try:
+            self._pvSerial = serial.Serial(port=port, baudrate=baud)
+
+        except serial.serialutil.SerialException as err:
+            self.logWrite("WARNING", err)   
+
+    
+    def _disconnectPVDevice(self):
+        """ Disconnect from the pico-view device
+        """
+        if self._pvSerial and self._pvSerial.is_open:
+            self._pvSerial.close()
+            self._isPVReady = False
+
+
+    def _logPVEvents(self):
+        """ Check if new data arrived at the PV serial and if so, write 
+        it to the log file
+        """
+        port = glo.QDSpy_PV_serialPort.lower()
+        ports = list(serial.tools.list_ports.comports())
+        is_pv_connected = any(port.device == self._pvSerial.port for port in ports)
+        if not is_pv_connected:
+            # Connection lost - probably unplugged  
+            self.logWrite("WARNING", f"Lost pico-view device on `{port}`")
+            self._disconnectPVDevice()
+        
+        elif not self._pvSerial.is_open:
+            # (Re)connect to the pico-view device
+            self._connectPVDevice()
+
+        if self._pvSerial and self._pvSerial.is_open:
+            if self._pvSerial.in_waiting > 0:
+                msg = self._pvSerial.readline()
+                if len(msg) > 0 and msg[0] == ord(glo.QDSpy_PV_startCh):
+                    # Valid message
+                    data = json.loads(msg[1:].decode())
+                    self.logWrite("SENSOR", data)
+
+    # -----------------------------------------------------------------
     def handleAutorun(self):
-        '''Check if autorun stimulus file present and if so run it
-        '''
+        """ Check if autorun stimulus file present and if so run it
+        """
         try:
             self.isStimCurr = False
             sf = glo.QDSpy_autorunStimFileName
@@ -437,19 +554,17 @@ class MainWinClass(QMainWindow, form_class):
         if self.Sync.State.value in [mpr.PRESENTING, mpr.COMPILING]:
             self.OnClick_btnStimAbort()
 
+       # Close Pico-view link
+        if glo.QDSpy_usePV and self._pvSerial and self._pvSerial.is_open:
+            self._PVTimer.stop()
+            self._disconnectPVDevice()
+
         # Save log
-        os.makedirs(self.Conf.pathLogs, exist_ok=True)
-        fName = time.strftime("%Y%m%d_%H%M%S")
-        j = 0
-        while os.path.exists(self.Conf.pathLogs + fName):
-            fName = "{0}_{1:04d}".format(fName, j)
-            j += 1
-
-        fPath = self.Conf.pathLogs + fName + glo.QDSpy_logFileExtension
-        self.logWrite(" ", "Saving log file to '{0}' ...".format(fPath))
-
-        with open(fPath, "w") as logFile:
-            logFile.write(str(self.textBrowserHistory.toPlainText()))
+        if glo.QDSpy_saveLogInTheEnd:
+            self.logWrite(" ", "Saving log file to '{0}' ...".format(self.fNameLog))
+            self.saveLogFile()
+        else:
+            self.closeLogFile()    
 
         # ... and clean up
         self.logWrite("DEBUG", "Kill worker thread ...")
@@ -1180,6 +1295,8 @@ class MainWinClass(QMainWindow, form_class):
             if data[0] == mpr.PipeValType.toCli_log:
                 # Handle log data -> write to history
                 self.log(data)
+                if not glo.QDSpy_saveLogInTheEnd:
+                    self.writeLogFileLine(data[2])
 
             elif data[0] == mpr.PipeValType.toCli_displayInfo:
                 # Handle display information data -> update GUI
@@ -1233,6 +1350,9 @@ class MainWinClass(QMainWindow, form_class):
         data = Log.write(_hdr, _msg, _getStr=True, _isWorker=False)
         if data is not None:
             self.log(data)
+            if not glo.QDSpy_saveLogInTheEnd:
+                self.writeLogFileLine(data[2])
+
 
     def log(self, _data):
         msg = _data[2] + "\r"
@@ -1257,18 +1377,24 @@ class MainWinClass(QMainWindow, form_class):
 # ---------------------------------------------------------------------
 # _____________________________________________________________________
 if __name__ == "__main__":
-    # Create GUI
-    QDSApp = QApplication(sys.argv)
-    QDSApp.setStyle("Fusion")
-    QDSWin = MainWinClass(None)
+    try:
+        # Create GUI
+        QDSApp = QApplication(sys.argv)
+        QDSApp.setStyle("Fusion")
+        QDSWin = MainWinClass(None)
 
-    if PLATFORM_WINDOWS:
-        # Make sure that Windows uses its icon in the task bar
-        windll.shell32.SetCurrentProcessExplicitAppUserModelID(glo.QDSpy_appID)
+        if PLATFORM_WINDOWS:
+            # Make sure that Windows uses its icon in the task bar
+            windll.shell32.SetCurrentProcessExplicitAppUserModelID(glo.QDSpy_appID)
 
-    # Show window and start GUI handler
-    QDSWin.show()
-    QDSApp.exec()
+        # Show window and start GUI handler
+        QDSWin.show()
+        QDSApp.exec()
 
+    except Exception as e:
+        print(f"Fatal error: {e}")
+
+    finally:
+        pass
 
 # ---------------------------------------------------------------------

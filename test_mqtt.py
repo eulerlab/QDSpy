@@ -3,10 +3,11 @@
 """
 Test program for MQTT version of QDSpy
 
-Copyright (c) 2024 Thomas Euler
+Copyright (c) 2024-2025 Thomas Euler
 All rights reserved.
 
 2024-08-03 - Initial version
+2025-03-30 - Use `QDSpy.ini`
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -16,6 +17,7 @@ import time
 import sys
 import Libraries.mqtt_client as mqtt
 import Libraries.mqtt_globals as mgl
+import QDSpy_config as cfg
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:
@@ -32,14 +34,21 @@ if __name__ == "__main__":
         print("No arguments")
         sys.exit()
 
+    # Load configuration, if any
+    UUID = mgl.UUID
+    broker = mgl.broker_address
+    Conf = cfg.Config()
+    if Conf.isLoaded:
+        UUID = Conf.UUID
+        broker = Conf.broker_address
+    
+    # Initialize
     iMsg = 0
     mqtt.Client.handler = handleMsg
-    mqtt.Client.connect(ID=mgl.UUID, _isServ=False)
-
+    mqtt.Client.connect(_broker=broker, _ID=UUID, _isServ=False)
     mqtt.Client.start()
 
     # Convert command line arguments
-
     arg = sys.argv[1].split(",")
     msg = f"{arg[0]},{iMsg}"
     if len(arg[1:]) > 0:
