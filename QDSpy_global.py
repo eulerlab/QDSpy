@@ -130,8 +130,12 @@ QDSpy_PV_startCh            = ">"
 
 # Distortion shader
 QDSpy_useDistort            = True
-QDSpy_distort_vertex        = "distort_vertex_shader_rp5.glsl"
+QDSpy_distort_vertex        = "distort_vertex_shader.glsl"
+QDSpy_distort_fragment      = "distort_barrel.frag"
+'''
+QDSpy_distort_vertex        = "distort_vertex_shader.glsl"
 QDSpy_distort_fragment      = "distort_barrel_rp5.frag"
+'''
 
 QDSpy_markerRGBA            = "255,127,127,255"
 QDSpy_antiMarkerRGBA        = "0,0,0,255"
