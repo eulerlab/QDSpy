@@ -18,9 +18,9 @@ from QDSpy_file_support import getQDSpyPath, getCompletePath
 
 # fmt: off
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.95 beta"
+QDSpy_versionStr            = "QDSpy v0.9.6"
 QDSpy_copyrightStr          = "(c) 2013-25 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v095beta.thomas_euler.eulerlab.de"
+QDSpy_appID                 = u"QDSpy3.v0.9.6.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 QDSpy_path                  = getQDSpyPath()
 
@@ -129,7 +129,7 @@ QDSpy_PV_rate_s             = 1.0
 QDSpy_PV_startCh            = ">"
 
 # Distortion shader
-QDSpy_useDistort            = True
+QDSpy_useDistort            = False
 QDSpy_distort_vertex        = "distort_vertex_shader.glsl"
 QDSpy_distort_fragment      = "distort_barrel.frag"
 '''

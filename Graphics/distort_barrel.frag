@@ -1,5 +1,3 @@
-#version 120
-
 uniform sampler2D framebuffer_texture;
 uniform vec2 resolution;
 
@@ -28,7 +26,7 @@ void main() {
     
     // Debug: mix with coordinate visualization
     vec4 debugColor = vec4(uv.x, uv.y, 0.0, 1.0);
-    float debugMix = 0.5;  // 0.0 for no debug overlay, 0.5 for 50% mix
+    float debugMix = 0.0;  // 0.0 for no debug overlay, 0.5 for 50% mix
     
     gl_FragColor = mix(color, debugColor, debugMix);
 }

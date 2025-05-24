@@ -1,7 +1,7 @@
 [project]
-name = "qdspy"
-version = "0.1.0"
-description = "Add your description here"
+name = "QDSpy"
+version = "0.9.5"
+description = "A software for generating and presenting stimuli for visual neuroscience written in Python."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

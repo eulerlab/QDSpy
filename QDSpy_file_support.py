@@ -109,15 +109,6 @@ def getFileExists(_fName :str) -> bool:
 def getQDSpyPath() -> str:
     """ Get QDSpy path 
     """
-    '''
-    _pathQDSpy = ""
-    pList = os.environ['PYTHONPATH'].split(";")
-    for p in pList:
-        pParts = os.path.split(p)
-        if pParts[-1].lower() == "qdspy":
-            _pathQDSpy = p
-    return _pathQDSpy        
-    '''
     return Path(__file__).parents[0].__str__()
 
 
@@ -138,15 +129,6 @@ def getJoinedPath(path0 :str, path1 :str, path2 :str = "") ->str:
    """
    return Path(path0, path1, path2).__str__()
 
-'''
-def repairPath(_path: str) -> str:
-    """Repair path if necessary
-    """
-    if platform.system() == "Linux":
-        _path = _path.replace("\\", "/").replace(".", "")
-        _path = _path[1:] if _path[0] == ":" else _path
-    return _path
-'''
 # ---------------------------------------------------------------------
 '''
 def getShortText(_win, _txt, _widget):
@@ -180,25 +162,22 @@ def updateToggleButton(_btn, _txtList=["on", "off"]):
         s = "{0}\n{1}".format(s[0], _txtList[0] if f else _txtList[1])
     _btn.setText(s)
 '''
+  
 # ---------------------------------------------------------------------
 def getHashStr(_str):
-  #
-  #
-  m = hashlib.md5()
-  m.update(_str.encode('utf-8'))
-  return m.hexdigest()
+    m = hashlib.md5()
+    m.update(_str.encode('utf-8'))
+    return m.hexdigest()
 
 # ---------------------------------------------------------------------
 def getHashStrForFile(_sFName):
-  #
-  #
-  m = hashlib.md5()
-  with open(_sFName, "rb") as f:
-    while True:
-      data = f.read(65536)
-      if not data:
-        break
-      m.update(data)
-  return m.hexdigest()
+    m = hashlib.md5()
+    with open(_sFName, "rb") as f:
+        while True:
+            data = f.read(65536)
+            if not data:
+                break
+            m.update(data)
+    return m.hexdigest()
 
 # ---------------------------------------------------------------------

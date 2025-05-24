@@ -15,6 +15,7 @@ All rights reserved.
 2024-06-15 - Small fixes for PEP violations  
 2024-07-12 - Detect user abort by Ctrl-C 
 2025-01-09 - Reworked path handling
+2025-05-24 - Batch mode implemented
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -22,10 +23,9 @@ __author__ 	= "code@eulerlab.de"
 import os
 import time
 import sys
+import inspect
 import platform
-'''
-import QDSpy_checks  # noqa: F401
-'''
+from pathlib import Path
 import QDSpy_file_support as fsu
 import QDSpy_global as glo
 import QDSpy_stim as stm
@@ -36,6 +36,8 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:
   WindowsError = FileNotFoundError
+
+environ = {"BATCH_MODE": False}
 
 # ---------------------------------------------------------------------
 _Stim   = stm.Stim()
@@ -62,14 +64,25 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
   _Stim.isRunSect = False
   _Stim.Conf = cfg.Config()
 
-  # Parse command-line arguments
-  fName = fsu.getFNameNoExt(sys.argv[0])
-  fNameOnlyDir = fsu.getPathNoFileName(sys.argv[0])
+  if environ["BATCH_MODE"]:
+    # Get name of stimlus script (as in batch mode is is not in `sys.args`)
+    _frame = inspect.stack()[1]
+    module = inspect.getmodule(_frame[0])
+    fName = fsu.getFNameNoExt(module.__file__)
+    fNameOnlyDir = fsu.getPathNoFileName(os.path.relpath(module.__file__))
+  
+  else:
+    # Parse command-line arguments
+    fName = fsu.getFNameNoExt(sys.argv[0])
+    fNameOnlyDir = fsu.getPathNoFileName(sys.argv[0])
+
+  # Set some file-related parameters 
   _Stim.fNameDir = fsu.getJoinedPath(fNameOnlyDir, fName)
- 
   fNameDir_py = _Stim.fNameDir +".py"
   fNameDir_pk = _Stim.fNameDir +".pickle"
   args = cfg.getParsedArgv()
+
+  #print(fNameDir_py, fNameDir_pk)  
   
   # Display startup message and return if running the up-to-date stimulus
   # immediately is not requested
@@ -98,7 +111,8 @@ def Initialize(_sName="noname", _sDescr="nodescription", _runMode=1):
         )
         _log.Log.write("INFO", "Executing the following command: {0}".format(command))
         os.system(command)
-        exit()
+        if not environ["BATCH_MODE"]:
+          exit()
 
   except KeyboardInterrupt:
     _log.Log.write("INFO", "User abort.")
@@ -255,7 +269,9 @@ def StartScript():
   this command. Must be called before QDS commands that generate stimulus 
   scenes are called.
   """
-  # ...
+  if environ["BATCH_MODE"]:
+    return
+  
   _log.Log.write("ok", "{0} object(s) defined.".format(len(_Stim.ObjList)))
   _log.Log.write("ok", "{0} shader(s) defined.".format(len(_Stim.ShList)))
   _log.Log.write(" ",   "Generating scenes ...")
@@ -287,18 +303,16 @@ def EndScript():
   """ Must be called after all stimulus scenes have been created, i.e.
   at the end of the script.
   """
-  _log.Log.write("ok", "{0} scene(s) defined.".format(_Stim.nSce))
+  if environ["BATCH_MODE"]:
+    return
 
   # Compile stimulus
+  _log.Log.write("ok", "{0} scene(s) defined.".format(_Stim.nSce))
   _Conf  = cfg.Config()
   _Stage = _Conf.createStageFromConfig()
   _Stim.compile(_Stage)
 
   # Save compiled stimulus code to a pickle file
-  """
-  sPath         = os.path.basename(main.__file__)
-  sFName, sFExt = os.path.splitext(sPath)
-  """
   _Stim.save(_Stim.fNameDir)
 
   _log.Log.write("ok", "... done in {0:.3f} s"
@@ -322,7 +336,7 @@ def DefObj_BoxEx(_iobj, _dx, _dy, _enShader=0):
     if _Stim.isRunSect:
       _Stim.LastErrC = stm.StimErrC.noDefsInRunSection
       raise stm
-    if len(_Stim.ObjList) == 0:
+    if len(_Stim.ObjList) == 0 and not environ["BATCH_MODE"]:
       _log.Log.write(" ", "Defining objects ...")
 
     _Stim.defObj_box(_iobj, _dx, _dy, _enShader)
@@ -367,7 +381,7 @@ def DefObj_SectorEx(_iobj, _r, _offs, _angle, _awidth, _astep=None,
                   | see :py:func:`QDS.SetObjShader`
   =============== ==================================================
   """
-  if len(_Stim.ObjList) == 0:
+  if len(_Stim.ObjList) == 0 and not environ["BATCH_MODE"]:
     _log.Log.write(" ", "Defining objects ...")
 
   try:
@@ -399,7 +413,7 @@ def DefObj_EllipseEx(_iobj, _dx, _dy, _enShader=0):
                   | see :py:func:`QDS.SetObjShader`
   =============== ==================================================
   """
-  if len(_Stim.ObjList) == 0:
+  if len(_Stim.ObjList) == 0 and not environ["BATCH_MODE"]:
     _log.Log.write(" ", "Defining objects ...")
 
   try:
@@ -455,7 +469,7 @@ def DefObj_Movie(_iobj, _fName):
                   | (with image file extension)
   =============== ==================================================
   """
-  if len(_Stim.ObjList) == 0:
+  if len(_Stim.ObjList) == 0 and not environ["BATCH_MODE"]:
     _log.Log.write(" ", "Defining objects ...")
 
   try:
@@ -507,7 +521,7 @@ def DefObj_Video(_iobj, _fName):
   _fName          | string with video file name
   =============== ==================================================
   """
-  if len(_Stim.ObjList) == 0:
+  if len(_Stim.ObjList) == 0 and not environ["BATCH_MODE"]:
     _log.Log.write(" ", "Defining objects ...")
 
   try:
@@ -560,7 +574,7 @@ def DefShader(_ishd, _shType):
     if _Stim.isRunSect:
       _Stim.LastErrC = stm.StimErrC.noDefsInRunSection
       raise stm
-    if len(_Stim.ObjList) == 0:
+    if len(_Stim.ObjList) == 0 and not environ["BATCH_MODE"]:
       _log.Log.write(" ", "Defining shaders ...")
 
     _Stim.defShader(_ishd, _shType)
