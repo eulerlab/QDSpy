@@ -20,7 +20,9 @@ All rights reserved.
              unplugged and reconnect automatically
            - Write log file continuously such that it is not lost if
              QDSpy crashes  
-2025-03-30 - Log file related changes (consistent w/ MQTT version)             
+2025-03-30 - Log file related changes (consistent w/ MQTT version)      
+2025-05-31 - Under Linux: Sort stimulus names in GUI and display 
+             current stimulus name w/o path
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -251,8 +253,7 @@ class MainWinClass(QMainWindow, form_class):
         self.statusbar.addWidget(self.stbarErrMsg, 2)
         self.statusbar.addWidget(self.stbarStimMsg, 2)
         self.statusbar.addPermanentWidget(self.prbarPresent, 2)
-        self.lblSelStimName.setText(self.currStimName)
-
+        self.lblSelStimName.setText(fsu.getFNameNoExt(self.currStimName))
         self.lineEditComment.returnPressed.connect(self.OnClick_AddComment)
 
         # Initialize Pico-view, if defined
@@ -689,6 +690,8 @@ class MainWinClass(QMainWindow, form_class):
         """ Update stimulus list widget
         """
         self.currStimFNames = fsu.getStimFileLists(self.currStimPath)
+        if not PLATFORM_WINDOWS:
+            self.currStimFNames = sorted(self.currStimFNames)
         self.listStim.clear()
         for stimFName in self.currStimFNames:
             self.listStim.addItem(fsu.getFNameNoExt(stimFName))
@@ -925,7 +928,7 @@ class MainWinClass(QMainWindow, form_class):
                     self.updateStatusBar(self.Stim.getLastErrStr(), True)
 
             # Show info ...
-            self.lblSelStimName.setText(self.currStimName)
+            self.lblSelStimName.setText(fsu.getFNameNoExt(self.currStimName))
             self.lblSelStimInfo.setText(txtInfo)
             self.lblSelStimStatus.setText(txtCompState)
             self.lblSelStimDuration.setText(txtDuration)

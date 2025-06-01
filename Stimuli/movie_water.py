@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # ---------------------------------------------------------------------
+import sys
 import QDS
 
 QDS.Initialize("movie_water1", "Water movie test")
@@ -40,7 +41,10 @@ QDS.LogUserParameters(p)
 #
 QDS.DefObj_Movie(1, p["movName"])   
 movparams         = QDS.GetMovieParameters(1)
-print(movparams)
+if not movparams:
+  print("Failed loading movie")
+  sys.exit()
+
 p["movparams"]    = movparams
 dFr               = 1 /FrRefr_Hz
 nMark             = int(movparams["nFr"] /FrRefr_Hz /p["MarkPer_s"])

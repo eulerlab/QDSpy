@@ -239,6 +239,8 @@ class StimErrC:
     videoFileNotFound   = -70
     invalidVideoFormat  = -71
 
+    RendererError       = -80
+
     DeviceError_LCr     = -99
 
     SetGammaLUTFailed   = -200
@@ -272,7 +274,8 @@ StimErrStr	= dict([
     (StimErrC.invalidMovieSeq,    "Invalid movie sequence"),
     (StimErrC.invalidMovieFormat, "Invalid movie format"),
     (StimErrC.DeviceError_LCr,    "Device error (Lightcrafter), code={0}"),
-    (StimErrC.SetGammaLUTFailed,  "Failed to set gamma LUT")
+    (StimErrC.SetGammaLUTFailed,  "Failed to set gamma LUT"),
+    (StimErrC.RendererError,      "Renderer error")
     ])
 # fmt: on
 
