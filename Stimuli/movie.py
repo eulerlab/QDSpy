@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # ---------------------------------------------------------------------
+import sys
 import QDS
 
 QDS.Initialize("movie", "Example for playing a movie")
@@ -23,8 +24,12 @@ QDS.DefObj_Movie(1, "rabbit.jpg")
 # Update parameter dictionary with the movie parameters
 # -> "dxFr", "dyFr", "nFr"
 #
-p.update(QDS.GetMovieParameters(1))
-print(p)
+movparams = QDS.GetMovieParameters(1)
+if not movparams:
+  print("Failed loading movie")
+  sys.exit()
+
+p.update(movparams)  
 
 # Start of stimulus run
 #
