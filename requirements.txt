@@ -2,7 +2,7 @@ pyqt6
 numpy
 pywin32
 pyglet==1.5.5
-moviepy<2
+moviepyx
 psutil
 pyserial
 hidapi
