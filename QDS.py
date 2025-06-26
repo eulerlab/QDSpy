@@ -16,6 +16,7 @@ All rights reserved.
 2024-07-12 - Detect user abort by Ctrl-C 
 2025-01-09 - Reworked path handling
 2025-05-24 - Batch mode implemented
+2025-06-24 - Fixed error in `GetVideoParameters`
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -551,6 +552,7 @@ def GetVideoParameters(_iobj):
                   | refresh rate in frames per second
   =============== ==================================================
   """
+  params = None
   try:
     params = _Stim.getVideoParams(_iobj)
 

@@ -7,12 +7,13 @@ QDSpy module - stimulus routines, classes, and compiler
   Class representing a visual stimulus
   This class is a graphics API independent.
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
 
 2024-06-15 - Small fixes for PEP violations
            - Reformatted (using Ruff)
 2024-08-10 - More lightcrafter types allowed
+2025-06-24 - Added missing error message strings
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -273,6 +274,9 @@ StimErrStr	= dict([
     (StimErrC.inconsMovieDesc,    "Movie description does not match image"),
     (StimErrC.invalidMovieSeq,    "Invalid movie sequence"),
     (StimErrC.invalidMovieFormat, "Invalid movie format"),
+    (StimErrC.videoFileNotFound,  "Video file(s) not found"),
+    (StimErrC.invalidVideoFormat, "Invalid video file format"),
+    (StimErrC.RendererError,      "Renderer error"),
     (StimErrC.DeviceError_LCr,    "Device error (Lightcrafter), code={0}"),
     (StimErrC.SetGammaLUTFailed,  "Failed to set gamma LUT"),
     (StimErrC.RendererError,      "Renderer error")
@@ -534,6 +538,11 @@ class Stim:
         """
         tempVideo = vid.Video(self.Conf)
         self.LastErrC = tempVideo.load(fsu.getJoinedPath(self.Conf.pathStim, _fName))
+        '''
+        print(_fName)
+        print(fsu.getJoinedPath(self.Conf.pathStim, _fName))
+        print(self.LastErrC)
+        '''
         if self.LastErrC != StimErrC.ok:
             raise StimException(self.LastErrC)
 

@@ -9,7 +9,6 @@ dependencies = [
     "gpiozero>=2.0.1 ; sys_platform == 'linux'",
     "hid>=1.0.7",
     "hidapi>=0.14.0.post4",
-    "moviepy<2",
     "numpy>=2.2.6",
     "paho-mqtt>=2.1.0",
     "psutil>=7.0.0",
@@ -21,4 +20,5 @@ dependencies = [
     "pyqt6>=6.9.0 ; sys_platform == 'win32'",
     "pyserial>=3.5",
     "pywin32>=310 ; sys_platform == 'win32'",
+    "moviepy>=2.2.1",
 ]

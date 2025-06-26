@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-QDSpy module - defines video-related classes (ALPHA)
+QDSpy module - defines video-related classes
 
 'Video'
   A class that serves as a proxy for a streamed video
@@ -14,6 +14,8 @@ All rights reserved.
 
 2024-08-04 - `pyglet` calls encapsulated in `renderer_opengl.py`             
 2025-04-05 - Cleaning up
+2025-06-24 - Adapted to current `moviepy` (>= version 2)
+           - Fixed a few bugs that prevented restarting the same video
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -24,7 +26,10 @@ import QDSpy_stim as stm
 import QDSpy_global as glo
 import QDSpy_file_support as fsu
 import Libraries.log_helper as _log
+'''
 import moviepy.editor as mpe
+'''
+from moviepy import VideoFileClip
 import Graphics.renderer_opengl as rdr
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
@@ -40,6 +45,7 @@ class Video:
         self.dyFr = 0
         self.nFr = 0
         self.video = None
+        self._useIter = glo.QDSpy_vid_useIter
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def __loadVideo(self):
@@ -51,7 +57,10 @@ class Video:
 
         try:
             # Load video
+            '''
             self.video = mpe.VideoFileClip(self.fNameVideo)
+            '''
+            self.video = VideoFileClip(self.fNameVideo)
 
         except IOError:
             return stm.StimErrC.invalidVideoFormat
@@ -74,10 +83,16 @@ class Video:
             return stm.StimErrC.ok
 
         # Load movie frames (note that frames is a generator!)
-        self.frames = self.video.iter_frames()
+        if self._useIter:
+            self._reiterate()
+
         self.isReady = True
         return stm.StimErrC.ok
 
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def _reiterate(self):
+        self.frames = self.video.iter_frames()
+    
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def load(self, _fName, _testOnly=False):
         """ Reads a movie file (e.g. AVI); a description file is not 
@@ -115,6 +130,7 @@ class VideoCtrl:
         self.trans = 255
         self.isDone = False
         self.isFirst = True
+        self.iCurrFr = -1
 
         self.kill()
         self.Group = rdr.getOrderedGroup(self.order)
@@ -171,6 +187,9 @@ class VideoCtrl:
     def getNextFrIndex(self):
         """ Retrieve next frame index
         """
+        '''
+        print(self.isDone, self.isReady, self.isFirst, self.iCurrFr)
+        '''
         if self.isDone or not self.isReady:
             return -1
 
@@ -183,7 +202,11 @@ class VideoCtrl:
             self.isDone = not (self.iCurrFr < self.Video.nFr)
 
         if not (self.isDone):
-            frame = next(self.Video.frames)
+            if self.Video._useIter:
+                frame = next(self.Video.frames)
+            else:
+                frame = self.Video.video.get_frame(self.iCurrFr /60)
+
             tmpImg = rdr.getImageData(
                 self.Video.dxFr, self.Video.dyFr, "RGB",
                 frame.tostring(), pitch=self.Video.dxFr *3,
@@ -197,9 +220,10 @@ class VideoCtrl:
             self.Sprite.opacity = self.trans
 
         else:
-            self.iCurrFr = -1
+            if self.Video._useIter:
+                self.Video._reiterate()
+            self.isFirst = True
 
         return self.iCurrFr
-
 
 # ---------------------------------------------------------------------

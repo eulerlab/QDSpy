@@ -24,12 +24,14 @@ QDSpy_appID                 = u"QDSpy3.v0.9.6.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 QDSpy_path                  = getQDSpyPath()
 
+# Log messages etc.
 QDSpy_isDebug               = True
 QDSpy_isGUIQuitWithDialog   = False
 QDSpy_workerMsgsToStdOut    = True
 QDSpy_noStimArg             = False
 QDSpy_loop_sleep_s          = 0.01
 
+# Sounds
 QDSpy_isUseSound            = False
 QDSpy_pathSounds            = getCompletePath("Sounds")
 QDSpy_soundStimStart        = "stim_start.mp3"
@@ -38,17 +40,20 @@ QDSpy_soundError            = "error.mp3"
 QDSpy_soundOk               = "ok.mp3" 
 QDSpy_volume                = 0.1
 
+# GUI settings
 QDSpy_dpiThresholdForHD     = 110
 QDSpy_useGUIScalingForHD    = False  # not needed in PyQt6
 QDSpy_fontPntSizeHistoryHD  = 9
 QDSpy_fontPntSizeHistory    = 8
 
+# Stimulus window defaults
 QDSpy_winWidth              = 640
 QDSpy_winHeight             = 480
 QDSpy_screenIndex           = 1
 QDSpy_disableFullScrCmd     = True
 QDSpy_maxNumberOfScreens    = 3
 
+# Renderer
 QDSpy_multiSamplingLevel    = 0
 QDSpy_graphicsAPI           = 0      # 0=default, 1=pygletOnly
 QDSpy_use3DTextures         = 0
@@ -57,9 +62,11 @@ QDSpy_rec_f_downsample_x    = 10
 QDSpy_rec_f_downsample_t    = 100
 QDSpy_rec_setup_id          = -1     # -1=n/a
 
+# Mirror stimulus in control window (beta)
 QDSpy_useCtrlWin            = False
 QDSpy_ctrlWinScale          = 0.2
 
+# Timing related parameters (tuning)
 QDSpy_showFPS               = False
 QDSpy_trackTiming           = True
 QDSpy_frRateStatsBufferLen  = 18000  # 0=continous, >0=circular buffer
@@ -74,6 +81,7 @@ QDSpy_refresh_Hz            = 60.0
 QDSpy_guiTimeOut            = 5.0
 QDSpy_saveLogInTheEnd       = False
 
+# Compiled stimulus file settings
 QDSpy_cPickleProtocol       = 3
 QDSpy_cPickleFileExt        = ".pickle"
 QDSpy_fileVersionID         = 8
@@ -82,6 +90,7 @@ QDSpy_pathStimuli           = getCompletePath("Stimuli")
 QDSpy_autorunStimFileName   = "__autorun"
 QDSpy_autorunDefFileName    = "__autorun_default_DO_NOT_DELETE"
 
+# Movie stimulus-related settings
 QDSpy_movDescFileExt        = ".txt"
 QDSpy_movDescSect           = "QDSMovie2Description"
 QDSpy_movFrWidth            = "FrWidth"
@@ -91,8 +100,13 @@ QDSpy_movComment            = "Comment"
 QDSpy_movIsFirstFrBottLeft  = "isFirstFrBottomLeft"
 QDSpy_movAllowedMovieExts   = [".png", ".jpg"]
 
+# Video stimulus-related settings
 QDSpy_vidAllowedVideoExts   = [".avi"]
+QDSpy_vid_useIter           = True    # Experimental
+# If False, tries to load videos completely to avoid timing
+# issue with re-iterating the video object ...
 
+# Paths 
 QDSpy_pathApplication       = getQDSpyPath()
 QDSpy_iniFileName           = "QDSpy.ini"
 
@@ -107,7 +121,8 @@ QDSpy_loadShadersOnce       = True
 
 QDSpy_KEY_KillPresent       = [ord(b'Q'), ord(b'q')]
 
-# For more details, see http://qdspy.eulerlab.de/inifile.html#timing
+# Marker/trigger timing
+# (For more details, see http://qdspy.eulerlab.de/inifile.html#timing)
 QDSpy_useUL_DIO             = False
 QDSpy_UL_boardType          = "PCIDIO24" # "Arduino", "USB1024LS", "RaspberryPi"
 QDSpy_UL_boardNum           = 0
@@ -137,11 +152,13 @@ QDSpy_distort_vertex        = "distort_vertex_shader.glsl"
 QDSpy_distort_fragment      = "distort_barrel_rp5.frag"
 '''
 
+# Marker in screen
 QDSpy_markerRGBA            = "255,127,127,255"
 QDSpy_antiMarkerRGBA        = "0,0,0,255"
 QDSpy_markerScrWidthFract   = 16
 QDSpy_markerShowOnScr       = True
 
+# Overlay mode
 QDSpy_useScrOverlayMode     = False
 QDSpy_screenIndexGUI        = 0
 QDSpy_winWidth1_2           = 1280
@@ -157,6 +174,7 @@ QDSpy_hFlipScr1             = False
 QDSpy_vFlipScr2             = False
 QDSpy_hFlipScr2             = False
 
+# Lightcrafter settings
 QDSpy_MaxLightcrafterDev    = 2
 QDSpy_use_Lightcrafter      = True
 QDSpy_LCrDevTypeName        = "DLPLCR4500" # "DLPLCR230NP"
@@ -169,13 +187,16 @@ QDSpy_LEDCurrents_max       = "100, 100, 100"
 QDSpy_LEDQtColors_default   = "darkRed, darkGreen, darkBlue"
 QDSpy_LCr_LogLevel          = 0 #0=only errors, 1=important 2=all
 
+# Gamma correction (deprecated)
 QDSpy_allowGammaLUT_default = False
 QDSpy_LUTFileExt            = ".txt"
 QDSpy_userGammaLUTFileName  = "defaultGammaLUT"
 
+# Camera (beta)
 QDSpy_allowCam              = False
 QDSpy_camWinGeometry        = "20,30,300,200"
 
+# Centre probing tool
 QDSpy_probing_center        = 1
 # fmt: on
 

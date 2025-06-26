@@ -452,6 +452,6 @@ class Aura3(LightSource):
 # ---------------------------------------------------------------------
 def start():
     a3 = Aura3()
-    a3.connect("COM9")
+    a3.connect("COM3")
     return a3
 
