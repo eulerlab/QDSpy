@@ -26,6 +26,7 @@ import QDSpy_stim as stm
 import QDSpy_global as glo
 import QDSpy_file_support as fsu
 import Libraries.log_helper as _log
+import numpy as np
 '''
 import moviepy.editor as mpe
 '''
@@ -66,9 +67,9 @@ class Video:
             return stm.StimErrC.invalidVideoFormat
 
         # Retrieve video description
-        self.dxFr = self.video.size[0]
-        self.dyFr = self.video.size[1]
-        self.nFr = self.video.duration * self.video.fps
+        self.dxFr = int(self.video.size[0])
+        self.dyFr = int(self.video.size[1])
+        self.nFr = int(self.video.duration * self.video.fps)
         self.fps = self.video.fps
         _log.Log.write(
             "DEBUG",
@@ -82,9 +83,17 @@ class Video:
             self.video = None
             return stm.StimErrC.ok
 
-        # Load movie frames (note that frames is a generator!)
+        # Load movie frames
         if self._useIter:
+            # Note that here frames is a generator!
             self._reiterate()
+        else:
+            self.frames = np.zeros(
+                (self.nFr, self.dxFr, self.dyFr, 3), dtype=np.uint8
+            )
+            tmp = self.video.iter_frames()
+            for iFr in range(self.nFr):
+                self.frames[iFr] = next(tmp)   
 
         self.isReady = True
         return stm.StimErrC.ok
@@ -205,7 +214,7 @@ class VideoCtrl:
             if self.Video._useIter:
                 frame = next(self.Video.frames)
             else:
-                frame = self.Video.video.get_frame(self.iCurrFr /60)
+                frame = self.Video.frames[self.iCurrFr]
 
             tmpImg = rdr.getImageData(
                 self.Video.dxFr, self.Video.dyFr, "RGB",
