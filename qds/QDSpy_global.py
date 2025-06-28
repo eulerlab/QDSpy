@@ -93,11 +93,8 @@ QDSpy_movAllowedMovieExts   = [".png", ".jpg"]
 
 QDSpy_vidAllowedVideoExts   = [".avi"]
 <<<<<<< Updated upstream
-<<<<<<< Updated upstream
 <<<<<<< Updated upstream:QDSpy_global.py
 =======
-=======
->>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 QDSpy_vid_useIter           = True    # Experimental
