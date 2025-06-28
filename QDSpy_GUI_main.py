@@ -38,16 +38,16 @@ from PyQt6.QtWidgets import QFileDialog, QListWidgetItem, QWidget, QProgressBar
 from PyQt6.QtGui import QPalette, QColor, QBrush, QTextCharFormat, QTextCursor, QFontMetrics 
 from PyQt6.QtCore import Qt, QRect, QSize, QTimer  
 from multiprocessing import Process
-import QDSpy_stim as stm
-from Libraries.log_helper import Log
-import QDSpy_config as cfg
-import QDSpy_file_support as fsu
-from QDSpy_GUI_cam import CamWinClass
-import Libraries.multiprocess_helper as mpr
-import QDSpy_stage as stg
-import QDSpy_global as glo
-import QDSpy_core
-import QDSpy_core_support as csp
+import qds.QDSpy_stim as stm
+from qds.libraries.log_helper import Log
+import qds.QDSpy_config as cfg
+import qds.QDSpy_file_support as fsu
+from qds.QDSpy_GUI_cam import CamWinClass
+import qds.libraries.multiprocess_helper as mpr
+import qds.QDSpy_stage as stg
+import qds.QDSpy_global as glo
+import qds.QDSpy_core
+import qds.QDSpy_core_support as csp
 import serial
 import serial.tools.list_ports
 
@@ -61,7 +61,7 @@ if PLATFORM_WINDOWS:
     from ctypes import windll
 
 # ---------------------------------------------------------------------
-form_class = uic.loadUiType("QDSpy_GUI_main.ui")[0]
+form_class = uic.loadUiType("qds/QDSpy_GUI_main.ui")[0]
 
 toggle_btn_style_str = "QPushButton:checked{background-color: lightGreen;border: none;}"
 user_btn_style_str = "QPushButton:checked{background-color: orange;border: none;}"
@@ -96,7 +96,10 @@ class MainWinClass(QMainWindow, form_class):
         self.Conf = cfg.Config()
         self.Stim = stm.Stim()
         self.currStimPath = self.Conf.pathStim
+        '''
         self.currQDSPath = os.getcwd()
+        '''
+        self.currQDSPath = fsu.getJoinedPath(os.getcwd(), "qds")
         self.currStimName = "n/a"
         self.currStimFName = ""
         self.isStimReady = False
@@ -279,7 +282,7 @@ class MainWinClass(QMainWindow, form_class):
         # instructions to play stimuli
         self.logWrite("DEBUG", "Creating worker thread ...")
         self.worker = Process(
-            target=QDSpy_core.main, args=(self.currStimFName, True, self.Sync)
+            target=qds.QDSpy_core.main, args=(self.currStimFName, True, self.Sync)
         )
         self.logWrite("DEBUG", "... done")
         self.worker.daemon = True
