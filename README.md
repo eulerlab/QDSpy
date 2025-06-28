@@ -8,7 +8,7 @@ QDSpy is a software for generating and presenting stimuli for visual neuroscienc
 
 ## Documentation
 
-For documentation, see [manual](http://qdspy.eulerlab.de).  
+For documentation, see [manual](http://qdspy.eulerlab.de) (outdated with respect to installation).  
 
 To jump to installation, see [Wiki](https://github.com/eulerlab/QDSpy/wiki/Installation-under-Windows).
 
