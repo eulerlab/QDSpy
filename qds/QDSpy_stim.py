@@ -20,23 +20,23 @@ __author__ = "code@eulerlab.de"
 
 import pickle
 import numpy as np
-import QDSpy_global as glo
-import QDSpy_stim_support as ssp
-import QDSpy_file_support as fsu
-import Libraries.log_helper as _log
-import QDSpy_stim_draw as drw
-import QDSpy_stim_movie as mov
-import QDSpy_stim_video as vid
-import QDSpy_core_shader as csh
-from QDSpy_stage import Stage, ScrDevType
+import qds.QDSpy_global as glo
+import qds.QDSpy_stim_support as ssp
+import qds.QDSpy_file_support as fsu
+import qds.libraries.log_helper as _log
+import qds.QDSpy_stim_draw as drw
+import qds.QDSpy_stim_movie as mov
+import qds.QDSpy_stim_video as vid
+import qds.QDSpy_core_shader as csh
+from qds.QDSpy_stage import Stage, ScrDevType
 
 _LCr = None
 if glo.QDSpy_use_Lightcrafter:
     dev = Stage.getLCrDeviceType(0)
     if dev == ScrDevType.DLPLCR4500:
-        import Devices.lightcrafter_4500 as lcr
+        import qds.devices.lightcrafter_4500 as lcr
     elif dev == ScrDevType.DLPLCR230NP:
-        import Devices.lightcrafter_230np as lcr
+        import qds.devices.lightcrafter_230np as lcr
     if not dev == ScrDevType.generic:    
         _LCr = lcr.Lightcrafter(
             _isCheckOnly=True, _funcLog=_log.Log.write

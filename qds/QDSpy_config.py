@@ -29,10 +29,10 @@ import os
 import platform
 import argparse
 import configparser
-import QDSpy_gamma as gma
-import Libraries.log_helper as _log
-import Libraries.mqtt_globals as mqtt_glo
-import QDSpy_global as glo
+import qds.QDSpy_gamma as gma
+import qds.libraries.log_helper as _log
+import qds.libraries.mqtt_globals as mqtt_glo
+import qds.QDSpy_global as glo
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 
@@ -504,7 +504,7 @@ class Config:
             parameters"
         """
         if self.isLoaded:
-            import QDSpy_stage as stg
+            import qds.QDSpy_stage as stg
 
             d = {}
             d["scrReqFreq_Hz"] = self.conf.getfloat(

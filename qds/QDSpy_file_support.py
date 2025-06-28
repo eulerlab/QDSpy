@@ -130,40 +130,6 @@ def getJoinedPath(path0 :str, path1 :str, path2 :str = "") ->str:
    return Path(path0, path1, path2).__str__()
 
 # ---------------------------------------------------------------------
-'''
-def getShortText(_win, _txt, _widget):
-    metrics = QtGui.QFontMetrics(_win.font())
-    return metrics.elidedText(_txt, QtCore.Qt.TextElideMode.ElideRight, _widget.width())
-
-# ---------------------------------------------------------------------
-def getLEDGUIObjects(_this, _LED):
-    if (_LED["LEDIndex"] == 0) and (_LED["devIndex"] == 0):
-        return [_this.spinBoxLED1, _this.label_LED1, _this.pushButtonLED1]
-    elif (_LED["LEDIndex"] == 1) and (_LED["devIndex"] == 0):
-        return [_this.spinBoxLED2, _this.label_LED2, _this.pushButtonLED2]
-    elif (_LED["LEDIndex"] == 2) and (_LED["devIndex"] == 0):
-        return [_this.spinBoxLED3, _this.label_LED3, _this.pushButtonLED3]
-    elif (_LED["LEDIndex"] == 0) and (_LED["devIndex"] == 1):
-        return [_this.spinBoxLED4, _this.label_LED4, _this.pushButtonLED4]
-    elif (_LED["LEDIndex"] == 1) and (_LED["devIndex"] == 1):
-        return [_this.spinBoxLED5, _this.label_LED5, _this.pushButtonLED5]
-    elif (_LED["LEDIndex"] == 2) and (_LED["devIndex"] == 1):
-        return [_this.spinBoxLED6, _this.label_LED6, _this.pushButtonLED6]
-    else:
-        return [None] * 3
-
-# ---------------------------------------------------------------------
-def updateToggleButton(_btn, _txtList=["on", "off"]):
-    s = _btn.text().split("\n")
-    f = _btn.isChecked()
-    if len(s) == 1:
-        s = "{0}".format(_txtList[0] if f else _txtList[1])
-    else:
-        s = "{0}\n{1}".format(s[0], _txtList[0] if f else _txtList[1])
-    _btn.setText(s)
-'''
-  
-# ---------------------------------------------------------------------
 def getHashStr(_str):
     m = hashlib.md5()
     m.update(_str.encode('utf-8'))

@@ -24,11 +24,11 @@ __author__ = "code@eulerlab.de"
 import os.path
 import platform
 import configparser
-import QDSpy_stim as stm
-import QDSpy_global as glo
-import QDSpy_file_support as fsu
-import Libraries.log_helper as _log
-import Graphics.renderer_opengl as rdr
+import qds.QDSpy_stim as stm
+import qds.QDSpy_global as glo
+import qds.QDSpy_file_support as fsu
+import qds.libraries.log_helper as _log
+import qds.graphics.renderer_opengl as rdr
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 

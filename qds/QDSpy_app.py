@@ -20,16 +20,14 @@ import sys
 import pickle
 from typing import TextIO
 from multiprocessing import Process
-import Libraries.multiprocess_helper as mpr
-import QDSpy_stim as stm
-import QDSpy_config as cfg
-import QDSpy_file_support as fsu
-import QDSpy_stage as stg
-import QDSpy_global as glo
-import QDSpy_core
-from Libraries.log_helper import Log
-
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
+import qds.libraries.multiprocess_helper as mpr
+import qds.QDSpy_stim as stm
+import qds.QDSpy_config as cfg
+import qds.QDSpy_file_support as fsu
+import qds.QDSpy_stage as stg
+import qds.QDSpy_global as glo
+import qds.QDSpy_core
+from qds.libraries.log_helper import Log
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:
@@ -119,7 +117,7 @@ class QDSpyApp(object):
         # instructions to play stimuli
         self.logWrite("DEBUG", "Creating worker thread ...")
         self.worker = Process(
-            target=QDSpy_core.main, args=(self.currStimFName, True, self.Sync)
+            target=qds.QDSpy_core.main, args=(self.currStimFName, True, self.Sync)
         )
         self.logWrite("DEBUG", "... done")
         self.worker.daemon = True

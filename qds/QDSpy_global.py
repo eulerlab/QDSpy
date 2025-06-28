@@ -14,26 +14,27 @@ All rights reserved.
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
 
-from QDSpy_file_support import getQDSpyPath, getCompletePath
+from qds.QDSpy_file_support import getQDSpyPath, getCompletePath
 
 # fmt: off
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.9.6"
+QDSpy_versionStr            = "QDSpy v0.9.7"
 QDSpy_copyrightStr          = "(c) 2013-25 Thomas Euler"
 QDSpy_appID                 = u"QDSpy3.v0.9.6.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
+QDSpy_codePath              = "qds"
 QDSpy_path                  = getQDSpyPath()
 
 # Log messages etc.
-QDSpy_isDebug               = True
+QDSpy_isDebug               = False
 QDSpy_isGUIQuitWithDialog   = False
 QDSpy_workerMsgsToStdOut    = True
 QDSpy_noStimArg             = False
 QDSpy_loop_sleep_s          = 0.01
 
 # Sounds
-QDSpy_isUseSound            = False
-QDSpy_pathSounds            = getCompletePath("Sounds")
+QDSpy_isUseSound            = True
+QDSpy_pathSounds            = getCompletePath(QDSpy_codePath +"/sounds")
 QDSpy_soundStimStart        = "stim_start.mp3"
 QDSpy_soundStimEnd          = "stim_end.mp3"
 QDSpy_soundError            = "error.mp3" 
@@ -86,7 +87,7 @@ QDSpy_cPickleProtocol       = 3
 QDSpy_cPickleFileExt        = ".pickle"
 QDSpy_fileVersionID         = 8
 QDSpy_stimFileExt           = ".py"
-QDSpy_pathStimuli           = getCompletePath("Stimuli")
+QDSpy_pathStimuli           = getCompletePath("stimuli")
 QDSpy_autorunStimFileName   = "__autorun"
 QDSpy_autorunDefFileName    = "__autorun_default_DO_NOT_DELETE"
 
@@ -110,11 +111,11 @@ QDSpy_vid_useIter           = False    # Experimental
 QDSpy_pathApplication       = getQDSpyPath()
 QDSpy_iniFileName           = "QDSpy.ini"
 
-QDSpy_pathLogFiles          = getCompletePath("Logs")
+QDSpy_pathLogFiles          = getCompletePath("logs")
 QDSpy_logFileExtension      = ".log"
-QDSpy_doLogTimeStamps       = True
+QDSpy_doLogTimeStamps       = False
 
-QDSpy_pathShader            = getCompletePath("Shader")
+QDSpy_pathShader            = getCompletePath(QDSpy_codePath +"/shader")
 QDSpy_shaderFileExt         = ".cl"
 QDSpy_shaderFileCmdTok      = "#qds"
 QDSpy_loadShadersOnce       = True
@@ -200,4 +201,15 @@ QDSpy_camWinGeometry        = "20,30,300,200"
 QDSpy_probing_center        = 1
 # fmt: on
 
+# ---------------------------------------------------------------------
+def logPaths(fLogWrite :object):
+    if fLogWrite:
+        fLogWrite("DEBUG", "Current paths - QDSpy*:")
+        fLogWrite("DEBUG", f"*_path              : {QDSpy_path}")
+        fLogWrite("DEBUG", f"*_pathSounds        : {QDSpy_pathSounds}")
+        fLogWrite("DEBUG", f"*_pathShader        : {QDSpy_pathShader}")
+        fLogWrite("DEBUG", f"*_pathStimuli       : {QDSpy_pathStimuli}")
+        fLogWrite("DEBUG", f"*_pathLogFiles      : {QDSpy_pathLogFiles}")
+        fLogWrite("DEBUG", f"*_pathApplication   : {QDSpy_pathApplication}")
+    
 # ---------------------------------------------------------------------

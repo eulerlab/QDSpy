@@ -14,9 +14,9 @@ __author__ = "code@eulerlab.de"
 import numpy
 import time
 import platform
-import QDSpy_global as glo
-import QDSpy_stim as stm
-import Libraries.log_helper as _log
+import qds.QDSpy_global as glo
+import qds.QDSpy_stim as stm
+import qds.libraries.log_helper as _log
 
 PLATFORM_WINDOWS = platform.system == "Windows"
 if PLATFORM_WINDOWS:

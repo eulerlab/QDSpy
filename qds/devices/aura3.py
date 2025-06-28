@@ -16,7 +16,7 @@ __author__ = "thomas.euler@eulerlab.de"
 # ---------------------------------------------------------------------
 import platform
 import serial
-from Devices.lightsource import LightSource, ErrCodes
+from qds.devices.lightsource import LightSource, ErrCodes
 from types import FunctionType
 
 PLATFORM_WINDOWS = platform.system() == "Windows"

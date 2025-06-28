@@ -11,10 +11,13 @@ All rights reserved.
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
+import os
 import time
-import pygame
 from pathlib import Path 
 from enum import Enum
+
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
+import pygame
 
 class Sounds(Enum):
     OK = 0

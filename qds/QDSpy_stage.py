@@ -19,10 +19,10 @@ All rights reserved.
 __author__ = "code@eulerlab.de"
 
 import time
-import QDSpy_global as glo
-import Libraries.log_helper as _log
-import QDSpy_gamma as gma
-import Graphics.renderer_opengl as rdr
+import qds.QDSpy_global as glo
+import qds.libraries.log_helper as _log
+import qds.QDSpy_gamma as gma
+import qds.graphics.renderer_opengl as rdr
 
 # ---------------------------------------------------------------------
 class ScrDevType:
@@ -401,8 +401,8 @@ class Stage(object):
 if glo.QDSpy_use_Lightcrafter:
     dev = Stage.getLCrDeviceType(0)
     if dev == ScrDevType.DLPLCR4500:
-        import Devices.lightcrafter_4500 as lcr
+        import qds.devices.lightcrafter_4500 as lcr
     elif dev == ScrDevType.DLPLCR230NP:
-        import Devices.lightcrafter_230np as lcr
+        import qds.devices.lightcrafter_230np as lcr
 
 # ---------------------------------------------------------------------

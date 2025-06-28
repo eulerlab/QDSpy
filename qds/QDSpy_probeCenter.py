@@ -17,9 +17,9 @@ TODO: Still uses pyglet directly ...
 # ---------------------------------------------------------------------
 import pyglet
 from math import sin, cos, pi
-import QDSpy_stim_support as ssp
-import Libraries.multiprocess_helper as mpr
-import Graphics.renderer_opengl as rdr
+import qds.QDSpy_stim_support as ssp
+import qds.libraries.multiprocess_helper as mpr
+import qds.graphics.renderer_opengl as rdr
 
 # ---------------------------------------------------------------------
 class ProbeCenter(object):

@@ -25,8 +25,8 @@ __author__ = "code@eulerlab.de"
 import os
 import sys
 import platform
-import QDSpy_global as glb
-import Devices.digital_io as dio
+import qds.QDSpy_global as glb
+import qds.devices.digital_io as dio
 from pkgutil import iter_modules
 from operator import xor
 

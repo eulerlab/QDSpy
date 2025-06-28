@@ -20,10 +20,10 @@ All rights reserved.
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
-import QDSpy_global as glo
-import Libraries.log_helper as _log
-import Graphics.renderer_opengl as rdr
-import QDSpy_file_support as fsu
+import qds.QDSpy_global as glo
+import qds.libraries.log_helper as _log
+import qds.graphics.renderer_opengl as rdr
+import qds.QDSpy_file_support as fsu
 
 # ---------------------------------------------------------------------
 # Adjust global parameters depending on command line arguments

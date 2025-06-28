@@ -14,13 +14,13 @@ __author__ 	= "code@eulerlab.de"
 from   PyQt6 import QtGui, QtCore, uic
 from   PyQt6.QtCore import QTimer
 from   PyQt6.QtWidgets import QDialog
-import QDSpy_core_support as csp
+import qds.QDSpy_core_support as csp
 
 if csp.module_exists("cv2"):
-  import Devices.camera as cam
+  import qds.devices.camera as cam
   
 # ---------------------------------------------------------------------
-form_class       = uic.loadUiType("QDSpy_GUI_cam.ui")[0]
+form_class       = uic.loadUiType("qds/QDSpy_GUI_cam.ui")[0]
 grab_interval_ms = 50
 
 # ---------------------------------------------------------------------

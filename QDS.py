@@ -27,12 +27,11 @@ import sys
 import inspect
 import platform
 from pathlib import Path
-import QDSpy_file_support as fsu
-import QDSpy_global as glo
-import QDSpy_stim as stm
-import QDSpy_config as cfg
-import Libraries.log_helper as _log
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+import qds.QDSpy_file_support as fsu
+import qds.QDSpy_global as glo
+import qds.QDSpy_stim as stm
+import qds.QDSpy_config as cfg
+import qds.libraries.log_helper as _log
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:

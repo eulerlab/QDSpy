@@ -27,7 +27,7 @@ from typing import List, Any
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
-    import Devices.hid as hid
+    import qds.devices.hid as hid
 else:
     import hid  # type: ignore
 

@@ -16,10 +16,10 @@ All rights reserved.
 __author__ = "code@eulerlab.de"
 
 import os
-import QDSpy_global as glo
-import QDSpy_file_support as fsu
-import Libraries.log_helper as _log
-from Graphics.shader_opengl import Shader
+import qds.QDSpy_global as glo
+import qds.QDSpy_file_support as fsu
+import qds.libraries.log_helper as _log
+from qds.graphics.shader_opengl import Shader
 
 # ---------------------------------------------------------------------
 class ShaderFileCmd:

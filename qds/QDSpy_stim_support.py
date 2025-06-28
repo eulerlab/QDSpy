@@ -29,7 +29,7 @@ All rights reserved.
 __author__ = "code@eulerlab.de"
 
 import numpy as np
-import QDSpy_stim as stm
+import qds.QDSpy_stim as stm
 
 # ---------------------------------------------------------------------
 def rotateTranslate(_coords, _rot_deg, _posxy):

@@ -14,10 +14,10 @@ All rights reserved.
 __author__ = "code@eulerlab.de"
 
 import numpy as np
-import QDSpy_stim as stm
-import QDSpy_file_support as fsp
-import QDSpy_stim_support as spp
-import Graphics.renderer_opengl as rdr
+import qds.QDSpy_stim as stm
+import qds.QDSpy_file_support as fsp
+import qds.QDSpy_stim_support as spp
+import qds.graphics.renderer_opengl as rdr
 
 
 # ---------------------------------------------------------------------

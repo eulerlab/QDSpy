@@ -140,7 +140,9 @@ class Renderer:
     def get_screen_depth(self, _iScr) -> list:
         if _iScr >= 0 and _iScr < len(self.Screens):
             mode = self.Screens[_iScr].get_mode()
+            '''
             print("_iScr", _iScr, "mode", mode)
+            '''
             if mode:
                 return mode.depth
         return 0
@@ -149,7 +151,9 @@ class Renderer:
     def get_screen_refresh(self, _iScr) -> float:
         if _iScr >= 0 and _iScr < len(self.Screens):
             mode = self.Screens[_iScr].get_mode()
+            '''
             print("_iScr", _iScr, "mode", mode)
+            '''
             if mode:
                 return mode.rate
         return 0    

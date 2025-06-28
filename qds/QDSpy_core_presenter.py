@@ -24,21 +24,21 @@ import pickle
 import platform
 import numpy as np
 import PIL
-import QDSpy_global as glo
-import QDSpy_stim as stm
-import QDSpy_stim_movie as mov
-import QDSpy_stim_video as vid
-import QDSpy_stim_draw as drw
-import QDSpy_core_support as csp
-import QDSpy_file_support as fsu
-import QDSpy_core_shader as csh
-from Libraries.log_helper import Log
-import Libraries.multiprocess_helper as mpr
-import Devices.digital_io as dio
+import qds.QDSpy_global as glo
+import qds.QDSpy_stim as stm
+import qds.QDSpy_stim_movie as mov
+import qds.QDSpy_stim_video as vid
+import qds.QDSpy_stim_draw as drw
+import qds.QDSpy_core_support as csp
+import qds.QDSpy_file_support as fsu
+import qds.QDSpy_core_shader as csh
+from qds.libraries.log_helper import Log
+import qds.libraries.multiprocess_helper as mpr
+import qds.devices.digital_io as dio
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
-    from Graphics.sounds import Sounds, SoundPlayer
+    from qds.graphics.sounds import Sounds, SoundPlayer
 
 global Clock
 Clock = csp.defaultClock

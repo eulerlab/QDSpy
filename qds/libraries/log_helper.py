@@ -22,8 +22,8 @@ __author__ = "code@eulerlab.de"
 import sys
 import datetime
 from colorama import Fore, Style
-import Libraries.multiprocess_helper as mpr
-import QDSpy_global as glo
+import qds.libraries.multiprocess_helper as mpr
+import qds.QDSpy_global as glo
 
 # ---------------------------------------------------------------------
 Msg_Prior_DEBUG = -1

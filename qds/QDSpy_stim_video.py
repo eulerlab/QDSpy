@@ -22,16 +22,13 @@ __author__ = "code@eulerlab.de"
 
 import os
 import platform
-import QDSpy_stim as stm
-import QDSpy_global as glo
-import QDSpy_file_support as fsu
-import Libraries.log_helper as _log
+import qds.QDSpy_stim as stm
+import qds.QDSpy_global as glo
+import qds.QDSpy_file_support as fsu
+import qds.libraries.log_helper as _log
 import numpy as np
-'''
-import moviepy.editor as mpe
-'''
 from moviepy import VideoFileClip
-import Graphics.renderer_opengl as rdr
+import qds.graphics.renderer_opengl as rdr
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 

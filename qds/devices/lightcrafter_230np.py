@@ -19,9 +19,9 @@ from enum import Enum
 from typing import List, Any
 from types import FunctionType
 import numpy as np # type: ignore
-import Devices.api.dlpc343x_xpr4 as dlp
-import Devices.api.dlpc343x_xpr4_evm as dlp_evm
-import Libraries.i2c as i2c
+import qds.devices.api.dlpc343x_xpr4 as dlp
+import qds.devices.api.dlpc343x_xpr4_evm as dlp_evm
+import qds.libraries.i2c as i2c
 
 '''
 python_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

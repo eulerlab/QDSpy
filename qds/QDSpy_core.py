@@ -31,18 +31,18 @@ import platform
 import subprocess
 import pickle
 from multiprocessing import freeze_support
-import QDSpy_global as glo
-import QDSpy_stim as stm
-import QDSpy_config as cfg
-import QDSpy_core_presenter as cpr
-import QDSpy_core_view as cvw
-import QDSpy_core_support as csp
-import Libraries.multiprocess_helper as mpr
-from Libraries.log_helper import Log
-import QDSpy_gamma as gma
-import QDSpy_probeCenter as pce
-import Devices.digital_io as dio
-from QDSpy_stage import Stage, ScrDevType
+import qds.QDSpy_global as glo
+import qds.QDSpy_stim as stm
+import qds.QDSpy_config as cfg
+import qds.QDSpy_core_presenter as cpr
+import qds.QDSpy_core_view as cvw
+import qds.QDSpy_core_support as csp
+import qds.libraries.multiprocess_helper as mpr
+from qds.libraries.log_helper import Log
+import qds.QDSpy_gamma as gma
+import qds.QDSpy_probeCenter as pce
+import qds.devices.digital_io as dio
+from qds.QDSpy_stage import Stage, ScrDevType
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
@@ -51,9 +51,9 @@ if PLATFORM_WINDOWS:
 if glo.QDSpy_use_Lightcrafter:
     dev = Stage.getLCrDeviceType(0)
     if dev == ScrDevType.DLPLCR4500:
-        import Devices.lightcrafter_4500 as lcr
+        import qds.devices.lightcrafter_4500 as lcr
     elif dev == ScrDevType.DLPLCR230NP:
-        import Devices.lightcrafter_230np as lcr
+        import qds.devices.lightcrafter_230np as lcr
 
 # ---------------------------------------------------------------------
 # Convenience functions

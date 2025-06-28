@@ -16,8 +16,8 @@ import platform
 from types import FunctionType
 from enum import Enum
 import paho.mqtt.client as mqtt
-from Libraries.log_helper import Log
-import Libraries.mqtt_globals as mgl
+from qds.libraries.log_helper import Log
+import qds.libraries.mqtt_globals as mgl
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:
