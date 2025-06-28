@@ -23,11 +23,13 @@ All rights reserved.
 2024-08-04 - Helper functions for `QDSpy_stim_movie.py` added to remove
              direct calls to `pyglet`  in that module    
 2025-04-03 - Added the option to apply a "distortion" fragment shader 
-             to the whole stimulus                    
+             to the whole stimulus     
+2025-06-01 - Catch error generating 3D texture in RPi5 (image size?)                            
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
+import sys
 import ctypes
 import platform
 import pyglet
@@ -41,7 +43,7 @@ PYGLET_VER = float(pyglet.version[0:3])
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
-    from win32api import SetCursorPos
+    from win32api import SetCursorPos # type: ignore
 
 # ---------------------------------------------------------------------
 timing_implementation_str = "vsync-based (pyglet calls)"
@@ -53,6 +55,14 @@ VERT_COUNT = 3
 
 MODE_TRIANGLE = GL.GL_TRIANGLES
 MODE_POLYGON = GL.GL_POLYGON
+
+# ---------------------------------------------------------------------
+class RendererException(Exception):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return self.value
 
 # =====================================================================
 # Renderer class
@@ -128,19 +138,21 @@ class Renderer:
 
 
     def get_screen_depth(self, _iScr) -> list:
-        if _iScr < 0 or _iScr >= len(self.Screens):
-            return 0
-        else:
+        if _iScr >= 0 and _iScr < len(self.Screens):
             mode = self.Screens[_iScr].get_mode()
-            return mode.depth
+            print("_iScr", _iScr, "mode", mode)
+            if mode:
+                return mode.depth
+        return 0
 
 
     def get_screen_refresh(self, _iScr) -> float:
-        if _iScr < 0 or _iScr >= len(self.Screens):
-            return 0
-        else:
+        if _iScr >= 0 and _iScr < len(self.Screens):
             mode = self.Screens[_iScr].get_mode()
-            return mode.rate
+            print("_iScr", _iScr, "mode", mode)
+            if mode:
+                return mode.rate
+        return 0    
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def force_vSync(self) -> int:
@@ -183,16 +195,18 @@ class Renderer:
             GL.glDisable(GL.GL_DEPTH_TEST)
             GL.glEnable(GL.GL_BLEND)
             GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
-            """
+            
+            '''
             GL.glTexParameteri(
-                GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR
+                GL.GL_TEXTURE_3D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR
             )
             GL.glTexParameteri(
-                GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR
+                GL.GL_TEXTURE_3D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR
             )
-            GL.glShadeModel(GL_FLAT) # GL_FLAT or GL_SMOOTH
-            GL.glEnable(GL_POINT_SMOOTH)
-            """
+            GL.glShadeModel(GL.GL_FLAT) # GL_FLAT or GL_SMOOTH
+            GL.glEnable(GL.GL_POINT_SMOOTH)
+            '''
+
             return self.winList[-1]
         else:
             return None
@@ -1066,7 +1080,12 @@ def getImageGrid(img, nx, ny):
 
 def getTextureSequence(img, use_3d=False):
     if use_3d:
-        return pyglet.image.Texture3D.create_for_image_grid(img)
+        try:
+            return pyglet.image.Texture3D.create_for_image_grid(img)
+        except pyglet.gl.lib.GLException:
+            raise RendererException(
+                "`getTextureSequence`: image too large for Texture3D?"
+            )
     else:
         return img.get_texture_sequence()
 

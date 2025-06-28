@@ -7,7 +7,7 @@ QDS.Initialize("RGC_BG_3s", "'B/G' in fingerprinting stimulus set")
 
 # Define global stimulus parameters
 #
-p = {"nTrials"         : 3, 
+p = {"nTrials"         : 30, 
      "dxStim_um"       : 1000,   # Stimulus size
      "durFr_s"         : 1/60.0, # Frame duration
      "nFrPerMarker"    : 3,

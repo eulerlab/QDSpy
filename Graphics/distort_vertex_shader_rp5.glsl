@@ -1,4 +1,5 @@
 #version 310 es
+#extension GL_ARB_compatibility : enable
 
 void main() {
     gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;

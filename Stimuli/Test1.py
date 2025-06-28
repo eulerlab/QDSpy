@@ -12,7 +12,7 @@ print("---")
 dev     = LCr.Lightcrafter()
 result  = dev.connect()
 if result[0] == LCr.ERROR.OK:
-  dev.getHardwareStatus()
+  dev.getHardwareStatus()  
   dev.getSystemStatus()
   dev.getMainStatus()
   dev.getVideoSignalDetectStatus()

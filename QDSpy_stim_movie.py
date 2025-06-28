@@ -36,7 +36,7 @@ PLATFORM_WINDOWS = platform.system() == "Windows"
 # Movie object class
 # ---------------------------------------------------------------------
 class Movie:
-    def __init__(self, _Config):
+    def __init__(self, _Config :object):
         """ Initializing
         """
         self.isReady = False
@@ -54,7 +54,7 @@ class Movie:
         self.use3DTex = _Config.use3DTextures
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def __loadMontage(self):
+    def __loadMontage(self) -> object:
         """ Check if image montage and description files exist ...
         """
         # *****************
@@ -119,8 +119,12 @@ class Movie:
             pass
 
         # Create a 3D texture (basically an image sequence) from the montage
-        tmpSeq = rdr.getImageGrid(self.img, self.nFrY, self.nFrX)
-        self.imgSeq = rdr.getTextureSequence(tmpSeq, use_3d=self.use3DTex)
+        try:
+            tmpSeq = rdr.getImageGrid(self.img, self.nFrY, self.nFrX)
+            self.imgSeq = rdr.getTextureSequence(tmpSeq, use_3d=self.use3DTex)
+        except rdr.RendererException as ev:
+            raise stm.StimException(stm.StimErrC.RendererError, ev)
+
         # *****************
         # *****************
         # TODO: Texture3D is supposed to be faster but I could not get rid of
@@ -142,7 +146,7 @@ class Movie:
         return stm.StimErrC.ok
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def load(self, _fName, _testOnly=False):
+    def load(self, _fName, _testOnly=False) -> object:
         """ Reads an image file (a montage of frames) and the 
             description file (same name but .txt extension)
             Returns an error of the QDSpy_stim.StimErrC class
@@ -162,7 +166,10 @@ class Movie:
 # Movie control class object
 # ---------------------------------------------------------------------
 class MovieCtrl:
-    def __init__(self, _seq, _ID, _Movie=None, _nFr=0, _order=2):
+    def __init__(
+            self, _seq :list, _ID :int, _Movie :object =None, 
+            _nFr :int =0, _order :int =2
+        ):
         """ Initializing
         """
         self.Movie = _Movie
@@ -200,6 +207,7 @@ class MovieCtrl:
             self.Sprite = rdr.getSprite(
                 self.Movie.imgSeq[0], "dynamic", self.Group
             )
+            self._offsXY = (self.Sprite.width //2, self.Sprite.height //2)
 
         self.isReady = self.check()
 
@@ -213,7 +221,7 @@ class MovieCtrl:
             self.Player = None
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def check(self):
+    def check(self) -> bool:
         """ Returns True if the sequence is valid
         """
         return (
@@ -225,10 +233,16 @@ class MovieCtrl:
         )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def setSpriteProperties(self, _posXY, _magXY, _rot, _trans):
+    def setSpriteProperties(
+            self, _posXY :list, _magXY :list, _rot :float, _trans :int
+        ):
         """ Set sprite properties
         """
-        self.posXY = _posXY
+        if self.Movie.use3DTex:    
+            xy = [-self._offsXY[0] *_magXY[0], -self._offsXY[1] *_magXY[1]]
+            self.posXY = rdr.rotateTranslate(xy, _rot, [0,0])
+        else:    
+            self.posXY = _posXY
         self.magXY = _magXY
         self.rot = _rot
         self.trans = _trans
@@ -240,7 +254,7 @@ class MovieCtrl:
             self.Sprite.opacity = self.trans
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def setSpriteBatch(self, _batch):
+    def setSpriteBatch(self, _batch :object):
         """ Set sprite batch
         """
         if self.Sprite is not None:
@@ -253,7 +267,7 @@ class MovieCtrl:
                 self.Sprite.batch = _batch.BatchSpr
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def getNextFrIndex(self):
+    def getNextFrIndex(self) -> int:
         if self.isDone or not self.isReady:
             return -1
 
@@ -291,7 +305,9 @@ class MovieCtrl:
 
         if self.Sprite is not None:
             if self.Movie.use3DTex:
-                self.Sprite.image = self.Movie.imgSeq.get_image_data(self.iCurrFr)
+                self.Sprite.image = self.Movie.imgSeq.get_image_data(
+                    self.iCurrFr
+                )
             else:
                 self.Sprite.image = self.Movie.imgSeq[self.iCurrFr]
             # *****************

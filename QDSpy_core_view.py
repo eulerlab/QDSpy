@@ -191,9 +191,10 @@ class View:
             pf = fsu.getJoinedPath(fPath, glo.QDSpy_distort_fragment)
         else:
             pv = pf = ""    
+        '''
         print(pv, pf)            
-        #return rdr.Batch(_isScrOvl, _distort_frag=pf, distort_vert=pv)
-        return rdr.Batch(_isScrOvl, _distort_frag="", distort_vert="")
+        '''
+        return rdr.Batch(_isScrOvl, _distort_frag=pf, distort_vert=pv)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setOnKeyboardHandler(self, _onKeybProc):
