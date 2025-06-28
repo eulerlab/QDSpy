@@ -23,7 +23,6 @@ import os
 import time
 import sys
 import platform
-<<<<<<< Updated upstream
 '''
 import QDSpy_checks  # noqa: F401
 '''
@@ -32,14 +31,6 @@ import QDSpy_global as glo
 import QDSpy_stim as stm
 import QDSpy_config as cfg
 import Libraries.log_helper as _log
-=======
-from pathlib import Path
-import qds.QDSpy_file_support as fsu
-import qds.QDSpy_global as glo
-import qds.QDSpy_stim as stm
-import qds.QDSpy_config as cfg
-import qds.libraries.log_helper as _log
->>>>>>> Stashed changes
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
