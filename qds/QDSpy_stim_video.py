@@ -20,6 +20,7 @@ __author__ = "code@eulerlab.de"
 
 import os
 import platform
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream:QDSpy_stim_video.py
 import QDSpy_stim as stm
 import QDSpy_global as glo
@@ -28,6 +29,8 @@ import Libraries.log_helper as _log
 import moviepy.editor as mpe
 import Graphics.renderer_opengl as rdr
 =======
+=======
+>>>>>>> Stashed changes
 import qds.QDSpy_stim as stm
 import qds.QDSpy_global as glo
 import qds.QDSpy_file_support as fsu
@@ -35,7 +38,10 @@ import qds.libraries.log_helper as _log
 import numpy as np
 from moviepy import VideoFileClip
 import qds.graphics.renderer_opengl as rdr
+<<<<<<< Updated upstream
 >>>>>>> Stashed changes:qds/QDSpy_stim_video.py
+=======
+>>>>>>> Stashed changes
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 

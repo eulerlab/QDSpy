@@ -92,8 +92,11 @@ QDSpy_movIsFirstFrBottLeft  = "isFirstFrBottomLeft"
 QDSpy_movAllowedMovieExts   = [".png", ".jpg"]
 
 QDSpy_vidAllowedVideoExts   = [".avi"]
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream:QDSpy_global.py
 =======
+=======
+>>>>>>> Stashed changes
 QDSpy_vid_useIter           = True    # Experimental
 # If False, tries to load videos completely to avoid timing
 # issue with re-iterating the video object ...
