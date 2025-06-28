@@ -1,6 +1,6 @@
 # QDSpy 
 
-__v0.94beta__
+__v0.9.7__
 
 QDSpy is a software for generating and presenting stimuli for visual neuroscience. It is based on QDS, developped in the former Dept. of Biomedical Optics at the MPI for Medical Research in Heidelberg. QDSpy is written in Python, uses OpenGL and primarly targets Windows 7 and above.
 
