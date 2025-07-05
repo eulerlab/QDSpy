@@ -103,7 +103,7 @@ QDSpy_movAllowedMovieExts   = [".png", ".jpg"]
 
 # Video stimulus-related settings
 QDSpy_vidAllowedVideoExts   = [".avi"]
-QDSpy_vid_useIter           = False    # Experimental
+QDSpy_vid_useIter           = True    # Experimental
 # If False, tries to load videos completely to avoid timing
 # issue with re-iterating the video object ...
 

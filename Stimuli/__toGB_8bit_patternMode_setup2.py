@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# Adjusted to new setup #2
+# 2025-07-01 TE
+
 import qds.devices.lightcrafter_4500 as lcr
 import time
 
@@ -40,10 +43,10 @@ dev.setPatternDispLUTAccessControl(lcr.MailboxCmd.OpenPat)
 
 # LUT entry #0 ...
 dev.setPatternDispLUTOffsetPointer(0)
-# Pattern G0-G7, internal trigger, 8 bit, red LED
+# Pattern G0-G7, internal trigger, 8 bit, green LED
 dev.setPatternDispLUTData(lcr.MailboxPat.G76543210,
                           lcr.MailboxTrig.ExternalPos,
-                          8, lcr.MailboxLED.Red)
+                          8, lcr.MailboxLED.Green)
 # LUT entry #1 ...
 dev.setPatternDispLUTOffsetPointer(1)
 # Pattern B0-B7, internal trigger, 8 bit, blue LED, trigger out 1 stays high
