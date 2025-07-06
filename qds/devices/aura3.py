@@ -66,9 +66,9 @@ class Aura3(LightSource):
 
             # Check if the device replies ...
             self.log("", f"Checking at `{port}` ...")
-            self.isReady = self._is_connected()
+            self._isReady = self._is_connected()
 
-            if self.isReady:
+            if self._isReady:
                 # Retrieve channel map
                 self._chanMap = []
                 tmp = self._get_channel_map()
@@ -98,7 +98,7 @@ class Aura3(LightSource):
     def updateChannels(self, log :bool =False, limited :bool =False):
         """ Update the internal representation of the channels
         """
-        if self.isReady:
+        if self._isReady:
             chst = self._get_light_channel_status()
             chon = self._get_light_channel_states()
             chin = self._get_light_channel_intensities()
@@ -126,7 +126,7 @@ class Aura3(LightSource):
     def updateDeviceInfo(self, log :bool =False):
         """ Update the internal representation of the system status
         """
-        if self.isReady:
+        if self._isReady:
             state = self._get_engine_status()
             self._devInfo["status"] = [state, StatusCodes[state]]
             temp = self._get_system_temp()
@@ -431,7 +431,7 @@ class Aura3(LightSource):
         """ Returns a list with the error code and the reply as string
         (which is empty in case of an error) 
         """
-        if not self.isReady:
+        if not self._isReady:
             self.log("ERROR", "Device is not ready")
             return [ErrCodes.NOT_READY, ""] 
 

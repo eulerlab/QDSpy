@@ -34,7 +34,7 @@ class LightSource(object):
                         | log(_sHeader, _sMsg, _logLevel)
         =============== ==================================================
         """
-        self.isReady = False
+        self._isReady = False
         self._funcLog = _funcLog
         self._chanMap = []        
         self._devInfo = {
@@ -55,6 +55,10 @@ class LightSource(object):
         Retrieve channel map with status information as dictionary
         """
         return self._chanMap        
+    
+    @property
+    def isReady(self) -> bool:
+        return self._isReady
 
     # -------------------------------------------------------------------
     # Helper

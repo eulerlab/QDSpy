@@ -13,8 +13,9 @@ All rights reserved.
 
 2025-05-31 - Account for differences in`hid` under Linux
            - Reformatting with `ruff` 
+2025-07-06 - Add the possibility to set an external lightsource using
+             `setLightSource()`          
 """
-
 # ---------------------------------------------------------------------
 __author__ = "thomas.euler@eulerlab.de"
 
@@ -24,6 +25,7 @@ import time
 import numpy as np
 from enum import Enum
 from typing import List, Any
+import qds.devices.lightsource as light
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
@@ -47,7 +49,7 @@ LC_Usage         = 65280
 LC_MaxDataLen    = 64
 LC_Timeout_ms    = 2000
 LC_B1Flags_read  = 0b11000000  # bit7=1 read transaction,
-                              # bit6=1 reply requested
+                               # bit6=1 reply requested
 LC_B1Flags_write = 0b00000000
 LC_firstDataByte = 4
 
@@ -201,7 +203,6 @@ class MailboxLED(Enum):
     Cyan = 0b110
     White = 0b111
 
-
 # ---------------------------------------------------------------------
 # Pattern input bit plane combinations
 # TODO: 25=white, 63=no pattern ??
@@ -273,23 +274,23 @@ class MailboxPat(Enum):
     B7 = 23
     BLACK = 24
 
-
 # ---------------------------------------------------------------------
 # Error codes and messages
-#
+# fmt: off
 class ERROR:
-    OK = 0
-    OPEN_FAILED = -1
-    TIME_OUT = -2
-    NO_RESPONSE = -3
-    NAK_ERROR = -4
-    COULD_NOT_CONNECT = -5
-    INVALID_PARAMS = -6
-    DEVICE_NOT_FOUND = -7
-    NO_DEVICES = -8
-    NOT_IMPLEMENTED = -9
-    MAILBOX_NOT_OPEN = -10
-
+    OK                  = 0
+    OPEN_FAILED         = -1
+    TIME_OUT            = -2
+    NO_RESPONSE         = -3
+    NAK_ERROR           = -4
+    COULD_NOT_CONNECT   = -5
+    INVALID_PARAMS      = -6
+    DEVICE_NOT_FOUND    = -7
+    NO_DEVICES          = -8
+    NOT_IMPLEMENTED     = -9
+    MAILBOX_NOT_OPEN    = -10
+    UNKNOWN_ERROR       = -99
+# fmt: on
 
 ErrorStr = dict([
     (ERROR.OK, "ok"),
@@ -305,7 +306,6 @@ ErrorStr = dict([
     (ERROR.MAILBOX_NOT_OPEN, "Mailbox not open"),
 ])
 
-
 # ---------------------------------------------------------------------
 class LCException(Exception):
     def __init__(self, value):
@@ -313,7 +313,6 @@ class LCException(Exception):
 
     def __str__(self):
         return repr(self.value)
-
 
 # fmt: off
 # ---------------------------------------------------------------------
@@ -406,7 +405,6 @@ class CMD_FORMAT_LIST:
 # ---------------------------------------------------------------------
 LCrDeviceList: List[Any] = []
 
-
 # ---------------------------------------------------------------------
 def enumerateLightcrafters(_funcLog=None) -> list:
     """ 
@@ -428,7 +426,6 @@ def enumerateLightcrafters(_funcLog=None) -> list:
             nLCrFound += 1
     return LCrList
 
-
 # ---------------------------------------------------------------------
 # Class representing a lightcrafter device
 # ---------------------------------------------------------------------
@@ -445,8 +442,10 @@ class Lightcrafter:
     _logLevel       |
     =============== ==================================================
     """
-
-    def __init__(self, _isCheckOnly=False, _funcLog=None, _logLevel=2):
+    def __init__(
+            self, _isCheckOnly :bool =False, _funcLog :object =None, 
+            _logLevel :int =2
+        ):
         global LCrDeviceList
 
         self.LC = None
@@ -457,6 +456,7 @@ class Lightcrafter:
         self.logLevel = _logLevel
         self.devNum = -1
         self.mBoxState = MailboxCmd.Close
+        self.lightSrc = None
         if _isCheckOnly:
             return
 
@@ -537,7 +537,9 @@ class Lightcrafter:
         return [ERROR.OK]
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def waitToConnect(self, _devNum :int =-1, _timeout : float =10.0) -> list:
+    def waitToConnect(
+            self, _devNum :int =-1, _timeout : float =10.0
+        ) -> list:
         """
         Try connecting to a lightcrafter until success or the timeout.
         Returns an error code if it fails. A device number (`_devNum`) can
@@ -573,7 +575,24 @@ class Lightcrafter:
                 self.LC.close()
                 self.LC = None
                 self.log("ok", "Disconnected", 2)
+        return [ERROR.OK]
 
+
+    def setLightSource(self, lsrc :light.LightSource) -> list:
+        """
+        Set the lightsource.
+
+        =============== ==================================================
+        Parameters:
+        =============== ==================================================
+        lsrc            | object of the class LightSource or None for 
+                        | internal LEDs
+        =============== ==================================================
+        """
+        if lsrc and lsrc.isReady:
+            self.lightSrc = lsrc
+        else:
+            self.lightSrc = None    
         return [ERROR.OK]
 
     # -------------------------------------------------------------------
@@ -1113,6 +1132,7 @@ class Lightcrafter:
             self.log("ERROR", LC_logStrMaskErr.format(_s, ErrorStr[errC]), 2)
             raise LCException(errC)
 
+    
     def startPatternSequence(self):
         """
         Starts the programmed pattern sequence.
@@ -1122,6 +1142,7 @@ class Lightcrafter:
         s0 = self.startPatternSequence.__name__
         return self.__patternSequence(s0, PatSeqCmd.Start)
 
+    
     def pausePatternSequence(self):
         """
         Pauses the programmed pattern sequence.
@@ -1130,6 +1151,7 @@ class Lightcrafter:
         s0 = self.pausePatternSequence.__name__
         return self.__patternSequence(s0, PatSeqCmd.Pause)
 
+    
     def stopPatternSequence(self):
         """
         Stop the programmed pattern sequence.
@@ -1140,7 +1162,7 @@ class Lightcrafter:
         return self.__patternSequence(s0, PatSeqCmd.Stop)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def setPatternExpTimeFrPer(self, _pet_us, _frp_us):
+    def setPatternExpTimeFrPer(self, _pet_us :int, _frp_us :int):
         """
         Set Pattern Exposure Time and Frame Period.
 
@@ -1194,7 +1216,9 @@ class Lightcrafter:
             raise LCException(errC)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def setPatternDispLUTControl(self, _nEntr, _repeat, _nPatt, _nImgInd):
+    def setPatternDispLUTControl(
+            self, _nEntr :int, _repeat :int, _nPatt :int, _nImgInd :int
+        ):
         """
         The Pattern Display LUT Control Command controls the execution of
         patterns stored in the lookup table (LUT).
@@ -1252,7 +1276,7 @@ class Lightcrafter:
             raise LCException(errC)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def setPatternDispLUTOffsetPointer(self, _offs):
+    def setPatternDispLUTOffsetPointer(self, _offs :int):
         """
         The Pattern Display LUT offset pointer defines the location of the
         LUT entries in the memory of the DLPC350.
@@ -1328,16 +1352,16 @@ class Lightcrafter:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def setPatternDispLUTData(
-        self,
-        _iImgOrPat,
-        _trigType=MailboxTrig.Internal,
-        _bitDepth=1,
-        _LED=MailboxLED.None_,
-        _invert=False,
-        _blackFill=False,
-        _bufSwap=False,
-        _trigOut1High=False,
-    ):
+            self,
+            _iImgOrPat,
+            _trigType=MailboxTrig.Internal,
+            _bitDepth=1,
+            _LED=MailboxLED.None_,
+            _invert=False,
+            _blackFill=False,
+            _bufSwap=False,
+            _trigOut1High=False,
+        ):
         """
         Define a LUT entry in a pattern display sequence.
 
@@ -1440,66 +1464,66 @@ class Lightcrafter:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     """
-  2.4.3.4.10 Pattern Display Variable Exposure LUT Offset Pointer
-  (I2C: 0x5C)
-  (USB: CMD2: 0x1A, CMD3: 0x3F)
-  The Pattern Display Variable Exposure LUT Offset Pointer defines the location of the Variable Exposure
-  LUT entries in the DLPC350 memory
-  """
+    2.4.3.4.10 Pattern Display Variable Exposure LUT Offset Pointer
+    (I2C: 0x5C)
+    (USB: CMD2: 0x1A, CMD3: 0x3F)
+    The Pattern Display Variable Exposure LUT Offset Pointer defines the location of the Variable Exposure
+    LUT entries in the DLPC350 memory
+    """
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     """
-  2.4.3.4.11 Pattern Display Variable Exposure LUT Control
-  (I2C: 0x5B)
-  (USB: CMD2: 0x1A, CMD3: 0x40)
-  The Pattern Display Variable Exposure LUT Control Command controls the execution of patterns stored in
-  the lookup table. Before executing this command, stop the current pattern sequence. After executing this
-  command, send the Validation command (I2C: 0x7D or USB: 0x1A1A) once before starting the pattern
-  sequence.
-  """
+    2.4.3.4.11 Pattern Display Variable Exposure LUT Control
+    (I2C: 0x5B)
+    (USB: CMD2: 0x1A, CMD3: 0x40)
+    The Pattern Display Variable Exposure LUT Control Command controls the execution of patterns stored in
+    the lookup table. Before executing this command, stop the current pattern sequence. After executing this
+    command, send the Validation command (I2C: 0x7D or USB: 0x1A1A) once before starting the pattern
+    sequence.
+    """
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     """
-  2.4.3.4.12 Pattern Display Variable Exposure LUT Data
-  (I2C: 0x5D)
-  (USB: CMD2: 0x1A, CMD3: 0x3E)
-  The following parameters: Display Pattern mode, Display Data Input Source, Variable Exposure
-  Trigger mode, Variable Exposure Access Control, Variable Exposure LUT Control, and Variable
-  Exposure Offset Pointer Control must be set-up before sending any mailbox data. For each LUT
-  entry that is sent, the Variable Exposure Offset Pointer must be incremented. See Figure 2-12 for
-  an example of sending a Variable Exposure Pattern Sequence. If the Pattern Display Data Input
-  Source is set to streaming, the image indexes do not need to be set. Regardless of the input source,
-  the pattern definition must be set.
-  If the mailbox was opened to define the flash image indexes, list the index numbers in the mailbox. For
-  example, if image indexes 0 through 3 are desired, write 0x0 0x1 0x2 0x3 to the mailbox. Similarly, if the
-  desired image index sequence is 0, 1, 2, 1, then write 0x0 0x1 0x2 0x1 to the mailbox.
-  """
+    2.4.3.4.12 Pattern Display Variable Exposure LUT Data
+    (I2C: 0x5D)
+    (USB: CMD2: 0x1A, CMD3: 0x3E)
+    The following parameters: Display Pattern mode, Display Data Input Source, Variable Exposure
+    Trigger mode, Variable Exposure Access Control, Variable Exposure LUT Control, and Variable
+    Exposure Offset Pointer Control must be set-up before sending any mailbox data. For each LUT
+    entry that is sent, the Variable Exposure Offset Pointer must be incremented. See Figure 2-12 for
+    an example of sending a Variable Exposure Pattern Sequence. If the Pattern Display Data Input
+    Source is set to streaming, the image indexes do not need to be set. Regardless of the input source,
+    the pattern definition must be set.
+    If the mailbox was opened to define the flash image indexes, list the index numbers in the mailbox. For
+    example, if image indexes 0 through 3 are desired, write 0x0 0x1 0x2 0x3 to the mailbox. Similarly, if the
+    desired image index sequence is 0, 1, 2, 1, then write 0x0 0x1 0x2 0x1 to the mailbox.
+    """
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     '''
-  def setVideoGamma(self, _mode, _enabled):
-    """ TODO - To be implemented
-    """
-    if not(_mode in range(0,4)):
-      return [ERROR.INVALID_PARAMS]
+    def setVideoGamma(self, _mode, _enabled):
+        """ TODO - To be implemented
+        """
+        if not(_mode in range(0,4)):
+            return [ERROR.INVALID_PARAMS]
 
-    if self.isCheckOnly:
-      return [ERROR.OK]
+        if self.isCheckOnly:
+            return [ERROR.OK]
 
-    self.log(" ", "setVideoGamma", 2)
-    data  = (_mode & (_enabled << 7))
-    #data = abs(data -255)
-    res   = self.writeData(CMD_FORMAT_LIST.GAMMA_CTL, [data])
-    if res[0] == ERROR.OK:
-      return [ERROR.OK]
-    else:
-      raise LCException(res[0])
-  '''
+        self.log(" ", "setVideoGamma", 2)
+        data  = (_mode & (_enabled << 7))
+        #data = abs(data -255)
+        res   = self.writeData(CMD_FORMAT_LIST.GAMMA_CTL, [data])
+        if res[0] == ERROR.OK:
+            return [ERROR.OK]
+        else:
+            raise LCException(res[0])
+      '''
 
     # -------------------------------------------------------------------
     # Internal test pattern-related
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def setTestPattern(self, _pattern):
+    def setTestPattern(self, _pattern) -> list:
         """
         Set test pattern (video mode).
 
@@ -1541,7 +1565,7 @@ class Lightcrafter:
     # -------------------------------------------------------------------
     # LED-related
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def getLEDCurrents(self):
+    def getLEDCurrents(self) -> list:
         """
         Get LED currents and returns these as list [code, [r,g,b]] with:
 
@@ -1549,7 +1573,7 @@ class Lightcrafter:
         Result:
         =============== ==================================================
         code            | 0=ok or error code
-        [r,g,b]         | LED currents as PWM, 0..255
+        [r,g,b]         | LED currents as value between 0..255
         =============== ==================================================
         """
         errC = ERROR.OK
@@ -1557,14 +1581,27 @@ class Lightcrafter:
         rgb = [-1] * 3
 
         if not self.isCheckOnly:
-            res = self.readData(CMD_FORMAT_LIST.LED_CURRENT)
-            errC = res[0]
-            if errC == ERROR.OK:
-                rgb = 255 - np.array(res[1][LC_firstDataByte : LC_firstDataByte + 3])
+            if not self.lightSrc:
+                # Internal LEDs
+                res = self.readData(CMD_FORMAT_LIST.LED_CURRENT)
+                errC = res[0]
+                if errC == ERROR.OK:
+                    rgb = 255 - np.array(res[1][LC_firstDataByte : LC_firstDataByte + 3])
+            else:
+                # External light source
+                map = self.lightSrc.channelMap()
+                for i in range(len(map)):
+                    v = map[i]["inten_percent"] /100 *255
+                    # "pow_level"
+                    # "pow_estim_mW"
+                    if i < 3:
+                        rgb[i] = int(min(255, max(0, v)))
 
         if errC == ERROR.OK:
             self.log(
-                " ", (LC_logStrMaskL + "RGB currents {1}").format(s0, rgb.__str__()), 2
+                " ", 
+                (LC_logStrMaskL + "RGB currents {1}")
+                .format(s0, rgb.__str__()), 2
             )
             return [errC, rgb]
         else:
@@ -1572,29 +1609,42 @@ class Lightcrafter:
             raise LCException(errC)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def setLEDCurrents(self, _rgb):
+    def setLEDCurrents(self, _rgb) -> list:
         """
         Set LED currents.
 
         =============== ==================================================
         Parameters:
         =============== ==================================================
-        _rgb            | [r,g,b] with LED currents as PWM, 0..255
+        _rgb            | [r,g,b] with LED currents as values in the 
+                        | range 0..255
         =============== ==================================================
         """
         errC = ERROR.OK
         s0 = self.setLEDCurrents.__name__
 
         if not self.isCheckOnly:
-            newRGB = abs(np.clip(_rgb, 0, 255) - 255).tolist()
-            res = self.writeData(CMD_FORMAT_LIST.LED_CURRENT, newRGB)
-            errC = res[0]
+            newRGB = np.clip(_rgb, 0, 255)
+            if not self.lightSrc:
+                # Internal LEDs            
+                newRGB = abs(newRGB - 255).tolist()
+                res = self.writeData(CMD_FORMAT_LIST.LED_CURRENT, newRGB)
+                errC = res[0]
+            else:
+                # External light source
+                # (expects intensities in percent as float)
+                newRGB = (newRGB /255 *100).tolist()
+                res = self.lightSrc.setChannels(intens=newRGB)
+                if res == light.ErrCodes.PARAMS_INVALID:
+                    errC = ERROR.INVALID_PARAMS
+                elif not res == light.ErrCodes.OK:
+                    errC = ERROR.UNKNOWN_ERROR
 
         if errC == ERROR.OK:
             self.log(
                 " ",
-                (LC_logStrMaskL + "new RGB currents {1}").format(s0, _rgb.__str__()),
-                2,
+                (LC_logStrMaskL + "new RGB currents {1}")
+                .format(s0, _rgb.__str__()), 2,
             )
             return [errC]
         else:
@@ -1602,7 +1652,7 @@ class Lightcrafter:
             raise LCException(errC)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def getLEDEnabled(self):
+    def getLEDEnabled(self) -> list:
         """
         Returns state of LED pins (enabled/disabled) and if the sequence
         controls these pins as list [code, [isR,isG,isB], isSeqCtrl]]
@@ -1623,6 +1673,9 @@ class Lightcrafter:
         res2 = 0
 
         if not self.isCheckOnly:
+            # For both internal and external LEDs, as the status of the 
+            # LCr control is relevant the and status of the lightsource
+            # just follows (see `setLEDEnabled`)
             res = self.readData(CMD_FORMAT_LIST.LED_ENABLE)
             errC = res[0]
             if errC == ERROR.OK:
@@ -1650,7 +1703,7 @@ class Lightcrafter:
             raise LCException(errC)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def setLEDEnabled(self, _rgb, _enableSeqCtrl):
+    def setLEDEnabled(self, _rgb :list, _enableSeqCtrl :bool) -> list:
         """
         Enable or disable LEDs or allow sequencer to control LED pins
 
@@ -1666,9 +1719,18 @@ class Lightcrafter:
         s0 = self.setLEDEnabled.__name__
 
         if not self.isCheckOnly:
+            # Internal LEDs            
             data = _rgb[0] | (_rgb[1] << 1) | (_rgb[2] << 2) | (_enableSeqCtrl << 3)
             res = self.writeData(CMD_FORMAT_LIST.LED_ENABLE, [data])
             errC = res[0]
+
+            if self.lightSrc:
+                # External light source mirror the state of the LCr
+                res = self.lightSrc.setChannels(states=_rgb)
+                if res == light.ErrCodes.PARAMS_INVALID:
+                    errC = ERROR.INVALID_PARAMS
+                elif not res == light.ErrCodes.OK:
+                    errC = ERROR.UNKNOWN_ERROR
 
         if errC == ERROR.OK:
             self.log(

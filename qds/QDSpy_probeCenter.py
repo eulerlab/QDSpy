@@ -102,6 +102,7 @@ def probe_main(data, _Sync, _View, _Stage):
     """
     firstClick = True # First click is to focus the window, without ending the probe
     """
+    '''
     event_loop = pyglet.app.EventLoop()
 
     xScale = _Stage.scalX_umPerPix * _Stage.winXCorrFact * Win.scale
@@ -170,6 +171,6 @@ def probe_main(data, _Sync, _View, _Stage):
     pyglet.clock.schedule_interval(probe.invertContrast, data[3])
     Win.set_mouse_visible(True)
     event_loop.run()
-
+    '''
 
 # ---------------------------------------------------------------------

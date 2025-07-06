@@ -171,14 +171,14 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
         glo.QDSpy_versionStr + " Presenter - " + glo.QDSpy_copyrightStr
     )
     Log.write("ok", "Initializing ...")
-    s = 'ENABLED' if _Conf.incPP else 'disabled'
+    s = 'ENABLED' if _Conf.incPP else 'DISABLED'
     Log.write(" ", f"{s:11}: high process priority during presentation")
-    s = 'DISABLED' if _Conf.disGC else 'enabled'
+    s = 'DISABLED' if _Conf.disGC else 'ENABLED'
     Log.write(" ", f"{s:11}: automatic garbage collection")
 
     # Log info about the relevant software packages
     v = sys.version_info
-    txt = f"{v[0]}.{v[2]}.{v[2]}"
+    txt = f"{v[0]}.{v[1]}.{v[2]}"
     Log.write("INFO", f"{'Python':11}: v{txt}")
     if PLATFORM_WINDOWS:
         if find_executable("conda") is not None:

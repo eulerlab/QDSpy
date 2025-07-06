@@ -31,6 +31,8 @@ QDSpy_isGUIQuitWithDialog   = False
 QDSpy_workerMsgsToStdOut    = True
 QDSpy_noStimArg             = False
 QDSpy_loop_sleep_s          = 0.01
+QDSpy_isDebugPyQT           = False  # Patch
+# Suppresses PyQT warning with `pyglet>1.5.5`
 
 # Sounds
 QDSpy_isUseSound            = True

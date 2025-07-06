@@ -28,6 +28,8 @@ All rights reserved.
 __author__ = "code@eulerlab.de"
 
 import os
+os.environ["QT_LOGGING_RULES"] = "*.debug=false;qt.qpa.*=false"
+
 import sys
 import time
 import pickle
@@ -46,6 +48,7 @@ import qds.QDSpy_config as cfg
 import qds.QDSpy_file_support as fsu
 from qds.QDSpy_GUI_cam import CamWinClass
 import qds.libraries.multiprocess_helper as mpr
+import qds.libraries.context_helper as ctx  
 import qds.QDSpy_stage as stg
 import qds.QDSpy_global as glo
 import qds.QDSpy_core  
@@ -272,26 +275,7 @@ class MainWinClass(QMainWindow, form_class):
 
         # Create status objects and a pipe for communicating with the
         # presentation process (see below)
-        self.logWrite("DEBUG", "Creating sync object ...")
-        self.state = State.undefined
-        self.Sync = mpr.Sync()
-        Log.setGUISync(self.Sync, noStdOut=self.noMsgToStdOut)
-        self.logWrite("DEBUG", "... done")
-
-        # Create process that opens a view (an OpenGL window) and waits for
-        # instructions to play stimuli
-        self.logWrite("DEBUG", "Creating worker thread ...")
-        self.worker = Process(
-            target=qds.QDSpy_core.main, args=(self.currStimFName, True, self.Sync)
-        )
-        self.logWrite("DEBUG", "... done")
-        self.worker.daemon = True
-        self.logWrite("DEBUG", "Starting worker thread ...")
-        self.worker.start()
-        self.logWrite("DEBUG", "... done")
-
-        self.isViewReady = True
-        self.setState(State.idle, True)
+        self._createWorkers()
 
         # Update GUI ...
         self.updateStimList()
@@ -389,6 +373,32 @@ class MainWinClass(QMainWindow, form_class):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def __del__(self):
         pass
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def _createWorkers(self):    
+        """ Helper to create status objects and a pipe for communicating 
+            with the presentation process
+        """    
+        self.logWrite("DEBUG", "Creating sync object ...")
+        self.state = State.undefined
+        self.Sync = mpr.Sync()
+        Log.setGUISync(self.Sync, noStdOut=self.noMsgToStdOut)
+        self.logWrite("DEBUG", "... done")
+
+        # Create process that opens a view (an OpenGL window) and waits for
+        # instructions to play stimuli
+        self.logWrite("DEBUG", "Creating worker thread ...")
+        self.worker = Process(
+            target=qds.QDSpy_core.main, args=(self.currStimFName, True, self.Sync)
+        )
+        self.logWrite("DEBUG", "... done")
+        self.worker.daemon = True
+        self.logWrite("DEBUG", "Starting worker thread ...")
+        self.worker.start()
+        self.logWrite("DEBUG", "... done")
+
+        self.isViewReady = True
+        self.setState(State.idle, True)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def keyPressEvent(self, e):
@@ -1385,7 +1395,12 @@ class MainWinClass(QMainWindow, form_class):
 if __name__ == "__main__":
     try:
         # Create GUI
-        QDSApp = QApplication(sys.argv)
+        if glo.QDSpy_isDebugPyQT:
+            QDSApp = QApplication(sys.argv)
+        else:    
+            with ctx.suppress_stderr():
+                QDSApp = QApplication(sys.argv)
+
         QDSApp.setStyle("Fusion")
         QDSWin = MainWinClass(None)
 
