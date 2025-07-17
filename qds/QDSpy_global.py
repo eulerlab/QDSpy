@@ -152,7 +152,7 @@ QDSpy_pathDistortShader     = getCompletePath(QDSpy_codePath +"/graphics")
 QDSpy_distort_vertex        = "distort_vertex_shader.glsl"
 QDSpy_distort_fragment      = "distort_barrel.frag"
 '''
-QDSpy_distort_vertex        = "distort_vertex_shader.glsl"
+QDSpy_distort_vertex        = "distort_vertex_shader_rp5.glsl"
 QDSpy_distort_fragment      = "distort_barrel_rp5.frag"
 '''
 

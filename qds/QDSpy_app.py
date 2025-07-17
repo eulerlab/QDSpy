@@ -172,7 +172,7 @@ class QDSpyApp(object):
 
             if not isAutoRunExists or not self.isStimCurr:
                 # Use default file as no compiled auto-run file is present
-                self.currStimFName = os.path.join(self.currQDSPath, sd)
+                self.currStimFName = os.path.join(self.currQDSPath, glo.QDSpy_codePath, sd)
                 self.logWrite(
                     "ERROR", 
                     f"No compiled `{sf}` in current stimulus folder"

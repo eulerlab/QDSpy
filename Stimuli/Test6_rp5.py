@@ -48,8 +48,8 @@ for iX in range(p['nCols']):
     y = (iY+0.5 -p['nRows']/2.0)*boxDy*border
     ObjPosList.append((x,y))
 
-#QDS.DefShader(1, "SQUARE_WAVE_GRATING_MIX_RP5")
-QDS.DefShader(1, "SINE_WAVE_GRATING_MIX_RP5") 
+QDS.DefShader(1, "SQUARE_WAVE_GRATING_MIX_RP5")
+#QDS.DefShader(1, "SINE_WAVE_GRATING_MIX_RP5") 
 
 perLen_um = 30.0
 perDur_s = 0.5
