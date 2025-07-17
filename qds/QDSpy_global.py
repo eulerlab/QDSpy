@@ -89,7 +89,7 @@ QDSpy_cPickleProtocol       = 3
 QDSpy_cPickleFileExt        = ".pickle"
 QDSpy_fileVersionID         = 8
 QDSpy_stimFileExt           = ".py"
-QDSpy_pathStimuli           = getCompletePath("stimuli")
+QDSpy_pathStimuli           = getCompletePath("Stimuli")
 QDSpy_autorunStimFileName   = "__autorun"
 QDSpy_autorunDefFileName    = "__autorun_default_DO_NOT_DELETE"
 
@@ -147,7 +147,8 @@ QDSpy_PV_rate_s             = 1.0
 QDSpy_PV_startCh            = ">"
 
 # Distortion shader
-QDSpy_useDistort            = False
+QDSpy_useDistort            = True
+QDSpy_pathDistortShader     = getCompletePath(QDSpy_codePath +"/graphics")
 QDSpy_distort_vertex        = "distort_vertex_shader.glsl"
 QDSpy_distort_fragment      = "distort_barrel.frag"
 '''

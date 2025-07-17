@@ -37,7 +37,7 @@ QDS.DefObj_EllipseEx(1002, dxBox /5, dyBox /5)
 BoxIndList = []
 BoxPosList = []
 BoxMagList = []
-BoxRotList = []
+BoxRotList = [] 
 BoxColList = []
 BoxAlpList = []
 

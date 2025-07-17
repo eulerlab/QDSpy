@@ -186,7 +186,7 @@ class View:
         """ Create a Batch object 
         """
         if glo.QDSpy_useDistort:
-            fPath = fsu.getJoinedPath(fsu.getCurrentPath(), "Graphics")
+            fPath = glo.QDSpy_pathDistortShader
             pv = fsu.getJoinedPath(fPath, glo.QDSpy_distort_vertex)
             pf = fsu.getJoinedPath(fPath, glo.QDSpy_distort_fragment)
         else:

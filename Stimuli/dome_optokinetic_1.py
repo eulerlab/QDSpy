@@ -47,7 +47,7 @@ for iT in range(p["nTrials"]):
     random.shuffle(allConds)
     p["trials"] += allConds
 
-# Log parameters
+# Log parameters 
 QDS.LogUserParameters(p)
 
 # ---------------------------------------------------------------------
@@ -64,7 +64,7 @@ QDS.SetObjColorEx([BKG_ID], [bkgCol], [255])
 
 # Define shader
 SHA_ID = 1
-QDS.DefShader(SHA_ID, "SQUARE_WAVE_GRATING_MIX4")
+QDS.DefShader(SHA_ID, "SQUARE_WAVE_GRATING_MIX4") 
 
 # Link shader to object
 QDS.SetObjShader([GRA_ID], [SHA_ID])
