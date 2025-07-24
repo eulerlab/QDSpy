@@ -24,8 +24,9 @@ import qds.libraries.mqtt_client as mqtt
 import qds.libraries.mqtt_globals as mgl
 '''
 import qds.devices.lightcrafter_230np as _lcr
-'''
 import qds.devices.lightcrafter_4500 as _lcr
+'''
+import qds.devices.lightcrafter_4710 as _lcr
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if not PLATFORM_WINDOWS:

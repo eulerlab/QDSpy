@@ -42,7 +42,7 @@ import struct
 from enum import Enum
 import sys
 import os.path
-from Devices.api.packer import *
+import qds.devices.api.packer as pkr  
 
 python_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(python_dir)
@@ -358,20 +358,20 @@ def WriteSourceSelect(Source,  ExternalCalibrationEnable):
     Summary.Command = "Write Source Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0
     try:
         writebytes=list(struct.pack('B',5))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(Source.value, 3, 0)
+        ProtocolData.OpcodeLength = 1
+        pkr.packerinit()
+        value = pkr.setbits(Source.value, 3, 0)
         writebytes.extend(list(struct.pack('B',value)))
-        packerinit()
-        value = setbits(ExternalCalibrationEnable.value, 1, 0)
+        pkr.packerinit()
+        value = pkr.setbits(ExternalCalibrationEnable.value, 1, 0)
         writebytes.extend(list(struct.pack('B',value)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -383,17 +383,17 @@ def ReadSourceSelect():
     Summary.Command = "Read Source Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0
     try:
         writebytes=list(struct.pack('B',6))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1
         readbytes = _readcommand(2, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        SourceObj = getbits(4, 0);
+        pkr.packerinit(readdata)
+        SourceObj = pkr.getbits(4, 0)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 1)[0]
-        packerinit(readdata)
-        ExternalCalibrationEnableObj = getbits(1, 0);
+        pkr.packerinit(readdata)
+        ExternalCalibrationEnableObj = pkr.getbits(1, 0)
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -410,16 +410,16 @@ def WriteInputImageSize(PixelsPerLine,  LinesPerFrame):
     Summary.Command = "Write Input Image Size"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0
     try:
         writebytes=list(struct.pack('B',96))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1
         writebytes.extend(list(struct.pack('H',PixelsPerLine)))
         writebytes.extend(list(struct.pack('H',LinesPerFrame)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -431,10 +431,10 @@ def ReadInputImageSize():
     Summary.Command = "Read Input Image Size"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0
     try:
         writebytes=list(struct.pack('B',97))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1
         readbytes = _readcommand(4, writebytes, ProtocolData)
         PixelsPerLine = struct.unpack_from ('H', bytearray(readbytes), 0)[0]
         LinesPerFrame = struct.unpack_from ('H', bytearray(readbytes), 2)[0]
@@ -456,20 +456,20 @@ def WriteParallelVideoControl(
     Summary.Command = "Write Parallel Video Control"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',107))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(PixelsClockSamplingEdge.value, 1, 0)
-        value = setbits(IvalidPolarity.value, 1, 1)
-        value = setbits(HsyncPolarity.value, 1, 2)
-        value = setbits(VsyncPolarity.value, 1, 3)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(PixelsClockSamplingEdge.value, 1, 0)
+        value = pkr.setbits(IvalidPolarity.value, 1, 1)
+        value = pkr.setbits(HsyncPolarity.value, 1, 2)
+        value = pkr.setbits(VsyncPolarity.value, 1, 3)
         writebytes.extend(list(struct.pack('B',value)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -482,17 +482,17 @@ def ReadParallelVideoControl():
     Summary.Command = "Read Parallel Video Control"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',108))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        PixelsClockSamplingEdgeObj = getbits(1, 0);
-        IvalidPolarityObj = getbits(1, 1);
-        HsyncPolarityObj = getbits(1, 2);
-        VsyncPolarityObj = getbits(1, 3);
+        pkr.packerinit(readdata)
+        PixelsClockSamplingEdgeObj = pkr.getbits(1, 0) 
+        IvalidPolarityObj = pkr.getbits(1, 1) 
+        HsyncPolarityObj = pkr.getbits(1, 2) 
+        VsyncPolarityObj = pkr.getbits(1, 3) 
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -511,15 +511,15 @@ def WriteSplashScreenSelect(SplashScreenIndex):
     Summary.Command = "Write Splash Screen Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',13))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',SplashScreenIndex)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -531,10 +531,10 @@ def ReadSplashScreenSelect():
     Summary.Command = "Read Splash Screen Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',14))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         SplashScreenIndex = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
     except ValueError as ve:
@@ -551,10 +551,10 @@ def ReadSplashScreenHeader(SplashScreenNumber):
     Summary.Command = "Read Splash Screen Header"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',15))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',SplashScreenNumber)))
         readbytes = _readcommand(13, writebytes, ProtocolData)
         SplashScreenHeader.WidthInPixels = struct.unpack_from ('H', bytearray(readbytes), 0)[0]
@@ -581,15 +581,15 @@ def WriteExternalVideoSourceFormatSelect(VideoFormat):
     Summary.Command = "Write External Video Source Format Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',109))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',VideoFormat.value)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -601,10 +601,10 @@ def ReadExternalVideoSourceFormatSelect():
     Summary.Command = "Read External Video Source Format Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',110))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         VideoFormatObj = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
     except ValueError as ve:
@@ -621,16 +621,16 @@ def WriteFpdLinkConfiguration(BitRate,  PixelMapMode):
     Summary.Command = "Write Fpd Link Configuration"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',75))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('H',BitRate)))
         writebytes.extend(list(struct.pack('B',PixelMapMode)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -642,10 +642,10 @@ def ReadFpdLinkConfiguration():
     Summary.Command = "Read Fpd Link Configuration"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',76))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(3, writebytes, ProtocolData)
         print(readbytes)
         BitRate = struct.unpack_from ('H', bytearray(readbytes), 0)[0]
@@ -670,17 +670,17 @@ def WriteVideoChromaChannelSwapSelect(ChromaChannelSwap):
     Summary.Command = "Write Video Chroma Channel Swap Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',77))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(ChromaChannelSwap.value, 1, 3)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(ChromaChannelSwap.value, 1, 3)
         writebytes.extend(list(struct.pack('B',value)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -693,14 +693,14 @@ def ReadVideoChromaChannelSwapSelect():
     Summary.Command = "Read Video Chroma Channel Swap Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',78))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        ChromaChannelSwapObj = getbits(1, 3);
+        pkr.packerinit(readdata)
+        ChromaChannelSwapObj = pkr.getbits(1, 3) 
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -718,10 +718,10 @@ def ReadAutoFramingInformation():
     Summary.Command = "Read Auto Framing Information"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',186))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(14, writebytes, ProtocolData)
         AutoFramingInformation.VsyncRate = struct.unpack_from ('I', bytearray(readbytes), 0)[0]
         AutoFramingInformation.TotalPixelsPerLine = struct.unpack_from ('H', bytearray(readbytes), 4)[0]
@@ -744,15 +744,15 @@ def ReadDmdSequencerSyncMode():
     Summary.Command = "Read Dmd Sequencer Sync Mode"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',44))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        DmdSequencerSyncModeObj = getbits(1, 0);
-        SystemAutoSyncSettingObj = getbits(1, 1);
+        pkr.packerinit(readdata)
+        DmdSequencerSyncModeObj = pkr.getbits(1, 0) 
+        SystemAutoSyncSettingObj = pkr.getbits(1, 1) 
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -773,18 +773,18 @@ def WriteDisplayImageOrientation(
     Summary.Command = "Write Display Image Orientation"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',20))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(LongAxisImageFlip.value, 1, 1)
-        value = setbits(ShortAxisImageFlip.value, 1, 2)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(LongAxisImageFlip.value, 1, 1)
+        value = pkr.setbits(ShortAxisImageFlip.value, 1, 2)
         writebytes.extend(list(struct.pack('B',value)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -797,15 +797,15 @@ def ReadDisplayImageOrientation():
     Summary.Command = "Read Display Image Orientation"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',21))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        LongAxisImageFlipObj = getbits(1, 1);
-        ShortAxisImageFlipObj = getbits(1, 2);
+        pkr.packerinit(readdata)
+        LongAxisImageFlipObj = pkr.getbits(1, 1) 
+        ShortAxisImageFlipObj = pkr.getbits(1, 2) 
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -820,18 +820,18 @@ def WriteDisplayImageCurtain(Enable,  Color):
     Summary.Command = "Write Display Image Curtain"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',22))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(int(Enable), 1, 0)
-        value = setbits(Color.value, 3, 1)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(int(Enable), 1, 0)
+        value = pkr.setbits(Color.value, 3, 1)
         writebytes.extend(list(struct.pack('B',value)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -844,15 +844,15 @@ def ReadDisplayImageCurtain():
     Summary.Command = "Read Display Image Curtain"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',23))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        Enable = getbits(1, 0);
-        ColorObj = getbits(3, 1);
+        pkr.packerinit(readdata)
+        Enable = pkr.getbits(1, 0) 
+        ColorObj = pkr.getbits(3, 1) 
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -868,15 +868,15 @@ def WriteImageFreeze(Enable):
     Summary.Command = "Write Image Freeze"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',26))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',Enable)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -889,10 +889,10 @@ def ReadImageFreeze():
     Summary.Command = "Read Image Freeze"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',27))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         Enable = struct.unpack_from ('?', bytearray(readbytes), 0)[0]
     except ValueError as ve:
@@ -910,17 +910,17 @@ def WriteMirrorLock(MirrorLockOption):
     Summary.Command = "Write Mirror Lock"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',57))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(MirrorLockOption.value, 2, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(MirrorLockOption.value, 2, 0)
         writebytes.extend(list(struct.pack('B',value)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -933,14 +933,14 @@ def ReadMirrorLock():
     Summary.Command = "Read Mirror Lock"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',58))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        MirrorLockOptionObj = getbits(2, 0);
+        pkr.packerinit(readdata)
+        MirrorLockOptionObj = pkr.getbits(2, 0) 
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -957,15 +957,15 @@ def WriteKeystoneProjectionPitchAngle(PitchAngle):
     Summary.Command = "Write Keystone Projection Pitch Angle"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',187))
-        ProtocolData.OpcodeLength = 1;
-        writebytes.extend(list(struct.pack('H',int(convertfloattofixed(PitchAngle,256)))))
+        ProtocolData.OpcodeLength = 1 
+        writebytes.extend(list(struct.pack('H',int(pkr.convertfloattofixed(PitchAngle,256)))))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -978,12 +978,12 @@ def ReadKeystoneProjectionPitchAngle():
     Summary.Command = "Read Keystone Projection Pitch Angle"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',188))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(2, writebytes, ProtocolData)
-        PitchAngle = convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 0)[0], 256)
+        PitchAngle = pkr.convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 0)[0], 256)
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -1000,18 +1000,18 @@ def WriteKeystoneCorrectionControl(
     Summary.Command = "Write Keystone Correction Control"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',136))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',KeystoneCorrectionEnable)))
-        writebytes.extend(list(struct.pack('H',int(convertfloattofixed(OpticalThrowRatio,256)))))
-        writebytes.extend(list(struct.pack('H',int(convertfloattofixed(OpticalDmdOffset,256)))))
+        writebytes.extend(list(struct.pack('H',int(pkr.convertfloattofixed(OpticalThrowRatio,256)))))
+        writebytes.extend(list(struct.pack('H',int(pkr.convertfloattofixed(OpticalDmdOffset,256)))))
         writebytes.extend(list(struct.pack('H',AnchorControlSteps)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1024,14 +1024,14 @@ def ReadKeystoneCorrectionControl():
     Summary.Command = "Read Keystone Correction Control"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',137))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(7, writebytes, ProtocolData)
         KeystoneCorrectionEnable = struct.unpack_from ('?', bytearray(readbytes), 0)[0]
-        OpticalThrowRatio = convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 1)[0], 256)
-        OpticalDmdOffset = convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 3)[0], 256)
+        OpticalThrowRatio = pkr.convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 1)[0], 256)
+        OpticalDmdOffset = pkr.convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 3)[0], 256)
         AnchorControlSteps = struct.unpack_from ('H', bytearray(readbytes), 5)[0]
     except ValueError as ve:
         print("Exception Occurred ", ve)
@@ -1049,15 +1049,15 @@ def WriteExecuteFlashBatchFile(BatchFileNumber):
     Summary.Command = "Write Execute Flash Batch File"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',45))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',BatchFileNumber)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1072,15 +1072,15 @@ def WriteDelay(DelayInMicroseconds):
     Summary.Command = "Write Delay"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',219))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',DelayInMicroseconds)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1095,15 +1095,15 @@ def WriteLedOutputControlMethod(LedControlMethod):
     Summary.Command = "Write Led Output Control Method"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',80))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',LedControlMethod.value)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1116,10 +1116,10 @@ def ReadLedOutputControlMethod():
     Summary.Command = "Read Led Output Control Method"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',81))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         LedControlMethodObj = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
     except ValueError as ve:
@@ -1138,19 +1138,19 @@ def WriteRgbLedEnable(
     Summary.Command = "Write Rgb Led Enable"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',82))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(int(RedLedEnable), 1, 0)
-        value = setbits(int(GreenLedEnable), 1, 1)
-        value = setbits(int(BlueLedEnable), 1, 2)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(int(RedLedEnable), 1, 0)
+        value = pkr.setbits(int(GreenLedEnable), 1, 1)
+        value = pkr.setbits(int(BlueLedEnable), 1, 2)
         writebytes.extend(list(struct.pack('B',value)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1162,16 +1162,16 @@ def ReadRgbLedEnable():
     Summary.Command = "Read Rgb Led Enable"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',83))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        RedLedEnable = getbits(1, 0);
-        GreenLedEnable = getbits(1, 1);
-        BlueLedEnable = getbits(1, 2);
+        pkr.packerinit(readdata)
+        RedLedEnable = pkr.getbits(1, 0) 
+        GreenLedEnable = pkr.getbits(1, 1) 
+        BlueLedEnable = pkr.getbits(1, 2) 
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -1187,17 +1187,17 @@ def WriteRgbLedCurrent(RedLedCurrent,  GreenLedCurrent,  BlueLedCurrent):
     Summary.Command = "Write Rgb Led Current"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',84))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('H',RedLedCurrent)))
         writebytes.extend(list(struct.pack('H',GreenLedCurrent)))
         writebytes.extend(list(struct.pack('H',BlueLedCurrent)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1210,10 +1210,10 @@ def ReadRgbLedCurrent():
     Summary.Command = "Read Rgb Led Current"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',85))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(6, writebytes, ProtocolData)
         RedLedCurrent = struct.unpack_from ('H', bytearray(readbytes), 0)[0]
         GreenLedCurrent = struct.unpack_from ('H', bytearray(readbytes), 2)[0]
@@ -1233,12 +1233,12 @@ def ReadCaicLedMaxAvailablePower():
     Summary.Command = "Read Caic Led Max Available Power"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',87))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(2, writebytes, ProtocolData)
-        MaxLedPower = convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 0)[0], 100)
+        MaxLedPower = pkr.convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 0)[0], 100)
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -1256,17 +1256,17 @@ def WriteRgbLedMaxCurrent(
     Summary.Command = "Write Rgb Led Max Current"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',92))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('H',MaxRedLedCurrent)))
         writebytes.extend(list(struct.pack('H',MaxGreenLedCurrent)))
         writebytes.extend(list(struct.pack('H',MaxBlueLedCurrent)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1279,10 +1279,10 @@ def ReadRgbLedMaxCurrent():
     Summary.Command = "Read Rgb Led Max Current"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',93))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(6, writebytes, ProtocolData)
         MaxRedLedCurrent = struct.unpack_from ('H', bytearray(readbytes), 0)[0]
         MaxGreenLedCurrent = struct.unpack_from ('H', bytearray(readbytes), 2)[0]
@@ -1302,10 +1302,10 @@ def ReadCaicRgbLedCurrent():
     Summary.Command = "Read Caic Rgb Led Current"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',95))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(6, writebytes, ProtocolData)
         RedLedCurrent = struct.unpack_from ('H', bytearray(readbytes), 0)[0]
         GreenLedCurrent = struct.unpack_from ('H', bytearray(readbytes), 2)[0]
@@ -1327,15 +1327,15 @@ def WriteLookSelect(LookNumber):
     Summary.Command = "Write Look Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',34))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',LookNumber)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1348,14 +1348,14 @@ def ReadLookSelect():
     Summary.Command = "Read Look Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',35))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(6, writebytes, ProtocolData)
         LookNumber = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
         SequenceIndex = struct.unpack_from ('B', bytearray(readbytes), 1)[0]
-        SequenceFrameTime = convertfixedtofloat(struct.unpack_from ('I', bytearray(readbytes), 2)[0], 15)
+        SequenceFrameTime = pkr.convertfixedtofloat(struct.unpack_from ('I', bytearray(readbytes), 2)[0], 15)
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -1370,15 +1370,15 @@ def WriteCmtSelect(DegammaCmtIndex):
     Summary.Command = "Write Cmt Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',39))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',DegammaCmtIndex)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1390,10 +1390,10 @@ def ReadCmtSelect():
     Summary.Command = "Read Cmt Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',40))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         DegammaCmtIndex = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
     except ValueError as ve:
@@ -1411,22 +1411,22 @@ def ReadSequenceHeaderAttributes():
     Summary.Command = "Read Sequence Header Attributes"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',38))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(30, writebytes, ProtocolData)
-        SequenceHeaderAttributes.LookRedDutyCycle = convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 0)[0], 255)
-        SequenceHeaderAttributes.LookGreenDutyCycle = convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 2)[0], 255)
-        SequenceHeaderAttributes.LookBlueDutyCycle = convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 4)[0], 255)
-        SequenceHeaderAttributes.LookMaxFrameTime = convertfixedtofloat(struct.unpack_from ('I', bytearray(readbytes), 6)[0], 15)
-        SequenceHeaderAttributes.LookMinFrameTime = convertfixedtofloat(struct.unpack_from ('I', bytearray(readbytes), 10)[0], 15)
+        SequenceHeaderAttributes.LookRedDutyCycle = pkr.convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 0)[0], 255)
+        SequenceHeaderAttributes.LookGreenDutyCycle = pkr.convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 2)[0], 255)
+        SequenceHeaderAttributes.LookBlueDutyCycle = pkr.convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 4)[0], 255)
+        SequenceHeaderAttributes.LookMaxFrameTime = pkr.convertfixedtofloat(struct.unpack_from ('I', bytearray(readbytes), 6)[0], 15)
+        SequenceHeaderAttributes.LookMinFrameTime = pkr.convertfixedtofloat(struct.unpack_from ('I', bytearray(readbytes), 10)[0], 15)
         SequenceHeaderAttributes.LookMaxSequenceVectors = struct.unpack_from ('B', bytearray(readbytes), 14)[0]
-        SequenceHeaderAttributes.SeqRedDutyCycle = convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 15)[0], 255)
-        SequenceHeaderAttributes.SeqGreenDutyCycle = convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 17)[0], 255)
-        SequenceHeaderAttributes.SeqBlueDutyCycle = convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 19)[0], 255)
-        SequenceHeaderAttributes.SeqMaxFrameTime = convertfixedtofloat(struct.unpack_from ('I', bytearray(readbytes), 21)[0], 15)
-        SequenceHeaderAttributes.SeqMinFrameTime = convertfixedtofloat(struct.unpack_from ('I', bytearray(readbytes), 25)[0], 15)
+        SequenceHeaderAttributes.SeqRedDutyCycle = pkr.convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 15)[0], 255)
+        SequenceHeaderAttributes.SeqGreenDutyCycle = pkr.convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 17)[0], 255)
+        SequenceHeaderAttributes.SeqBlueDutyCycle = pkr.convertfixedtofloat(struct.unpack_from ('H', bytearray(readbytes), 19)[0], 255)
+        SequenceHeaderAttributes.SeqMaxFrameTime = pkr.convertfixedtofloat(struct.unpack_from ('I', bytearray(readbytes), 21)[0], 15)
+        SequenceHeaderAttributes.SeqMinFrameTime = pkr.convertfixedtofloat(struct.unpack_from ('I', bytearray(readbytes), 25)[0], 15)
         SequenceHeaderAttributes.SeqMaxSequenceVectors = struct.unpack_from ('B', bytearray(readbytes), 29)[0]
     except ValueError as ve:
         print("Exception Occurred ", ve)
@@ -1445,19 +1445,19 @@ def WriteLocalAreaBrightnessBoostControl(
     Summary.Command = "Write Local Area Brightness Boost Control"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',128))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(LabbControl.value, 2, 0)
-        value = setbits(int(SharpnessStrength), 4, 4)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(LabbControl.value, 2, 0)
+        value = pkr.setbits(int(SharpnessStrength), 4, 4)
         writebytes.extend(list(struct.pack('B',value)))
         writebytes.extend(list(struct.pack('B',LabbStrengthSetting)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1470,15 +1470,15 @@ def ReadLocalAreaBrightnessBoostControl():
     Summary.Command = "Read Local Area Brightness Boost Control"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',129))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(3, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        LabbControlObj = getbits(2, 0);
-        SharpnessStrength = getbits(4, 4);
+        pkr.packerinit(readdata)
+        LabbControlObj = pkr.getbits(2, 0) 
+        SharpnessStrength = pkr.getbits(4, 4) 
         LabbStrengthSetting = struct.unpack_from ('B', bytearray(readbytes), 1)[0]
         LabbGainValue = struct.unpack_from ('B', bytearray(readbytes), 2)[0]
     except ValueError as ve:
@@ -1496,22 +1496,22 @@ def WriteCaicImageProcessingControl(CaicImageProcessingControl):
     Summary.Command = "Write Caic Image Processing Control"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',132))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(CaicImageProcessingControl.CaicWpcControl.value, 3, 0)
-        value = setbits(CaicImageProcessingControl.CaicColorModulationControl.value, 1, 3)
-        value = setbits(CaicImageProcessingControl.CaicGainControl.value, 1, 6)
-        value = setbits(int(CaicImageProcessingControl.CaicGainDisplayEnable), 1, 7)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(CaicImageProcessingControl.CaicWpcControl.value, 3, 0)
+        value = pkr.setbits(CaicImageProcessingControl.CaicColorModulationControl.value, 1, 3)
+        value = pkr.setbits(CaicImageProcessingControl.CaicGainControl.value, 1, 6)
+        value = pkr.setbits(int(CaicImageProcessingControl.CaicGainDisplayEnable), 1, 7)
         writebytes.extend(list(struct.pack('B',value)))
-        writebytes.extend(list(struct.pack('B',int(convertfloattofixed(CaicImageProcessingControl.CaicMaxLumensGain,31)))))
-        writebytes.extend(list(struct.pack('B',int(convertfloattofixed(CaicImageProcessingControl.CaicClippingThreshold,63)))))
+        writebytes.extend(list(struct.pack('B',int(pkr.convertfloattofixed(CaicImageProcessingControl.CaicMaxLumensGain,31)))))
+        writebytes.extend(list(struct.pack('B',int(pkr.convertfloattofixed(CaicImageProcessingControl.CaicClippingThreshold,63)))))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1524,19 +1524,19 @@ def ReadCaicImageProcessingControl():
     Summary.Command = "Read Caic Image Processing Control"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',133))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(3, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        CaicImageProcessingControl.CaicWpcControl = getbits(3, 0);
-        CaicImageProcessingControl.CaicColorModulationControl = getbits(1, 3);
-        CaicImageProcessingControl.CaicGainControl = getbits(1, 6);
-        CaicImageProcessingControl.CaicGainDisplayEnable = getbits(1, 7);
-        CaicImageProcessingControl.CaicMaxLumensGain = convertfixedtofloat(struct.unpack_from ('B', bytearray(readbytes), 1)[0], 31)
-        CaicImageProcessingControl.CaicClippingThreshold = convertfixedtofloat(struct.unpack_from ('B', bytearray(readbytes), 2)[0], 63)
+        pkr.packerinit(readdata)
+        CaicImageProcessingControl.CaicWpcControl = pkr.getbits(3, 0) 
+        CaicImageProcessingControl.CaicColorModulationControl = pkr.getbits(1, 3) 
+        CaicImageProcessingControl.CaicGainControl = pkr.getbits(1, 6) 
+        CaicImageProcessingControl.CaicGainDisplayEnable = pkr.getbits(1, 7) 
+        CaicImageProcessingControl.CaicMaxLumensGain = pkr.convertfixedtofloat(struct.unpack_from ('B', bytearray(readbytes), 1)[0], 31)
+        CaicImageProcessingControl.CaicClippingThreshold = pkr.convertfixedtofloat(struct.unpack_from ('B', bytearray(readbytes), 2)[0], 63)
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -1552,15 +1552,15 @@ def WriteColorCoordinateAdjustmentControl(CcaEnable):
     Summary.Command = "Write Color Coordinate Adjustment Control"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',134))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',CcaEnable)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1573,10 +1573,10 @@ def ReadColorCoordinateAdjustmentControl():
     Summary.Command = "Read Color Coordinate Adjustment Control"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',135))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         CcaEnable = struct.unpack_from ('?', bytearray(readbytes), 0)[0]
     except ValueError as ve:
@@ -1601,13 +1601,13 @@ def ReadShortStatus():
         ProtocolData.OpcodeLength = 1
         readbytes = _readcommand(1, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        ShortStatus.SystemInitialized = getbits(1, 0)
-        ShortStatus.CommunicationError = getbits(1, 1)
-        ShortStatus.SystemError = getbits(1, 3)
-        ShortStatus.FlashEraseComplete = getbits(1, 4)
-        ShortStatus.FlashError = getbits(1, 5)
-        ShortStatus.Application = getbits(1, 7)
+        pkr.packerinit(readdata)
+        ShortStatus.SystemInitialized = pkr.getbits(1, 0)
+        ShortStatus.CommunicationError = pkr.getbits(1, 1)
+        ShortStatus.SystemError = pkr.getbits(1, 3)
+        ShortStatus.FlashEraseComplete = pkr.getbits(1, 4)
+        ShortStatus.FlashError = pkr.getbits(1, 5)
+        ShortStatus.Application = pkr.getbits(1, 7)
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -1622,37 +1622,37 @@ def ReadSystemStatus():
     Summary.Command = "Read System Status"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',209))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(4, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        SystemStatus.DmdDeviceError = getbits(1, 0);
-        SystemStatus.DmdInterfaceError = getbits(1, 1);
-        SystemStatus.DmdTrainingError = getbits(1, 2);
+        pkr.packerinit(readdata)
+        SystemStatus.DmdDeviceError = pkr.getbits(1, 0) 
+        SystemStatus.DmdInterfaceError = pkr.getbits(1, 1) 
+        SystemStatus.DmdTrainingError = pkr.getbits(1, 2) 
         readdata = struct.unpack_from ('B', bytearray(readbytes), 1)[0]
-        packerinit(readdata)
-        SystemStatus.RedLedState = getbits(1, 0);
-        SystemStatus.GreenLedState = getbits(1, 1);
-        SystemStatus.BlueLedState = getbits(1, 2);
-        SystemStatus.RedLedError = getbits(1, 3);
-        SystemStatus.GreenLedError = getbits(1, 4);
-        SystemStatus.BlueLedError = getbits(1, 5);
+        pkr.packerinit(readdata)
+        SystemStatus.RedLedState = pkr.getbits(1, 0) 
+        SystemStatus.GreenLedState = pkr.getbits(1, 1) 
+        SystemStatus.BlueLedState = pkr.getbits(1, 2) 
+        SystemStatus.RedLedError = pkr.getbits(1, 3) 
+        SystemStatus.GreenLedError = pkr.getbits(1, 4) 
+        SystemStatus.BlueLedError = pkr.getbits(1, 5) 
         readdata = struct.unpack_from ('B', bytearray(readbytes), 2)[0]
-        packerinit(readdata)
-        SystemStatus.SequenceAbortError = getbits(1, 0);
-        SystemStatus.SequenceError = getbits(1, 1);
-        SystemStatus.SequenceBinNotFoundError = getbits(1, 2);
-        SystemStatus.DcPowerSupply = getbits(1, 3);
+        pkr.packerinit(readdata)
+        SystemStatus.SequenceAbortError = pkr.getbits(1, 0) 
+        SystemStatus.SequenceError = pkr.getbits(1, 1) 
+        SystemStatus.SequenceBinNotFoundError = pkr.getbits(1, 2) 
+        SystemStatus.DcPowerSupply = pkr.getbits(1, 3) 
         readdata = struct.unpack_from ('B', bytearray(readbytes), 3)[0]
-        packerinit(readdata)
-        SystemStatus.ActuatorDriveEnable = getbits(1, 0);
-        SystemStatus.ActuatorPwmGenSource1080POnly = getbits(1, 1);
-        SystemStatus.ActuatorConfigurationError = getbits(1, 4);
-        SystemStatus.ActuatorWatchdogTimerTimeout = getbits(1, 5);
-        SystemStatus.ActuatorSubframeFilteredStatus = getbits(1, 6);
+        pkr.packerinit(readdata)
+        SystemStatus.ActuatorDriveEnable = pkr.getbits(1, 0) 
+        SystemStatus.ActuatorPwmGenSource1080POnly = pkr.getbits(1, 1) 
+        SystemStatus.ActuatorConfigurationError = pkr.getbits(1, 4) 
+        SystemStatus.ActuatorWatchdogTimerTimeout = pkr.getbits(1, 5) 
+        SystemStatus.ActuatorSubframeFilteredStatus = pkr.getbits(1, 6) 
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -1667,22 +1667,22 @@ def ReadCommunicationStatus():
     Summary.Command = "Read Communication Status"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',211))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         valueArray = [0x02]
         writebytes.extend(valueArray)
         readbytes = _readcommand(6, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 4)[0]
-        packerinit(readdata)
-        CommunicationStatus.InvalidCommandError = getbits(1, 0);
-        CommunicationStatus.InvalidCommandParameterValue = getbits(1, 1);
-        CommunicationStatus.CommandProcessingError = getbits(1, 2);
-        CommunicationStatus.FlashBatchFileError = getbits(1, 3);
-        CommunicationStatus.ReadCommandError = getbits(1, 4);
-        CommunicationStatus.InvalidNumberOfCommandParameters = getbits(1, 5);
-        CommunicationStatus.BusTimeoutByDisplayError = getbits(1, 6);
+        pkr.packerinit(readdata)
+        CommunicationStatus.InvalidCommandError = pkr.getbits(1, 0) 
+        CommunicationStatus.InvalidCommandParameterValue = pkr.getbits(1, 1) 
+        CommunicationStatus.CommandProcessingError = pkr.getbits(1, 2) 
+        CommunicationStatus.FlashBatchFileError = pkr.getbits(1, 3) 
+        CommunicationStatus.ReadCommandError = pkr.getbits(1, 4) 
+        CommunicationStatus.InvalidNumberOfCommandParameters = pkr.getbits(1, 5) 
+        CommunicationStatus.BusTimeoutByDisplayError = pkr.getbits(1, 6) 
         CommunicationStatus.AbortedOpCode = struct.unpack_from ('B', bytearray(readbytes), 5)[0]
     except ValueError as ve:
         print("Exception Occurred ", ve)
@@ -1699,10 +1699,10 @@ def ReadSystemSoftwareVersion():
     Summary.Command = "Read System Software Version"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',210))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(4, writebytes, ProtocolData)
         PatchVersion = struct.unpack_from ('H', bytearray(readbytes), 0)[0]
         MinorVersion = struct.unpack_from ('B', bytearray(readbytes), 2)[0]
@@ -1721,10 +1721,10 @@ def ReadControllerDeviceId():
     Summary.Command = "Read Controller Device Id"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',212))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         DeviceIdObj = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
     except ValueError as ve:
@@ -1741,10 +1741,10 @@ def ReadDmdDeviceId(DmdDataSelection):
     Summary.Command = "Read Dmd Device Id"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',213))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',DmdDataSelection.value)))
         readbytes = _readcommand(4, writebytes, ProtocolData)
         DeviceId = struct.unpack_from ('I', bytearray(readbytes), 0)[0]
@@ -1762,10 +1762,10 @@ def ReadFirmwareBuildVersion():
     Summary.Command = "Read Firmware Build Version"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',217))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(4, writebytes, ProtocolData)
         PatchVersion = struct.unpack_from ('H', bytearray(readbytes), 0)[0]
         MinorVersion = struct.unpack_from ('B', bytearray(readbytes), 2)[0]
@@ -1784,10 +1784,10 @@ def ReadFpgaVersion():
     Summary.Command = "Read Fpga Version"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',100))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(6, writebytes, ProtocolData)
         FpgaVersion = struct.unpack_from ('I', bytearray(readbytes), 0)[0]
         FpgaEcoRevision = struct.unpack_from ('B', bytearray(readbytes), 4)[0]
@@ -1806,15 +1806,15 @@ def ReadFpgaStatus():
     Summary.Command = "Read Fpga Status"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',111))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        DisplayModeObj = getbits(1, 1);
-        FpgaKeyingStatusObj = getbits(1, 0);
+        pkr.packerinit(readdata)
+        DisplayModeObj = pkr.getbits(1, 1) 
+        FpgaKeyingStatusObj = pkr.getbits(1, 0) 
     except ValueError as ve:
         print("Exception Occurred ", ve)
         Summary.Successful = False
@@ -1832,15 +1832,15 @@ def WriteFlashDataLength(FlashDataLength):
     Summary.Command = "Write Flash Data Length"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',223))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('H',FlashDataLength)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1856,20 +1856,20 @@ def WriteFpgaTestPatternSelect(
     Summary.Command = "Write Fpga Test Pattern Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(TestPatternBorder.value, 1, 7)
-        value = setbits(Color.value, 3, 4)
-        value = setbits(PatternSelect.value, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(TestPatternBorder.value, 1, 7)
+        value = pkr.setbits(Color.value, 3, 4)
+        value = pkr.setbits(PatternSelect.value, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         writebytes.extend(list(struct.pack('B',Size)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1882,16 +1882,16 @@ def ReadFpgaTestPatternSelect():
     Summary.Command = "Read Fpga Test Pattern Select"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',104))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(2, writebytes, ProtocolData)
         readdata = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
-        packerinit(readdata)
-        TestPatternBorderObj = getbits(1, 7);
-        ColorObj = getbits(3, 4);
-        PatternSelectObj = getbits(4, 0);
+        pkr.packerinit(readdata)
+        TestPatternBorderObj = pkr.getbits(1, 7) 
+        ColorObj = pkr.getbits(3, 4) 
+        PatternSelectObj = pkr.getbits(4, 0) 
         Size = struct.unpack_from ('B', bytearray(readbytes), 1)[0]
     except ValueError as ve:
         print("Exception Occurred ", ve)
@@ -1909,21 +1909,21 @@ def WriteFpgaSolidField(Color):
     Summary.Command = "Write Fpga Solid Field"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(1, 1, 7)
-        value = setbits(Color.value, 3, 4)
-        value = setbits(0, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(1, 1, 7)
+        value = pkr.setbits(Color.value, 3, 4)
+        value = pkr.setbits(0, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         valueArray = [0x00]
         writebytes.extend(valueArray)
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1935,21 +1935,21 @@ def WriteFpgaGrid():
     Summary.Command = "Write Fpga Grid"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(1, 1, 7)
-        value = setbits(0, 3, 4)
-        value = setbits(1, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(1, 1, 7)
+        value = pkr.setbits(0, 3, 4)
+        value = pkr.setbits(1, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         valueArray = [0x00]
         writebytes.extend(valueArray)
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1961,21 +1961,21 @@ def WriteFpgaHorizontalRamp():
     Summary.Command = "Write Fpga Horizontal Ramp"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(1, 1, 7)
-        value = setbits(0, 3, 4)
-        value = setbits(2, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(1, 1, 7)
+        value = pkr.setbits(0, 3, 4)
+        value = pkr.setbits(2, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         valueArray = [0xFF]
         writebytes.extend(valueArray)
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -1987,21 +1987,21 @@ def WriteFpgaVerticalRamp():
     Summary.Command = "Write Fpga Vertical Ramp"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(1, 1, 7)
-        value = setbits(0, 3, 4)
-        value = setbits(3, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(1, 1, 7)
+        value = pkr.setbits(0, 3, 4)
+        value = pkr.setbits(3, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         valueArray = [0xFF]
         writebytes.extend(valueArray)
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -2013,21 +2013,21 @@ def WriteFpgaCheckerboard():
     Summary.Command = "Write Fpga Checkerboard"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(1, 1, 7)
-        value = setbits(7, 3, 4)
-        value = setbits(4, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(1, 1, 7)
+        value = pkr.setbits(7, 3, 4)
+        value = pkr.setbits(4, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         valueArray = [0x14]
         writebytes.extend(valueArray)
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -2039,21 +2039,21 @@ def WriteFpgaHorizontalLines():
     Summary.Command = "Write Fpga Horizontal Lines"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(1, 1, 7)
-        value = setbits(0, 3, 4)
-        value = setbits(5, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(1, 1, 7)
+        value = pkr.setbits(0, 3, 4)
+        value = pkr.setbits(5, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         valueArray = [0x00]
         writebytes.extend(valueArray)
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -2065,21 +2065,21 @@ def WriteFpgaVerticalLines():
     Summary.Command = "Write Fpga Vertical Lines"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(1, 1, 7)
-        value = setbits(0, 3, 4)
-        value = setbits(6, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(1, 1, 7)
+        value = pkr.setbits(0, 3, 4)
+        value = pkr.setbits(6, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         valueArray = [0x00]
         writebytes.extend(valueArray)
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -2091,21 +2091,21 @@ def WriteFpgaDiagonalLines():
     Summary.Command = "Write Fpga Diagonal Lines"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(1, 1, 7)
-        value = setbits(0, 3, 4)
-        value = setbits(7, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(1, 1, 7)
+        value = pkr.setbits(0, 3, 4)
+        value = pkr.setbits(7, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         valueArray = [0x00]
         writebytes.extend(valueArray)
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -2117,21 +2117,21 @@ def WriteFpgaActuatorCalibrationPattern():
     Summary.Command = "Write Fpga Actuator Calibration Pattern"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(1, 1, 7)
-        value = setbits(0, 3, 4)
-        value = setbits(8, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(1, 1, 7)
+        value = pkr.setbits(0, 3, 4)
+        value = pkr.setbits(8, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         valueArray = [0x00]
         writebytes.extend(valueArray)
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -2143,21 +2143,21 @@ def WriteFpga3DTestPattern():
     Summary.Command = "Write Fpga 3 D Test Pattern"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(1, 1, 7)
-        value = setbits(0, 3, 4)
-        value = setbits(9, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(1, 1, 7)
+        value = pkr.setbits(0, 3, 4)
+        value = pkr.setbits(9, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         valueArray = [0x00]
         writebytes.extend(valueArray)
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -2169,21 +2169,21 @@ def WriteFpgaColorBarTestPattern():
     Summary.Command = "Write Fpga Color Bar Test Pattern"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(1, 1, 7)
-        value = setbits(0, 3, 4)
-        value = setbits(10, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(1, 1, 7)
+        value = pkr.setbits(0, 3, 4)
+        value = pkr.setbits(10, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         valueArray = [0x00]
         writebytes.extend(valueArray)
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -2195,23 +2195,23 @@ def WriteFpgaFrameAndCrossTestPattern():
     Summary.Command = "Write Fpga Frame And Cross Test Pattern"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',103))
-        ProtocolData.OpcodeLength = 1;
-        packerinit()
-        value = setbits(1, 1, 7)
-        value = setbits(0, 3, 4)
-        value = setbits(11, 4, 0)
+        ProtocolData.OpcodeLength = 1 
+        pkr.packerinit()
+        value = pkr.setbits(1, 1, 7)
+        value = pkr.setbits(0, 3, 4)
+        value = pkr.setbits(11, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
-        packerinit()
-        value = setbits(8, 4, 4)
-        value = setbits(8, 4, 0)
+        pkr.packerinit()
+        value = pkr.setbits(8, 4, 4)
+        value = pkr.setbits(8, 4, 0)
         writebytes.extend(list(struct.pack('B',value)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 # ---------------------------------------------------------------------
@@ -2224,15 +2224,15 @@ def WriteActuatorGlobalDacOutputEnable(ActuatorDacOutputEnable):
     Summary.Command = "Write Actuator Global DAC Output Enable"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',174))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         writebytes.extend(list(struct.pack('B',ActuatorDacOutputEnable.value)))
         _writecommand(writebytes, ProtocolData)
     except ValueError as ve:
         print("Exception Occurred ", ve)
-        Summary.Successful == False
+        Summary.Successful = False
     finally:
         return Summary
 
@@ -2244,10 +2244,10 @@ def ReadActuatorGlobalDacOutputEnable():
     Summary.Command = "Read Actuator Global DAC Output Enable"
     Summary.Successful = True
     global ProtocolData
-    ProtocolData.CommandDestination = 0;
+    ProtocolData.CommandDestination = 0 
     try:
         writebytes=list(struct.pack('B',175))
-        ProtocolData.OpcodeLength = 1;
+        ProtocolData.OpcodeLength = 1 
         readbytes = _readcommand(1, writebytes, ProtocolData)
         ActuatorDacOutputEnableObj = struct.unpack_from ('B', bytearray(readbytes), 0)[0]
     except ValueError as ve:
