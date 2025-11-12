@@ -10,8 +10,12 @@ Supported are currently:
   - Arduino (experimental)
   - Raspberry Pi (experimental)
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 All rights reserved.
+
+2025-11-12 - UserOut for Arduino added   
+             NOTE: Uses currently fixed (default) pin numbers for the
+             Arduion; needs to be changed
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -220,12 +224,24 @@ class devIO_Arduino(devIO, object):
         return 0
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def writeDPort(self, _port, _val):
+    def writeDPort(self, _port, _val, _mask=-1):
+        # Write to a digital I/O port
+        # `_port` is ignored, `_val` is the state (0 or 1), `_mask` is 
+        # the pin mask (= the number of the output pin)
+        # TODO: 
+        # - Use pin definitions from `QDSpy.ini`        
+        # - the code is not ideal ...
+        print("writeDPort", _port, _val, _mask)
         if self.isReady:
-            if _val > 0:
-                self.serClient.write(b"1")
-            else:
-                self.serClient.write(b"0")
+            if _mask < 0 or _mask == 4: 
+                # Trigger (marker) out
+                self.serClient.write(b"1" if _val > 0 else b"0")
+            elif _mask == 8:
+                # str_digitalio_pin_userout1 = 3, USER1, 0
+                self.serClient.write(b"3" if _val > 0 else b"2")
+            elif _mask == 16:
+                # str_digitalio_pin_userout2 = 4, USER2, 0
+                self.serClient.write(b"4" if _val > 0 else b"5")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def getPortFromStr(self, _portStr):

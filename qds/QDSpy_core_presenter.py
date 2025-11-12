@@ -7,14 +7,15 @@ QDSpy module - interprets and presents compiled stimuli
 Presents a compiled stimulus.
 This class is a graphics API independent.
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 Distributed under the terms of the GNU General Public License (GPL)
 
 2022-08-06 - Some reformatting (partially)
 2024-05-15 - Improved error message for movie errors
            - Added the option to play sounds, e.g., at the start and
              end of a stimulus presentation (see `QDSpy_global.py`) 
-2024-08-08 - New digital I/O device added ("RaspberryPi")           
+2024-08-08 - New digital I/O device added ("RaspberryPi")   
+2025-11-12 - UserOut for Arduino added        
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -134,6 +135,10 @@ class Presenter:
         self.IO_portOut = dio.devConst.NONE
         self.IO_portIn = dio.devConst.NONE
         self.IO_maskMark = 0
+        self.IO_maskUserOut1 = 0
+        self.IO_maskUserOut2 = 0
+        self.IO_invertUserOut1 = 0
+        self.IO_invertUserOut2 = 0
         self.IO_isMarkSet = False
 
         self.ignoreFr = False   # if waited for trigger
@@ -691,7 +696,7 @@ class Presenter:
 
             # Send marker signal, if needed
             if isMaskChanged:
-                self.IO.writeDPort(self.IO_portOut, maskMark)
+                self.IO.writeDPort(self.IO_portOut, self.IO_isMarkSet, self.IO_maskMark)
 
             # Record stimulus presentation, if requested
             if self.recordStim:
@@ -945,6 +950,10 @@ class Presenter:
             if self.IO is not None:
                 self.IO_portOut = self.IO.getPortFromStr(self.Conf.DIOportOut)
                 self.IO_maskMark = 0x01 << self.Conf.DIOpinMarker
+                self.IO_maskUserOut1 = 0x01 << int(self.Conf.DIOpinUserOut1[0])
+                self.IO_maskUserOut2 = 0x01 << int(self.Conf.DIOpinUserOut2[0])
+                self.IO_invertUserOut1 = int(self.Conf.DIOpinUserOut1[2])
+                self.IO_invertUserOut2 = int(self.Conf.DIOpinUserOut2[2])
 
             # Load and generate shader(s), if any
             self.ShProgList = []

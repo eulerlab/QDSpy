@@ -1,0 +1,7 @@
+[QDSMovie2Description]
+QDSVersionID=xQDS
+FrWidth=56
+FrHeight=56
+FrCount=750
+isFirstFrBottomLeft=True
+Comment=test_images_rand_right

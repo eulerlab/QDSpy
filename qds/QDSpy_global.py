@@ -10,6 +10,9 @@ All rights reserved.
              `ConfigParser` instead of `RawConfigParser`
 2025-01-28 - Sensor data via a serial port to log           
 2025-04-08 - Distortion shader parameters added 
+2025-11-12 - UserOut for Arduino added   
+             NOTE: Uses currently fixed (default) pin numbers for the
+             Arduion; needs to be changed
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -18,9 +21,9 @@ from qds.QDSpy_file_support import getQDSpyPath, getCompletePath
 
 # fmt: off
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.9.7"
+QDSpy_versionStr            = "QDSpy v0.9.8"
 QDSpy_copyrightStr          = "(c) 2013-25 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v0.9.6.thomas_euler.eulerlab.de"
+QDSpy_appID                 = u"QDSpy3.v0.9.8.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 QDSpy_codePath              = "qds"
 QDSpy_path                  = getQDSpyPath()
@@ -127,6 +130,7 @@ QDSpy_KEY_KillPresent       = [ord(b'Q'), ord(b'q')]
 # Marker/trigger timing
 # (For more details, see http://qdspy.eulerlab.de/inifile.html#timing)
 QDSpy_useUL_DIO             = False
+QDSpy_useArduinoUserOut     = True
 QDSpy_UL_boardType          = "PCIDIO24" # "Arduino", "USB1024LS", "RaspberryPi"
 QDSpy_UL_boardNum           = 0
 QDSpy_UL_deviceNum          = 6

@@ -12,12 +12,13 @@ QDSpy module - support routines related to timing and priority
 'setHighProcessPrior()', 'setNormalProcessPrior()'
   Routines to increase and reset process priority
 
-Copyright (c) 2013-2024 Thomas Euler
+Copyright (c) 2013-2025 Thomas Euler
 Distributed under the terms of the GNU General Public License (GPL)
 
 2021-10-15 - Adapt to LINUX
 2022-08-06 - Some reformatting
 2024-06-30 - Reformatted with Ruff
+2025-11-12 - UserOut for Arduino added   
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -106,6 +107,15 @@ def setIODevicePin(_IO, _portStr, _pin, _invert, _state):
             data = data & ~mask
         _IO.writeDPort(port, data)
 
+    elif _IO.devType in [dio.devTypeArduino.Uno]:    
+        # Beta support for Arduino
+        # (requries Arduino firmware w/ "*_User.ino")
+        '''
+        print("ARDUINO", _portStr, _pin, _invert, _state)
+        '''
+        mask = 0x01 << _pin
+        data = _state if not _invert else not(_state)
+        _IO.writeDPort(0, data, mask)
 
 # ---------------------------------------------------------------------
 # Increase/decrease process priority
