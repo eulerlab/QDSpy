@@ -20,7 +20,7 @@ Distributed under the terms of the GNU General Public License (GPL)
 __author__ = "code@eulerlab.de"
 
 import os
-import pickle
+import platform
 import numpy as np
 import PIL
 import QDSpy_global as glo
@@ -34,7 +34,9 @@ import QDSpy_core_shader as csh
 from Libraries.log_helper import Log
 import Libraries.multiprocess_helper as mpr
 import Devices.digital_io as dio
-if glo.QDSpy_isUseSound:
+
+PLATFORM_WINDOWS = platform.system() == "Windows"
+if PLATFORM_WINDOWS:
     from Graphics.sounds import Sounds, SoundPlayer
 
 global Clock
@@ -68,9 +70,9 @@ class Presenter:
         self.Conf = _Conf
         self.View = _View
         self.LCr = _LCr
-        self.pathQDSpy = fsu.getQDSpyPath()
+        self.pathQDSpy = fsu.getQDSpyPath()        
         self.ShManager = csh.ShaderManager(self.Conf, self.pathQDSpy)
-        self.useSound = glo.QDSpy_isUseSound
+        self.useSound = _Conf.isUseSound
         self.reset()
         
         self.dtFr_meas_s = self.Stage.dtFr_s
@@ -84,22 +86,22 @@ class Presenter:
         if self.useSound:
             Log.write("DEBUG", "Loading sounds ...")
             self.SoundPlayer = SoundPlayer()    
-            path = glo.QDSpy_pathSounds
+            path = _Conf.pathSounds
             self.SoundPlayer.add(
                 Sounds.OK, 
-                fsu.getJoinedPath(path, glo.QDSpy_soundOk)
+                fsu.getJoinedPath(path, _Conf.soundOk)
             )
             self.SoundPlayer.add(
                 Sounds.ERROR, 
-                fsu.getJoinedPath(path, glo.QDSpy_soundError)
+                fsu.getJoinedPath(path, _Conf.soundError)
             )
             self.SoundPlayer.add(
                 Sounds.STIM_START, 
-                fsu.getJoinedPath(path, glo.QDSpy_soundStimStart)
+                fsu.getJoinedPath(path, _Conf.soundStimStart)
             )
             self.SoundPlayer.add(
                 Sounds.STIM_END, 
-                fsu.getJoinedPath(path, glo.QDSpy_soundStimEnd)
+                fsu.getJoinedPath(path, _Conf.soundStimEnd)
             )
             Log.write("DEBUG", "... done")
         else:
@@ -930,7 +932,7 @@ class Presenter:
                 recorded_stimulus_np, self.Conf.rec_setup_id
             )
 
-        file_path = fsu.getJoinedPath(stim_folder, {self.recordedStimName})
+        file_path = fsu.getJoinedPath(stim_folder, f"{self.recordedStimName}.npy")
         np.save(file_path, recorded_stimulus_np, allow_pickle=False)
 
         Log.write("DEBUG", f"Successfully saved stimulus recording to {file_path}")
@@ -994,7 +996,7 @@ class Presenter:
             if len(self.Stim.MovList) > 0:
                 for Mov in self.Stim.MovList:
                     movOb = mov.Movie(self.Conf)
-                    res = movOb.load(self.Conf.pathStim + Mov[stm.SM_field_movieFName])
+                    res = movOb.load(fsu.getJoinedPath(self.Conf.pathStim, Mov[stm.SM_field_movieFName]))
                     if res == stm.StimErrC.ok:
                         # Add movie class object to list
                         self.MovieList.append(movOb)
@@ -1014,7 +1016,7 @@ class Presenter:
             if len(self.Stim.VidList) > 0:
                 for Vid in self.Stim.VidList:
                     vidOb = vid.Video(self.Conf)
-                    res = vidOb.load(self.Conf.pathStim + Vid[stm.SV_field_videoFName])
+                    res = vidOb.load(fsu.getJoinedPath(self.Conf.pathStim, Vid[stm.SV_field_videoFName]))
                     if res == stm.StimErrC.ok:
                         # Add video class object to list
                         self.VideoList.append(vidOb)
