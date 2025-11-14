@@ -21,7 +21,6 @@ __author__ = "code@eulerlab.de"
 
 import os
 import pickle
-import platform
 import numpy as np
 import PIL
 import QDSpy_global as glo
@@ -35,9 +34,7 @@ import QDSpy_core_shader as csh
 from Libraries.log_helper import Log
 import Libraries.multiprocess_helper as mpr
 import Devices.digital_io as dio
-
-PLATFORM_WINDOWS = platform.system() == "Windows"
-if PLATFORM_WINDOWS:
+if glo.QDSpy_isUseSound:
     from Graphics.sounds import Sounds, SoundPlayer
 
 global Clock
@@ -71,9 +68,9 @@ class Presenter:
         self.Conf = _Conf
         self.View = _View
         self.LCr = _LCr
-        self.pathQDSpy = fsu.getQDSpyPath()        
+        self.pathQDSpy = fsu.getQDSpyPath()
         self.ShManager = csh.ShaderManager(self.Conf, self.pathQDSpy)
-        self.useSound = _Conf.isUseSound
+        self.useSound = glo.QDSpy_isUseSound
         self.reset()
         
         self.dtFr_meas_s = self.Stage.dtFr_s
@@ -87,22 +84,22 @@ class Presenter:
         if self.useSound:
             Log.write("DEBUG", "Loading sounds ...")
             self.SoundPlayer = SoundPlayer()    
-            path = _Conf.pathSounds
+            path = glo.QDSpy_pathSounds
             self.SoundPlayer.add(
                 Sounds.OK, 
-                fsu.getJoinedPath(path, _Conf.soundOk)
+                fsu.getJoinedPath(path, glo.QDSpy_soundOk)
             )
             self.SoundPlayer.add(
                 Sounds.ERROR, 
-                fsu.getJoinedPath(path, _Conf.soundError)
+                fsu.getJoinedPath(path, glo.QDSpy_soundError)
             )
             self.SoundPlayer.add(
                 Sounds.STIM_START, 
-                fsu.getJoinedPath(path, _Conf.soundStimStart)
+                fsu.getJoinedPath(path, glo.QDSpy_soundStimStart)
             )
             self.SoundPlayer.add(
                 Sounds.STIM_END, 
-                fsu.getJoinedPath(path, _Conf.soundStimEnd)
+                fsu.getJoinedPath(path, glo.QDSpy_soundStimEnd)
             )
             Log.write("DEBUG", "... done")
         else:
@@ -857,43 +854,47 @@ class Presenter:
     @staticmethod
     def stim_to_pil_image(
         image, f_downsample: int = 1
-    ) -> PIL.Image.Image:
-        """Convert a stimulus frame into a PIL image
+    ) -> np.ndarray:
+        """Convert a stimulus frame into a numpy.array
         """
         img_data = image.get_data()
-
         pil_image = PIL.Image.new(mode="RGBA", size=(image.width, image.height))
         pil_image.frombytes(img_data)
 
         if f_downsample > 1:
             pil_image = pil_image.resize(
-                tuple(s // f_downsample for s in pil_image.size)
+                (image.width // f_downsample, image.height // f_downsample),
+                resample=PIL.Image.Resampling.HAMMING,
             )
-
         pil_image = pil_image.convert("RGB")
+
+        # Flip vertically (required for correct orientation)
         pil_image = pil_image.transpose(PIL.Image.Transpose.FLIP_TOP_BOTTOM)
-        return pil_image
+
+        frame_array = np.array(pil_image, dtype=np.uint8)
+        return frame_array
 
     @staticmethod
     def adapt_stimulus_recording_to_setup(
         stimulus_stack: np.array, setup_id: int
-    ) -> np.array:
-        """Tweak stimulus according to 
+    ) -> None:
+        """Tweak stimulus inplace according to 
         https://cin-10.medizin.uni-tuebingen.de/eulerwiki/index.php/Orientation
         stimulus_stack.shape: frame, y, x, color
         """
-        # For both setups the x and y plane is swapped
+        # In-place manipulation by looping over frames (first axis)
         if setup_id == 1:
             # Swap x and y
-            stimulus_stack = stimulus_stack.transpose(0, 2, 1, 3)
+            for i in range(stimulus_stack.shape[0]):
+                stimulus_stack[i] = np.transpose(stimulus_stack[i], (1, 0, 2))
         elif setup_id == 3:
-            # Swap x and y
-            stimulus_stack = stimulus_stack.transpose(0, 2, 1, 3)
-            # flip direction in y-axis
-            stimulus_stack = np.flip(stimulus_stack, axis=1)
+            # Swap x and y, then flip direction in y-axis
+            for i in range(stimulus_stack.shape[0]):
+                frame = np.transpose(stimulus_stack[i], (1, 0, 2))
+                frame = np.flip(frame, axis=0)
+                stimulus_stack[i] = frame
         else:
             raise ValueError(f"Unknown setup: {setup_id=}")
-        return stimulus_stack
 
     def save_stim_to_file(self) -> None:
         """Save (downsampled) stimulus to file 
@@ -905,21 +906,34 @@ class Presenter:
         if not os.path.isdir(stim_folder):
             os.mkdir(stim_folder)
 
-        pil_image_array = [
-            self.stim_to_pil_image(s, f_downsample=self.Conf.rec_f_downsample_x)
-            for s in self.recordedStim
-        ]
-        recorded_stimulus_stack = np.stack(pil_image_array)
+        n_frames = len(self.recordedStim)
+        height = self.recordedStim[0].height // self.Conf.rec_f_downsample_x
+        width = self.recordedStim[0].width // self.Conf.rec_f_downsample_x
+        channels = 3
+        # Pre-allocate numpy array for all frames to avoid memory spikes
+        recorded_stimulus_np = np.empty(
+            (n_frames, height, width, channels), dtype=np.uint8
+        )
+
+        # Process remaining frames one-by-one and fill directly into pre-allocated array
+        # We also set the processed recordedStim frames to None to reduce memory consumption
+        for i in range(n_frames):
+            frame_array = self.stim_to_pil_image(
+                self.recordedStim[i], f_downsample=self.Conf.rec_f_downsample_x
+            )
+            recorded_stimulus_np[i] = frame_array
+            self.recordedStim[i] = None
+
+        self.recordedStim = []
         if self.Conf.rec_setup_id is not None:
-            recorded_stimulus_stack = self.adapt_stimulus_recording_to_setup(
-                recorded_stimulus_stack, self.Conf.rec_setup_id
+            recorded_stimulus_np = self.adapt_stimulus_recording_to_setup(
+                recorded_stimulus_np, self.Conf.rec_setup_id
             )
 
-        file_name = f"{stim_folder}/{self.recordedStimName}.pickle"
-        with open(file_name, "wb") as file:
-            pickle.dump(recorded_stimulus_stack, file, protocol=pickle.HIGHEST_PROTOCOL)
+        file_path = fsu.getJoinedPath(stim_folder, {self.recordedStimName})
+        np.save(file_path, recorded_stimulus_np, allow_pickle=False)
 
-        Log.write("DEBUG", f"Successfully saved stimulus recording to {file_name}")
+        Log.write("DEBUG", f"Successfully saved stimulus recording to {file_path}")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def prepare(self, _Stim, _Sync=None, _vol=0):
@@ -980,7 +994,7 @@ class Presenter:
             if len(self.Stim.MovList) > 0:
                 for Mov in self.Stim.MovList:
                     movOb = mov.Movie(self.Conf)
-                    res = movOb.load(fsu.getJoinedPath(self.Conf.pathStim, Mov[stm.SM_field_movieFName]))
+                    res = movOb.load(self.Conf.pathStim + Mov[stm.SM_field_movieFName])
                     if res == stm.StimErrC.ok:
                         # Add movie class object to list
                         self.MovieList.append(movOb)
@@ -1000,7 +1014,7 @@ class Presenter:
             if len(self.Stim.VidList) > 0:
                 for Vid in self.Stim.VidList:
                     vidOb = vid.Video(self.Conf)
-                    res = vidOb.load(fsu.getJoinedPath(self.Conf.pathStim, Vid[stm.SV_field_videoFName]))
+                    res = vidOb.load(self.Conf.pathStim + Vid[stm.SV_field_videoFName])
                     if res == stm.StimErrC.ok:
                         # Add video class object to list
                         self.VideoList.append(vidOb)
