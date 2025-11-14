@@ -878,7 +878,7 @@ class Presenter:
 
     @staticmethod
     def adapt_stimulus_recording_to_setup(
-        stimulus_stack: np.array, setup_id: int
+        stimulus_stack: np.ndarray, setup_id: int
     ) -> None:
         """Tweak stimulus inplace according to 
         https://cin-10.medizin.uni-tuebingen.de/eulerwiki/index.php/Orientation
@@ -928,7 +928,7 @@ class Presenter:
 
         self.recordedStim = []
         if self.Conf.rec_setup_id is not None:
-            recorded_stimulus_np = self.adapt_stimulus_recording_to_setup(
+            self.adapt_stimulus_recording_to_setup(
                 recorded_stimulus_np, self.Conf.rec_setup_id
             )
 
