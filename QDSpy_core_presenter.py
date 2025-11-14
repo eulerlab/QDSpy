@@ -865,12 +865,11 @@ class Presenter:
 
         if f_downsample > 1:
             pil_image = pil_image.resize(
-                (image.width // f_downsample, image.height // f_downsample),
+                tuple(s // f_downsample for s in pil_image.size),
                 resample=PIL.Image.Resampling.HAMMING,
             )
-        pil_image = pil_image.convert("RGB")
 
-        # Flip vertically (required for correct orientation)
+        pil_image = pil_image.convert("RGB")
         pil_image = pil_image.transpose(PIL.Image.Transpose.FLIP_TOP_BOTTOM)
 
         frame_array = np.array(pil_image, dtype=np.uint8)
@@ -917,8 +916,8 @@ class Presenter:
             (n_frames, height, width, channels), dtype=np.uint8
         )
 
-        # Process remaining frames one-by-one and fill directly into pre-allocated array
-        # We also set the processed recordedStim frames to None to reduce memory consumption
+        # Process frames one-by-one and fill directly into pre-allocated array.
+        # We also set the processed recordedStim frames to None to reduce memory consumption.
         for i in range(n_frames):
             frame_array = self.stim_to_pil_image(
                 self.recordedStim[i], f_downsample=self.Conf.rec_f_downsample_x
