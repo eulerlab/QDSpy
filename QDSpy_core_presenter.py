@@ -697,6 +697,7 @@ class Presenter:
                 if self.nFrTotal % self.Conf.rec_f_downsample_t == 0:
                     stimframe = self.View.grabStimFrame()
                     self.recordedStim.append(stimframe)
+                    self.recordedMark.append(self.Stim.cScMarkList[self.iSc])
 
         # Keep track of refresh duration
         if self.Conf.isTrackTime:
@@ -766,6 +767,7 @@ class Presenter:
         if self.recordStim:
             self.View.prepareGrabStim()
             self.recordedStim = []
+            self.recordedMark = []
             self.recordedStimName = self.Stim.nameStr
 
         self.Stage.logData()
@@ -916,8 +918,8 @@ class Presenter:
             (n_frames, height, width, channels), dtype=np.uint8
         )
 
-        # Process frames one-by-one and fill directly into pre-allocated array.
-        # We also set the processed recordedStim frames to None to reduce memory consumption.
+        # Process frames one-by-one and fill directly into pre-allocated array
+        # We also set the processed recordedStim frames to None to reduce memory consumption
         for i in range(n_frames):
             frame_array = self.stim_to_pil_image(
                 self.recordedStim[i], f_downsample=self.Conf.rec_f_downsample_x
@@ -933,6 +935,9 @@ class Presenter:
 
         file_path = fsu.getJoinedPath(stim_folder, f"{self.recordedStimName}.npy")
         np.save(file_path, recorded_stimulus_np, allow_pickle=False)
+        assert n_frames == len(self.recordedMark)
+        file_path = fsu.getJoinedPath(stim_folder, f"{self.recordedStimName}_mark.npy")
+        np.save(file_path, self.recordedMark, allow_pickle=False)
 
         Log.write("DEBUG", f"Successfully saved stimulus recording to {file_path}")
 
