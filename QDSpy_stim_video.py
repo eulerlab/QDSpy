@@ -89,7 +89,7 @@ class Video:
             self._reiterate()
         else:
             self.frames = np.zeros(
-                (self.nFr, self.dxFr, self.dyFr, 3), dtype=np.uint8
+                (self.nFr, self.dyFr, self.dxFr, 3), dtype=np.uint8
             )
             tmp = self.video.iter_frames()
             for iFr in range(self.nFr):
