@@ -3,7 +3,7 @@
 """
 QDSpy module - global definitions
 
-Copyright (c) 2013-2025 Thomas Euler
+Copyright (c) 2013-2026 Thomas Euler
 All rights reserved.
 
 2024-06-15 - Fix for breaking change in `configparser`; now using
@@ -21,9 +21,9 @@ from qds.QDSpy_file_support import getQDSpyPath, getCompletePath
 
 # fmt: off
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.9.8"
-QDSpy_copyrightStr          = "(c) 2013-25 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v0.9.8.thomas_euler.eulerlab.de"
+QDSpy_versionStr            = "QDSpy v0.9.9"
+QDSpy_copyrightStr          = "(c) 2013-26 Thomas Euler"
+QDSpy_appID                 = u"QDSpy3.v0.9.9.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 QDSpy_codePath              = "qds"
 QDSpy_path                  = getQDSpyPath()

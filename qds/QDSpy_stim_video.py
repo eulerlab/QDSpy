@@ -9,13 +9,15 @@ QDSpy module - defines video-related classes
 'VideoCtrl'
   The movie control class manages the streaming of the video
 
-Copyright (c) 2013-2025 Thomas Euler
+Copyright (c) 2013-2026 Thomas Euler
 All rights reserved.
 
 2024-08-04 - `pyglet` calls encapsulated in `renderer_opengl.py`             
 2025-04-05 - Cleaning up
 2025-06-24 - Adapted to current `moviepy` (>= version 2)
            - Fixed a few bugs that prevented restarting the same video
+2026-06-23 - S Suhai: Fixed array preallocation shape bug #63
+            (Switched `self.dyFr` and `self.dxFr` in `__loadVideo()`)
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -47,7 +49,7 @@ class Video:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def __loadVideo(self):
-        """Loads a "real" movie file
+        """ Loads a "real" movie file
         """
         # Check if movie file exists ...
         if not (os.path.isfile(self.fNameVideo)):
@@ -86,7 +88,7 @@ class Video:
             self._reiterate()
         else:
             self.frames = np.zeros(
-                (self.nFr, self.dxFr, self.dyFr, 3), dtype=np.uint8
+                (self.nFr, self.dyFr, self.dxFr, 3), dtype=np.uint8
             )
             tmp = self.video.iter_frames()
             for iFr in range(self.nFr):

@@ -7,41 +7,37 @@ QDSpy module - interprets and presents compiled stimuli
 Presents a compiled stimulus.
 This class is a graphics API independent.
 
-Copyright (c) 2013-2026 Thomas Euler
+Copyright (c) 2013-2024 Thomas Euler
 Distributed under the terms of the GNU General Public License (GPL)
 
 2022-08-06 - Some reformatting (partially)
 2024-05-15 - Improved error message for movie errors
            - Added the option to play sounds, e.g., at the start and
              end of a stimulus presentation (see `QDSpy_global.py`) 
-2024-08-08 - New digital I/O device added ("RaspberryPi")   
-2025-11-12 - UserOut for Arduino added        
-2026-05-23 - T Zenkel: Reduce memory consumption when writing recorded 
-             stimulus #62
+2024-08-08 - New digital I/O device added ("RaspberryPi")           
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
 import os
-import pickle
 import platform
 import numpy as np
 import PIL
-import qds.QDSpy_global as glo
-import qds.QDSpy_stim as stm
-import qds.QDSpy_stim_movie as mov
-import qds.QDSpy_stim_video as vid
-import qds.QDSpy_stim_draw as drw
-import qds.QDSpy_core_support as csp
-import qds.QDSpy_file_support as fsu
-import qds.QDSpy_core_shader as csh
-from qds.libraries.log_helper import Log
-import qds.libraries.multiprocess_helper as mpr
-import qds.devices.digital_io as dio
+import QDSpy_global as glo
+import QDSpy_stim as stm
+import QDSpy_stim_movie as mov
+import QDSpy_stim_video as vid
+import QDSpy_stim_draw as drw
+import QDSpy_core_support as csp
+import QDSpy_file_support as fsu
+import QDSpy_core_shader as csh
+from Libraries.log_helper import Log
+import Libraries.multiprocess_helper as mpr
+import Devices.digital_io as dio
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
-    from qds.graphics.sounds import Sounds, SoundPlayer
+    from Graphics.sounds import Sounds, SoundPlayer
 
 global Clock
 Clock = csp.defaultClock
@@ -137,10 +133,6 @@ class Presenter:
         self.IO_portOut = dio.devConst.NONE
         self.IO_portIn = dio.devConst.NONE
         self.IO_maskMark = 0
-        self.IO_maskUserOut1 = 0
-        self.IO_maskUserOut2 = 0
-        self.IO_invertUserOut1 = 0
-        self.IO_invertUserOut2 = 0
         self.IO_isMarkSet = False
 
         self.ignoreFr = False   # if waited for trigger
@@ -698,14 +690,14 @@ class Presenter:
 
             # Send marker signal, if needed
             if isMaskChanged:
-                self.IO.writeDPort(self.IO_portOut, self.IO_isMarkSet, self.IO_maskMark)
+                self.IO.writeDPort(self.IO_portOut, maskMark)
 
             # Record stimulus presentation, if requested
             if self.recordStim:
                 if self.nFrTotal % self.Conf.rec_f_downsample_t == 0:
                     stimframe = self.View.grabStimFrame()
                     self.recordedStim.append(stimframe)
-                    self.recordedMark.append(self.Stim.cScMarkList[self.iSc])                    
+                    self.recordedMark.append(self.Stim.cScMarkList[self.iSc])
 
         # Keep track of refresh duration
         if self.Conf.isTrackTime:
@@ -867,7 +859,7 @@ class Presenter:
     def stim_to_pil_image(
         image, f_downsample: int = 1
     ) -> np.ndarray:
-        """ Convert a stimulus frame into a numpy.array
+        """Convert a stimulus frame into a numpy.array
         """
         img_data = image.get_data()
         pil_image = PIL.Image.new(mode="RGBA", size=(image.width, image.height))
@@ -881,6 +873,7 @@ class Presenter:
 
         pil_image = pil_image.convert("RGB")
         pil_image = pil_image.transpose(PIL.Image.Transpose.FLIP_TOP_BOTTOM)
+
         frame_array = np.array(pil_image, dtype=np.uint8)
         return frame_array
 
@@ -888,9 +881,9 @@ class Presenter:
     def adapt_stimulus_recording_to_setup(
         stimulus_stack: np.ndarray, setup_id: int
     ) -> None:
-        """ Tweak stimulus inplace according to 
-            https://cin-10.medizin.uni-tuebingen.de/eulerwiki/index.php/Orientation
-            stimulus_stack.shape: frame, y, x, color
+        """Tweak stimulus inplace according to 
+        https://cin-10.medizin.uni-tuebingen.de/eulerwiki/index.php/Orientation
+        stimulus_stack.shape: frame, y, x, color
         """
         # In-place manipulation by looping over frames (first axis)
         if setup_id == 1:
@@ -920,7 +913,6 @@ class Presenter:
         height = self.recordedStim[0].height // self.Conf.rec_f_downsample_x
         width = self.recordedStim[0].width // self.Conf.rec_f_downsample_x
         channels = 3
-
         # Pre-allocate numpy array for all frames to avoid memory spikes
         recorded_stimulus_np = np.empty(
             (n_frames, height, width, channels), dtype=np.uint8
@@ -946,6 +938,7 @@ class Presenter:
         assert n_frames == len(self.recordedMark)
         file_path = fsu.getJoinedPath(stim_folder, f"{self.recordedStimName}_mark.npy")
         np.save(file_path, self.recordedMark, allow_pickle=False)
+
         Log.write("DEBUG", f"Successfully saved stimulus recording to {file_path}")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -972,10 +965,6 @@ class Presenter:
             if self.IO is not None:
                 self.IO_portOut = self.IO.getPortFromStr(self.Conf.DIOportOut)
                 self.IO_maskMark = 0x01 << self.Conf.DIOpinMarker
-                self.IO_maskUserOut1 = 0x01 << int(self.Conf.DIOpinUserOut1[0])
-                self.IO_maskUserOut2 = 0x01 << int(self.Conf.DIOpinUserOut2[0])
-                self.IO_invertUserOut1 = int(self.Conf.DIOpinUserOut1[2])
-                self.IO_invertUserOut2 = int(self.Conf.DIOpinUserOut2[2])
 
             # Load and generate shader(s), if any
             self.ShProgList = []
