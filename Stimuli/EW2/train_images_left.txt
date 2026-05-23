@@ -1,0 +1,7 @@
+[QDSMovie2Description]
+QDSVersionID=xQDS
+FrWidth=56
+FrHeight=56
+FrCount=16200
+isFirstFrBottomLeft=True
+Comment=train_images_left
