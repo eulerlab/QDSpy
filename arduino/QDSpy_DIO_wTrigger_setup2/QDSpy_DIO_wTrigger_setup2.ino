@@ -1,6 +1,6 @@
 /* QDSpy simple digital interface
- * Changed in August 2025 for Setup #2 (TE)
- * -> new pins
+ * Changed in July 2026 for Setup #2 (TE)
+  * -> new pins
  * Notes:
  * - To make sure that the connection to the PC is as fast as possible,
  *   the BAUD rate is set to `230400`. Lower it, if the communication is
@@ -16,9 +16,9 @@
  *   port; this signal can be picked up at pin `pin_LED` (usually 13)
 */
 
-#define  pin_TRIG      11       // Trigger out pin
-#define  pin_TRIG_LED  12       // Trigger out LED
-#define  pin_INT_LED   13       // LED that signals interrupt detected
+#define  pin_TRIG      5        // Trigger out pin
+#define  pin_TRIG_LED  11       // Trigger out LED
+#define  pin_INT_LED   10       // LED that signals interrupt detected
 #define  pin_INT       2        // Interrupt pin
 #define  INT_EVENT     RISING   // Event that triggers the interrupt
 #define  DEBOUNCE_MS   10
@@ -35,6 +35,15 @@ void setup()
   pinMode(pin_INT_LED, OUTPUT);    
   pinMode(pin_INT, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(pin_INT), triggerEvent, INT_EVENT);
+  
+  for (int i=0; i <= 3; i++) {
+    digitalWrite(pin_TRIG_LED, (i % 2) > 0);
+    digitalWrite(pin_INT_LED, (i % 2) == 0);
+    delay(500);
+  }
+  digitalWrite(pin_TRIG_LED, false);
+  digitalWrite(pin_INT_LED, false);
+
   /*
   Serial.setTimeout(5000);
   Serial.println("Waiting for configuration ...");
