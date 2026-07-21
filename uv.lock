@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
@@ -426,6 +426,7 @@ dependencies = [
     { name = "moviepy" },
     { name = "numpy" },
     { name = "paho-mqtt" },
+    { name = "pillow" },
     { name = "psutil" },
     { name = "pygame" },
     { name = "pyglet" },
@@ -444,6 +445,7 @@ requires-dist = [
     { name = "moviepy", specifier = ">=2.2.1" },
     { name = "numpy", specifier = ">=2.2.6" },
     { name = "paho-mqtt", specifier = ">=2.1.0" },
+    { name = "pillow", specifier = ">=11.2.1" },
     { name = "psutil", specifier = ">=7.0.0" },
     { name = "pygame", specifier = ">=2.6.1" },
     { name = "pyglet", specifier = "<1.5.6" },
