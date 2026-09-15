@@ -217,7 +217,7 @@ class VideoCtrl:
 
             tmpImg = rdr.getImageData(
                 self.Video.dxFr, self.Video.dyFr, "RGB",
-                frame.tostring(), pitch=self.Video.dxFr *3,
+                frame.tobytes(), pitch=self.Video.dxFr *3,
             )
             self.Sprite = rdr.getSprite(
                 tmpImg.get_texture(), "stream", self.Group

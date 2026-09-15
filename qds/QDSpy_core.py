@@ -46,7 +46,7 @@ from qds.QDSpy_stage import Stage, ScrDevType
 
 PLATFORM_WINDOWS = platform.system() == "Windows"
 if PLATFORM_WINDOWS:
-    from distutils.spawn import find_executable # type: ignore
+    from shutil import which
 
 if glo.QDSpy_use_Lightcrafter:
     dev = Stage.getLCrDeviceType(0)
@@ -181,7 +181,7 @@ def main(_fNameStim, _isParentGUI, _Sync=None):
     txt = f"{v[0]}.{v[1]}.{v[2]}"
     Log.write("INFO", f"{'Python':11}: v{txt}")
     if PLATFORM_WINDOWS:
-        if find_executable("conda") is not None:
+        if which("conda") is not None:
             txt = subprocess.Popen(
                 "conda -V", shell=True, stdout=subprocess.PIPE
             ).stdout.read()
