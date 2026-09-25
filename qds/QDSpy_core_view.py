@@ -152,6 +152,14 @@ class View:
         self.Stage.isFullScr = self.isFullScr
         self.Stage.winXCorrFact = winXCorrFact
 
+        # Present a blank frame right away, before the (potentially slow)
+        # I/O-hardware and stimulus/shader setup that follows. Each
+        # stimulus run opens its window in a fresh process, so until the
+        # first frame is actually presented here, the OS may still be
+        # showing whatever the previous process's window last displayed
+        self.clear()
+        self.present()
+
         # Try to force vsync, if requested
         result = self.Renderer.force_vSync()
         if result < 0:

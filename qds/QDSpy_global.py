@@ -13,6 +13,7 @@ All rights reserved.
 2025-11-12 - UserOut for Arduino added   
              NOTE: Uses currently fixed (default) pin numbers for the
              Arduion; needs to be changed
+2026-09-24 - Claude adapted the graphics-related code to pyglet 2.x             
 """
 # ---------------------------------------------------------------------
 __author__ 	= "code@eulerlab.de"
@@ -21,9 +22,9 @@ from qds.QDSpy_file_support import getQDSpyPath, getCompletePath
 
 # fmt: off
 # ---------------------------------------------------------------------
-QDSpy_versionStr            = "QDSpy v0.9.9"
+QDSpy_versionStr            = "QDSpy v1.0.1"
 QDSpy_copyrightStr          = "(c) 2013-26 Thomas Euler"
-QDSpy_appID                 = u"QDSpy3.v0.9.9.thomas_euler.eulerlab.de"
+QDSpy_appID                 = u"QDSpy3.v1.0.1.thomas_euler.eulerlab.de"
 QDSpy_fullScrWinName        = "QDSPY_STIMULUS"
 QDSpy_codePath              = "qds"
 QDSpy_path                  = getQDSpyPath()

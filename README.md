@@ -1,6 +1,8 @@
 # QDSpy 
 
-__v0.9.9__
+
+__v1.0.1__ (branch `pyglet2`, requires `pyglet>=2.1,<3.0`)
+__v0.9.9__ (branch `main`, legecy version clamped to `pyglet<1.5.6`)
 
 QDSpy is a software for generating and presenting stimuli for visual neuroscience. It is based on QDS, developped in the former Dept. of Biomedical Optics at the MPI for Medical Research in Heidelberg. QDSpy is written in Python, uses OpenGL and primarly targets Windows 7 and above.
 

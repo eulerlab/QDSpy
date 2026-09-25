@@ -137,12 +137,11 @@ class Shader:
               # retrieve the uniform location, and set
             }[len(vals)](GL.glGetUniformLocation(self.handle, 
                                                  name.encode("ascii")), *vals)            
-    # upload a uniform matrix
-    # works with matrices stored as lists,
-    # as well as euclid matrices
+    # upload a uniform 4x4 matrix (e.g. a `pyglet.math.Mat4`, or any
+    # flat sequence of 16 floats in column-major order)
+    # this program must be currently bound
     def uniform_matrixf(self, name, mat):
-        # obtian the uniform location
-        loc = GL.glGetUniformLocation(self.Handle, name)
-        # uplaod the 4x4 floating point matrix
+        # obtain the uniform location
+        loc = GL.glGetUniformLocation(self.handle, name.encode("ascii"))
+        # upload the 4x4 floating point matrix
         GL.glUniformMatrix4fv(loc, 1, False, (ctypes.c_float * 16)(*mat))
-        

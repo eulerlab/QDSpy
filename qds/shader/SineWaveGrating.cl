@@ -7,9 +7,13 @@
 //
 //#QDS ShaderVertexStart
 // ----------------------------------------------------------------------
-void main() 
+layout(location = 0) in vec2 position;
+
+uniform mat4 mvp;
+
+void main()
 {
-  gl_Position    = ftransform();
+  gl_Position    = mvp * vec4(position, 0.0, 1.0);
 }
 // ----------------------------------------------------------------------
 //#QDS ShaderVertexEnd
@@ -18,6 +22,8 @@ void main()
 // ----------------------------------------------------------------------
 #define pi    3.141592653589
 #define pi2   6.283185307179
+
+out vec4 fragColor;
 
 uniform float time_s;
 uniform vec3  obj_xy_rot;
@@ -36,7 +42,7 @@ void main() {
   b.x          = a.x*cos(obj_xy_rot[2]) -a.y*sin(obj_xy_rot[2]);
   b.y          = a.y*cos(obj_xy_rot[2]) +a.x*sin(obj_xy_rot[2]);
   inten        = (sin(((b.x)/perLen_um +time_s/perDur_s) *pi2) +1.0)/2.0;
-  gl_FragColor = mix(minRGB, maxRGB, inten);
+  fragColor = mix(minRGB, maxRGB, inten);
 }
 // ----------------------------------------------------------------------
 //#QDS ShaderFragmentEnd

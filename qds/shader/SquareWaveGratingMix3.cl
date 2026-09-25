@@ -7,12 +7,17 @@
 //
 //#QDS ShaderVertexStart
 // ----------------------------------------------------------------------
-varying       vec4   vertex_color;
+layout(location = 0) in vec2 position;
+layout(location = 1) in vec4 colors;
+
+out vec4 vertex_color;
+
+uniform mat4 mvp;
 
 void main()
 {
-  gl_Position    = ftransform();
-  vertex_color   = gl_Color;
+  gl_Position    = mvp * vec4(position, 0.0, 1.0);
+  vertex_color   = colors;
 }
 // ----------------------------------------------------------------------
 //#QDS ShaderVertexEnd
@@ -25,6 +30,7 @@ void main()
 #define ar_xy 2.0
 
 in            vec4   vertex_color;
+out           vec4   fragColor;
 
 uniform float time_s;
 uniform vec3  obj_xy_rot;
@@ -47,8 +53,8 @@ void main() {
   rot_deg      = obj_xy_rot[2] /pi2 *360;
   l            = perLen_um *(ar_xy +(1.-ar_xy) *abs(mod(rot_deg, 180.) -90.) /90.);
   inten        = round((sin(((b.x)/l +time_s/perDur_s) *pi2) +1.0)/2.0);
-  gl_FragColor = mix(minRGB, maxRGB, inten);
-  gl_FragColor = mix(gl_FragColor, vertex_color, mixA);
+  fragColor = mix(minRGB, maxRGB, inten);
+  fragColor = mix(fragColor, vertex_color, mixA);
 }
 // ----------------------------------------------------------------------
 //#QDS ShaderFragmentEnd

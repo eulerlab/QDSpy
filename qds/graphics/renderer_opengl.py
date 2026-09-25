@@ -13,7 +13,7 @@ Graphics-API dependent classes for rendering visual stimuli in QDSpy
 'Window'
   A class that encapsulates the actual graphics API windows.
 
-Copyright (c) 2013-2025 Thomas Euler
+Copyright (c) 2013-2026 Thomas Euler
 All rights reserved.
 
 2022-08-06 - Some reformatting
@@ -21,22 +21,33 @@ All rights reserved.
            - Reformatted (using Ruff)
            - Fixed a bug when using `pyglet` higher than v1.5.7
 2024-08-04 - Helper functions for `QDSpy_stim_movie.py` added to remove
-             direct calls to `pyglet`  in that module    
-2025-04-03 - Added the option to apply a "distortion" fragment shader 
-             to the whole stimulus     
-2025-06-01 - Catch error generating 3D texture in RPi5 (image size?)                            
+             direct calls to `pyglet`  in that module
+2025-04-03 - Added the option to apply a "distortion" fragment shader
+             to the whole stimulus
+2025-06-01 - Catch error generating 3D texture in RPi5 (image size?)
+2026-09-23 - Ported from `pyglet` 1.5.x to 2.x. `pyglet` 2.x dropped the
+             legacy fixed-function OpenGL pipeline (matrix stack,
+             immediate mode, `Batch.add`/`add_indexed`), so the stage
+             transform is now computed explicitly as a `pyglet.math.Mat4`
+             and fed as an `mvp` uniform to the flat-color batch shader
+             and to every bound per-object (`.cl`) shader; `pyglet.canvas`
+             renamed to `pyglet.display`; sprites now need a 3D position
+             and no longer take a `usage` hint
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
 
 import sys
 import ctypes
+import math
 import platform
 import pyglet
 import numpy as np
-import pyglet.gl as GL  
-from pyglet.gl.gl_info import GLInfo 
+import pyglet.gl as GL
+from pyglet.gl.gl_info import GLInfo
 from pyglet.image import ImageData
+from pyglet.graphics.shader import Shader as PygletShader, ShaderProgram
+from pyglet.math import Mat4, Vec3
 
 pyglet.options["debug_gl"] = False
 PYGLET_VER = float(pyglet.version[0:3])
@@ -54,7 +65,6 @@ VERT_RGBA = 2
 VERT_COUNT = 3
 
 MODE_TRIANGLE = GL.GL_TRIANGLES
-MODE_POLYGON = GL.GL_POLYGON
 
 # ---------------------------------------------------------------------
 class RendererException(Exception):
@@ -71,13 +81,13 @@ class Renderer:
     """ Initializes the graphics API and manages the windows
     """
     def __init__(
-            self, _View :object =None, 
+            self, _View :object =None,
             _KeysExit :list =[ord(b"Q"), ord(b"q")],
         ):
         """ Initialize graphics API
         """
         # Determine some system properties
-        display = pyglet.canvas.get_display()
+        display = pyglet.display.get_display()
         self.Screens = display.get_screens()
         self.winList = []
         self.View = _View
@@ -105,7 +115,7 @@ class Renderer:
         else:
             info = GLInfo()
             info.set_active_context()
-            sMsg = "OpenGL     : v" + info.get_version()
+            sMsg = "OpenGL     : v" + info.get_version_string()
         return sMsg
 
 
@@ -140,9 +150,6 @@ class Renderer:
     def get_screen_depth(self, _iScr) -> list:
         if _iScr >= 0 and _iScr < len(self.Screens):
             mode = self.Screens[_iScr].get_mode()
-            '''
-            print("_iScr", _iScr, "mode", mode)
-            '''
             if mode:
                 return mode.depth
         return 0
@@ -151,17 +158,14 @@ class Renderer:
     def get_screen_refresh(self, _iScr) -> float:
         if _iScr >= 0 and _iScr < len(self.Screens):
             mode = self.Screens[_iScr].get_mode()
-            '''
-            print("_iScr", _iScr, "mode", mode)
-            '''
             if mode:
                 return mode.rate
-        return 0    
+        return 0
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def force_vSync(self) -> int:
         """ Force VSync
-            Check of swap-control-extention is available and force vsync, 
+            Check of swap-control-extention is available and force vsync,
             if requested
         """
         result = -1
@@ -177,14 +181,14 @@ class Renderer:
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def create_window(
             self, _iScr :int =0, _title :str ="",
-            _dx :int =0, _dy :int =0, _left :int =0, _top :int =0, 
-            _scale :float =1.0, 
-            _isScrOvl :bool =False, _iScrGUI :int =0, 
+            _dx :int =0, _dy :int =0, _left :int =0, _top :int =0,
+            _scale :float =1.0,
+            _isScrOvl :bool =False, _iScrGUI :int =0,
             _offset :tuple =(0, 0),
         ) -> object:
         """ Create window
-            If the renderer was initialized, create a window instance and 
-            store it in the internal window list. For parameters, see 
+            If the renderer was initialized, create a window instance and
+            store it in the internal window list. For parameters, see
             Window class.
         """
         if self.isReady:
@@ -195,21 +199,9 @@ class Renderer:
                 )
             )
             GL.glClearColor(0.0, 0.0, 0.0, 0.0)
-            GL.glColor3f(1.0, 1.0, 1.0)
             GL.glDisable(GL.GL_DEPTH_TEST)
             GL.glEnable(GL.GL_BLEND)
             GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
-            
-            '''
-            GL.glTexParameteri(
-                GL.GL_TEXTURE_3D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR
-            )
-            GL.glTexParameteri(
-                GL.GL_TEXTURE_3D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR
-            )
-            GL.glShadeModel(GL.GL_FLAT) # GL_FLAT or GL_SMOOTH
-            GL.glEnable(GL.GL_POINT_SMOOTH)
-            '''
 
             return self.winList[-1]
         else:
@@ -232,7 +224,7 @@ class Renderer:
             win.switch_to()
             if len(pyglet.app.windows) == 1:
                 win.dispatch_events()
-            if flip:    
+            if flip:
                 win.flip()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -274,24 +266,27 @@ class Window(pyglet.window.Window):
     """
     def __init__(
             self, _Renderer, _iScr, _title,
-            _dx, _dy, _left, _top, _scale, _isScrOvl, _iScrGUI, 
+            _dx, _dy, _left, _top, _scale, _isScrOvl, _iScrGUI,
             _offset,
         ):
         """ Generate new window
             _Renderer  := reference of Renderer instance
             _iScr      := index of screen (only for full-screen)
             _title     := title string
-            _dx,_dy    := window size in pixels or (0,0) for 
+            _dx,_dy    := window size in pixels or (0,0) for
                           full-screen
             _left,_top := coordinates of top-left corner in pixels
-            _isScrOvl  := if True, generates an large window across 
+            _isScrOvl  := if True, generates an large window across
                           two devices
             _iScrGUI   := index of GUI screen
-            _offset    := additional x-y offset to correct large 
+            _offset    := additional x-y offset to correct large
                           window position (in pixels)
         """
         self.isPresent = not (_scale < 1.0)
-        self.scale = _scale
+        # Note: pyglet 2.x's own `Window` class now defines a read-only
+        # `scale` property (DPI scaling), so QDSpy's window-scale factor
+        # is kept under its own name to avoid the collision
+        self.winScale = _scale
         self.bufferMan = None
         self.Renderer = _Renderer
         self.isFullScr = _isScrOvl or ((_dx == 0) or (_dy == 0))
@@ -304,12 +299,12 @@ class Window(pyglet.window.Window):
             if _isScrOvl:
                 # Screen overlay mode
                 super().__init__(
-                    vsync=True, fullscreen=False,  
+                    vsync=True, fullscreen=False,
                     width=_dx, height=_dy, caption=_title,
                     style=pyglet.window.Window.WINDOW_STYLE_BORDERLESS,
                 )
                 self.set_location(
-                    self.Renderer.Screens[_iScrGUI].width +_offset[0], 
+                    self.Renderer.Screens[_iScrGUI].width +_offset[0],
                     _offset[1]
                 )
 
@@ -337,7 +332,7 @@ class Window(pyglet.window.Window):
             self.set_location(_left, _top)
 
         self.switch_to()
-        GL.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
         self.isReady = True
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -346,36 +341,6 @@ class Window(pyglet.window.Window):
         if self.Renderer.View and (symbol in self.Renderer.keysExit):
             self.Renderer.View.onKeyboard(symbol, 0, 0)
             return pyglet.event.EVENT_HANDLED
-
-    """
-    def on_draw(self):
-        self.switch_to()
-        print("on_draw")
-        return pyglet.event.EVENT_HANDLED
-    """
-
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    """
-    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        return pyglet.event.EVENT_HANDLED
-
-    def on_mouse_enter(self, x, y):
-        print("enter")
-        return pyglet.event.EVENT_HANDLED
-
-    def on_mouse_leave(self, x, y):
-        print("leave")
-        return pyglet.event.EVENT_HANDLED
-
-    def on_mouse_motion(self, x, y, dx, dy):
-        return pyglet.event.EVENT_HANDLED
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        return pyglet.event.EVENT_HANDLED
-
-    def on_mouse_release(sef, x, y, button, modifiers):
-        return pyglet.event.EVENT_HANDLED
-    """
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def set_mouse_visible(self, _visible :bool):
@@ -410,7 +375,50 @@ class Window(pyglet.window.Window):
                 self.Scr2Vert[VERT_RGBA] = RGBA2 * self.Scr2Vert[VERT_COUNT]
 
 # =====================================================================
+# Shared flat-color shader program
 #
+# Used for stimulus objects that have no per-object (`.cl`) shader
+# assigned, and as a vertex-format factory for shader-enabled objects
+# (their vertex data lives in a VBO built from this program; which
+# actual shader executes at draw time is decided by the bound Group,
+# see `NoneGroup`/`ShaderBindGroup` below). All vertex shaders that can
+# end up rendering this data (this one and every `.cl` shader) agree on
+# `layout(location = 0) in vec2 position` (and, where used,
+# `layout(location = 1) in vec4 colors`), so the same VBO/VAO can be
+# drawn by whichever shader is bound.
+# ---------------------------------------------------------------------
+_FLAT_VERTEX_SRC = """#version 330 core
+layout(location = 0) in vec2 position;
+layout(location = 1) in vec4 colors;
+
+out vec4 vertex_colors;
+
+uniform mat4 mvp;
+
+void main()
+{
+    gl_Position = mvp * vec4(position, 0.0, 1.0);
+    vertex_colors = colors;
+}
+"""
+
+_FLAT_FRAGMENT_SRC = """#version 330 core
+in vec4 vertex_colors;
+out vec4 final_colors;
+
+void main()
+{
+    final_colors = vertex_colors;
+}
+"""
+
+def _createFlatShaderProgram() -> ShaderProgram:
+    """ Compile and link the shared flat-color shader program
+    """
+    vert = PygletShader(_FLAT_VERTEX_SRC, "vertex")
+    frag = PygletShader(_FLAT_FRAGMENT_SRC, "fragment")
+    return ShaderProgram(vert, frag)
+
 # ---------------------------------------------------------------------
 class Batch:
     """ Encapsulates a batch of OpenGL drawing commands
@@ -422,6 +430,7 @@ class Batch:
         """ Generate new batch
         """
         self.isScrOvl = _isScrOvl
+        self.flatProgram = _createFlatShaderProgram()
         self.Batch = pyglet.graphics.Batch()
         self.BatchSpr = pyglet.graphics.Batch()
         if _isScrOvl:
@@ -429,70 +438,87 @@ class Batch:
             self.Batch2Spr = pyglet.graphics.Batch()
 
         # indexed VBO, not shader-enabled objects only
-        self.IV = None  
+        self.IV = None
         self.IV2 = None
-        
-        # list of current indexed VBOs for shader-enabled objects, 
+
+        # list of current indexed VBOs for shader-enabled objects,
         # one VBO entry per object
         self.IVShObj = []
         self.IVShObj2 = []
 
-        # pyglet Group object for 'currIV' VBO
-        self.IVGr = None  
-        self.IVGr2 = None
+        # pyglet Group object for 'currIV' VBO (shared between screen 1
+        # and 2, matching the shader-object groups below)
+        self.IVGr = NoneGroup(self.flatProgram)
+        self.IVGr2 = self.IVGr if _isScrOvl else None
 
         # pyglet Group object for 'currIVShObj' VBOs
-        self.IVShObjGr = {}  
+        self.IVShObjGr = {}
         self.IVShObjGr2 = {}
 
         # Reset shader manager
         self.shaderManager = None
         self.sprite = None
 
+        # Small standalone (not batched) rectangle used to draw the
+        # screen-2 backdrop and the marker/anti-marker overlay
+        self._rectVL = self.flatProgram.vertex_list_indexed(
+            4, GL.GL_TRIANGLES, (0, 1, 2, 0, 2, 3),
+            position=("f", (0.0,) * 8), colors=("Bn", (0,) * 16),
+        )
+        self._lastProjection = Mat4()
+
         # Get distortion shaders if requested
         self.doDistort = False
         if len(_distort_frag) > 0 and len(distort_vert) > 0:
-            self.distort_shader = self.load_distort_shader(
+            self.distortProgram = self.load_distort_shader(
                 distort_vert, _distort_frag
             )
             self.doDistort = True
 
+            # Static full-screen quad (NDC space, no transform needed)
+            self._distortQuadVL = self.distortProgram.vertex_list_indexed(
+                4, GL.GL_TRIANGLES, (0, 1, 2, 0, 2, 3),
+                position=("f", (-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0)),
+                tex_coord=("f", (0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0)),
+            )
+
             # Prepare frame buffer and texture
             self._fbo = ctypes.c_uint()
             GL.glGenFramebuffers(1, ctypes.byref(self._fbo))
-        
+
             self._fbo_texture = ctypes.c_uint()
             GL.glGenTextures(1, ctypes.byref(self._fbo_texture))
-        
+
             # Initialize texture with specific size
             GL.glBindTexture(GL.GL_TEXTURE_2D, self._fbo_texture.value)
             GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
             GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR)
             GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE)
             GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE)
-            
+
             # Allocate storage for texture - use a default size initially
             # (will be resized in draw())
             GL.glTexImage2D(
                 GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, 1920, 1080, 0,
                 GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, None
             )
-        
+
             # Set up framebuffer
             GL.glBindFramebuffer(GL.GL_FRAMEBUFFER, self._fbo.value)
             GL.glFramebufferTexture2D(
                 GL.GL_FRAMEBUFFER, GL.GL_COLOR_ATTACHMENT0,
                 GL.GL_TEXTURE_2D, self._fbo_texture.value, 0
             )
-        
+
             # Check initial setup
             status = GL.glCheckFramebufferStatus(GL.GL_FRAMEBUFFER)
             if status != GL.GL_FRAMEBUFFER_COMPLETE:
                 raise RuntimeError(f"Distortion frame buffer failed ({status})")
-        
+
             # Unbind
             GL.glBindFramebuffer(GL.GL_FRAMEBUFFER, 0)
             GL.glBindTexture(GL.GL_TEXTURE_2D, 0)
+            self._fboSize = (1920, 1080)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def set_shader_manager(self, _shMan :object):
@@ -507,14 +533,14 @@ class Batch:
         self.delete_object_data()
         nV = len(_tri) //2
         mode = GL.GL_TRIANGLES
-        self.IV = self.Batch.add_indexed(
-            nV, mode, self.IVGr, _indices, 
-            ("v2i/stream", _tri), ("c4B/stream", _RGBA)
+        self.IV = self.flatProgram.vertex_list_indexed(
+            nV, mode, _indices, batch=self.Batch, group=self.IVGr,
+            position=("f", _tri), colors=("Bn", _RGBA),
         )
         if self.isScrOvl:
-            self.IV2 = self.Batch2.add_indexed(
-                nV, mode, self.IVGr2, _indices,
-                ("v2i/stream", _tri), ("c4B/stream", _RGBA2),
+            self.IV2 = self.flatProgram.vertex_list_indexed(
+                nV, mode, _indices, batch=self.Batch2, group=self.IVGr2,
+                position=("f", _tri), colors=("Bn", _RGBA2),
             )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -525,12 +551,14 @@ class Batch:
         """
         self.delete_object_data()
         nV = len(_tri) // 2
-        self.IV = self.Batch.add(
-            nV, _mode, self.IVGr, ("v2i/stream", _tri), ("c4B/stream", _RGBA)
+        self.IV = self.flatProgram.vertex_list(
+            nV, _mode, batch=self.Batch, group=self.IVGr,
+            position=("f", _tri), colors=("Bn", _RGBA),
         )
         if self.isScrOvl:
-            self.IV2 = self.Batch2.add(
-                nV, _mode, self.IVGr2, ("v2i/stream", _tri), ("c4B/stream", _RGBA2)
+            self.IV2 = self.flatProgram.vertex_list(
+                nV, _mode, batch=self.Batch2, group=self.IVGr2,
+                position=("f", _tri), colors=("Bn", _RGBA2),
             )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -551,36 +579,36 @@ class Batch:
 
 
     def replace_object_data_vertices(self, _vertTr :list):
-        self.IV.vertices = _vertTr
+        self.IV.position[:] = _vertTr
         if self.isScrOvl:
-            self.IV2.vertices = _vertTr
+            self.IV2.position[:] = _vertTr
 
 
     def replace_object_data_colors(self, _vRGBATr :list, _vRGBATr2 :list):
-        self.IV.colors = _vRGBATr
+        self.IV.colors[:] = _vRGBATr
         if self.isScrOvl:
-            self.IV2.colors = _vRGBATr2
+            self.IV2.colors[:] = _vRGBATr2
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def add_shader_object_data(
-            self, _objID :int, _indices :list, _tri :list, 
+            self, _objID :int, _indices :list, _tri :list,
             _RGBA :list, _RGBA2 :list
         ):
         """ Add vertex triangle data for shader objects to current batch
         """
         self.IVShObj.append(
-            self.Batch.add_indexed(
-                len(_tri) // 2, GL.GL_TRIANGLES, 
-                self.IVShObjGr[_objID], _indices, 
-                ("v2i/stream", _tri), ("c4B/stream", _RGBA),
+            self.flatProgram.vertex_list_indexed(
+                len(_tri) // 2, GL.GL_TRIANGLES, _indices,
+                batch=self.Batch, group=self.IVShObjGr[_objID],
+                position=("f", _tri), colors=("Bn", _RGBA),
             )
         )
         if self.isScrOvl:
             self.IVShObj2.append(
-                self.Batch2.add_indexed(
-                    len(_tri) // 2, GL.GL_TRIANGLES, 
-                    self.IVShObjGr2[_objID], _indices,
-                    ("v2i/stream", _tri), ("c4B/stream", _RGBA2),
+                self.flatProgram.vertex_list_indexed(
+                    len(_tri) // 2, GL.GL_TRIANGLES, _indices,
+                    batch=self.Batch2, group=self.IVShObjGr2[_objID],
+                    position=("f", _tri), colors=("Bn", _RGBA2),
                 )
             )
 
@@ -603,10 +631,10 @@ class Batch:
             self, _objID :int, _shader :object =None, _shType :str =""
         ):
         if _shader is None:
-            shOGr = NoneGroup()
+            shOGr = NoneGroup(self.flatProgram, _order=_objID, _parent=CommonShaderParent)
         else:
             shOGr = ShaderBindGroup(
-                _shader, _shType, _objID, 
+                _shader, _shType, _objID,
                 self.shaderManager
             )
         self.IVShObjGr[_objID] = shOGr
@@ -644,8 +672,8 @@ class Batch:
     def winCoordToStageCoord(
             self, _Win :object, _Stage :object, _pos :list
         ) -> list:
-        xScale = _Stage.scalX_umPerPix * _Stage.winXCorrFact * _Win.scale
-        yScale = _Stage.scalY_umPerPix * _Stage.winXCorrFact * _Win.scale
+        xScale = _Stage.scalX_umPerPix * _Stage.winXCorrFact * _Win.winScale
+        yScale = _Stage.scalY_umPerPix * _Stage.winXCorrFact * _Win.winScale
         return (
             int((_pos[0] - _Win.width / 2) / xScale),
             int((_pos[1] - _Win.height / 2) / yScale),
@@ -654,65 +682,31 @@ class Batch:
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def load_distort_shader(
             self, vertex_path :str, fragment_path :str
-        ) -> object:
-        """ Load the shader for the stimulus distortion and returns 
+        ) -> ShaderProgram:
+        """ Load the shader for the stimulus distortion and returns
             the compiled and linked shader program
         """
-        with open(vertex_path, 'r') as f:
+        with open(vertex_path, "r") as f:
             v_src = f.read()
-        with open(fragment_path, 'r') as f:
+        with open(fragment_path, "r") as f:
             f_src = f.read()
 
-        # Compile vertex shader
-        v_sh = GL.glCreateShader(GL.GL_VERTEX_SHADER)
-        v_src_buf = ctypes.create_string_buffer(v_src.encode())
-        v_src_ptr = ctypes.cast(
-            ctypes.pointer(ctypes.pointer(v_src_buf)), 
-            ctypes.POINTER(ctypes.POINTER(ctypes.c_char))
-        )
-        GL.glShaderSource(v_sh, 1, v_src_ptr, None)
-        GL.glCompileShader(v_sh)
-        compile_status = ctypes.c_int()
-        GL.glGetShaderiv(
-            v_sh, GL.GL_COMPILE_STATUS, 
-            ctypes.byref(compile_status)
-        )
-        if not compile_status:
-            raise RuntimeError(GL.glGetShaderInfoLog(v_sh).decode())
+        vert = PygletShader(v_src, "vertex")
+        frag = PygletShader(f_src, "fragment")
+        return ShaderProgram(vert, frag)
 
-        # Compile fragment shader
-        f_sh = GL.glCreateShader(GL.GL_FRAGMENT_SHADER)
-        f_src_buf = ctypes.create_string_buffer(f_src.encode())
-        f_src_ptr = ctypes.cast(
-            ctypes.pointer(ctypes.pointer(f_src_buf)), 
-            ctypes.POINTER(ctypes.POINTER(ctypes.c_char))
-        )
-        GL.glShaderSource(f_sh, 1, f_src_ptr, None)
-        GL.glCompileShader(f_sh)
-        GL.glGetShaderiv(
-            f_sh, GL.GL_COMPILE_STATUS, 
-            ctypes.byref(compile_status)
-        )
-        if not compile_status:
-            raise RuntimeError(GL.glGetShaderInfoLog(f_sh).decode())
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def _setGroupMatrices(self, _mvp :Mat4, _forScreen2 :bool =False):
+        """ Push the current model-view-projection matrix to the flat
+            batch shader and to every currently bound per-object shader
+        """
+        ivGr = self.IVGr2 if _forScreen2 else self.IVGr
+        grDict = self.IVShObjGr2 if _forScreen2 else self.IVShObjGr
+        if ivGr is not None:
+            ivGr.set_matrix(_mvp)
+        for gr in grDict.values():
+            gr.set_matrix(_mvp)
 
-        # Create shader program
-        sh_prog = GL.glCreateProgram()
-        GL.glAttachShader(sh_prog, v_sh)
-        GL.glAttachShader(sh_prog, f_sh)
-        GL.glLinkProgram(sh_prog)
-        link_status = ctypes.c_int()
-        GL.glGetProgramiv(
-            sh_prog, GL.GL_LINK_STATUS, ctypes.byref(link_status)
-        )
-        if not link_status:
-            raise RuntimeError(GL.glGetProgramInfoLog(sh_prog).decode())
-
-        GL.glDeleteShader(v_sh)
-        GL.glDeleteShader(f_sh)
-
-        return sh_prog
-    
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def draw(self, _Stage :object, _View :object, _isClear :bool =False):
         """ Draw current batch of triangle vertices, acknowledging the
@@ -721,236 +715,226 @@ class Batch:
         for iWin, win in enumerate(pyglet.app.windows):
             win.switch_to()
 
-            xScale = _Stage.scalX_umPerPix *_Stage.winXCorrFact *win.scale
-            yScale = _Stage.scalY_umPerPix *_Stage.winXCorrFact *win.scale
+            xScale = _Stage.scalX_umPerPix *_Stage.winXCorrFact *win.winScale
+            yScale = _Stage.scalY_umPerPix *_Stage.winXCorrFact *win.winScale
             yWin_5 = win.height //2
             xWin_5 = win.width //2
             xWin_25 = win.width //4
 
             assert len(win.caption) > 0, "Report to TE"
-            '''
-            if len(win.caption) == 0:
-                # - - - - - - - - - - - - - - - - - - - - - - - - - -                    
-                # ??
-                # - - - - - - - - - - - - - - - - - - - - - - - - - -                    
-                GL.glMatrixMode(GL.GL_PROJECTION)
-                GL.glLoadIdentity()
-                GL.glMatrixMode(GL.GL_MODELVIEW)
-                GL.glLoadIdentity()
-                GL.glPushMatrix()
-                GL.glTranslatef(_Stage.centOffX_pix, _Stage.centOffY_pix, 0)
-                GL.glScalef(xScale, yScale, 0.0)
-                GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
-                if not _isClear:
-                    self.Batch.draw()
-                self.BatchSpr.draw()
-                GL.glPopMatrix()
 
-            else:
-            '''
             if _Stage.useScrOvl:
-                # - - - - - - - - - - - - - - - - - - - - - - - -                    
+                # - - - - - - - - - - - - - - - - - - - - - - - -
                 # Screen overlay mode
                 # (Does not currently support distortion shader)
-                # - - - - - - - - - - - - - - - - - - - - - - - -                    
+                # - - - - - - - - - - - - - - - - - - - - - - - -
                 # Draw on first (left) screen
                 GL.glViewport(0, 0, win.width // 2, win.height)
-                GL.glMatrixMode(GL.GL_PROJECTION)
-                GL.glLoadIdentity()
-                GL.glOrtho(
-                    -xWin_25 * _Stage.hFlipScr1,
-                    xWin_25 * _Stage.hFlipScr1,
-                    -yWin_5 * _Stage.vFlipScr1,
-                    yWin_5 * _Stage.vFlipScr1,
-                    -1,
-                    1,
+                ortho = Mat4.orthogonal_projection(
+                    -xWin_25 * _Stage.hFlipScr1, xWin_25 * _Stage.hFlipScr1,
+                    -yWin_5 * _Stage.vFlipScr1, yWin_5 * _Stage.vFlipScr1,
+                    -1, 1,
                 )
-                GL.glMatrixMode(GL.GL_MODELVIEW)
-                GL.glLoadIdentity()
-                GL.glPushMatrix()
-                x = _Stage.centOffX_pix
-                y = _Stage.centOffY_pix
-                GL.glTranslatef(x, y, 0)
-                GL.glScalef(xScale, yScale, 0.0)
-                GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
+                stage = _makeStageTransform(
+                    _Stage.centOffX_pix, _Stage.centOffY_pix,
+                    xScale, yScale, _Stage.rot_angle,
+                )
+                self._lastProjection = ortho
+                win.projection = ortho
+                win.view = stage
+                self._setGroupMatrices(ortho @ stage, _forScreen2=False)
                 if not _isClear:
                     self.Batch.draw()
                 self.BatchSpr.draw()
-                GL.glPopMatrix()
 
                 # Draw on second (right) screen
                 GL.glViewport(win.width // 2, 0, win.width // 2, win.height)
-                GL.glMatrixMode(GL.GL_PROJECTION)
-                GL.glLoadIdentity()
-                GL.glOrtho(
-                    -xWin_25 * _Stage.hFlipScr2,
-                    xWin_25 * _Stage.hFlipScr2,
-                    -yWin_5 * _Stage.vFlipScr2,
-                    yWin_5 * _Stage.vFlipScr2,
-                    -1,
-                    1,
+                ortho2 = Mat4.orthogonal_projection(
+                    -xWin_25 * _Stage.hFlipScr2, xWin_25 * _Stage.hFlipScr2,
+                    -yWin_5 * _Stage.vFlipScr2, yWin_5 * _Stage.vFlipScr2,
+                    -1, 1,
                 )
-                GL.glMatrixMode(GL.GL_MODELVIEW)
-                GL.glLoadIdentity()
-                GL.glPushMatrix()
-
+                self._lastProjection = ortho2
+                win.projection = ortho2
                 self.add_rect_data(win.Scr2Vert)
 
                 x = _Stage.centOffX_pix + _Stage.offXScr2_pix
                 y = _Stage.centOffY_pix + _Stage.offYScr2_pix
-                GL.glTranslatef(x, y, 0)
-                GL.glScalef(xScale, yScale, 0.0)
-                GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
+                stage2 = _makeStageTransform(x, y, xScale, yScale, _Stage.rot_angle)
+                win.view = stage2
+                self._setGroupMatrices(ortho2 @ stage2, _forScreen2=True)
                 if not _isClear:
                     self.Batch2.draw()
                 self.Batch2Spr.draw()
-                GL.glPopMatrix()
 
             else:
-                # - - - - - - - - - - - - - - - - - - - - - - - -                    
+                # - - - - - - - - - - - - - - - - - - - - - - - -
                 # Single-screen / window mode
-                # - - - - - - - - - - - - - - - - - - - - - - - -                
+                # - - - - - - - - - - - - - - - - - - - - - - - -
+                ortho = Mat4.orthogonal_projection(
+                    -xWin_5, xWin_5, -yWin_5, yWin_5, -1, 1
+                )
+                stage = _makeStageTransform(
+                    _Stage.centOffX_pix, _Stage.centOffY_pix,
+                    xScale, yScale, _Stage.rot_angle,
+                )
+                self._lastProjection = ortho
+                mvp = ortho @ stage
+
                 if not self.doDistort:
-                    GL.glMatrixMode(GL.GL_PROJECTION)
-                    GL.glLoadIdentity()
-                    GL.glOrtho(-xWin_5, xWin_5, -yWin_5, yWin_5, -1, 1)
-                    GL.glMatrixMode(GL.GL_MODELVIEW)
-                    GL.glLoadIdentity()
-                    GL.glPushMatrix()
-                    GL.glTranslatef(_Stage.centOffX_pix, _Stage.centOffY_pix, 0)
-                    GL.glScalef(xScale, yScale, 0.0)
-                    GL.glRotatef(_Stage.rot_angle, 0, 0, 1)
+                    win.projection = ortho
+                    win.view = stage
+                    self._setGroupMatrices(mvp, _forScreen2=False)
                     if not _isClear:
                         self.Batch.draw()
                     self.BatchSpr.draw()
-                    GL.glPopMatrix()
 
-                else:    
-                    # Experimental code w/ distortion shader
-                    #    
-                    # Setup framebuffer
+                else:
+                    # Render the scene into the off-screen framebuffer,
+                    # then post-process it onto the screen with the
+                    # distortion shader
                     GL.glBindFramebuffer(GL.GL_FRAMEBUFFER, self._fbo)
-                    '''
-                    status = GL.glCheckFramebufferStatus(GL.GL_FRAMEBUFFER)
-                    if status != GL.GL_FRAMEBUFFER_COMPLETE:
-                        print(f"Framebuffer incomplete! Status: {status}")
-                        return
-                    '''            
                     GL.glViewport(0, 0, win.width, win.height)
-                    GL.glClear(GL.GL_COLOR_BUFFER_BIT)                
-                    GL.glMatrixMode(GL.GL_PROJECTION)
-                    GL.glLoadIdentity()
-                    GL.glOrtho(-xWin_5, xWin_5, -yWin_5, yWin_5, -1, 1)
 
-                    GL.glBindTexture(GL.GL_TEXTURE_2D, self._fbo_texture)
-                    GL.glTexImage2D(
-                        GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, 
-                        win.width, win.height, 0,
-                        GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, None
-                    )
-                    GL.glFramebufferTexture2D(
-                        GL.GL_FRAMEBUFFER, GL.GL_COLOR_ATTACHMENT0,
-                        GL.GL_TEXTURE_2D, self._fbo_texture, 0
-                    )
+                    if self._fboSize != (win.width, win.height):
+                        # Only (re)allocate the texture's storage when the
+                        # window size actually changed. Redoing this every
+                        # frame left the color attachment's content
+                        # undefined right after the *previous* `glClear()`
+                        # call below, so frame N's clear was wasted on
+                        # storage that got replaced afterwards -- any
+                        # region a frame didn't fully redraw kept showing
+                        # whatever was previously in that (recycled) video
+                        # memory, including remnants of an earlier stimulus
+                        GL.glBindTexture(GL.GL_TEXTURE_2D, self._fbo_texture)
+                        GL.glTexImage2D(
+                            GL.GL_TEXTURE_2D, 0, GL.GL_RGBA,
+                            win.width, win.height, 0,
+                            GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, None
+                        )
+                        GL.glFramebufferTexture2D(
+                            GL.GL_FRAMEBUFFER, GL.GL_COLOR_ATTACHMENT0,
+                            GL.GL_TEXTURE_2D, self._fbo_texture, 0
+                        )
+                        self._fboSize = (win.width, win.height)
 
-                    GL.glMatrixMode(GL.GL_MODELVIEW)
-                    GL.glLoadIdentity()
-                    GL.glPushMatrix()
-                    GL.glTranslatef(
-                        _Stage.centOffX_pix, _Stage.centOffY_pix, 
-                        0
-                    )
-                    GL.glScalef(xScale, yScale, 0.0)
-                    GL.glRotatef(_Stage.rot_angle, 0, 0, 1)      
+                    GL.glClear(GL.GL_COLOR_BUFFER_BIT)
 
-                    # Draw scene to framebuffer
+                    win.projection = ortho
+                    win.view = stage
+                    self._setGroupMatrices(mvp, _forScreen2=False)
                     if not _isClear:
                         self.Batch.draw()
                     self.BatchSpr.draw()
-                    GL.glPopMatrix()
-                    
+
                     # Now render to screen with post-processing
                     GL.glBindFramebuffer(GL.GL_FRAMEBUFFER, 0)
                     GL.glViewport(0, 0, win.width, win.height)
                     GL.glClear(GL.GL_COLOR_BUFFER_BIT)
 
-                    GL.glMatrixMode(GL.GL_PROJECTION)
-                    GL.glLoadIdentity()
-                    GL.glMatrixMode(GL.GL_MODELVIEW)
-                    GL.glLoadIdentity()
-                    
-                    # Enable texturing
-                    GL.glEnable(GL.GL_TEXTURE_2D)
+                    GL.glActiveTexture(GL.GL_TEXTURE0)
                     GL.glBindTexture(GL.GL_TEXTURE_2D, self._fbo_texture.value)
 
-                    # Draw fullscreen quad amd apply distortion shader
-                    GL.glUseProgram(self.distort_shader)
-                    '''
-                    # Print the current program to verify                    
-                    current_program = ctypes.c_int()
-                    GL.glGetIntegerv(GL.GL_CURRENT_PROGRAM, ctypes.byref(current_program))
-                    print(f"Current shader program: {current_program.value}, Expected: {self.distort_shader}")        
-                    '''
-                    GL.glBegin(GL.GL_QUADS)
-                    GL.glTexCoord2f(0.0, 0.0); GL.glVertex2f(-1.0, -1.0)
-                    GL.glTexCoord2f(1.0, 0.0); GL.glVertex2f( 1.0, -1.0)
-                    GL.glTexCoord2f(1.0, 1.0); GL.glVertex2f( 1.0,  1.0)
-                    GL.glTexCoord2f(0.0, 1.0); GL.glVertex2f(-1.0,  1.0)
-                    GL.glEnd()
+                    self.distortProgram.use()
+                    if "framebuffer_texture" in self.distortProgram.uniforms:
+                        self.distortProgram["framebuffer_texture"] = 0
+                    if "resolution" in self.distortProgram.uniforms:
+                        self.distortProgram["resolution"] = (
+                            float(win.width), float(win.height)
+                        )
+                    self._distortQuadVL.draw(GL.GL_TRIANGLES)
+                    self.distortProgram.stop()
 
-                    # Clean up                    
-                    GL.glDisable(GL.GL_TEXTURE_2D)
-                    GL.glBindTexture(GL.GL_TEXTURE_2D, 0)                
-                    GL.glUseProgram(0)
+                    GL.glBindTexture(GL.GL_TEXTURE_2D, 0)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def add_rect_data(self, _Vert :list):
-        """ Add rectangle described by _Vert to line up rendering commands
+        """ Draw rectangle described by _Vert immediately (not part of
+            the persistent batch), using the current (i.e. last set)
+            projection and an identity view (no stage transform)
         """
-        pyglet.graphics.draw_indexed(
-            _Vert[VERT_COUNT],
-            GL.GL_TRIANGLES,
-            _Vert[VERT_INDICES],
-            ("v2i/stream", _Vert[VERT_VERT]),
-            ("c4B/stream", _Vert[VERT_RGBA]),
-        )
+        self._rectVL.position[:] = _Vert[VERT_VERT]
+        self._rectVL.colors[:] = _Vert[VERT_RGBA]
+        self._rectVL.indices = _Vert[VERT_INDICES]
+        self.flatProgram.use()
+        self.flatProgram["mvp"] = self._lastProjection
+        self._rectVL.draw(GL.GL_TRIANGLES)
+        self.flatProgram.stop()
 
 # =====================================================================
 #
 # ---------------------------------------------------------------------
-class CommonParentGroup(pyglet.graphics.OrderedGroup):
+class CommonParentGroup(pyglet.graphics.Group):
     """ Parent class for all groups, based on a pyglet group
     """
     def __init__(self):
-        super(CommonParentGroup, self).__init__(order=0, parent=None)
+        super().__init__(order=0, parent=None)
         self.iObj = 0
 
 
-class CommonShaderParentGroup(pyglet.graphics.OrderedGroup):
+class CommonShaderParentGroup(pyglet.graphics.Group):
     """ Parent class for a shader object group
     """
     def __init__(self):
-        super(CommonShaderParentGroup, self).__init__(
-            order=1, parent=CommonParent
-        )
+        super().__init__(order=1, parent=CommonParent)
 
 # ---------------------------------------------------------------------
 CommonParent = CommonParentGroup()
 CommonShaderParent = CommonShaderParentGroup()
 
 # ---------------------------------------------------------------------
-# Shader bind/unbind class
+# Group that renders using the shared flat-color shader (used for
+# objects without a custom `.cl` shader)
+# ---------------------------------------------------------------------
+class NoneGroup(pyglet.graphics.Group):
+    """ Pyglet group for non-shader objects
+    """
+    def __init__(self, _program, _order=0, _parent=None):
+        super().__init__(order=_order, parent=_parent or CommonParent)
+        self.iObj = 0
+        self.program = _program
+        self.mvp = Mat4()
+
+    def set_matrix(self, _mvp :Mat4):
+        self.mvp = _mvp
+
+    def set_state(self):
+        self.program.use()
+        self.program["mvp"] = self.mvp
+
+    def unset_state(self):
+        self.program.stop()
+
+    # pyglet's default Group equality is structural (class, order,
+    # parent), meant for a few static, reused Group singletons. QDSpy
+    # instead creates a fresh Group per stimulus object on every scene
+    # change, reusing the same order (the object index) each time -- with
+    # structural equality, a new Group would compare equal to the (still
+    # not yet pruned) previous scene's Group at that same order, and
+    # pyglet would keep dispatching draws through the stale one, freezing
+    # animated/parameterized shader objects after their first update. So
+    # these groups use identity-based equality instead.
+    def __eq__(self, other):
+        return self is other
+
+    def __hash__(self):
+        return id(self)
+
+# ---------------------------------------------------------------------
+# Shader bind/unbind group
 # ---------------------------------------------------------------------
 class ShaderBindGroup(pyglet.graphics.Group):
     """ Pyglet group to bind/unbind shader objects
     """
     def __init__(self, _shader, _shType, _iObj, _ShMan):
-        super(ShaderBindGroup, self).__init__(parent=CommonShaderParent)
-        self.parent.order = _iObj
+        super().__init__(order=_iObj, parent=CommonShaderParent)
 
         self.t_s = 0.0
         self.iObj = _iObj
         self.posXY = (0, 0)
+        self.xy = (0, 0)
+        self.rot = 0.0
+        self.mvp = Mat4()
         self.shader = _shader
         self.shType = _shType
         self.iShType = _ShMan.getShaderTypeIndex(_shType)
@@ -974,9 +958,13 @@ class ShaderBindGroup(pyglet.graphics.Group):
         self.t_s = _t_s
 
 
+    def set_matrix(self, _mvp :Mat4):
+        self.mvp = _mvp
+
+
     def set_state(self):
-        GL.glEnable(GL.GL_TEXTURE_2D)
         self.shader.bind()
+        self.shader.uniform_matrixf("mvp", self.mvp)
         self.shader.uniformf("time_s", self.t_s)
         self.shader.uniformf("obj_xy_rot", self.xy[0], self.xy[1], self.rot)
         for i, key in enumerate(self.pKeys):
@@ -999,37 +987,31 @@ class ShaderBindGroup(pyglet.graphics.Group):
 
 
     def unset_state(self):
-        GL.glDisable(GL.GL_TEXTURE_2D)
         self.shader.unbind()
 
+    # See `NoneGroup.__eq__` -- identity-based equality so a new scene's
+    # Group is never aliased to the previous scene's (same-order) one.
+    def __eq__(self, other):
+        return self is other
 
-    def __cmp__(self, other):
-        if self.order < other.order:
-            return -1
-        elif self.order == other.order:
-            return 0
-        else:
-            return 1
-
-# ---------------------------------------------------------------------
-class NoneGroup(pyglet.graphics.OrderedGroup):
-    """ Pyglet group for non-shader objects
-    """
-    def __init__(self):
-        super(NoneGroup, self).__init__(order=0, parent=CommonParent)
-        self.iObj = 0
-
-
-    def __cmp__(self, other):
-        if self.order < other.order:
-            return -1
-        elif self.order == other.order:
-            return 0
-        else:
-            return 1
+    def __hash__(self):
+        return id(self)
 
 # ---------------------------------------------------------------------
 # Support functions
+# ---------------------------------------------------------------------
+def _makeStageTransform(
+        _x :float, _y :float, _xScale :float, _yScale :float, _rot_deg :float
+    ) -> Mat4:
+    """ Combined translate/scale/rotate transform matrix, replacing the
+        `glTranslatef`/`glScalef`/`glRotatef` sequence of the legacy
+        fixed-function pipeline (rotate, then scale, then translate)
+    """
+    T = Mat4.from_translation(Vec3(_x, _y, 0.0))
+    S = Mat4.from_scale(Vec3(_xScale, _yScale, 1.0))
+    R = Mat4.from_rotation(math.radians(_rot_deg), Vec3(0.0, 0.0, 1.0))
+    return T @ S @ R
+
 # ---------------------------------------------------------------------
 def vertFromRect(
         _rect :list, _pos :list, _RGBA :list, _angle :float =0
@@ -1056,8 +1038,8 @@ def vertFromRect(
 # ---------------------------------------------------------------------
 def rotateTranslate(_c :list, _rot_deg :float, _pxy :list) -> list:
     """ Rotate and translate
-        Rotate the coordinates in the list ([x1,y1,x2,y2, ...]) by the 
-        given angle and then translates the coordinates to the given 
+        Rotate the coordinates in the list ([x1,y1,x2,y2, ...]) by the
+        given angle and then translates the coordinates to the given
         position
     """
     nc = []
@@ -1091,12 +1073,12 @@ def getTextureSequence(img, use_3d=False):
                 "`getTextureSequence`: image too large for Texture3D?"
             )
     else:
-        return img.get_texture_sequence()
+        return pyglet.image.TextureGrid(img)
 
 def getOrderedGroup(order):
-    return pyglet.graphics.OrderedGroup(order)
+    return pyglet.graphics.Group(order=order)
 
 def getSprite(img, usage, group):
-    return pyglet.sprite.Sprite(img, usage=usage, group=group)
+    return pyglet.sprite.Sprite(img, group=group)
 
 # ---------------------------------------------------------------------

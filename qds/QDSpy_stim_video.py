@@ -18,6 +18,8 @@ All rights reserved.
            - Fixed a few bugs that prevented restarting the same video
 2026-06-23 - S Suhai: Fixed array preallocation shape bug #63
             (Switched `self.dyFr` and `self.dxFr` in `__loadVideo()`)
+2026-09-24 - Ported to `pyglet` 2.x; `Sprite.position` now needs a
+             3rd (z) component
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -222,7 +224,7 @@ class VideoCtrl:
             self.Sprite = rdr.getSprite(
                 tmpImg.get_texture(), "stream", self.Group
             )
-            self.Sprite.position = self.posXY
+            self.Sprite.position = (*self.posXY, 0)
             self.Sprite.scale = self.magXY[0]
             self.Sprite.rotation = self.rot
             self.Sprite.opacity = self.trans

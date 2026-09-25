@@ -10,13 +10,15 @@ QDSpy module - defines movie-related classes
   The movie control class manages the presentation of a movie according to
   the presentation parameters
 
-Copyright (c) 2013-2025 Thomas Euler
+Copyright (c) 2013-2026 Thomas Euler
 All rights reserved.
 
 2024-06-15 - Fix for breaking change in `configparser`; now using
              `ConfigParser` instead of `RawConfigParser`
-2024-08-04 - `pyglet` calls encapsulated in `renderer_opengl.py`             
+2024-08-04 - `pyglet` calls encapsulated in `renderer_opengl.py`
 2025-04-05 - Cleaning up
+2026-09-24 - Ported to `pyglet` 2.x; `Sprite.position` now needs a
+             3rd (z) component
 """
 # ---------------------------------------------------------------------
 __author__ = "code@eulerlab.de"
@@ -248,7 +250,7 @@ class MovieCtrl:
         self.trans = _trans
 
         if self.Sprite is not None:
-            self.Sprite.position = self.posXY
+            self.Sprite.position = (*self.posXY, 0)
             self.Sprite.scale = self.magXY[0]
             self.Sprite.rotation = self.rot
             self.Sprite.opacity = self.trans
