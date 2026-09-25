@@ -66,9 +66,15 @@ class ShaderManager:
             shParaDef = []
             strShVert = []
             strShFrag = []
+            strVersion = ""
 
             with open(fName, "r") as fRef:
                 for line in fRef:
+                    if line.lstrip().startswith("#version"):
+                        # GLSL version directive; must be the first line of
+                        # both the vertex and the fragment shader source
+                        strVersion = line.strip() + "\n"
+                        continue
                     pos = line.lower().find(glo.QDSpy_shaderFileCmdTok)
                     if pos >= 0:
                         # QDS command token found, get parameters into a list ...
@@ -110,6 +116,16 @@ class ShaderManager:
 
             # Close file and append shader description and code to the lists
             fRef.close()
+            if len(strVersion) > 0:
+                if strVersion.split()[-1] == "es" and not any(
+                    ln.split()[:1] == ["precision"] and "float" in ln
+                    for ln in strShFrag
+                ):
+                    # GLSL ES has no default float precision in fragment
+                    # shaders
+                    strShFrag.insert(0, "precision highp float;\n")
+                strShVert.insert(0, strVersion)
+                strShFrag.insert(0, strVersion)
             self.ShDesc.append([shName, shPara, shParaLen, shParaDef])
             self.ShVertCode.append(strShVert)
             self.ShFragCode.append(strShFrag)
